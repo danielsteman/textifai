@@ -19,12 +19,14 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const navigate = useNavigate();
-  const handleShowPassword = () => setShowPassword(!showPassword);
-  const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-  const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) =>
+  };
+  const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+  };
+
+  const navigate = useNavigate();
 
   const handleSignUpHook = useCallback(
     async (e: any) => {
@@ -41,6 +43,7 @@ const SignUp = () => {
 
   const missingEmailError = email === "";
   const missingPasswordError = password === "";
+  const handleShowPassword = () => setShowPassword(!showPassword);
 
   return (
     <form>
