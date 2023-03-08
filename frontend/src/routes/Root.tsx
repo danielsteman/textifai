@@ -1,3 +1,10 @@
+import auth from "../config/firebase";
+
 export default function Root() {
-  return <div>Root</div>;
+  return (
+    <div>
+      <h1>Home</h1>
+      <button onClick={() => auth.signOut()}></button>
+    </div>
+  );
 }
