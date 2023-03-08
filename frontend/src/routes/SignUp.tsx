@@ -1,6 +1,6 @@
 import auth from "../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   InputGroup,
   Input,
@@ -9,32 +9,35 @@ import {
   FormControl,
   FormErrorMessage,
   FormHelperText,
-  Box,
   InputLeftElement,
 } from "@chakra-ui/react";
 import { AtSignIcon, LockIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const navigate = useNavigate();
   const handleShowPassword = () => setShowPassword(!showPassword);
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) =>
     setEmail(e.target.value);
   const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) =>
     setPassword(e.target.value);
 
-  const handleSignUp = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  const handleSignUpHook = useCallback(
+    async (e: any) => {
+      e.preventDefault();
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        navigate("/");
+      } catch (error) {
+        alert(error);
+      }
+    },
+    [navigate]
+  );
 
   const missingEmailError = email === "";
   const missingPasswordError = password === "";
@@ -90,7 +93,7 @@ const SignUp = () => {
         ) : (
           <FormErrorMessage>Password is required.</FormErrorMessage>
         )}
-        <Button type="submit" onClick={handleSignUp}>
+        <Button type="submit" onClick={handleSignUpHook}>
           Sign up
         </Button>
       </FormControl>
