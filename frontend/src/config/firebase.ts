@@ -17,5 +17,4 @@ const firebaseConfig = {
   measurementId: import.meta.env.MEASUREMENTID,
 };
 
-const firebaseApp = initializeApp(firebaseConfig)
-export const auth = getAuth(firebaseApp)
+const app = initializeApp(firebaseConfig)
