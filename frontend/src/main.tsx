@@ -9,20 +9,26 @@ import Root from "./routes/Root";
 import SignUp from "./routes/SignUp";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./themes/theme";
+import Header from "./layouts/Header";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Root />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "login",
-    element: <Login />,
-  },
-  {
-    path: "signup",
-    element: <SignUp />,
+    element: <Header />,
+    children: [
+      {
+        path: "/",
+        element: <Root />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "signup",
+        element: <SignUp />,
+      },
+    ],
   },
 ]);
 
