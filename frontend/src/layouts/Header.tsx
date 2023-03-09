@@ -1,8 +1,24 @@
-import { Button, Flex, HStack, Icon, Spacer } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spacer,
+  useDisclosure,
+  Center,
+} from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
+import LoginOrRegister from "../components/LoginOrRegister";
 import Logo from "../components/Logo";
 
 const Header = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <>
       <Flex p={2} gap={2} direction="row" alignItems="center">
@@ -11,7 +27,27 @@ const Header = () => {
         <Button size="sm">Docs</Button>
         <Button size="sm">Pricing</Button>
         <Spacer />
-        <Button size="sm">Login</Button>
+        <Button size="sm" onClick={onOpen}>
+          Login
+        </Button>
+        <Modal isCentered isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay
+            bg="blackAlpha.300"
+            backdropFilter="blur(10px) hue-rotate(90deg)"
+          />
+          <ModalContent>
+            <Center>
+              <ModalHeader>Login</ModalHeader>
+            </Center>
+            <ModalCloseButton />
+            <ModalBody>
+              <LoginOrRegister variant="login" />
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onClose}>Close</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Flex>
       <Outlet />
     </>
