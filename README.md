@@ -1,6 +1,6 @@
-# form-builder
+# saas-starter
 
-Build better forms with this AI-powered form builder tool.
+SaaS (Software-as-a-Service) starter pack to convert ideas to value real quick.
 
 ## Authentication
 
