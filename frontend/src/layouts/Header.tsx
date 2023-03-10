@@ -12,12 +12,15 @@ import {
   useDisclosure,
   Center,
 } from "@chakra-ui/react";
+import { useContext, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import LoginOrRegister from "../components/LoginOrRegister";
 import Logo from "../components/Logo";
+import { AuthContext } from "../providers/AuthProvider";
 
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const currentUser = useContext(AuthContext);
 
   return (
     <>
