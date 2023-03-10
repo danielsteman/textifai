@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   Flex,
   Spacer,
@@ -11,6 +12,8 @@ import { AuthContext } from "../providers/AuthProvider";
 
 const Header = () => {
   const currentUser = useContext(AuthContext);
+  // solve this with a loader: https://reactrouter.com/en/main/route/loader
+  console.log(currentUser);
 
   return (
     <>
@@ -20,7 +23,7 @@ const Header = () => {
         <Button size="sm">Docs</Button>
         <Button size="sm">Pricing</Button>
         <Spacer />
-        <LoginOrRegisterModal variant="login" />
+        {currentUser ? <Avatar bg='teal.500' /> : <LoginOrRegisterModal variant="login" />}
       </Flex>
       <Outlet />
     </>
