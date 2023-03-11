@@ -14,11 +14,11 @@ import Header from "./layouts/Header";
 const router = createBrowserRouter([
   {
     element: <Header />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "/",
         element: <Root />,
-        errorElement: <ErrorPage />,
       },
       {
         path: "login",
