@@ -1,7 +1,7 @@
 import LoginOrRegisterModal from "../components/LoginOrRegisterModal";
 
 const SignUp = () => {
-  return <LoginOrRegisterModal variant="register" />;
+  return <LoginOrRegisterModal variant="signup" />;
 };
 
 export default SignUp;

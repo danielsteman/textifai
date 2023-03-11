@@ -26,7 +26,7 @@ import { useCallback, useState } from "react";
 import auth from "../config/firebase";
 
 interface Props {
-  variant: "login" | "register";
+  variant: "signin" | "signup";
 }
 
 const LoginOrRegisterModal: React.FC<Props> = (props) => {
@@ -49,9 +49,9 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
       e.preventDefault();
       try {
         switch (props.variant) {
-          case "register":
+          case "signup":
             await createUserWithEmailAndPassword(auth, email, password);
-          case "login":
+          case "signin":
             await signInWithEmailAndPassword(auth, email, password);
         }
         onClose();
@@ -65,11 +65,14 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
   const missingEmailError = email === "" && attempts >= 1;
   const missingPasswordError = password === "" && attempts >= 1;
   const handleShowPassword = () => setShowPassword(!showPassword);
+  const buttonProps = props.variant === "signup"
+    ? {text: "Sign up", variant: "outline"}
+    : {text: "Sign in", variant: "solid"}
 
   return (
     <>
-      <Button size="sm" onClick={onOpen}>
-        {props.variant === "register" ? "Sign up" : "Login"}
+      <Button size="sm" onClick={onOpen} variant={buttonProps.variant}>
+        {buttonProps.text}
       </Button>
       <Modal isCentered isOpen={isOpen} onClose={onClose}>
         <ModalOverlay
@@ -78,7 +81,7 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
         />
         <ModalContent>
           <Center>
-            <ModalHeader>Login</ModalHeader>
+            <ModalHeader>{buttonProps.text}</ModalHeader>
           </Center>
           <ModalCloseButton />
           <ModalBody>
@@ -133,7 +136,7 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
                 <FormErrorMessage>Password is required.</FormErrorMessage>
               )}
               <Button type="submit" onClick={handleSubmit}>
-                {props.variant === "register" ? "Sign up" : "Login"}
+                {buttonProps.text}
               </Button>
             </FormControl>
           </form>
