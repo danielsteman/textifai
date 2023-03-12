@@ -18,7 +18,7 @@ const Header = () => {
 
   return (
     <>
-      <Flex p={2} gap={2} direction="row" alignItems="center">
+      <Flex py={2} px={4} gap={2} direction="row" alignItems="center">
         <Logo />
         <Box w={8}/>
         <ButtonGroup>
@@ -31,8 +31,10 @@ const Header = () => {
         {currentUser 
         ? <Avatar bg='teal.500' /> 
         : <>
-            <LoginOrRegisterModal variant="signin" />
-            <LoginOrRegisterModal variant="signup" />
+            <ButtonGroup>
+              <LoginOrRegisterModal variant="signin" />
+              <LoginOrRegisterModal variant="signup" />
+            </ButtonGroup>
           </>
          }
       </Flex>
