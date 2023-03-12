@@ -12,6 +12,9 @@ import theme from "./themes/theme";
 import Header from "./layouts/Header";
 import Account from "./routes/Account";
 import Pricing from "./routes/Pricing";
+import Support from "./routes/Support";
+import Docs from "./routes/Docs";
+import Products from "./routes/Products";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +36,18 @@ const router = createBrowserRouter([
       {
         path: "pricing",
         element: <Pricing />,
+      },
+      {
+        path: "support",
+        element: <Support />,
+      },
+      {
+        path: "docs",
+        element: <Docs />,
+      },
+      {
+        path: "products",
+        element: <Products />,
       },
       {
         path: "account",
