@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Button,
   ButtonGroup,
   Flex,
   Spacer,
@@ -10,6 +9,7 @@ import { useContext } from "react";
 import { Outlet } from "react-router-dom";
 import LoginOrRegisterModal from "../components/LoginOrRegisterModal";
 import Logo from "../components/Logo";
+import LogoutButton from "../components/LogoutButton";
 import NavigationButton from "../components/NavigationButton";
 import { AuthContext } from "../providers/AuthProvider";
 
@@ -18,7 +18,7 @@ const Header = () => {
 
   return (
     <>
-      <Flex py={2} px={4} gap={2} direction="row" alignItems="center">
+      <Flex py={2} px={8} gap={4} direction="row" alignItems="center">
         <Logo />
         <Box w={8}/>
         <ButtonGroup>
@@ -29,7 +29,10 @@ const Header = () => {
         </ButtonGroup>
         <Spacer />
         {currentUser 
-        ? <Avatar bg='teal.500' /> 
+        ? <>
+            <Avatar bg='teal.500' size="sm"/>
+            <LogoutButton />
+          </>
         : <>
             <ButtonGroup>
               <LoginOrRegisterModal variant="signin" />
