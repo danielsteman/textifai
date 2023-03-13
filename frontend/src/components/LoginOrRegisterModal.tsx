@@ -17,6 +17,7 @@ import {
   useDisclosure,
   HStack,
   VStack,
+  Spinner,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
@@ -30,11 +31,13 @@ interface Props {
 }
 
 const LoginOrRegisterModal: React.FC<Props> = (props) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [attempts, setAttempts] = useState(0);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [attempts, setAttempts] = useState<number>(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -46,6 +49,7 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
   const handleSubmit = useCallback(
     async (e: any) => {
       setAttempts(attempts + 1);
+      setLoading(true);
       e.preventDefault();
       try {
         switch (props.variant) {
@@ -56,8 +60,9 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
         }
         onClose();
       } catch (error) {
-        alert(error);
+        console.log(error);
       }
+      setLoading(false);
     },
     [email, password]
   );
@@ -136,13 +141,17 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
             </ModalBody>
             <ModalFooter>
               <HStack spacing={2}>
-                <Button
-                  type="submit"
-                  onClick={handleSubmit}
-                  isDisabled={email === "" && password === ""}
-                >
-                  {buttonProps.text}
-                </Button>
+                {loading ? (
+                  <Spinner size="md" />
+                ) : (
+                  <Button
+                    type="submit"
+                    onClick={handleSubmit}
+                    isDisabled={email === "" && password === ""}
+                  >
+                    {buttonProps.text}
+                  </Button>
+                )}
                 <Button onClick={onClose}>Close</Button>
               </HStack>
             </ModalFooter>
