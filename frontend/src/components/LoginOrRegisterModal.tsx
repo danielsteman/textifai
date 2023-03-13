@@ -4,11 +4,9 @@ import {
   InputGroup,
   InputLeftElement,
   Input,
-  FormHelperText,
   FormErrorMessage,
   InputRightElement,
   Button,
-  Center,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -138,7 +136,11 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
             </ModalBody>
             <ModalFooter>
               <HStack spacing={2}>
-                <Button type="submit" onClick={handleSubmit}>
+                <Button
+                  type="submit"
+                  onClick={handleSubmit}
+                  isDisabled={email === "" && password === ""}
+                >
                   {buttonProps.text}
                 </Button>
                 <Button onClick={onClose}>Close</Button>
