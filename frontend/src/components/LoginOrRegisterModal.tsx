@@ -18,6 +18,7 @@ import {
   HStack,
   VStack,
   Spinner,
+  Text,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
@@ -59,8 +60,10 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
             await signInWithEmailAndPassword(auth, email, password);
         }
         onClose();
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
+        // TODO: convert error to something that's user friendly
+        console.log(error.message);
+        setError(error.message);
       }
       setLoading(false);
     },
@@ -141,13 +144,14 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
             </ModalBody>
             <ModalFooter>
               <HStack spacing={2}>
+                {error !== "" && <Text>{error}</Text>}
                 {loading ? (
                   <Spinner size="md" />
                 ) : (
                   <Button
                     type="submit"
                     onClick={handleSubmit}
-                    isDisabled={email === "" && password === ""}
+                    isDisabled={email === "" || password === ""}
                   >
                     {buttonProps.text}
                   </Button>
