@@ -17,6 +17,8 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
+  HStack,
+  VStack,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
@@ -65,9 +67,10 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
   const missingEmailError = email === "" && attempts >= 1;
   const missingPasswordError = password === "" && attempts >= 1;
   const handleShowPassword = () => setShowPassword(!showPassword);
-  const buttonProps = props.variant === "signup"
-    ? {text: "Sign up", variant: "outline"}
-    : {text: "Sign in", variant: "solid"}
+  const buttonProps =
+    props.variant === "signup"
+      ? { text: "Sign up", variant: "outline" }
+      : { text: "Sign in", variant: "solid" };
 
   return (
     <>
@@ -80,70 +83,68 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
           backdropFilter="blur(10px) hue-rotate(90deg)"
         />
         <ModalContent>
-          <Center>
-            <ModalHeader>{buttonProps.text}</ModalHeader>
-          </Center>
+          <ModalHeader>{buttonProps.text}</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
           <form>
-            <FormControl isInvalid={missingEmailError}>
-              <InputGroup size="md">
-                <InputLeftElement
-                  pointerEvents="none"
-                  color="gray.300"
-                  children={<AtSignIcon color="gray.300" />}
-                />
-                <Input
-                  value={email}
-                  onChange={handleChangeEmail}
-                  placeholder="Enter email address"
-                  type="email"
-                />
-                {!missingEmailError ? (
-                  <FormHelperText>
-                    Enter the email address you'd like to use for signing up.
-                  </FormHelperText>
-                ) : (
-                  <FormErrorMessage>Email is required.</FormErrorMessage>
-                )}
-              </InputGroup>
-            </FormControl>
-            <FormControl isInvalid={missingPasswordError}>
-              <InputGroup size="md">
-                <InputLeftElement
-                  pointerEvents="none"
-                  color="gray.300"
-                  children={<LockIcon color="gray.300" />}
-                />
-                <Input
-                  value={password}
-                  onChange={handleChangePassword}
-                  pr="4.5rem"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter password"
-                />
-                <InputRightElement width="4.5rem">
-                  <Button h="1.75rem" size="sm" onClick={handleShowPassword}>
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              {!missingPasswordError ? (
-                <FormHelperText>
-                  Enter the password you'd like to use for future logins.
-                </FormHelperText>
-              ) : (
-                <FormErrorMessage>Password is required.</FormErrorMessage>
-              )}
-              <Button type="submit" onClick={handleSubmit}>
-                {buttonProps.text}
-              </Button>
-            </FormControl>
+            <ModalBody>
+              <VStack spacing={2}>
+                <FormControl isInvalid={missingEmailError}>
+                  <InputGroup size="md">
+                    <InputLeftElement
+                      pointerEvents="none"
+                      color="gray.300"
+                      children={<AtSignIcon color="gray.300" />}
+                    />
+                    <Input
+                      value={email}
+                      onChange={handleChangeEmail}
+                      placeholder="Enter email address"
+                      type="email"
+                    />
+                  </InputGroup>
+                  {missingEmailError && (
+                    <FormErrorMessage>Email is required.</FormErrorMessage>
+                  )}
+                </FormControl>
+                <FormControl isInvalid={missingPasswordError}>
+                  <InputGroup size="md">
+                    <InputLeftElement
+                      pointerEvents="none"
+                      color="gray.300"
+                      children={<LockIcon color="gray.300" />}
+                    />
+                    <Input
+                      value={password}
+                      onChange={handleChangePassword}
+                      pr="4.5rem"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter password"
+                    />
+                    <InputRightElement width="4.5rem">
+                      <Button
+                        h="1.75rem"
+                        size="sm"
+                        onClick={handleShowPassword}
+                      >
+                        {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                  {missingPasswordError && (
+                    <FormErrorMessage>Password is required.</FormErrorMessage>
+                  )}
+                </FormControl>
+              </VStack>
+            </ModalBody>
+            <ModalFooter>
+              <HStack spacing={2}>
+                <Button type="submit" onClick={handleSubmit}>
+                  {buttonProps.text}
+                </Button>
+                <Button onClick={onClose}>Close</Button>
+              </HStack>
+            </ModalFooter>
           </form>
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={onClose}>Close</Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
