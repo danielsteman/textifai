@@ -61,7 +61,7 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
         }
         onClose();
       } catch (error: any) {
-        // TODO: convert error to something that's user friendly
+        // TODO: convert error to something that's user friendly (use table: https://firebase.google.com/docs/auth/admin/errors)
         console.log(error.message);
         setError(error.message);
       }
