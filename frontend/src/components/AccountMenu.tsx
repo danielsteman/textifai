@@ -2,7 +2,7 @@ import { Avatar, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 import auth from "../config/firebase";
 import { NavLink } from "react-router-dom";
 
-const AvatarMenu = () => {
+const AccountMenu = () => {
   return (
     <Menu>
       <MenuButton as={Avatar} bg="teal.500" size="sm" cursor="pointer" />
@@ -16,4 +16,4 @@ const AvatarMenu = () => {
   );
 };
 
-export default AvatarMenu;
+export default AccountMenu;

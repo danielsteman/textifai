@@ -1,7 +1,7 @@
 import { Box, ButtonGroup, Flex, Spacer } from "@chakra-ui/react";
 import { useContext } from "react";
 import { Outlet } from "react-router-dom";
-import AvatarMenu from "../components/AvatarMenu";
+import AccountMenu from "../components/AccountMenu";
 import LoginOrRegisterModal from "../components/LoginOrRegisterModal";
 import Logo from "../components/Logo";
 import NavigationButton from "../components/NavigationButton";
@@ -24,7 +24,7 @@ const Header = () => {
         <Spacer />
         {currentUser ? (
           <>
-            <AvatarMenu />
+            <AccountMenu />
           </>
         ) : (
           <>
