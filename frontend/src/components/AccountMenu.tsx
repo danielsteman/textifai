@@ -7,7 +7,7 @@ const AccountMenu = () => {
     <Menu>
       <MenuButton as={Avatar} bg="teal.500" size="sm" cursor="pointer" />
       <MenuList>
-        <MenuItem as={NavLink} to="/account">
+        <MenuItem as={NavLink} to="/settings">
           Account settings
         </MenuItem>
         <MenuItem onClick={() => auth.signOut()}>Sign out</MenuItem>
