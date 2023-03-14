@@ -15,6 +15,7 @@ import Pricing from "./routes/Pricing";
 import Support from "./routes/Support";
 import Docs from "./routes/Docs";
 import Products from "./routes/Products";
+import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 
 const router = createBrowserRouter([
   {
@@ -51,7 +52,11 @@ const router = createBrowserRouter([
       },
       {
         path: "account",
-        element: <Account />,
+        element: (
+          <PrivateRoute>
+            <Account />
+          </PrivateRoute>
+        ),
       },
     ],
   },
