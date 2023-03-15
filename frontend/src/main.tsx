@@ -10,7 +10,7 @@ import SignUp from "./routes/SignUp";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./themes/theme";
 import Header from "./layouts/Header";
-import Account from "./routes/Account";
+import Settings from "./routes/Settings";
 import Pricing from "./routes/Pricing";
 import Support from "./routes/Support";
 import Docs from "./routes/Docs";
@@ -51,10 +51,10 @@ const router = createBrowserRouter([
         element: <Products />,
       },
       {
-        path: "account",
+        path: "settings",
         element: (
           <PrivateRoute>
-            <Account />
+            <Settings />
           </PrivateRoute>
         ),
       },
