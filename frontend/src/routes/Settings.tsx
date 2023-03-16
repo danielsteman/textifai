@@ -1,13 +1,4 @@
-import { SettingsIcon } from "@chakra-ui/icons";
-import {
-  Grid,
-  GridItem,
-  Heading,
-  HStack,
-  Text,
-  VStack,
-  Icon,
-} from "@chakra-ui/react";
+import { Grid, GridItem } from "@chakra-ui/react";
 import { MdColorLens, MdPayment, MdSettings } from "react-icons/md";
 import SettingsMenuItem from "../components/SettingsMenuItem";
 
