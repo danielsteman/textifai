@@ -1,6 +1,6 @@
 # saas-starter
 
-A SaaS (Software-as-a-Service) starter pack to convert ideas to value real quick. I'm aware that there are a plethora of similar starters, but I wanted to build one myself, for fun and educational purposes. 
+A SaaS (Software-as-a-Service) starter pack to convert ideas to value real quick. I'm aware that there are a plethora of similar starters, but I wanted to build one myself, for fun and educational purposes. Also, as the creator it will be easier and faster to implement it as a base for a future project.
 
 ## Authentication
 
