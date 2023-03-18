@@ -16,7 +16,9 @@ VITE_FIREBASE_MESSAGINGSENDERID
 VITE_FIREBASE_APPID  
 VITE_FIREBASE_MEASUREMENTID  
 
-## Contribute
+## Test locally
+
+You don't need to set (the above) environment variables to just explore the UI. You can set `DEVELOPMENT` to `true` to use mock data.
 
 ```
 cd frontend&&yarn install
