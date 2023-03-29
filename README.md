@@ -24,3 +24,7 @@ You don't need to set (the above) environment variables to just explore the UI. 
 cd frontend&&yarn install
 yarn dev
 ```
+
+## Subscriptions
+
+Use Stripe to handle payments. Connected Firebase to Stripe with [this plugin](https://firebase.google.com/codelabs/stripe-firebase-extensions#0). The challenge is to keep Firebase (the authentication part) and Stripe in sync.
