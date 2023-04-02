@@ -9,11 +9,11 @@ variable "project_id" {
 }
 
 variable "unique_identifier" {
-  type = string
+  type    = string
   default = "sqz8p7qtai"
 }
 
 variable "organisation_id" {
-  type = string
-  default = "" 
+  type    = string
+  default = ""
 }
