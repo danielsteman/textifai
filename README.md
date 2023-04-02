@@ -28,3 +28,16 @@ yarn dev
 ## Subscriptions
 
 Use Stripe to handle payments. Connected Firebase to Stripe with [this plugin](https://firebase.google.com/codelabs/stripe-firebase-extensions#0). The challenge is to keep Firebase (the authentication part) and Stripe in sync.
+
+## Deployment
+
+To make the deployment of this project as easy, stable and reproducable as possible, it leverages [Terraform Cloud](https://app.terraform.io/). This solution is free up to 5 users. 
+
+- Create an account if you don't have one already.
+- Create a workspace. 
+  - Choose the version control workflow
+  - Connect to Github (recommended)
+  - Choose your repository and make sure to install Terraform Cloud in your fork of this project
+  - Submit and create! 🚀
+
+Terraform will create a Firebase project, which actually is a Google Cloud Project. [Read more](https://firebase.google.com/docs/projects/learn-more) about the relationship bewteen Firebase and Google Cloud.
