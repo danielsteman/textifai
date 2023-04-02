@@ -1,10 +1,5 @@
-import auth from "../config/firebase";
+import { Box } from "@chakra-ui/react";
 
 export default function Root() {
-  return (
-    <div>
-      <h1>Home</h1>
-      <button onClick={() => auth.signOut()}>Sign out</button>
-    </div>
-  );
+  return <Box>Insert your product here</Box>;
 }

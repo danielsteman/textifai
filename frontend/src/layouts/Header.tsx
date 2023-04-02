@@ -2,7 +2,7 @@ import { Box, ButtonGroup, Flex, Spacer } from "@chakra-ui/react";
 import { useContext } from "react";
 import { Outlet } from "react-router-dom";
 import AccountMenu from "../components/AccountMenu";
-import LoginOrRegisterModal from "../components/LoginOrRegisterModal";
+import LoginOrRegisterModal from "../components/Authentication/LoginOrRegisterModal";
 import Logo from "../components/Logo";
 import Navigation from "../components/Navigation/Navigation";
 import PromoTiara from "../components/PromoTiara";

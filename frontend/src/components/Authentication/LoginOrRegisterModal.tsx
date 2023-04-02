@@ -19,13 +19,15 @@ import {
   VStack,
   Spinner,
   Text,
+  Center,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useCallback, useState } from "react";
-import auth from "../config/firebase";
+import auth from "../../config/firebase";
+import Socials from "./Socials";
 
 interface Props {
   variant: "signin" | "signup";
@@ -160,6 +162,12 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
               </HStack>
             </ModalFooter>
           </form>
+          <Center>
+            <VStack>
+              <Text>Or</Text>
+              <Socials />
+            </VStack>
+          </Center>
         </ModalContent>
       </Modal>
     </>
