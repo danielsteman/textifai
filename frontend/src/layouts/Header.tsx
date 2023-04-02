@@ -1,15 +1,4 @@
-import { SmallCloseIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Center,
-  Flex,
-  HStack,
-  Icon,
-  Spacer,
-  Text,
-} from "@chakra-ui/react";
+import { Box, ButtonGroup, Flex, Spacer } from "@chakra-ui/react";
 import { useContext, useState } from "react";
 import { Outlet } from "react-router-dom";
 import AccountMenu from "../components/AccountMenu";
@@ -21,13 +10,10 @@ import { AuthContext } from "../providers/AuthProvider";
 
 const Header = () => {
   const currentUser = useContext(AuthContext);
-  const [showPromo, setShowPromo] = useState<boolean>(true);
 
   return (
     <>
-      {showPromo && (
-        <PromoTiara />
-      )}
+      <PromoTiara />
       <Flex py={2} px={8} gap={4} direction="row" alignItems="center">
         <Logo />
         <Box w={8} />
