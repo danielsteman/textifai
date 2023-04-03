@@ -161,7 +161,9 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
           </form>
           <Center>
             <VStack>
-              <Text fontWeight={600}>Or</Text>
+              <Text fontWeight={600} mb={2}>
+                Or
+              </Text>
               <Socials />
             </VStack>
           </Center>

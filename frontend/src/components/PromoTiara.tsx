@@ -1,12 +1,26 @@
 import { SmallCloseIcon } from "@chakra-ui/icons";
-import { Box, Text, Center, Button, IconButton } from "@chakra-ui/react";
-import { useState } from "react";
+import {
+  Box,
+  Text,
+  Center,
+  Button,
+  IconButton,
+  useDisclosure,
+  Collapse,
+} from "@chakra-ui/react";
+import { useEffect } from "react";
 
 const PromoTiara: React.FC = () => {
-  const [showPromo, setShowPromo] = useState<boolean>(true);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  if (showPromo) {
-    return (
+  useEffect(() => {
+    return () => {
+      onOpen();
+    };
+  }, []);
+
+  return (
+    <Collapse in={isOpen} animateOpacity>
       <Box w="100%" p={2} bgGradient="linear(to-l, #7928CA, #FF0080)">
         <Center gap={4}>
           <Text size="sm" color={"white"}>
@@ -26,14 +40,12 @@ const PromoTiara: React.FC = () => {
             variant={"outline"}
             icon={<SmallCloseIcon />}
             aria-label={"Close tiara"}
-            onClick={() => setShowPromo(false)}
+            onClick={onClose}
           />
         </Center>
       </Box>
-    );
-  } else {
-    return null;
-  }
+    </Collapse>
+  );
 };
 
 export default PromoTiara;
