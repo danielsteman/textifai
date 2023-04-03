@@ -90,7 +90,7 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
           bg="blackAlpha.300"
           backdropFilter="blur(10px) hue-rotate(90deg)"
         />
-        <ModalContent>
+        <ModalContent pb={4}>
           <ModalHeader>{buttonProps.text}</ModalHeader>
           <ModalCloseButton />
           <form>
@@ -145,26 +145,23 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
               </VStack>
             </ModalBody>
             <ModalFooter>
-              <HStack spacing={2}>
-                {error !== "" && <Text>{error}</Text>}
-                {loading ? (
-                  <Spinner size="md" />
-                ) : (
-                  <Button
-                    type="submit"
-                    onClick={handleSubmit}
-                    isDisabled={email === "" || password === ""}
-                  >
-                    {buttonProps.text}
-                  </Button>
-                )}
-                <Button onClick={onClose}>Close</Button>
-              </HStack>
+              {error !== "" && <Text>{error}</Text>}
+              {loading ? (
+                <Spinner size="md" />
+              ) : (
+                <Button
+                  type="submit"
+                  onClick={handleSubmit}
+                  isDisabled={email === "" || password === ""}
+                >
+                  {buttonProps.text}
+                </Button>
+              )}
             </ModalFooter>
           </form>
           <Center>
             <VStack>
-              <Text>Or</Text>
+              <Text fontWeight={600}>Or</Text>
               <Socials />
             </VStack>
           </Center>

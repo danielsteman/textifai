@@ -40,4 +40,4 @@ To make the deployment of this project as easy, stable and reproducable as possi
   - Choose your repository and make sure to install Terraform Cloud in your fork of this project
   - Submit and create! 🚀
 
-Terraform will create a Firebase project, which actually is a Google Cloud Project. [Read more](https://firebase.google.com/docs/projects/learn-more) about the relationship bewteen Firebase and Google Cloud.
+Terraform will create a Firebase project, which actually is a Google Cloud Project. [Read more](https://firebase.google.com/docs/projects/learn-more) about the relationship between Firebase and Google Cloud.
