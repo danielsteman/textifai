@@ -1,4 +1,4 @@
-import { HStack, VStack, Heading, Icon, Text } from "@chakra-ui/react";
+import { HStack, VStack, Heading, Icon, Text, Tooltip } from "@chakra-ui/react";
 import { IconType } from "react-icons";
 
 interface Props {
@@ -9,13 +9,14 @@ interface Props {
 
 const SettingsMenuItem: React.FC<Props> = ({ children, headerText, icon }) => {
   return (
-    <HStack>
-      <Icon as={icon} />
-      <VStack>
-        <Heading size="sm">{headerText}</Heading>
-        <Text>{children}</Text>
-      </VStack>
-    </HStack>
+    <Tooltip label={children}>
+      <HStack m={4} p={2} bgColor="grey" rounded={4}>
+        <Icon as={icon} />
+        <VStack>
+          <Heading size="sm">{headerText}</Heading>
+        </VStack>
+      </HStack>
+    </Tooltip>
   );
 };
 
