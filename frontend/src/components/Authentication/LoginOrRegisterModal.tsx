@@ -15,7 +15,6 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
-  HStack,
   VStack,
   Spinner,
   Text,
@@ -29,11 +28,11 @@ import { useCallback, useState } from "react";
 import auth from "../../config/firebase";
 import Socials from "./Socials";
 
-interface Props {
-  variant: "signin" | "signup";
+export interface LoginOrRegisterModalProps {
+  loginOrRegister: "signIn" | "signUp";
 }
 
-const LoginOrRegisterModal: React.FC<Props> = (props) => {
+const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -55,10 +54,10 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
       setLoading(true);
       e.preventDefault();
       try {
-        switch (props.variant) {
-          case "signup":
+        switch (props.loginOrRegister) {
+          case "signUp":
             await createUserWithEmailAndPassword(auth, email, password);
-          case "signin":
+          case "signIn":
             await signInWithEmailAndPassword(auth, email, password);
         }
         onClose();
@@ -74,9 +73,10 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
 
   const missingEmailError = email === "" && attempts >= 1;
   const missingPasswordError = password === "" && attempts >= 1;
+
   const handleShowPassword = () => setShowPassword(!showPassword);
   const buttonProps =
-    props.variant === "signup"
+    props.loginOrRegister === "signUp"
       ? { text: "Sign up", variant: "outline" }
       : { text: "Sign in", variant: "solid" };
 
@@ -142,6 +142,33 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
                     <FormErrorMessage>Password is required.</FormErrorMessage>
                   )}
                 </FormControl>
+                {props.loginOrRegister === "signUp" && (
+                  <>
+                    <FormControl>
+                      <InputGroup>
+                        <InputLeftElement
+                          pointerEvents="none"
+                          color="gray.300"
+                          children={<LockIcon color="gray.300" />}
+                        />
+                        <Input
+                          placeholder="Repeat password"
+                          type={showPassword ? "text" : "password"}
+                        />
+                      </InputGroup>
+                    </FormControl>
+                    <FormControl>
+                      <InputGroup>
+                        <Input placeholder="First name" />
+                      </InputGroup>
+                    </FormControl>
+                    <FormControl>
+                      <InputGroup>
+                        <Input placeholder="Last name" />
+                      </InputGroup>
+                    </FormControl>
+                  </>
+                )}
               </VStack>
             </ModalBody>
             <ModalFooter>
@@ -164,7 +191,7 @@ const LoginOrRegisterModal: React.FC<Props> = (props) => {
               <Text fontWeight={600} mb={2}>
                 Or
               </Text>
-              <Socials />
+              <Socials {...props} />
             </VStack>
           </Center>
         </ModalContent>
