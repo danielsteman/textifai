@@ -1,6 +1,7 @@
+// Format camelcase as capitalized words
+
 export default function formatPropString(stringProp: string) {
-  var formattedStringProp = ""
-  formattedStringProp += stringProp[0].toUpperCase()
-  formattedStringProp += stringProp.slice(1).replace("upper case char", "space and lowercase char")
+  var temp = stringProp.slice(1).replace(/([A-Z])/g, " $1");
+  var formattedStringProp = stringProp.charAt(0).toUpperCase() + temp
   return formattedStringProp
 };
