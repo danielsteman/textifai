@@ -19,7 +19,13 @@ const AccountMenuDrawer = () => {
   return (
     <>
       <AccountAvatar onClick={onOpen} />
-      <Drawer placement="right" onClose={onClose} isOpen={isOpen} size="xs">
+      <Drawer
+        placement="right"
+        onClose={onClose}
+        isOpen={isOpen}
+        size="xs"
+        autoFocus={false}
+      >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader borderBottomWidth="1px">
@@ -37,9 +43,17 @@ const AccountMenuDrawer = () => {
           </DrawerHeader>
           <DrawerBody>
             <VStack gap={2} alignItems="left">
-              <MenuItem name={"Account"} icon={MdSettings} />
-              <MenuItem name={"Subscriptions"} icon={MdPayment} />
-              <MenuItem name={"Appearance"} icon={MdColorLens} />
+              <MenuItem name={"Account"} icon={MdSettings} href="/settings" />
+              <MenuItem
+                name={"Subscriptions"}
+                icon={MdPayment}
+                href="/settings"
+              />
+              <MenuItem
+                name={"Appearance"}
+                icon={MdColorLens}
+                href="/settings"
+              />
             </VStack>
           </DrawerBody>
         </DrawerContent>
