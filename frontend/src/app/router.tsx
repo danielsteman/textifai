@@ -42,9 +42,9 @@ export const router = createBrowserRouter([
       {
         path: "settings",
         element: (
-          // <PrivateRoute>
-          <Settings />
-          // </PrivateRoute>
+          <PrivateRoute>
+            <Settings />
+          </PrivateRoute>
         ),
       },
     ],
