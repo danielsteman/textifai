@@ -1,7 +1,7 @@
-import AccountInfoDrawer from "../../common/components/AccountInfoDrawer";
+import AccountMenuDrawer from "../../features/AccountMenuDrawer/AccountMenuDrawer";
 
 const Settings = () => {
-  return <AccountInfoDrawer />;
+  return <AccountMenuDrawer />;
 };
 
 export default Settings;

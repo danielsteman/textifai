@@ -10,10 +10,10 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import AccountAvatar from "./AccountAvatar";
-import SettingsMenuItem from "./SettingsMenuItem";
+import AccountAvatar from "../../common/components/AccountAvatar";
+import MenuItem from "../../common/components/MenuItem";
 
-const AccountInfoDrawer = () => {
+const AccountMenuDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const fakeUser = "Daniel";
   return (
@@ -37,15 +37,9 @@ const AccountInfoDrawer = () => {
           </DrawerHeader>
           <DrawerBody>
             <VStack gap={2} alignItems="left">
-              <SettingsMenuItem name={"Account"} icon={MdSettings}>
-                Manage your account settings
-              </SettingsMenuItem>
-              <SettingsMenuItem name={"Subscriptions"} icon={MdPayment}>
-                Manage your active subscriptions
-              </SettingsMenuItem>
-              <SettingsMenuItem name={"Appearance"} icon={MdColorLens}>
-                Manage the appearance of the web app
-              </SettingsMenuItem>
+              <MenuItem name={"Account"} icon={MdSettings} />
+              <MenuItem name={"Subscriptions"} icon={MdPayment} />
+              <MenuItem name={"Appearance"} icon={MdColorLens} />
             </VStack>
           </DrawerBody>
         </DrawerContent>
@@ -54,4 +48,4 @@ const AccountInfoDrawer = () => {
   );
 };
 
-export default AccountInfoDrawer;
+export default AccountMenuDrawer;

@@ -1,7 +1,7 @@
 import { Box, ButtonGroup, Flex, Spacer } from "@chakra-ui/react";
 import { useContext } from "react";
 import { Outlet } from "react-router-dom";
-import AccountInfoDrawer from "../../common/components/AccountInfoDrawer";
+import AccountInfoDrawer from "../../features/AccountMenuDrawer/AccountMenuDrawer";
 import Navigation from "../../features/Navigation/Navigation";
 import Logo from "../../common/components/Logo";
 import PromoTiara from "../../common/components/PromoTiara";
