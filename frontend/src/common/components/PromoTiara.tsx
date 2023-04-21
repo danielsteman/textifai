@@ -21,7 +21,7 @@ const PromoTiara: React.FC = () => {
 
   return (
     <Collapse in={isOpen} animateOpacity>
-      <Box w="100%" p={2} bgGradient="linear(to-l, #7928CA, #FF0080)">
+      <Box w="100%" p={2} bgGradient="linear(to-l, lightblue, blue)">
         <Center gap={4}>
           <Text size="sm" color={"white"}>
             Check out our promo 💎

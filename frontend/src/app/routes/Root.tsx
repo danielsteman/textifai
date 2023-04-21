@@ -1,5 +1,4 @@
-import { Box, Button, Center, Flex, Grid, Heading } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Box, Button, Center, Heading } from "@chakra-ui/react";
 
 export default function Root() {
   return (
@@ -10,7 +9,7 @@ export default function Root() {
       h="85vw"
     >
       <Box maxW={500}>
-        <Heading color="lightgrey" fontWeight={900}>
+        <Heading color="lightgrey" fontWeight={900} size="2xl">
           From ideation to deployment with speed 🚀
         </Heading>
         <Button mt={8} variant="solid" size="lg">
