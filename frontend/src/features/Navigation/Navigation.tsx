@@ -1,5 +1,5 @@
 import { ButtonGroup } from "@chakra-ui/react";
-import NavigationButton from "./NavigationButton";
+import NavigationButton from "../../common/components/NavigationButton";
 
 const Navigation = () => (
   <ButtonGroup>

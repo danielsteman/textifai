@@ -25,7 +25,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useCallback, useState } from "react";
-import auth from "../../config/firebase";
+import auth from "../../app/config/firebase";
 import Socials from "./Socials";
 
 export interface LoginOrRegisterModalProps {

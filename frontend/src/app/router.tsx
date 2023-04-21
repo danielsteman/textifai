@@ -8,7 +8,6 @@ import Products from "./routes/Products";
 import Root from "./routes/Root";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Settings from "./routes/Settings";
-import SignUp from "./routes/SignUp";
 import Support from "./routes/Support";
 
 export const router = createBrowserRouter([
@@ -23,10 +22,6 @@ export const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
-      },
-      {
-        path: "signup",
-        element: <SignUp />,
       },
       {
         path: "pricing",

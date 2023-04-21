@@ -1,8 +1,9 @@
 import { Text, HStack, Icon } from "@chakra-ui/react";
 import React from "react";
 import { IconType } from "react-icons";
+import formatPropString from "../../common/utils/formatPropString";
 import { Color } from "../../shared/app.types";
-import formatPropString from "../../utils/formatPropString";
+
 import { SocialsProps } from "./Socials";
 
 interface SocialLoginButtonProps extends SocialsProps {

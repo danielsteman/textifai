@@ -1,11 +1,11 @@
 import { Box, ButtonGroup, Flex, Spacer } from "@chakra-ui/react";
 import { useContext } from "react";
 import { Outlet } from "react-router-dom";
-import AccountInfoDrawer from "../components/AccountInfoDrawer";
-import LoginOrRegisterModal from "../components/Authentication/LoginOrRegisterModal";
-import Logo from "../components/Logo";
-import Navigation from "../components/Navigation/Navigation";
-import PromoTiara from "../components/PromoTiara";
+import AccountInfoDrawer from "../../common/components/AccountInfoDrawer";
+import Navigation from "../../features/Navigation/Navigation";
+import Logo from "../../common/components/Logo";
+import PromoTiara from "../../common/components/PromoTiara";
+import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
 import { AuthContext } from "../providers/AuthProvider";
 
 const Header = () => {
