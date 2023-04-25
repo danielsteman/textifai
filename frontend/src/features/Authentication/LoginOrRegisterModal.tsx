@@ -86,10 +86,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
         {buttonProps.text}
       </Button>
       <Modal isCentered isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay
-          bg="blackAlpha.300"
-          backdropFilter="blur(10px) hue-rotate(90deg)"
-        />
+        <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
         <ModalContent pb={4}>
           <ModalHeader>{buttonProps.text}</ModalHeader>
           <ModalCloseButton />
