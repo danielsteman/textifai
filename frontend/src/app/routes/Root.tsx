@@ -4,9 +4,8 @@ export default function Root() {
   return (
     <Center
       bgGradient="linear(to-l, #7928CA, #FF0080)"
-      w={"100%"}
       textAlign="center"
-      h="85vw"
+      flex="1"
     >
       <Box maxW={500}>
         <Heading color="lightgrey" fontWeight={900} size="2xl">

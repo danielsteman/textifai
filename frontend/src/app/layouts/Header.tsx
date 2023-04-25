@@ -12,7 +12,7 @@ const Header = () => {
   const currentUser = useContext(AuthContext);
 
   return (
-    <>
+    <Flex direction="column" h="100%">
       <PromoTiara />
       <Flex py={2} px={8} gap={4} direction="row" alignItems="center">
         <Logo />
@@ -31,7 +31,7 @@ const Header = () => {
         )}
       </Flex>
       <Outlet />
-    </>
+    </Flex>
   );
 };
 
