@@ -9,9 +9,11 @@ import {
   Collapse,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PromoTiara: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
 
   useEffect(() => {
     return () => {
@@ -32,6 +34,10 @@ const PromoTiara: React.FC = () => {
             bgColor="black"
             textColor={"white"}
             rounded={2}
+            onClick={() => {
+              navigate("/pricing");
+              onClose();
+            }}
           >
             Learn more
           </Button>
