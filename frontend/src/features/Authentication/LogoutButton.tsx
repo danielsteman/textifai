@@ -1,10 +1,17 @@
-import { Button } from "@chakra-ui/react";
-import auth from "../../config/firebase";
+import { IconButton, Tooltip } from "@chakra-ui/react";
+import { MdLogout } from "react-icons/md";
+import auth from "../../app/config/firebase";
 
 const LogoutButton = () => (
-  <Button size="sm" onClick={() => auth.signOut()}>
-    Sign out
-  </Button>
+  <Tooltip label="Sign out">
+    <IconButton
+      size="sm"
+      onClick={() => auth.signOut()}
+      icon={<MdLogout />}
+      aria-label="Sign out"
+      w="fit-content"
+    />
+  </Tooltip>
 );
 
 export default LogoutButton;

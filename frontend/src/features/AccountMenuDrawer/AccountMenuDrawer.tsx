@@ -9,9 +9,12 @@ import {
   Text,
   VStack,
   HStack,
+  Spacer,
+  Flex,
 } from "@chakra-ui/react";
 import AccountAvatar from "../../common/components/AccountAvatar";
 import MenuItem from "../../common/components/MenuItem";
+import LogoutButton from "../Authentication/LogoutButton";
 
 const AccountMenuDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -42,7 +45,13 @@ const AccountMenuDrawer = () => {
             </HStack>
           </DrawerHeader>
           <DrawerBody>
-            <VStack gap={2} alignItems="left">
+            <Flex
+              gap={2}
+              py={4}
+              alignItems="left"
+              flexDirection="column"
+              h="100%"
+            >
               <MenuItem name={"Account"} icon={MdSettings} href="/settings" />
               <MenuItem
                 name={"Subscriptions"}
@@ -54,7 +63,12 @@ const AccountMenuDrawer = () => {
                 icon={MdColorLens}
                 href="/settings"
               />
-            </VStack>
+              <Spacer />
+              <Flex>
+                <Spacer />
+                <LogoutButton />
+              </Flex>
+            </Flex>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
