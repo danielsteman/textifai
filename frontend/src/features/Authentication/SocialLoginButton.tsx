@@ -1,6 +1,9 @@
-import { Text, HStack, Icon } from "@chakra-ui/react";
+import { Text, Icon, Button } from "@chakra-ui/react";
+import { signInWithRedirect } from "firebase/auth";
 import React from "react";
 import { IconType } from "react-icons";
+import { googleProvider } from "../../app/auth/auth_google_provider_create";
+import auth from "../../app/config/firebase";
 import formatPropString from "../../common/utils/formatPropString";
 import { Color } from "../../shared/app.types";
 
@@ -15,13 +18,21 @@ interface SocialLoginButtonProps extends SocialsProps {
 const SocialLoginButton: React.FC<SocialLoginButtonProps> = (props) => {
   const buttonText = `${props.loginOrRegister} with ${props.socialMediaProvider}`;
   const formattedButtonText = formatPropString(buttonText);
+  const handleSubmit = () => {
+    switch(props.socialMediaProvider) {
+      case "Google": {
+        console.log("logging in with Google");
+        signInWithRedirect(auth, googleProvider);
+      }
+    }
+  }
   return (
-    <HStack bgColor={props.color} p={2} rounded={5} w={"fit-content"}>
-      <Icon as={props.icon} color="white" boxSize={5} />
+    <Button onClick={handleSubmit} colorScheme={props.socialMediaProvider.toLowerCase()} p={2} rounded={5} >
+      <Icon as={props.icon} color="white" boxSize={5} mr={2}/>
       <Text color={"white"} fontWeight={600}>
         {formattedButtonText}
       </Text>
-    </HStack>
+    </Button>
   );
 };
 
