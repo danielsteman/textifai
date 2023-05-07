@@ -1,7 +1,9 @@
 import { Text, Icon, Button } from "@chakra-ui/react";
-import { signInWithRedirect } from "firebase/auth";
+import { getRedirectResult, signInWithRedirect } from "firebase/auth";
 import React from "react";
 import { IconType } from "react-icons";
+import { useNavigate } from "react-router-dom";
+import { facebookProvider } from "../../app/auth/auth_facebook_provider_create";
 import { googleProvider } from "../../app/auth/auth_google_provider_create";
 import auth from "../../app/config/firebase";
 import formatPropString from "../../common/utils/formatPropString";
@@ -18,11 +20,29 @@ interface SocialLoginButtonProps extends SocialsProps {
 const SocialLoginButton: React.FC<SocialLoginButtonProps> = (props) => {
   const buttonText = `${props.loginOrRegister} with ${props.socialMediaProvider}`;
   const formattedButtonText = formatPropString(buttonText);
+  const navigate = useNavigate();
   const handleSubmit = () => {
     switch(props.socialMediaProvider) {
       case "Google": {
-        console.log("logging in with Google");
         signInWithRedirect(auth, googleProvider);
+        getRedirectResult(auth)
+        .then(() => {
+          navigate("/products")
+        }).catch((error) => {
+          console.log(error)
+        });
+      }
+      case "Facebook": {
+        signInWithRedirect(auth, facebookProvider);
+        getRedirectResult(auth)
+        .then(() => {
+          navigate("/products")
+        }).catch((error) => {
+          console.log(error)
+        });
+      }
+      default: {
+        console.log("socialMediaProvider in SocialLoginButtonProps was not matched")
       }
     }
   }
