@@ -43,3 +43,7 @@ To make the deployment of this project as easy, stable and reproducable as possi
   - Submit and create! 🚀
 
 Terraform will create a Firebase project, which actually is a Google Cloud Project. [Read more](https://firebase.google.com/docs/projects/learn-more) about the relationship between Firebase and Google Cloud.
+
+To plan and apply Terraform locally (for debugging purposes), you'll need the following tools:
+
+First, [install Terraform](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/install-cli?in=terraform%2Fgcp-get-started). Second, [install gcloud CLI](https://cloud.google.com/sdk/docs/install). 
