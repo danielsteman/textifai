@@ -4,7 +4,7 @@ A SaaS (Software-as-a-Service) starter pack to convert ideas to value real quick
 
 ## Authentication
 
-Use Firebase to authenticate users, for convenience. 
+Use Firebase to authenticate users. This saves a lot of time and the [free tier](https://firebase.google.com/pricing) is pretty lenient. If you want to utilize the Facebook login method, create credentials by following [these instructions](https://firebase.google.com/docs/auth/web/facebook-login) and add them to the environment variables.
 
 ## Environment variables
 
@@ -15,6 +15,8 @@ VITE_FIREBASE_STORAGEBUCKET
 VITE_FIREBASE_MESSAGINGSENDERID  
 VITE_FIREBASE_APPID  
 VITE_FIREBASE_MEASUREMENTID  
+FACEBOOK_APP_ID  
+FACEBOOK_APP_SECRET  
 
 ## Test locally
 
