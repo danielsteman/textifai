@@ -9,6 +9,8 @@ import {
   VStack,
   Button,
 } from "@chakra-ui/react";
+import { FaBox, FaCheck, FaCross, FaCrosshairs, FaXbox } from "react-icons/fa";
+import { MdCheckBox, MdPlayDisabled } from "react-icons/md";
 
 const pricingData = [
   {
@@ -68,11 +70,9 @@ const Pricing = () => {
               <Text>Up to {plan.nProjects} projects</Text>
               {plan.features.map((feature, index) => (
                 <HStack key={index} gap={2}>
-                  <Box
-                    h={4}
-                    w={4}
-                    bgColor={feature.included ? "green" : "red"}
-                  />
+                  {
+                    feature.included ? <FaCheck color="green" /> : <Box w={4} />
+                  }
                   <Text fontSize="sm" as={!feature.included ? "s" : undefined}>
                     {feature.body}
                   </Text>
