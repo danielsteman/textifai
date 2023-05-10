@@ -1,13 +1,20 @@
 import { ButtonGroup } from "@chakra-ui/react";
-import NavigationButton from "../../common/components/NavigationButton";
+import NavigationButton from "./NavigationButton";
 
-const Navigation = () => (
-  <ButtonGroup>
-    <NavigationButton to="/products">Products</NavigationButton>
-    <NavigationButton to="/docs">Docs</NavigationButton>
-    <NavigationButton to="/pricing">Pricing</NavigationButton>
-    <NavigationButton to="/support">Support</NavigationButton>
-  </ButtonGroup>
-);
+const Navigation = () => {
+  const products = ["product1", "product2", "product3"];
+  return (
+    <ButtonGroup>
+      <NavigationButton
+        to="/products"
+        title="Products"
+        subitems={products}
+      ></NavigationButton>
+      <NavigationButton to="/docs" title="Docs"></NavigationButton>
+      <NavigationButton to="/pricing" title="Pricing"></NavigationButton>
+      <NavigationButton to="/support" title="Support"></NavigationButton>
+    </ButtonGroup>
+  );
+};
 
 export default Navigation;
