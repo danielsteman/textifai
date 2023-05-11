@@ -9,6 +9,7 @@ import Root from "./routes/Root";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Settings from "./routes/Settings";
 import Support from "./routes/Support";
+import Product from "./routes/Product";
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +39,12 @@ export const router = createBrowserRouter([
       {
         path: "products",
         element: <Products />,
+        children: [
+          {
+            path: "*",
+            element: <Product />
+          }
+        ]
       },
       {
         path: "settings",
