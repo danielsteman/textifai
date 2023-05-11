@@ -53,9 +53,9 @@ const pricingData = [
 
 const Pricing = () => {
   return (
-    <Grid templateColumns="repeat(3, 1fr)" gap={4} p={4}>
+    <Grid templateColumns="repeat(3, 1fr)" gap={4}>
       <GridItem colSpan={3}>
-        <Center p={12}>
+        <Center px={12}>
           <Text>
             Choose <b>annual billing</b> and get <b>2 months free</b>
           </Text>
@@ -70,9 +70,7 @@ const Pricing = () => {
               <Text>Up to {plan.nProjects} projects</Text>
               {plan.features.map((feature, index) => (
                 <HStack key={index} gap={2}>
-                  {
-                    feature.included ? <FaCheck color="green" /> : <Box w={4} />
-                  }
+                  {feature.included ? <FaCheck color="green" /> : <Box w={4} />}
                   <Text fontSize="sm" as={!feature.included ? "s" : undefined}>
                     {feature.body}
                   </Text>

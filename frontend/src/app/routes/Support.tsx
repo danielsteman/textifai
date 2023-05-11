@@ -31,7 +31,6 @@ const Support = () => {
 
   return (
     <>
-      <Heading>Support</Heading>
       <Text>
         Do you experience any inconveniences with your product? Let us know!
       </Text>

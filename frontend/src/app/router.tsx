@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import Header from "./layouts/Header";
+import Layout from "./layouts/Layout";
 import Docs from "./routes/Docs";
 import ErrorPage from "./routes/ErrorPage";
 import Login from "./routes/Login";
@@ -10,16 +10,23 @@ import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Settings from "./routes/Settings";
 import Support from "./routes/Support";
 import Product from "./routes/Product";
+import LandingPageLayout from "./layouts/LandingPageLayout";
 
 export const router = createBrowserRouter([
   {
-    element: <Header />,
+    element: <LandingPageLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
         path: "/",
         element: <Root />,
       },
+    ],
+  },
+  {
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
       {
         path: "login",
         element: <Login />,
@@ -42,9 +49,9 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "*",
-            element: <Product />
-          }
-        ]
+            element: <Product />,
+          },
+        ],
       },
       {
         path: "settings",
