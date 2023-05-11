@@ -15,6 +15,7 @@ import {
 import AccountAvatar from "../../common/components/AccountAvatar";
 import MenuItem from "../../common/components/MenuItem";
 import LogoutButton from "../Authentication/LogoutButton";
+import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 
 const AccountMenuDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -65,6 +66,7 @@ const AccountMenuDrawer = () => {
               />
               <Spacer />
               <Flex>
+                <ColorModeSwitcher size="sm" />
                 <Spacer />
                 <LogoutButton />
               </Flex>
