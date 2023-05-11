@@ -11,10 +11,7 @@ import {
   HStack,
   Spacer,
   Flex,
-  Tooltip,
   useColorMode,
-  WrapItem,
-  Wrap,
 } from "@chakra-ui/react";
 import AccountAvatar from "../../common/components/AccountAvatar";
 import MenuItem from "../../common/components/MenuItem";
@@ -24,8 +21,6 @@ import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 const AccountMenuDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const fakeUser = "Daniel";
-  const { colorMode, toggleColorMode } = useColorMode();
-  const colorModeToolTip = `Switch to ${colorMode}`;
   return (
     <>
       <AccountAvatar onClick={onOpen} />
