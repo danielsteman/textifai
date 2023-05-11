@@ -47,7 +47,7 @@ const SocialLoginButton: React.FC<SocialLoginButtonProps> = (props) => {
     }
   }
   return (
-    <Button onClick={handleSubmit} colorScheme={props.socialMediaProvider.toLowerCase()} p={2} rounded={5} >
+    <Button onClick={handleSubmit} colorScheme={props.socialMediaProvider.toLowerCase()} p={2} rounded={5} w="100%">
       <Icon as={props.icon} color="white" boxSize={5} mr={2}/>
       <Text color={"white"} fontWeight={600}>
         {formattedButtonText}

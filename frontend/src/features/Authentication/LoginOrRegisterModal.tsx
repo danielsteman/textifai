@@ -174,6 +174,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                 <Spinner size="md" />
               ) : (
                 <Button
+                  w="100%"
                   type="submit"
                   onClick={handleSubmit}
                   isDisabled={email === "" || password === ""}
