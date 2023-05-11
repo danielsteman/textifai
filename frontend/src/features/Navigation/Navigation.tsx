@@ -6,13 +6,12 @@ const Navigation = () => {
   return (
     <ButtonGroup>
       <NavigationButton
-        to="/products"
         title="Products"
         subitems={products}
       ></NavigationButton>
-      <NavigationButton to="/docs" title="Docs"></NavigationButton>
-      <NavigationButton to="/pricing" title="Pricing"></NavigationButton>
-      <NavigationButton to="/support" title="Support"></NavigationButton>
+      <NavigationButton title="Docs"></NavigationButton>
+      <NavigationButton title="Pricing"></NavigationButton>
+      <NavigationButton title="Support"></NavigationButton>
     </ButtonGroup>
   );
 };
