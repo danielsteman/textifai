@@ -1,3 +1,3 @@
-const Support = () => (<></>)
+const Products = () => <></>;
 
-export default Support
+export default Products;

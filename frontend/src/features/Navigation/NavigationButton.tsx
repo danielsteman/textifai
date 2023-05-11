@@ -9,24 +9,37 @@ interface Props {
   subitems?: string[];
 }
 
-const NavigationButton: React.FC<Props> = ({
-  title,
-  subitems,
-}) => (
+const NavigationButton: React.FC<Props> = ({ title, subitems }) => (
   <>
     {subitems ? (
       <Menu>
-        <MenuButton variant="ghost" size="sm" as={Button} rightIcon={<ChevronDownIcon />}>
+        <MenuButton
+          variant="ghost"
+          size="sm"
+          as={Button}
+          rightIcon={<ChevronDownIcon />}
+        >
           {title}
         </MenuButton>
         <MenuList>
           {subitems.map((item, index) => (
-            <MenuItem key={index} as={NavLink} to={`/products/${item.toLowerCase()}`}>{item}</MenuItem>
+            <MenuItem
+              key={index}
+              as={NavLink}
+              to={`/products/${item.toLowerCase()}`}
+            >
+              {item}
+            </MenuItem>
           ))}
         </MenuList>
       </Menu>
     ) : (
-      <Button variant="ghost" size="sm" as={NavLink} to={`/${title.toLowerCase()}`}>
+      <Button
+        variant="ghost"
+        size="sm"
+        as={NavLink}
+        to={`/${title.toLowerCase()}`}
+      >
         {title}
       </Button>
     )}
