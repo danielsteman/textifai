@@ -1,8 +1,6 @@
-import { ArrowDownIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 import { NavLink, To } from "react-router-dom";
-
-// TODO: allow NavigationButton to become Menu with MenuItems that navigate() to a page according to its children
 
 interface Props {
   title: string;
