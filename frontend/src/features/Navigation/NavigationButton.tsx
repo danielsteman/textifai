@@ -1,32 +1,56 @@
-import { ArrowDownIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
-import { NavLink, To } from "react-router-dom";
-
-// TODO: allow NavigationButton to become Menu with MenuItems that navigate() to a page according to its children
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
+import { NavLink } from "react-router-dom";
+import { formatStringAsRoute } from "../../common/utils/formatStrings";
+import { NavigationButtonData } from "./Navigation";
 
 interface Props {
   title: string;
-  subitems?: string[];
+  menudata?: NavigationButtonData;
 }
 
-const NavigationButton: React.FC<Props> = ({
-  title,
-  subitems,
-}) => (
+const NavigationButton: React.FC<Props> = ({ title, menudata }) => (
   <>
-    {subitems ? (
+    {menudata ? (
       <Menu>
-        <MenuButton variant="ghost" size="sm" as={Button} rightIcon={<ChevronDownIcon />}>
+        <MenuButton
+          variant="ghost"
+          size="sm"
+          as={Button}
+          rightIcon={<ChevronDownIcon />}
+        >
           {title}
         </MenuButton>
         <MenuList>
-          {subitems.map((item, index) => (
-            <MenuItem key={index} as={NavLink} to={`/products/${item.toLowerCase()}`}>{item}</MenuItem>
+          <MenuItem as={NavLink} to={`/${menudata.collectionRoute}`}>
+            {menudata.collectionTitle}
+          </MenuItem>
+          <MenuDivider />
+          {menudata.children.map((item, index) => (
+            <MenuItem
+              key={index}
+              as={NavLink}
+              to={`/${menudata.collectionRoute}/${formatStringAsRoute(item)}`}
+            >
+              {item}
+            </MenuItem>
           ))}
         </MenuList>
       </Menu>
     ) : (
-      <Button variant="ghost" size="sm" as={NavLink} to={`/${title.toLowerCase()}`}>
+      <Button
+        variant="ghost"
+        size="sm"
+        as={NavLink}
+        to={`/${title.toLowerCase()}`}
+      >
         {title}
       </Button>
     )}
