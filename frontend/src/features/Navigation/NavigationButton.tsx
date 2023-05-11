@@ -1,15 +1,24 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
-import { NavLink, To } from "react-router-dom";
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
+import { NavLink } from "react-router-dom";
+import { formatStringAsRoute } from "../../common/utils/formatStrings";
+import { NavigationButtonData } from "./Navigation";
 
 interface Props {
   title: string;
-  subitems?: string[];
+  menudata?: NavigationButtonData;
 }
 
-const NavigationButton: React.FC<Props> = ({ title, subitems }) => (
+const NavigationButton: React.FC<Props> = ({ title, menudata }) => (
   <>
-    {subitems ? (
+    {menudata ? (
       <Menu>
         <MenuButton
           variant="ghost"
@@ -20,11 +29,15 @@ const NavigationButton: React.FC<Props> = ({ title, subitems }) => (
           {title}
         </MenuButton>
         <MenuList>
-          {subitems.map((item, index) => (
+          <MenuItem as={NavLink} to={`/${menudata.collectionRoute}`}>
+            {menudata.collectionTitle}
+          </MenuItem>
+          <MenuDivider />
+          {menudata.children.map((item, index) => (
             <MenuItem
               key={index}
               as={NavLink}
-              to={`/products/${item.toLowerCase()}`}
+              to={`/${menudata.collectionRoute}/${formatStringAsRoute(item)}`}
             >
               {item}
             </MenuItem>

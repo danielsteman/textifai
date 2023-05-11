@@ -1,14 +1,21 @@
 import { ButtonGroup } from "@chakra-ui/react";
 import NavigationButton from "./NavigationButton";
 
+export interface NavigationButtonData {
+  collectionTitle: string;
+  collectionRoute: string;
+  children: string[];
+}
+
 const Navigation = () => {
-  const products = ["product1", "product2", "product3"];
+  const products: NavigationButtonData = {
+    collectionTitle: "All products",
+    collectionRoute: "products",
+    children: ["Product 1", "Product 2", "Product 3"],
+  };
   return (
     <ButtonGroup>
-      <NavigationButton
-        title="Products"
-        subitems={products}
-      ></NavigationButton>
+      <NavigationButton title="Products" menudata={products}></NavigationButton>
       <NavigationButton title="Docs"></NavigationButton>
       <NavigationButton title="Pricing"></NavigationButton>
       <NavigationButton title="Support"></NavigationButton>
