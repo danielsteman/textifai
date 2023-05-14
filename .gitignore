@@ -130,7 +130,7 @@ dist
 .pnp.*
 
 # Compiled Javascript
-index.js
+**/index.js
 
 # Editor directories and files
 .vscode/*
