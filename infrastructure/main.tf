@@ -8,5 +8,6 @@ terraform {
 }
 
 provider "google-beta" {
-  # Configuration options
+  alias = "no_user_project_override"
+  user_project_override = false
 }

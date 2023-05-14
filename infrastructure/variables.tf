@@ -1,16 +1,16 @@
 variable "project_name" {
   type    = string
-  default = "saas-starter"
+  default = "textifai"
 }
 
 variable "project_id" {
   type    = string
-  default = "saas-starter"
+  default = "textifai"
 }
 
 variable "unique_identifier" {
   type    = string
-  default = "sqz8p7qtai"
+  default = "G5NjdML004"
 }
 
 variable "organisation_id" {
