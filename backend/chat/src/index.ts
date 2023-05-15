@@ -31,7 +31,7 @@ app.use(
   })
 );
 
-app.use(router);
+app.use("api/chat", router);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

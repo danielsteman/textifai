@@ -6,6 +6,11 @@ import { AuthProvider } from "./providers/AuthProvider";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./themes/theme";
 import { router } from "./router";
+import { worker } from "./mocks/browser";
+
+if (process.env.NODE_ENV === "development") {
+  worker.start();
+}
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

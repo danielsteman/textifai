@@ -23,12 +23,11 @@ const Chat = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessageStack([...messageStack, message]);
-
-    console.log(message);
     try {
-      const res = await axios.post("http://localhost:3001/ask", {
+      const res = await axios.post("http://localhost:3001/api/chat/ask", {
         prompt: message,
       });
+      console.log(res);
     } catch (error) {
       console.log(error);
     }
