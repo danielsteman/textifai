@@ -9,9 +9,9 @@ export interface NavigationButtonData {
 
 const Navigation = () => {
   const products: NavigationButtonData = {
-    collectionTitle: "All products",
+    collectionTitle: "See all",
     collectionRoute: "products",
-    children: ["Product 1", "Product 2", "Product 3"],
+    children: ["Textifai"],
   };
   return (
     <ButtonGroup>

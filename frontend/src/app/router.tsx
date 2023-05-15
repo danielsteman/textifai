@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import Layout from "./layouts/Layout";
 import Docs from "./routes/Docs";
 import ErrorPage from "./routes/ErrorPage";
 import Login from "./routes/Login";
@@ -9,22 +8,27 @@ import Root from "./routes/Root";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Settings from "./routes/Settings";
 import Support from "./routes/Support";
-import Product from "./routes/Product";
+import Chat from "./routes/Chat";
+import LandingPageFlexLayout from "./layouts/LandingPageFlexLayout";
 import LandingPageLayout from "./layouts/LandingPageLayout";
 
 export const router = createBrowserRouter([
   {
-    element: <LandingPageLayout />,
+    element: <LandingPageFlexLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
         path: "/",
         element: <Root />,
       },
+      {
+        path: "products/textifai",
+        element: <Chat />,
+      },
     ],
   },
   {
-    element: <Layout />,
+    element: <LandingPageLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -46,12 +50,6 @@ export const router = createBrowserRouter([
       {
         path: "products",
         element: <Products />,
-        children: [
-          {
-            path: "*",
-            element: <Product />,
-          },
-        ],
       },
       {
         path: "settings",

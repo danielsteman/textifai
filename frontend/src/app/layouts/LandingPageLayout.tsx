@@ -30,7 +30,9 @@ const LandingPageLayout = () => {
           </ButtonGroup>
         )}
       </Flex>
-      <Outlet />
+      <Box px={16} py={8}>
+        <Outlet />
+      </Box>
     </Flex>
   );
 };
