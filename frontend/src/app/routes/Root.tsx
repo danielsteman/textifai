@@ -11,7 +11,7 @@ export default function Root() {
     >
       <Box maxW={500}>
         <Heading color="lightgrey" fontWeight={900} size="2xl">
-          From ideation to deployment with speed 🚀
+          Interact with your documents through chat ⚡
         </Heading>
         <Button
           mt={8}

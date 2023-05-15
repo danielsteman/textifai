@@ -5,6 +5,12 @@ terraform {
       version = "~> 4.0"
     }
   }
+  cloud {
+    organization = "textifai"
+    workspaces {
+      name = "textifai"
+    }
+  }
 }
 
 provider "google-beta" {
