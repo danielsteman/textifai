@@ -10,7 +10,7 @@ variable "project_id" {
 
 variable "unique_identifier" {
   type    = string
-  default = "G5NjdML004"
+  default = "g5njdml004"
 }
 
 variable "organisation_id" {
