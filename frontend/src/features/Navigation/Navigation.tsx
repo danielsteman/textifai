@@ -8,14 +8,14 @@ export interface NavigationButtonData {
 }
 
 const Navigation = () => {
-  const products: NavigationButtonData = {
+  const features: NavigationButtonData = {
     collectionTitle: "See all",
-    collectionRoute: "products",
-    children: ["Assistant"],
+    collectionRoute: "features",
+    children: ["Assistant", "Upload"],
   };
   return (
     <ButtonGroup>
-      <NavigationButton title="Products" menudata={products}></NavigationButton>
+      <NavigationButton title="Features" menudata={features}></NavigationButton>
       <NavigationButton title="Docs"></NavigationButton>
       <NavigationButton title="Pricing"></NavigationButton>
       <NavigationButton title="Support"></NavigationButton>

@@ -3,7 +3,7 @@ import Docs from "./routes/Docs";
 import ErrorPage from "./routes/ErrorPage";
 import Login from "./routes/Login";
 import Pricing from "./routes/Pricing";
-import Products from "./routes/Products";
+import Features from "./routes/Features";
 import Root from "./routes/Root";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Settings from "./routes/Settings";
@@ -11,6 +11,7 @@ import Support from "./routes/Support";
 import Assistant from "./routes/Assistant";
 import FlexLayout from "./layouts/FlexLayout";
 import Layout from "./layouts/FlexLayout";
+import Upload from "./routes/Upload";
 
 export const router = createBrowserRouter([
   {
@@ -22,7 +23,7 @@ export const router = createBrowserRouter([
         element: <Root />,
       },
       {
-        path: "products/assistant",
+        path: "features/assistant",
         element: <Assistant />,
       },
     ],
@@ -48,12 +49,12 @@ export const router = createBrowserRouter([
         element: <Docs />,
       },
       {
-        path: "products",
-        element: <Products />,
+        path: "features",
+        element: <Features />,
       },
       {
-        path: "products/upload",
-        element: <Assistant />,
+        path: "features/upload",
+        element: <Upload />,
       },
       {
         path: "settings",
