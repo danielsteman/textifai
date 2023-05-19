@@ -8,7 +8,7 @@ import Root from "./routes/Root";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Settings from "./routes/Settings";
 import Support from "./routes/Support";
-import Chat from "./routes/Chat";
+import Assistant from "./routes/Assistant";
 import LandingPageFlexLayout from "./layouts/LandingPageFlexLayout";
 import LandingPageLayout from "./layouts/LandingPageLayout";
 
@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "products/textifai",
-        element: <Chat />,
+        element: <Assistant />,
       },
     ],
   },
