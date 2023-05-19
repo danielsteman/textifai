@@ -11,7 +11,7 @@ const Navigation = () => {
   const products: NavigationButtonData = {
     collectionTitle: "See all",
     collectionRoute: "products",
-    children: ["Textifai"],
+    children: ["Assistant"],
   };
   return (
     <ButtonGroup>

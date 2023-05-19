@@ -8,7 +8,7 @@ import PromoTiara from "../../common/components/PromoTiara";
 import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
 import { AuthContext } from "../providers/AuthProvider";
 
-const LandingPageFlexLayout = () => {
+const Layout = () => {
   const currentUser = useContext(AuthContext);
 
   return (
@@ -30,9 +30,11 @@ const LandingPageFlexLayout = () => {
           </ButtonGroup>
         )}
       </Flex>
-      <Outlet />
+      <Box px={16} py={8}>
+        <Outlet />
+      </Box>
     </Flex>
   );
 };
 
-export default LandingPageFlexLayout;
+export default Layout;

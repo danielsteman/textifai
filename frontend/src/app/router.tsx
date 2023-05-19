@@ -9,12 +9,12 @@ import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Settings from "./routes/Settings";
 import Support from "./routes/Support";
 import Assistant from "./routes/Assistant";
-import LandingPageFlexLayout from "./layouts/LandingPageFlexLayout";
-import LandingPageLayout from "./layouts/LandingPageLayout";
+import FlexLayout from "./layouts/FlexLayout";
+import Layout from "./layouts/FlexLayout";
 
 export const router = createBrowserRouter([
   {
-    element: <LandingPageFlexLayout />,
+    element: <FlexLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -22,13 +22,13 @@ export const router = createBrowserRouter([
         element: <Root />,
       },
       {
-        path: "products/textifai",
+        path: "products/assistant",
         element: <Assistant />,
       },
     ],
   },
   {
-    element: <LandingPageLayout />,
+    element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -50,6 +50,10 @@ export const router = createBrowserRouter([
       {
         path: "products",
         element: <Products />,
+      },
+      {
+        path: "products/upload",
+        element: <Assistant />,
       },
       {
         path: "settings",
