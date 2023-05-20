@@ -21,4 +21,5 @@ Global node dependencies:
 
 ### Notes
 
+Terraform TODO: add credentials to Terraform Cloud.
 [Terraform example](https://gist.github.com/Zebreus/906b8870e49586adfe8bd7bbff43f0a8)
