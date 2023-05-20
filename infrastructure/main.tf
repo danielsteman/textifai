@@ -14,6 +14,11 @@ terraform {
 }
 
 provider "google-beta" {
-  alias = "gcloud-user"
+  # alias = "gcloud-user"
+  user_project_override = true
+}
+
+provider "google-beta" {
+  alias = "no_user_project_override"
   user_project_override = false
 }

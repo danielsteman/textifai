@@ -1,76 +1,42 @@
+# Creates a new Google Cloud project.
 resource "google_project" "default" {
-  provider = google-beta
+  provider   = google-beta.no_user_project_override
 
   project_id = "${var.project_id}-${var.unique_identifier}"
   name       = "${var.project_name}-${var.unique_identifier}"
-
+  # Required for any service that requires the Blaze pricing plan
+  # (like Firebase Authentication with GCIP)
   billing_account = "01C220-00DCED-92B0FE"
 
+  # Required for the project to display in any list of Firebase projects.
   labels = {
     "firebase" = "enabled"
   }
 }
 
-resource "google_service_account" "service_account" {
-  provider     = google-beta.gcloud-user
-  project      = google_project.default.project_id
-  account_id   = "terraform"
-  display_name = "Terraform"
-}
-
-data "google_client_openid_userinfo" "gcloud-user" {
-  provider = google-beta.gcloud-user
-}
-
-resource "google_service_account_iam_member" "grant-token-iam" {
-  provider           = google-beta.gcloud-user
-  service_account_id = google_service_account.service_account.id
-  role               = "roles/iam.serviceAccountTokenCreator"
-  member             = "user:${data.google_client_openid_userinfo.gcloud-user.email}"
-}
-
-resource "time_sleep" "delay_token_creation" {
-  depends_on = [
-    google_service_account_iam_member.grant-token-iam,
-    google_service_account.service_account,
-  ]
-
-  create_duration = "30s"
-}
-
-data "google_service_account_access_token" "default" {
-  provider = google-beta.gcloud-user
-  #   project                = google_project.default.project_id
-  target_service_account = google_service_account.service_account.email
-  scopes                 = ["userinfo-email", "cloud-platform"]
-  lifetime               = "300s"
-  depends_on = [
-    google_service_account_iam_member.grant-token-iam,
-    google_service_account.service_account,
-    time_sleep.delay_token_creation
-  ]
-}
-
+# Enables required APIs.
 resource "google_project_service" "default" {
-  provider = google-beta.gcloud-user
+  provider = google-beta.no_user_project_override
   project  = google_project.default.project_id
   for_each = toset([
     "cloudbilling.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "firebase.googleapis.com",
-    "firebasestorage.googleapis.com",
+    # Enabling the ServiceUsage API allows the new project to be quota checked from now on.
     "serviceusage.googleapis.com",
-    "identitytoolkit.googleapis.com",
   ])
   service = each.key
 
+  # Don't disable the service if the resource block is removed by accident.
   disable_on_destroy = false
 }
 
+# Enables Firebase services for the new project created above.
 resource "google_firebase_project" "default" {
-  provider = google-beta.gcloud-user
+  provider = google-beta
   project  = google_project.default.project_id
 
+  # Waits for the required APIs to be enabled.
   depends_on = [
     google_project_service.default
   ]
