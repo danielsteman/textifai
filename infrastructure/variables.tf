@@ -17,3 +17,7 @@ variable "organisation_id" {
   type    = string
   default = ""
 }
+
+variable "GOOGLE_CREDENTIALS" {
+  default = ""
+}
