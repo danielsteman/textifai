@@ -88,3 +88,5 @@ resource "google_firebase_web_app" "default" {
   display_name = var.web_app_display_name
   deletion_policy = "DELETE"
 }
+
+# TODO: continue settings up Google auth https://firebase.google.com/codelabs/firebase-terraform#5
