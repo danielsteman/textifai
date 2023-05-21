@@ -59,7 +59,7 @@ resource "google_identity_platform_config" "default" {
   ]
 }
 
-resource "google_identity_platform_project_default_config" "auth" {
+resource "google_identity_platform_project_default_config" "default" {
   provider = google-beta
   project  = google_project.default.project_id
   sign_in {
@@ -77,6 +77,6 @@ resource "google_identity_platform_project_default_config" "auth" {
 
   # Wait for Authentication to be initialized before enabling email/password.
   depends_on = [
-    google_identity_platform_config.auth
+    google_identity_platform_config.default
   ]
 }
