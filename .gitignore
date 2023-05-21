@@ -181,3 +181,6 @@ terraform.rc
 
 # Ignore lockfile
 .terraform.lock.hcl
+
+# Temp key file
+key

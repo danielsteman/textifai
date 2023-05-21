@@ -19,6 +19,10 @@ Global node dependencies:
 
 `npm i -g gitmoji-cli` to install and `gitmoji install` in the cloned repository to be prompted for awesome commit message emojis at every commit (works like a pre-commit-hook).
 
+### Deployment
+
+Deployments are done with Terraform Cloud, which receives GCP credentials through `GOOGLE_CREDENTIALS` environment variable, which should be set to the json key of a (manually created) service account without newlines. The json key can be retrieved through the GCP console and can be transformed to a single line using `cat ~/Downloads/keyfile.json| tr -s '\n' ' '`.
+
 ### Notes
 
 Terraform TODO: add credentials to Terraform Cloud.
