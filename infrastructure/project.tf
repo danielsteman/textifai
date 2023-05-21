@@ -1,6 +1,6 @@
 # Creates a new Google Cloud project.
 resource "google_project" "default" {
-  provider   = google-beta.no_user_project_override
+  provider   = google-beta
 
   project_id = "${var.project_id}-${var.unique_identifier}"
   name       = "${var.project_name}-${var.unique_identifier}"
@@ -16,7 +16,7 @@ resource "google_project" "default" {
 
 # Enables required APIs.
 resource "google_project_service" "default" {
-  provider = google-beta.no_user_project_override
+  provider = google-beta
   project  = google_project.default.project_id
   for_each = toset([
     "cloudbilling.googleapis.com",
