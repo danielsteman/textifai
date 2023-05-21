@@ -21,3 +21,8 @@ variable "organisation_id" {
 variable "GOOGLE_CREDENTIALS" {
   default = ""
 }
+
+variable "web_app_display_name" {
+  type = string
+  default = "textifai"
+}

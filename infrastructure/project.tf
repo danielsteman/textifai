@@ -80,3 +80,11 @@ resource "google_identity_platform_project_default_config" "default" {
     google_identity_platform_config.default
   ]
 }
+
+resource "google_firebase_web_app" "default" {
+  provider = google-beta
+
+  project      = google_firebase_project.default.project
+  display_name = var.web_app_display_name
+  deletion_policy = "DELETE"
+}
