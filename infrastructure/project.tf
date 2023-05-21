@@ -24,6 +24,8 @@ resource "google_project_service" "default" {
     "firebase.googleapis.com",
     # Enabling the ServiceUsage API allows the new project to be quota checked from now on.
     "serviceusage.googleapis.com",
+    # Enabling GCIP
+    "identitytoolkit.googleapis.com",
   ])
   service = each.key
 
@@ -39,5 +41,20 @@ resource "google_firebase_project" "default" {
   # Waits for the required APIs to be enabled.
   depends_on = [
     google_project_service.default
+  ]
+}
+
+# Creates an Identity Platform config.
+# Also enables Firebase Authentication with Identity Platform in the project if not.
+resource "google_identity_platform_config" "default" {
+  provider = google-beta
+  project  = google_project.default.project_id
+
+  # For example, you can configure to auto-delete Anonymous users.
+  autodelete_anonymous_users = true
+
+  # Wait for identitytoolkit.googleapis.com to be enabled before initializing Authentication.
+  depends_on = [
+    google_project_service.default,
   ]
 }

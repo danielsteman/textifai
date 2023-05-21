@@ -5,16 +5,15 @@ terraform {
       version = "~> 4.0"
     }
   }
-  # cloud {
-  #   organization = "textifai"
-  #   workspaces {
-  #     name = "textifai"
-  #   }
-  # }
+  cloud {
+    organization = "textifai"
+    workspaces {
+      name = "textifai"
+    }
+  }
 }
 
 provider "google-beta" {
-  # alias = "gcloud-user"
   user_project_override = true
 }
 
