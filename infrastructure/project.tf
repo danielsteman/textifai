@@ -58,3 +58,25 @@ resource "google_identity_platform_config" "default" {
     google_project_service.default,
   ]
 }
+
+resource "google_identity_platform_project_default_config" "auth" {
+  provider = google-beta
+  project  = google_project.default.project_id
+  sign_in {
+    allow_duplicate_emails = false
+
+    anonymous {
+      enabled = true
+    }
+
+    email {
+      enabled           = true
+      password_required = true
+    }
+  }
+
+  # Wait for Authentication to be initialized before enabling email/password.
+  depends_on = [
+    google_identity_platform_config.auth
+  ]
+}
