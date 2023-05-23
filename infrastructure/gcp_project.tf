@@ -26,6 +26,7 @@ resource "google_project_service" "default" {
     "serviceusage.googleapis.com",
     # Enabling GCIP
     "identitytoolkit.googleapis.com",
+    "firestore.googleapis.com"
   ])
   service = each.key
 
