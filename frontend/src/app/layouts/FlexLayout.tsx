@@ -25,8 +25,14 @@ const FlexLayout = () => {
           </>
         ) : (
           <ButtonGroup>
-            <LoginOrRegisterModal loginOrRegister="signIn" />
-            <LoginOrRegisterModal loginOrRegister="signUp" />
+            <LoginOrRegisterModal
+              loginOrRegister="signIn"
+              authProviders={["google"]}
+            />
+            <LoginOrRegisterModal
+              loginOrRegister="signUp"
+              authProviders={["google"]}
+            />
           </ButtonGroup>
         )}
       </Flex>

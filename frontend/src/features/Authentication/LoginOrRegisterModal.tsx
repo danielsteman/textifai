@@ -28,8 +28,11 @@ import { useCallback, useState } from "react";
 import auth from "../../app/config/firebase";
 import Socials from "./Socials";
 
+export type AuthProvider = "facebook" | "google";
+
 export interface LoginOrRegisterModalProps {
   loginOrRegister: "signIn" | "signUp";
+  authProviders: AuthProvider[];
 }
 
 const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {

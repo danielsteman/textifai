@@ -17,7 +17,7 @@ export default function Root() {
           mt={8}
           variant="solid"
           size="lg"
-          onClick={() => navigate("/products/textifai")}
+          onClick={() => navigate("/features/assistant")}
         >
           Get started
         </Button>
