@@ -28,6 +28,8 @@ Deployments are done with Terraform Cloud, which receives GCP credentials throug
 Terraform TODO: add credentials to Terraform Cloud.
 [Terraform example](https://gist.github.com/Zebreus/906b8870e49586adfe8bd7bbff43f0a8)
 
+Structure TODO: checkout best practice monorepo project structures
+
 Workflow TODO: add pre-commit hooks
 
 Workflow TODO: run tests in pipeline
