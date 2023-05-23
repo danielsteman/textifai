@@ -89,4 +89,16 @@ resource "google_firebase_web_app" "default" {
   deletion_policy = "DELETE"
 }
 
-# TODO: continue settings up Google auth https://firebase.google.com/codelabs/firebase-terraform#5
+resource "google_identity_platform_default_supported_idp_config" "google_sign_in" {
+  provider = google-beta
+  project  = google_firebase_project.default.project
+
+  enabled       = true
+  idp_id        = "google.com"
+  client_id     = "352224501567-lrc9dt4ckpegdb9tcvg0vgrbde2skor0.apps.googleusercontent.com"
+  client_secret = var.oauth_client_secret
+
+  depends_on = [
+     google_identity_platform_config.default
+  ]
+}
