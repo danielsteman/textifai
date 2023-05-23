@@ -36,19 +36,37 @@ export interface LoginOrRegisterModalProps {
 }
 
 const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
+  const [firstname, setFirstname] = useState<string>("");
+  const [lastname, setLastname] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [repeatedPassword, setRepeatedPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [attempts, setAttempts] = useState<number>(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
+  const handleChangeFirstname = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFirstname(e.target.value);
+  };
+
+  const handleChangeLastname = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLastname(e.target.value);
+  };
+
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
+
   const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+  };
+
+  const handleChangeRepeatedPassword = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRepeatedPassword(e.target.value);
   };
 
   const handleSubmit = useCallback(
@@ -57,6 +75,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
       setLoading(true);
       e.preventDefault();
       try {
+        // TODO: create user with first name and last name
         switch (props.loginOrRegister) {
           case "signUp":
             await createUserWithEmailAndPassword(auth, email, password);
@@ -78,10 +97,27 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
   const missingPasswordError = password === "" && attempts >= 1;
 
   const handleShowPassword = () => setShowPassword(!showPassword);
+
   const buttonProps =
     props.loginOrRegister === "signUp"
       ? { text: "Sign up", variant: "outline" }
       : { text: "Sign in", variant: "solid" };
+
+  const disableSubmitButton = (): boolean => {
+    if (props.loginOrRegister === "signIn") {
+      return email === "" || password === "";
+    } else if (props.loginOrRegister === "signUp") {
+      return (
+        firstname === "" ||
+        lastname === "" ||
+        email === "" ||
+        password === "" ||
+        password !== repeatedPassword
+      );
+    } else {
+      return false;
+    }
+  };
 
   return (
     <>
@@ -154,17 +190,27 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                         <Input
                           placeholder="Repeat password"
                           type={showPassword ? "text" : "password"}
+                          value={repeatedPassword}
+                          onChange={handleChangeRepeatedPassword}
                         />
                       </InputGroup>
                     </FormControl>
                     <FormControl>
                       <InputGroup>
-                        <Input placeholder="First name" />
+                        <Input
+                          placeholder="First name"
+                          value={firstname}
+                          onChange={handleChangeFirstname}
+                        />
                       </InputGroup>
                     </FormControl>
                     <FormControl>
                       <InputGroup>
-                        <Input placeholder="Last name" />
+                        <Input
+                          placeholder="Last name"
+                          value={lastname}
+                          onChange={handleChangeLastname}
+                        />
                       </InputGroup>
                     </FormControl>
                   </>
@@ -180,7 +226,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                   w="100%"
                   type="submit"
                   onClick={handleSubmit}
-                  isDisabled={email === "" || password === ""}
+                  isDisabled={disableSubmitButton()}
                 >
                   {buttonProps.text}
                 </Button>
