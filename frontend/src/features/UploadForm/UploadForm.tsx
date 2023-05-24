@@ -27,16 +27,10 @@ const UploadForm = () => {
   };
 
   return (
-    <form action="/stats" encType="multipart/form-data" method="post">
-      <div className="form-group">
-        <input type="file" className="form-control-file" name="uploaded_file" />
-        <input
-          type="submit"
-          value="Get me the stats!"
-          className="btn btn-default"
-        />
-      </div>
-    </form>
+    <div className="App">
+      <input type="file" onChange={saveFile} />
+      <button onClick={uploadFile}>Upload</button>
+    </div>
   );
 };
 
