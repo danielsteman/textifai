@@ -13,4 +13,3 @@ const app = initializeApp({
 const auth = getAuth(app);
 
 export default auth
-
