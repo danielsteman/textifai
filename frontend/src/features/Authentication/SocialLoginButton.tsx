@@ -15,6 +15,7 @@ interface SocialLoginButtonProps extends SocialsProps {
   socialMediaProvider: "Facebook" | "Google";
   icon: IconType;
   color: Color;
+  index?: number;
 }
 
 const SocialLoginButton: React.FC<SocialLoginButtonProps> = (props) => {
@@ -57,6 +58,7 @@ const SocialLoginButton: React.FC<SocialLoginButtonProps> = (props) => {
       p={2}
       rounded={5}
       w="100%"
+      key={props.index}
     >
       <Icon as={props.icon} color="white" boxSize={5} mr={2} />
       <Text color={"white"} fontWeight={600}>

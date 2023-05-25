@@ -9,11 +9,15 @@ import SocialLoginButton from "./SocialLoginButton";
 export interface SocialsProps extends LoginOrRegisterModalProps {}
 
 const Socials: React.FC<SocialsProps> = (props) => {
-  const renderSocialLoginButton = (authProviders: AuthProvider) => {
+  const renderSocialLoginButton = (
+    authProviders: AuthProvider,
+    index: number
+  ) => {
     switch (authProviders) {
       case "google":
         return (
           <SocialLoginButton
+            key={index}
             socialMediaProvider={"Google"}
             icon={FaGoogle}
             color={"#D84B37"}
@@ -23,6 +27,7 @@ const Socials: React.FC<SocialsProps> = (props) => {
       case "facebook":
         return (
           <SocialLoginButton
+            key={index}
             socialMediaProvider={"Facebook"}
             icon={FaFacebook}
             color={"#1877F2"}
@@ -33,8 +38,8 @@ const Socials: React.FC<SocialsProps> = (props) => {
   };
   return (
     <VStack>
-      {props.authProviders.map((authProvider) =>
-        renderSocialLoginButton(authProvider)
+      {props.authProviders.map((authProvider, index) =>
+        renderSocialLoginButton(authProvider, index)
       )}
     </VStack>
   );
