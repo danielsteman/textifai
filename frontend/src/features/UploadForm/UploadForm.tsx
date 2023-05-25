@@ -19,7 +19,10 @@ const UploadForm = () => {
       throw new Error("No file was found");
     }
     try {
-      const res = await axios.post("http://localhost:3000/upload", formData);
+      const res = await axios.post(
+        "http://localhost:3000/api/documents/upload",
+        formData
+      );
       console.log(res);
     } catch (ex) {
       console.log(ex);

@@ -1,24 +1,42 @@
 import express, { Request, Response } from "express";
+import { pdf } from "pdf-parse";
+import { Readable } from "stream";
 
 const router = express.Router();
 
-// in node.js with express.js using Typescript, the following piece of code is not valid because req.files might be null or undefined. What is an idiomatic way to solve this?
+async function extractTextFromPDFStream(pdfStream: Readable): Promise<string> {
+  const options = {}; // You can customize the parsing options here
+  const pdf = await PDFParser.pdfBufferToBuffer(pdfStream);
+  const data: PDFData = await PDFParser(pdf, options);
+  const text = data.text;
+  return text;
+}
 
 router.post("/upload", (req: Request, res: Response) => {
   const newpath = __dirname + "/files/";
+  // console.log(req.files?.file);
   const file = req.files?.file;
+
   let filename: string | undefined;
 
   if (Array.isArray(file)) {
-    filename = file[0].name;
+    console.log(
+      "Array of files found and is not supported by the documents service"
+    );
   } else {
     filename = file?.name;
-    file?.mv(`${newpath}${filename}`, (err) => {
-      if (err) {
-        res.status(500).send({ message: "File upload failed", code: 200 });
-      }
-      res.status(200).send({ message: "File Uploaded", code: 200 });
-    });
+
+    console.log(filename);
+
+    console.log(file);
+
+    // file?.mv(`${newpath}${filename}`, (err) => {
+    //   if (err) {
+    //     console.log(err);
+    //     // res.status(500).send({ message: "File upload failed", code: 500 });
+    //   }
+    //   res.status(200).send({ message: "File Uploaded", code: 200 });
+    // });
   }
 });
 

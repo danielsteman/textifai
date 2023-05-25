@@ -31,7 +31,8 @@ app.use(
   })
 );
 
-app.use("api/chat", router);
+// TODO: refactor such that prefix is equal to "api" + {service root folder name}
+app.use("/api/chat", router);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
