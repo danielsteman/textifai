@@ -27,6 +27,8 @@ import {
 import { useCallback, useState } from "react";
 import auth from "../../app/config/firebase";
 import Socials from "./Socials";
+import FirebaseError from "./AuthError";
+import AuthError from "./AuthError";
 
 export type AuthProvider = "facebook" | "google";
 
@@ -45,7 +47,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
   const [attempts, setAttempts] = useState<number>(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string>();
 
   const handleChangeFirstname = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFirstname(e.target.value);
@@ -84,9 +86,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
         }
         onClose();
       } catch (error: any) {
-        // TODO: convert error to something that's user friendly (use table: https://firebase.google.com/docs/auth/admin/errors)
-        console.log(error.message);
-        setError(error.message);
+        setError(error.code);
       }
       setLoading(false);
     },
@@ -132,6 +132,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
           <form>
             <ModalBody>
               <VStack spacing={2}>
+                {error && <AuthError code={error} />}
                 <FormControl isInvalid={missingEmailError}>
                   <InputGroup size="md">
                     <InputLeftElement
@@ -218,7 +219,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               </VStack>
             </ModalBody>
             <ModalFooter>
-              {error !== "" && <Text>{error}</Text>}
               {loading ? (
                 <Spinner size="md" />
               ) : (
