@@ -1,3 +1,4 @@
+import { Box, Text } from "@chakra-ui/react";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -8,14 +9,14 @@ const UploadForm = () => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <div {...getRootProps()}>
+    <Box {...getRootProps()} h={200} bgColor="grey" border="2px">
       <input {...getInputProps()} />
       {isDragActive ? (
-        <p>Drop the files here ...</p>
+        <Text>Drop the files here ...</Text>
       ) : (
-        <p>Drag 'n' drop some files here, or click to select files</p>
+        <Text>Drag 'n' drop some files here, or click to select files</Text>
       )}
-    </div>
+    </Box>
   );
 };
 
