@@ -17,7 +17,7 @@ Global node dependencies:
 
 `npm install -g typescript` to globally install Typescript.
 
-`npm i -g gitmoji-cli` to install and `gitmoji install` in the cloned repository to be prompted for awesome commit message emojis at every commit (works like a pre-commit-hook).
+`npm i -g gitmoji-cli` to install and `gitmoji install` in the cloned repository to be prompted for commit message emojis at every commit (works like a pre-commit-hook). Categorizes commits in a silly way.
 
 ### Deployment
 
