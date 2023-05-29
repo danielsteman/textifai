@@ -12,6 +12,7 @@ import Assistant from "./routes/Assistant";
 import FlexLayout from "./layouts/FlexLayout";
 import Layout from "./layouts/FlexLayout";
 import Upload from "./routes/Upload";
+import Editor from "./routes/Editor";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: "features/assistant",
         element: <Assistant />,
+      },
+      {
+        path: "features/editor",
+        element: <Editor />,
       },
     ],
   },

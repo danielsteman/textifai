@@ -11,7 +11,7 @@ const Navigation = () => {
   const features: NavigationButtonData = {
     collectionTitle: "See all",
     collectionRoute: "features",
-    children: ["Assistant", "Upload"],
+    children: ["Assistant", "Upload", "Editor"],
   };
   return (
     <ButtonGroup>
