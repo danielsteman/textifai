@@ -1,22 +1,31 @@
-// Extend errorMap to map a message to a Firebase error
-// TODO: convert error to something that's user friendly (use table: https://firebase.google.com/docs/auth/admin/errors)
-import { Box, Link } from "@chakra-ui/react";
+import { Alert, AlertIcon, Link } from "@chakra-ui/react";
 import React from "react";
 
 interface Props {
-  code: string | undefined;
+  code: string;
 }
 
 const AuthError: React.FC<Props> = (props) => {
-  if (props.code === "auth/user-not-found") {
-    return (
-      <Box>
-        We couldn't find this email. Would you like to{" "}
-        <Link>sign up with this email address?</Link>{" "}
-      </Box>
-    );
-  } else {
-    throw new Error("No message available for this Firebase error code");
+  switch (props.code) {
+    case "auth/user-not-found":
+      return (
+        <Alert status="warning">
+          <AlertIcon />
+          We couldn't find this email address
+        </Alert>
+      );
+    case "auth/invalid-email":
+      return (
+        <Alert status="error">
+          <AlertIcon />
+          The email address you used is invalid
+        </Alert>
+      );
+    default:
+      console.warn(
+        `No message available for "${props.code}" Firebase error code`
+      );
+      return null;
   }
 };
 
