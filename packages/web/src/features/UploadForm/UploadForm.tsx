@@ -2,6 +2,7 @@ import { Box, Button, Text } from "@chakra-ui/react";
 import axios from "axios";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { useColorModeValue } from "@chakra-ui/react";
 
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
@@ -43,7 +44,11 @@ const UploadForm = () => {
         borderRadius="md"
         textAlign="center"
         borderColor={isDragActive ? "green.400" : "gray.200"}
-        bg={isDragActive ? "green.50" : "white"}
+        bg={
+          isDragActive
+            ? useColorModeValue("green.50", "green.800")
+            : useColorModeValue("white", "gray.800")
+        }
         cursor="pointer"
       >
         <input {...getInputProps()} />
