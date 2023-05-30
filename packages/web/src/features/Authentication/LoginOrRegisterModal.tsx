@@ -28,7 +28,6 @@ import { useCallback, useState } from "react";
 import auth from "../../app/config/firebase";
 import Socials from "./Socials";
 import AuthError from "./AuthError";
-import { validateEmail } from "../../common/utils/validations";
 
 export type AuthProvider = "facebook" | "google";
 
@@ -71,7 +70,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
     setRepeatedPassword(e.target.value);
   };
 
-  // how do I stop the function from excuting the 'try' block if validateEmail(email) is false?
   const handleSubmit = useCallback(
     async (e: any) => {
       // if (!validateEmail(email)) {
