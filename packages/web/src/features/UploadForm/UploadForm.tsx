@@ -1,11 +1,15 @@
 import { Box, Button, Text } from "@chakra-ui/react";
-import axios from "axios";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { app } from "../../app/config/firebase";
+
+// TODO: gsutil cors set cors.json gs://textifai-g5njdml004.appspot.com
 
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
+  const [uploadSuccessful, setUploadSuccessful] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: any) => {
     console.log(acceptedFiles);
@@ -14,20 +18,19 @@ const UploadForm = () => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+  const storage = getStorage(app);
+
   const handleSubmit = () => {
     if (files && files.length > 0) {
-      console.log("uploading files...");
-
       files.forEach((file: any) => {
         const data = new FormData();
         data.append("file", file);
-        axios
-          .post(`http://localhost:3000/api/documents/upload`, data, {
-            onUploadProgress: (progressEvent) => {
-              console.log(`progress ${progressEvent}`);
-            },
-          })
-          .then((res) => console.log(res));
+
+        const docRef = ref(storage, `uploads/${file.name}`);
+        uploadBytes(docRef, file).then((snapshot) => {
+          console.log("Uploaded a blob or file!");
+          setUploadSuccessful(true);
+        });
       });
     } else {
       console.warn("No files were uploaded");
@@ -56,6 +59,8 @@ const UploadForm = () => {
           <Text>Drop the files here ...</Text>
         ) : files && files.length > 0 ? (
           files.map((file, index) => <Text key={index}>{file.name}</Text>)
+        ) : uploadSuccessful ? (
+          <Text>Done!✅ Want to upload more?</Text>
         ) : (
           <Text>Drag 'n' drop some files here, or click to select files</Text>
         )}
