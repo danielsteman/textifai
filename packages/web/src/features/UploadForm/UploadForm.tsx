@@ -5,7 +5,8 @@ import { useColorModeValue } from "@chakra-ui/react";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { app } from "../../app/config/firebase";
 
-// TODO: gsutil cors set cors.json gs://textifai-g5njdml004.appspot.com
+// TODO: https://firebase.google.com/docs/storage/security/rules-conditions
+// TODO: fix "all done" message when upload is finished
 
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
@@ -26,9 +27,10 @@ const UploadForm = () => {
         const data = new FormData();
         data.append("file", file);
 
-        const docRef = ref(storage, `uploads/${file.name}`);
+        const docRef = ref(storage, file.name);
         uploadBytes(docRef, file).then((snapshot) => {
           console.log("Uploaded a blob or file!");
+          console.log(snapshot);
           setUploadSuccessful(true);
         });
       });
