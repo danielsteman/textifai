@@ -1,5 +1,4 @@
-FROM node:16.15.1 AS builder
-ENV NODE_ENV="production"
+FROM node:18.13 AS builder
 WORKDIR /usr/src/app
 COPY . .
 RUN npm install && npm run build
