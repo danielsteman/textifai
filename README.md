@@ -34,12 +34,15 @@ Pass the `oauth_client_secret` variable in Terraform Cloud.
 
 Testing TODO: use [Firebase emulator](https://firebase.google.com/docs/rules/unit-tests) to run unit tests
 
-Structure TODO: checkout best practice monorepo project structures
+✅ Structure TODO: checkout best practice monorepo project structures
 
 Workflow TODO: add pre-commit hooks
+    - Protect main branch
 
 Workflow TODO: run tests in pipeline
 
 Deployment TODO: create Dockerfiles
 
-Workflow TODO: build docker images in pipeline
+Workflow TODO: build and push docker images in pipeline
+
+Deployment TODO: deploy GKE
