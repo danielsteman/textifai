@@ -13,6 +13,15 @@ Install:
 - Node v16
 - Yarn
 
+🌎 Environment variables:
+
+- VITE_FIREBASE_APIKEY
+- VITE_FIREBASE_AUTHDOMAIN
+- VITE_FIREBASE_PROJECTID
+- VITE_FIREBASE_STORAGEBUCKET
+- VITE_FIREBASE_MESSAGINGSENDERID
+- VITE_FIREBASE_APPID
+
 Global node dependencies:
 
 `npm install -g typescript` to globally install Typescript.
@@ -36,8 +45,7 @@ Testing TODO: use [Firebase emulator](https://firebase.google.com/docs/rules/uni
 
 ✅ Structure TODO: checkout best practice monorepo project structures
 
-Workflow TODO: add pre-commit hooks
-    - Protect main branch
+Workflow TODO: add pre-commit hooks - Protect main branch
 
 Workflow TODO: run tests in pipeline
 
