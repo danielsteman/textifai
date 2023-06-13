@@ -22,7 +22,7 @@ Following microservices architecture, the backend is separated into several smal
 - VITE_FIREBASE_MESSAGINGSENDERID
 - VITE_FIREBASE_APPID
 
-These can be found in `project settings > general > your apps` in the code snippet at the bottom of the page.
+These can be found in `project settings > general > your apps` in the code snippet at the bottom of the page. Copy + paste them in `/packages/web/.env.local` as `${KEY}=${VALUE}`.
 
 ### Global node dependencies:
 
