@@ -2,7 +2,7 @@ name: React.js CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, feat/deployment]
   pull_request:
     branches: [main]
 
