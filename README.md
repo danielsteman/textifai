@@ -30,6 +30,17 @@ These can be found in `project settings > general > your apps` in the code snipp
 
 `npm i -g gitmoji-cli` to install and `gitmoji install` in the cloned repository to be prompted for commit message emojis at every commit (works like a pre-commit-hook). Categorizes commits in a silly way.
 
+### Start
+
+A development server can be started for each packages with a universal command: `yarn dev`, ran from the root of each packages, for example:
+
+```
+>>> pwd
+/textifai/packages/web
+>>> yarn dev
+yarn run ...
+```
+
 ## Deployment
 
 Deployments are done with Terraform Cloud, which receives GCP credentials through `GOOGLE_CREDENTIALS` environment variable, which should be set to the json key of a (manually created) service account without newlines. The json key can be retrieved through the GCP console and can be transformed to a single line using `cat ~/Downloads/keyfile.json| tr -s '\n' ' '`.
