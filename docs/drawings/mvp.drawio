@@ -1,0 +1,73 @@
+<mxfile host="app.diagrams.net" modified="2023-07-21T15:05:24.350Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0" etag="LboZ7q0gGo59TNmZSgBS" version="21.6.5" type="device">
+  <diagram name="Page-1" id="3d2dV7ZGVJoYUeWuzONU">
+    <mxGraphModel dx="986" dy="543" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-3" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="440" y="40" width="480" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-1" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="360" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-2" value="Frontend" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="190" y="10" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-4" value="Backend" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="10" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-5" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="110" width="120" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-6" value="Firebase" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="490" y="80" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-7" value="Auth" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="465" y="120" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-8" value="File storage" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="465" y="175" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-9" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="110" width="120" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-10" value="ChatGPT" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="605" y="120" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-11" value="Embeddings" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="605" y="175" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-12" value="OpenAI" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="630" y="80" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-14" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="110" width="120" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-15" value="Index" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="745" y="120" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-17" value="Pinecone" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="770" y="80" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-18" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="80" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-21" value="Upload page" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="50" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-22" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="80" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-23" value="Chat" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="270" y="50" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-24" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="240" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Z0ZhPIDVoA2yE1nkiKr1-25" value="Editor" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="210" width="60" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
