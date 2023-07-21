@@ -8,6 +8,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "build": "tsc && vite build",
+    "build:production": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {

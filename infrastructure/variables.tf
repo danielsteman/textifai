@@ -8,6 +8,11 @@ variable "project_id" {
   default = "textifai"
 }
 
+variable "billing_account" {
+  type    = string
+  default = "01C220-00DCED-92B0FE"
+}
+
 variable "unique_identifier" {
   type    = string
   default = "g5njdml004"
