@@ -11,7 +11,9 @@ Following microservices architecture, the backend is separated into several smal
 ### Install:
 
 - Node v18
+  - You can use `nvm` to easily switch between Node versions. Read [install instructions](https://github.com/nvm-sh/nvm).
 - Yarn
+  - Is faster than NPM and be installed with [these instructions](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)
 
 ### 🌎 Environment variables used by the Firebase client library:
 
