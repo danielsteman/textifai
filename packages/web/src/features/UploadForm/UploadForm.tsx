@@ -61,13 +61,12 @@ const UploadForm = () => {
           <Text>Drop the files here ...</Text>
         ) : files && files.length > 0 ? (
           files.map((file, index) => <Text key={index}>{file.name}</Text>)
-        ) : uploadSuccessful ? (
-          <Text>Done!✅ Want to upload more?</Text>
         ) : (
           <Text>Drag 'n' drop some files here, or click to select files</Text>
         )}
       </Box>
       <Button onClick={handleSubmit}>Submit</Button>
+      {uploadSuccessful ? <Text>Done!✅ Want to upload more?</Text> : <></>}
     </>
   );
 };
