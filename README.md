@@ -10,7 +10,7 @@ Following microservices architecture, the backend is separated into several smal
 
 ### Install:
 
-- Node v16
+- Node v18
 - Yarn
 
 ### 🌎 Environment variables used by the Firebase client library:
