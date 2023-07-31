@@ -5,9 +5,6 @@ import { useColorModeValue } from "@chakra-ui/react";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { app } from "../../app/config/firebase";
 
-// TODO: https://firebase.google.com/docs/storage/security/rules-conditions
-// TODO: fix "all done" message when upload is finished
-
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadSuccessful, setUploadSuccessful] = useState(false);
