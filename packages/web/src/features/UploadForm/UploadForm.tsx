@@ -1,4 +1,4 @@
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, Spinner, Text } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
@@ -8,6 +8,7 @@ import { app } from "../../app/config/firebase";
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadSuccessful, setUploadSuccessful] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: any) => {
     console.log(acceptedFiles);
@@ -29,6 +30,7 @@ const UploadForm = () => {
   };
 
   const handleSubmit = () => {
+    setLoading(true);
     if (files && files.length > 0) {
       files.forEach((file: any) => {
         const data = new FormData();
@@ -39,11 +41,13 @@ const UploadForm = () => {
           console.log("Uploaded a blob or file!");
           console.log(snapshot);
           setUploadSuccessful(true);
+          setLoading(false);
         });
       });
       resetForm();
     } else {
       console.warn("No files were uploaded");
+      setLoading(false);
     }
   };
 
@@ -77,6 +81,7 @@ const UploadForm = () => {
         onClick={handleSubmit}
         isDisabled={files === undefined ? true : false}
       >
+        {loading && <Spinner />}
         Upload
       </Button>
       {uploadSuccessful ? <Text>Done!✅ Want to upload more?</Text> : <></>}
