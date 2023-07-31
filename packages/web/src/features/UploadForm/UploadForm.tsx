@@ -23,6 +23,11 @@ const UploadForm = () => {
 
   const storage = getStorage(app);
 
+  const resetForm = () => {
+    setUploadSuccessful(false);
+    setFiles(undefined);
+  };
+
   const handleSubmit = () => {
     if (files && files.length > 0) {
       files.forEach((file: any) => {
@@ -36,6 +41,7 @@ const UploadForm = () => {
           setUploadSuccessful(true);
         });
       });
+      resetForm();
     } else {
       console.warn("No files were uploaded");
     }
@@ -67,7 +73,12 @@ const UploadForm = () => {
           <Text>Drag 'n' drop some files here, or click to select files</Text>
         )}
       </Box>
-      <Button onClick={handleSubmit}>Submit</Button>
+      <Button
+        onClick={handleSubmit}
+        isDisabled={files === undefined ? true : false}
+      >
+        Upload
+      </Button>
       {uploadSuccessful ? <Text>Done!✅ Want to upload more?</Text> : <></>}
     </>
   );
