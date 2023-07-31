@@ -14,7 +14,12 @@ const UploadForm = () => {
     setFiles(acceptedFiles);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const acceptedFormats = { "application/pdf": [".pdf"] };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: acceptedFormats,
+  });
 
   const storage = getStorage(app);
 
