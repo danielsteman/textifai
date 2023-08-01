@@ -52,7 +52,7 @@ const UploadForm = () => {
         const data = new FormData();
         data.append("file", file);
 
-        const docRef = ref(storage, file.name);
+        const docRef = ref(storage, `upload-form-documents/${file.name}`);
         uploadBytes(docRef, file).then((snapshot) => {
           console.log("Uploaded a blob or file!");
           console.log(snapshot);
