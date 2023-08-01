@@ -97,9 +97,11 @@ const UploadForm = () => {
             </Button>
             <Button
               bgGradient="linear(to-l, #7928CA,#FF0080)"
-              fontSize="lg"
+              fontSize="md"
               backgroundSize="200% auto"
               animation={`${animation} 2s ease-in-out infinite alternate`}
+              colorScheme="blue"
+              textColor="white"
             >
               Sign up for newsletter
             </Button>
