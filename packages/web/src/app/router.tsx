@@ -39,6 +39,14 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      {
+        path: "features/upload",
+        element: (
+          <PrivateRoute>
+            <Upload />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
   {
@@ -64,14 +72,6 @@ export const router = createBrowserRouter([
       {
         path: "features",
         element: <Features />,
-      },
-      {
-        path: "features/upload",
-        element: (
-          <PrivateRoute>
-            <Upload />
-          </PrivateRoute>
-        ),
       },
       {
         path: "settings",

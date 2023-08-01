@@ -2,6 +2,8 @@ import {
   Box,
   Button,
   Center,
+  Checkbox,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -11,6 +13,7 @@ import {
   ModalOverlay,
   Spinner,
   Text,
+  VStack,
   keyframes,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -68,7 +71,11 @@ const UploadForm = () => {
   };
 
   useEffect(() => {
-    onOpen();
+    const shouldOpen = localStorage.getItem("showNewsLetterOffer");
+    console.log(shouldOpen);
+    if (!shouldOpen || JSON.parse(shouldOpen) === true) {
+      onOpen();
+    }
   }, []);
 
   const animation = keyframes`
@@ -78,7 +85,7 @@ const UploadForm = () => {
   `;
 
   return (
-    <>
+    <Box>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -92,19 +99,35 @@ const UploadForm = () => {
             </Text>
           </ModalBody>
           <ModalFooter justifyContent="center">
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button
-              bgGradient="linear(to-l, #7928CA,#FF0080)"
-              fontSize="md"
-              backgroundSize="200% auto"
-              animation={`${animation} 2s ease-in-out infinite alternate`}
-              colorScheme="blue"
-              textColor="white"
-            >
-              Sign up for newsletter
-            </Button>
+            <VStack gap={4} p={0}>
+              <HStack p={0}>
+                <Button colorScheme="blue" mr={3} onClick={onClose}>
+                  Close
+                </Button>
+                <Button
+                  bgGradient="linear(to-l, #7928CA,#FF0080)"
+                  fontSize="md"
+                  backgroundSize="200% auto"
+                  animation={`${animation} 2s ease-in-out infinite alternate`}
+                  colorScheme="blue"
+                  textColor="white"
+                >
+                  Sign up for newsletter
+                </Button>
+              </HStack>
+              <Checkbox
+                value="dontShowAgain"
+                onChange={(e) => {
+                  localStorage.setItem(
+                    "showNewsLetterOffer",
+                    JSON.stringify(!e.target.checked)
+                  );
+                  console.log(e.target.checked);
+                }}
+              >
+                Don't show again
+              </Checkbox>
+            </VStack>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -132,15 +155,17 @@ const UploadForm = () => {
           <Text>Drag 'n' drop some files here, or click to select files</Text>
         )}
       </Box>
-      <Button
-        onClick={handleSubmit}
-        isDisabled={files === undefined ? true : false}
-      >
-        {loading && <Spinner />}
-        Upload
-      </Button>
+      <Center p={4}>
+        <Button
+          onClick={handleSubmit}
+          isDisabled={files === undefined ? true : false}
+        >
+          {loading && <Spinner />}
+          Upload
+        </Button>
+      </Center>
       {uploadSuccessful ? <Text>Done!✅ Want to upload more?</Text> : <></>}
-    </>
+    </Box>
   );
 };
 
