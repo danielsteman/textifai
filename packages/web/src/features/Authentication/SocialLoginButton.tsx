@@ -5,7 +5,7 @@ import { IconType } from "react-icons";
 import { useNavigate } from "react-router-dom";
 import { facebookProvider } from "../../app/auth/auth_facebook_provider_create";
 import { googleProvider } from "../../app/auth/auth_google_provider_create";
-import auth from "../../app/config/firebase";
+import { auth } from "../../app/config/firebase";
 import { formatPropString } from "../../common/utils/formatStrings";
 import { Color } from "../../shared/app.types";
 

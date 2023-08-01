@@ -1,41 +1,136 @@
-import { Box, Button, Text } from "@chakra-ui/react";
-import axios from "axios";
-import { useCallback, useState } from "react";
+import {
+  Box,
+  Button,
+  Center,
+  Checkbox,
+  HStack,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  Text,
+  VStack,
+  keyframes,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { app } from "../../app/config/firebase";
 
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
+  const [uploadSuccessful, setUploadSuccessful] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onDrop = useCallback((acceptedFiles: any) => {
     console.log(acceptedFiles);
     setFiles(acceptedFiles);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const acceptedFormats = { "application/pdf": [".pdf"] };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: acceptedFormats,
+  });
+
+  const storage = getStorage(app);
+
+  const resetForm = () => {
+    setUploadSuccessful(false);
+    setFiles(undefined);
+  };
 
   const handleSubmit = () => {
+    setLoading(true);
     if (files && files.length > 0) {
-      console.log("uploading files...");
-
       files.forEach((file: any) => {
         const data = new FormData();
         data.append("file", file);
-        axios
-          .post(`http://localhost:3000/api/documents/upload`, data, {
-            onUploadProgress: (progressEvent) => {
-              console.log(`progress ${progressEvent}`);
-            },
-          })
-          .then((res) => console.log(res));
+
+        const docRef = ref(storage, `upload-form-documents/${file.name}`);
+        uploadBytes(docRef, file).then((snapshot) => {
+          console.log("Uploaded a blob or file!");
+          console.log(snapshot);
+          setUploadSuccessful(true);
+          setLoading(false);
+        });
       });
+      resetForm();
     } else {
       console.warn("No files were uploaded");
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    const shouldOpen = localStorage.getItem("showNewsLetterOffer");
+    console.log(shouldOpen);
+    if (!shouldOpen || JSON.parse(shouldOpen) === true) {
+      onOpen();
+    }
+  }, []);
+
+  const animation = keyframes`
+    to {
+       background-position: 200%;
+     }
+  `;
+
   return (
-    <>
+    <Box>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Welcome!</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>
+              Upload PDF documents. Textifai is a text analytics platform so we
+              only accept text based documents, for now... Sign up to our
+              newsletter to receive updates about new features!
+            </Text>
+          </ModalBody>
+          <ModalFooter justifyContent="center">
+            <VStack gap={4} p={0}>
+              <HStack p={0}>
+                <Button colorScheme="blue" mr={3} onClick={onClose}>
+                  Close
+                </Button>
+                <Button
+                  bgGradient="linear(to-l, #7928CA,#FF0080)"
+                  fontSize="md"
+                  backgroundSize="200% auto"
+                  animation={`${animation} 2s ease-in-out infinite alternate`}
+                  colorScheme="blue"
+                  textColor="white"
+                >
+                  Sign up for newsletter
+                </Button>
+              </HStack>
+              <Checkbox
+                value="dontShowAgain"
+                onChange={(e) => {
+                  localStorage.setItem(
+                    "showNewsLetterOffer",
+                    JSON.stringify(!e.target.checked)
+                  );
+                  console.log(e.target.checked);
+                }}
+              >
+                Don't show again
+              </Checkbox>
+            </VStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Box
         {...getRootProps()}
         p={4}
@@ -60,8 +155,17 @@ const UploadForm = () => {
           <Text>Drag 'n' drop some files here, or click to select files</Text>
         )}
       </Box>
-      <Button onClick={handleSubmit}>Submit</Button>
-    </>
+      <Center p={4}>
+        <Button
+          onClick={handleSubmit}
+          isDisabled={files === undefined ? true : false}
+        >
+          {loading && <Spinner />}
+          Upload
+        </Button>
+      </Center>
+      {uploadSuccessful ? <Text>Done!✅ Want to upload more?</Text> : <></>}
+    </Box>
   );
 };
 
