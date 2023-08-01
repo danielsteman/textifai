@@ -11,7 +11,6 @@ import {
   HStack,
   Spacer,
   Flex,
-  useColorMode,
 } from "@chakra-ui/react";
 import AccountAvatar from "../../common/components/AccountAvatar";
 import MenuItem from "../../common/components/MenuItem";

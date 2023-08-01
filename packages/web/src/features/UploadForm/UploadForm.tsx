@@ -1,5 +1,20 @@
-import { Box, Button, Spinner, Text } from "@chakra-ui/react";
-import { useCallback, useState } from "react";
+import {
+  Box,
+  Button,
+  Center,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  Text,
+  keyframes,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
@@ -9,6 +24,7 @@ const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadSuccessful, setUploadSuccessful] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onDrop = useCallback((acceptedFiles: any) => {
     console.log(acceptedFiles);
@@ -51,8 +67,45 @@ const UploadForm = () => {
     }
   };
 
+  useEffect(() => {
+    onOpen();
+  }, []);
+
+  const animation = keyframes`
+    to {
+       background-position: 200%;
+     }
+  `;
+
   return (
     <>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Welcome!</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>
+              Upload PDF documents. Textifai is a text analytics platform so we
+              only accept text based documents, for now... Sign up to our
+              newsletter to receive updates about new features!
+            </Text>
+          </ModalBody>
+          <ModalFooter justifyContent="center">
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button
+              bgGradient="linear(to-l, #7928CA,#FF0080)"
+              fontSize="lg"
+              backgroundSize="200% auto"
+              animation={`${animation} 2s ease-in-out infinite alternate`}
+            >
+              Sign up for newsletter
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Box
         {...getRootProps()}
         p={4}
