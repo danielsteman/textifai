@@ -25,6 +25,8 @@
     "openai": "^3.2.1",
     "swagger-ui-express": "^4.6.3",
     "typescript": "^5.0.4",
-    "yaml": "^2.2.2"
+    "yaml": "^2.2.2", 
+    "langchain": "^0.0.118", 
+    "@pinecone-database/pinecone": "0.1.6"
   }
 }

@@ -1,7 +1,13 @@
 import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import path from "path";
-import { Configuration, OpenAIApi } from "openai";
+import initializeClient from '../../lib/pinecone';
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { PineconeStore } from "langchain/vectorstores/pinecone";
+import {ChatOpenAI} from "langchain/chat_models/openai";
+import { BufferMemory } from "langchain/memory";
+import { ConversationalRetrievalQAChain } from "langchain/chains";
+import { PineconeClient } from "@pinecone-database/pinecone";
 
 const router = express.Router();
 
@@ -16,16 +22,40 @@ router.post(
     res: Response,
     next: NextFunction
   ) => {
-    const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    const openai = new OpenAIApi(configuration);
+    const embeddings = new OpenAIEmbeddings({
+			openAIApiKey: process.env.OPENAI_API_KEY
+		});
+
+    const pineconeIndex = await initializeClient();
+
+    const vectorStore = await PineconeStore.fromExistingIndex(
+      embeddings, { pineconeIndex }
+    );
+
+		const model = new ChatOpenAI({ 
+      temperature: 0.1, 
+      openAIApiKey: process.env.OPENAI_API_KEY, 
+      modelName: 'gpt-3.5-turbo' }
+    );
+    
+    const chain = ConversationalRetrievalQAChain.fromLLM(
+      model,
+      vectorStore.asRetriever(),
+      {
+        memory: new BufferMemory({
+          memoryKey: "chat_history", // Must be set to "chat_history"
+        })
+      }
+    );
+
+    const question = req.body.prompt; 
+    console.log(question)
     try {
-      const completion = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: req.body.prompt,
+      const answer = await chain.call({ 
+        question
       });
-      res.json({ answer: completion.data.choices[0].text });
+    console.log(answer.text)  
+    res.json({ answer: answer.text });
     } catch (error) {
       next(error);
     }
