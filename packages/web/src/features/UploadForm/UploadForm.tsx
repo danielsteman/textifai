@@ -72,7 +72,6 @@ const UploadForm = () => {
 
   useEffect(() => {
     const shouldOpen = localStorage.getItem("showNewsLetterOffer");
-    console.log(shouldOpen);
     if (!shouldOpen || JSON.parse(shouldOpen) === true) {
       onOpen();
     }
