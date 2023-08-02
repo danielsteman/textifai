@@ -7,7 +7,6 @@ import { PineconeStore } from "langchain/vectorstores/pinecone";
 import {ChatOpenAI} from "langchain/chat_models/openai";
 import { BufferMemory } from "langchain/memory";
 import { ConversationalRetrievalQAChain } from "langchain/chains";
-import { PineconeClient } from "@pinecone-database/pinecone";
 
 const router = express.Router();
 

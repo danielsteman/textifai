@@ -1,14 +1,20 @@
 import { PineconeClient } from "@pinecone-database/pinecone";
+import dotenv from "dotenv";
+import path from "path";
+
+const envPath = path.resolve(__dirname, "../../.env.local");
+
+dotenv.config({ path: envPath })
 
 const client = new PineconeClient();
 
 async function initializeClient() {
   await client.init({
-    apiKey: "73144a3a-1736-4c50-a992-8fb87cdeacb0", 
-    environment: "northamerica-northeast1-gcp"
+    apiKey: process.env.PINECONE_API_KEY!, 
+    environment: process.env.PINECONE_ENV!
   });
-
-  const pineconeIndex = client.Index("textifai");
+  
+  const pineconeIndex = client.Index(process.env.PINECONE_INDEX!);
   
   return pineconeIndex;
 }
