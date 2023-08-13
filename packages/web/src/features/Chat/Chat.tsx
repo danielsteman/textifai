@@ -27,6 +27,25 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const getConversation = () => {
+    const lastThreeConversations: string[] = [];
+
+    // Loop from the end of the stacks to get the last 3 conversations
+    for (let i = 1; i <= 3 && i <= messageStack.length; i++) {
+      // Get the user message and AI answer
+      const userMessage = messageStack[messageStack.length - i];
+      const aiAnswer = answerStack[answerStack.length - i];
+
+      // Format and add them to the result array
+      lastThreeConversations.unshift(`USER: ${userMessage}`);
+      lastThreeConversations.unshift(`AI: ${aiAnswer}`);
+    }
+
+    return lastThreeConversations;
+  };
+
+  const history = getConversation();
+  console.log(history)
   useEffect(() => {
     scrollToBottom();
   }, [messageStack, answerStack]);
@@ -42,6 +61,7 @@ const Chat = () => {
       setLoading(true);
       const res = await axios.post("http://localhost:3001/api/chat/ask", {
         prompt: message,
+        history: history
       });
       setAnswerStack([...answerStack, res.data.answer]);
       setLoading(false);
