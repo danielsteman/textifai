@@ -22,6 +22,7 @@ import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { app } from "../../app/config/firebase";
+import { processFile } from "../../common/utils/pinecone-upload";
 
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
@@ -52,16 +53,26 @@ const UploadForm = () => {
     setLoading(true);
     if (files && files.length > 0) {
       files.forEach((file: any) => {
-        const data = new FormData();
-        data.append("file", file);
-
         const docRef = ref(storage, `upload-form-documents/${file.name}`);
-        uploadBytes(docRef, file).then((snapshot) => {
-          console.log("Uploaded a blob or file!");
-          console.log(snapshot);
-          setUploadSuccessful(true);
-          setLoading(false);
-        });
+  
+        // Promise for uploading to Firebase
+        const uploadPromise = uploadBytes(docRef, file);
+  
+        // Promise for processing the file
+        const processingPromise = processFile(file);
+  
+        Promise.all([uploadPromise, processingPromise])
+          .then(([snapshot, processingResult]) => {
+            console.log("Uploaded a blob or file!", snapshot);
+            console.log("File processing result:", processingResult);
+            setUploadSuccessful(true);
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.error("An error occurred:", error);
+            // You may want to handle the error appropriately here, e.g., set an error state
+            setLoading(false);
+          });
       });
       resetForm();
     } else {
@@ -69,6 +80,7 @@ const UploadForm = () => {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     const shouldOpen = localStorage.getItem("showNewsLetterOffer");

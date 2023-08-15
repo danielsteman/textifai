@@ -25,6 +25,7 @@
     "framer-motion": "^10.2.3",
     "langchain": "^0.0.118",
     "openai": "^3.3.0",
+    "pdf-parse": "^1.1.1",
     "pinecone": "^0.1.0",
     "pinecone-client": "^1.1.0",
     "react": "^18.2.0",
