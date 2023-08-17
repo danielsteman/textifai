@@ -1,3 +1,6 @@
+# Creds
+**.env.local
+
 # Logs
 logs
 *.log
