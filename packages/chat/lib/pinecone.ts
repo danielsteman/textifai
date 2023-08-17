@@ -11,7 +11,7 @@ if (!process.env.PINECONE_ENV! || !process.env.PINECONE_API_KEY!) {
   throw new Error("Pinecone environment or API key vars missing");
 }
 
-async function initializeClient() {
+export async function initializeClient() {
   try {
     const client = new PineconeClient();
     await client.init({
@@ -30,5 +30,3 @@ async function initializeClient() {
     throw new Error("Failed to initialize Pinecone Client");
   }
 }
-
-export default initializeClient;

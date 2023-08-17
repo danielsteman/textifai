@@ -22,7 +22,7 @@ import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { app } from "../../app/config/firebase";
-import { processFile } from "../../common/utils/pinecone-upload";
+import { processFile } from "../../common/utils/pineconeUpload";
 
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
@@ -54,13 +54,13 @@ const UploadForm = () => {
     if (files && files.length > 0) {
       files.forEach((file: any) => {
         const docRef = ref(storage, `upload-form-documents/${file.name}`);
-  
+
         // Promise for uploading to Firebase
         const uploadPromise = uploadBytes(docRef, file);
-  
+
         // Promise for processing the file
         const processingPromise = processFile(file);
-  
+
         Promise.all([uploadPromise, processingPromise])
           .then(([snapshot, processingResult]) => {
             console.log("Uploaded a blob or file!", snapshot);
@@ -80,7 +80,6 @@ const UploadForm = () => {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     const shouldOpen = localStorage.getItem("showNewsLetterOffer");
