@@ -58,16 +58,19 @@ const UploadForm = () => {
         data.forEach((value, key) => {
           console.log(`Key: ${key}, Value: ${value}`);
         });
+
         const docRef = ref(storage, `upload-form-documents/${file.name}`);
         uploadBytes(docRef, file).then((snapshot) => {
           console.log("Uploaded a blob or file!");
           console.log(snapshot);
           setUploadSuccessful(true);
           setLoading(false);
-          
-          axios.post("http://localhost:3000/api/documents/upload", data, {
+        });
+
+        axios
+          .post("http://localhost:3000/api/documents/upload", data, {
             headers: {
-              "Content-Type": "multipart/form-data"
+              "Content-Type": "multipart/form-data",
             },
           })
           .then((response) => {
@@ -78,8 +81,6 @@ const UploadForm = () => {
             // Handle error
             console.error("Failed to upload file to server", error);
           });
-        
-        });
       });
       resetForm();
     } else {
@@ -139,7 +140,6 @@ const UploadForm = () => {
                     "showNewsLetterOffer",
                     JSON.stringify(!e.target.checked)
                   );
-                  console.log(e.target.checked);
                 }}
               >
                 Don't show again
@@ -181,7 +181,7 @@ const UploadForm = () => {
           Upload
         </Button>
       </Center>
-      {uploadSuccessful ? <Text>Done!✅ Want to upload more?</Text> : <></>}
+      {uploadSuccessful ? <Text>Done! ✅ Want to upload more?</Text> : <></>}
     </Box>
   );
 };
