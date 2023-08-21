@@ -21,8 +21,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
+import axios from "axios";
 import { app } from "../../app/config/firebase";
-import { processFile } from "../../common/utils/pineconeUpload";
 
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
@@ -53,26 +53,33 @@ const UploadForm = () => {
     setLoading(true);
     if (files && files.length > 0) {
       files.forEach((file: any) => {
+        const data = new FormData();
+        data.append("file", file);
+        data.forEach((value, key) => {
+          console.log(`Key: ${key}, Value: ${value}`);
+        });
         const docRef = ref(storage, `upload-form-documents/${file.name}`);
-
-        // Promise for uploading to Firebase
-        const uploadPromise = uploadBytes(docRef, file);
-
-        // Promise for processing the file
-        const processingPromise = processFile(file);
-
-        Promise.all([uploadPromise, processingPromise])
-          .then(([snapshot, processingResult]) => {
-            console.log("Uploaded a blob or file!", snapshot);
-            console.log("File processing result:", processingResult);
-            setUploadSuccessful(true);
-            setLoading(false);
+        uploadBytes(docRef, file).then((snapshot) => {
+          console.log("Uploaded a blob or file!");
+          console.log(snapshot);
+          setUploadSuccessful(true);
+          setLoading(false);
+          
+          axios.post("http://localhost:3000/api/documents/upload", data, {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            },
+          })
+          .then((response) => {
+            // Handle success
+            console.log("File uploaded to server", response.data);
           })
           .catch((error) => {
-            console.error("An error occurred:", error);
-            // You may want to handle the error appropriately here, e.g., set an error state
-            setLoading(false);
+            // Handle error
+            console.error("Failed to upload file to server", error);
           });
+        
+        });
       });
       resetForm();
     } else {
