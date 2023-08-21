@@ -36,18 +36,17 @@ async function initializeClient() {
   }
 }
 
-export async function processFile(fileBuffer: Buffer) {
+export async function processFile(file: File) {
   const index = await initializeClient();
 
   // Convert Buffer to Blob
-  const fileBlob = new Blob([fileBuffer], { type: "application/pdf" });
-
+  // const fileBlob = new Blob([fileBuffer], { type: "application/pdf" });
 
   let rawDoc;
   try {
     console.log("Starting to load PDF document.");
     
-    const loader = new PDFLoader(fileBlob);
+    const loader = new PDFLoader(file);
     rawDoc = await loader.load();
 
     console.log("PDF document loaded successfully.");

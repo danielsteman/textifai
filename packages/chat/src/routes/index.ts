@@ -5,7 +5,7 @@ import { getMatchesFromEmbeddings } from '../../lib/matches';
 import summarizer from '../../lib/summarizer';
 import { templates } from '../../../utils/constants'
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import {ChatOpenAI} from "langchain/chat_models/openai";
+import { ChatOpenAI } from "langchain/chat_models/openai";
 import { LLMChain } from "langchain/chains";
 import { PromptTemplate } from "langchain/prompts";
 

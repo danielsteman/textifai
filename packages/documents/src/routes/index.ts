@@ -9,13 +9,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post(
   "/upload", 
-  (req: Request, res: Response, next: NextFunction) => {
-    // Log the headers (filtering out potential authorization headers)
-    console.log('Headers:', { ...req.headers, authorization: 'REDACTED' });
-
-    // Continue to the next middleware
-    next();
-  },
   upload.single('file'), 
   async (
     req: Request, 
@@ -24,26 +17,21 @@ router.post(
   ) => {
     try {
       // Access the uploaded file
+      console.log('Request received', req.file);  
       const file = req.file;
 
       // Check if a file was uploaded
       if (!file) {
-        return res.status(400).json({ error: 'No file was uploaded' });
+        return res.status(400).json({error: req.body}) // res.status(400).json({ error: 'No file found in request:', req });
       }
-
-      // Log some details about the uploaded file
-      console.log('File:', {
-        originalName: file.originalname,
-        mimetype: file.mimetype,
-        size: file.size,
-      });
       
       // Pass the file buffer directly to the processFile function
-      await processFile(file.buffer);
+       await processFile( file.buffer );
 
       // Send a success response
       res.json({ success: true, message: 'File processed successfully' });
     } catch (error) {
+      next(error)
       console.error('Failed to process file:', error);
       res.status(500).json({ error: 'Failed to process file' });
     }
