@@ -12,9 +12,7 @@ const DocumentCollection = () => {
   useEffect(() => {
     listAll(listRef)
       .then((res) => {
-        res.items.forEach((itemRef) => {
-          setDocuments([...documents, itemRef]);
-        });
+        setDocuments(res.items);
       })
       .catch((error) => {
         console.log("Something went wrong listing your files");
