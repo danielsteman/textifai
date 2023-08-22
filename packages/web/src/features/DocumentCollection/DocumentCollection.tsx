@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../app/providers/AuthProvider";
-import { Box, Text, VStack } from "@chakra-ui/react";
+import { Text, VStack } from "@chakra-ui/react";
 import { storage } from "../../app/config/firebase";
 import { StorageReference, listAll, ref } from "firebase/storage";
 
@@ -23,14 +23,11 @@ const DocumentCollection = () => {
   }, []);
 
   return (
-    <Box>
-      Hi {currentUser?.email}
-      <VStack>
-        {documents.map((doc) => (
-          <Text key={doc.fullPath}>{doc.name}</Text>
-        ))}
-      </VStack>
-    </Box>
+    <VStack bgColor={"lightgrey"}>
+      {documents.map((doc) => (
+        <Text key={doc.fullPath}>{doc.name}</Text>
+      ))}
+    </VStack>
   );
 };
 
