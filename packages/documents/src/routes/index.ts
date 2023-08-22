@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { processFile } from "../lib/pineconeUpload";
+import pdf from "pdf-parse";
 
 const router = express.Router();
 
@@ -14,15 +15,15 @@ router.post(
     try {
       // Access the uploaded file
       console.log("Request received", req.file);
-      const file = req.file;
+      const pdfBuffer: Buffer | undefined = req.file?.buffer;
 
-      // Check if a file was uploaded
-      if (!file) {
-        return res.status(400).json({ error: req.body }); // res.status(400).json({ error: 'No file found in request:', req });
+      if (!pdfBuffer) {
+        res.status(400).json({ error: "No PDF file uploaded" });
+        return;
       }
 
       // Pass the file buffer directly to the processFile function
-      await processFile(file.buffer);
+      await processFile(pdfBuffer);
 
       // Send a success response
       res.json({ success: true, message: "File processed successfully" });

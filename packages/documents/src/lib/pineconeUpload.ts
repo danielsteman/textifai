@@ -2,7 +2,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { PineconeClient } from "@pinecone-database/pinecone";
-import { PDFLoader } from "langchain/document_loaders/fs/pdf"
+import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 
 import dotenv from "dotenv";
 import path from "path";
@@ -16,7 +16,9 @@ const pineconeIndex = process.env.PINECONE_INDEX!;
 
 if (!apiKey || !environment || !pineconeIndex) {
   console.error("Missing environment variables");
-  throw new Error("Failed to initialize Pinecone Client due to missing environment variables");
+  throw new Error(
+    "Failed to initialize Pinecone Client due to missing environment variables"
+  );
 }
 
 async function initializeClient() {
@@ -45,7 +47,7 @@ export async function processFile(file: File) {
   let rawDoc;
   try {
     console.log("Starting to load PDF document.");
-    
+
     const loader = new PDFLoader(file);
     rawDoc = await loader.load();
 
@@ -90,4 +92,4 @@ export async function processFile(file: File) {
   }
 }
 
-export default processFile
+export default processFile;
