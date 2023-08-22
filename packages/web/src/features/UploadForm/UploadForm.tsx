@@ -20,8 +20,8 @@ import {
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
-import { app } from "../../app/config/firebase";
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
 
 const UploadForm = () => {
@@ -42,8 +42,6 @@ const UploadForm = () => {
     onDrop,
     accept: acceptedFormats,
   });
-
-  const storage = getStorage(app);
 
   const resetForm = () => {
     setUploadSuccessful(false);
