@@ -1,18 +1,39 @@
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react";
+import {
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  CloseButton,
+  IconButton,
+} from "@chakra-ui/react";
+import { useOutletContext } from "react-router-dom";
+import { ContextType } from "../layouts/WorkspaceLayout";
+import { SmallCloseIcon } from "@chakra-ui/icons";
 
 const Workspace = () => {
+  const { openTabs, setOpenTabs } = useOutletContext<ContextType>();
   return (
-    <Tabs isFitted variant="enclosed">
+    <Tabs isFitted variant="enclosed" size="md">
       <TabList mb="1em">
-        <Tab>One</Tab>
-        <Tab>Two</Tab>
+        <Tab position="relative">
+          Editor
+          <IconButton
+            variant="ghost"
+            position="absolute"
+            right={2}
+            size="xs"
+            aria-label={"close"}
+            icon={<SmallCloseIcon />}
+          />
+        </Tab>
+        {openTabs.map((tab) => (
+          <Tab>{tab}</Tab>
+        ))}
       </TabList>
       <TabPanels>
         <TabPanel>
-          <p>one!</p>
-        </TabPanel>
-        <TabPanel>
-          <p>two!</p>
+          <p>Paste editor here...</p>
         </TabPanel>
       </TabPanels>
     </Tabs>

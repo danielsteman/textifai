@@ -1,4 +1,4 @@
-import { ChatIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { ChatIcon, HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
 import {
   Box,
   Breadcrumb,
@@ -14,14 +14,22 @@ import {
   MenuList,
   Spacer,
 } from "@chakra-ui/react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Outlet } from "react-router-dom";
 
+export type ContextType = {
+  openTabs: string[];
+  setOpenTabs: Dispatch<SetStateAction<string[]>>;
+};
+
 const WorkspaceLayout = () => {
+  const [openTabs, setOpenTabs] = useState<string[]>([]);
   return (
-    <Flex direction="column" h="100%" p={0}>
-      <Flex direction="row">
-        <IconButton aria-label={"settings"} icon={<HamburgerIcon />} />
-        <Breadcrumb>
+    <Flex direction="column" h="100%">
+      <Flex direction="row" p={2}>
+        <IconButton aria-label={"settings"} icon={<SettingsIcon />} />
+        <Box w={4} />
+        <Breadcrumb alignSelf={"center"}>
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
@@ -33,6 +41,7 @@ const WorkspaceLayout = () => {
         </Breadcrumb>
         <Spacer />
         <IconButton aria-label={"chat"} icon={<ChatIcon />} />
+        <Box w={2} />
         <Menu>
           <MenuButton as={Button} p={0}>
             <HamburgerIcon />
@@ -45,8 +54,8 @@ const WorkspaceLayout = () => {
           </MenuList>
         </Menu>
       </Flex>
-      <Box>
-        <Outlet />
+      <Box px={2}>
+        <Outlet context={{ openTabs, setOpenTabs } satisfies ContextType} />
       </Box>
     </Flex>
   );
