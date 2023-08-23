@@ -13,8 +13,13 @@ import FlexLayout from "./layouts/FlexLayout";
 import Layout from "./layouts/FlexLayout";
 import Upload from "./routes/Upload";
 import Editor from "./routes/Editor";
+import Workspace from "./routes/Workspace";
 
 export const router = createBrowserRouter([
+  {
+    path: "/features/workspace",
+    element: <Workspace />,
+  },
   {
     element: <FlexLayout />,
     errorElement: <ErrorPage />,
@@ -68,10 +73,6 @@ export const router = createBrowserRouter([
       {
         path: "docs",
         element: <Docs />,
-      },
-      {
-        path: "features",
-        element: <Features />,
       },
       {
         path: "settings",
