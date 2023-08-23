@@ -10,25 +10,24 @@ import {
 import { useOutletContext } from "react-router-dom";
 import { ContextType } from "../layouts/WorkspaceLayout";
 import { SmallCloseIcon } from "@chakra-ui/icons";
+import CustomTab from "../../common/components/CustomTab";
 
 const Workspace = () => {
   const { openTabs, setOpenTabs } = useOutletContext<ContextType>();
+
+  const onClose = (tab: string) => {
+    setOpenTabs(removeItemIfExists(openTabs, tab));
+  };
+
+  const onOpen = (tab: string) => {
+    setOpenTabs(addItemIfNotExist(openTabs, tab));
+  };
+
   return (
     <Tabs isFitted variant="enclosed" size="md">
       <TabList mb="1em">
-        <Tab position="relative">
-          Editor
-          <IconButton
-            variant="ghost"
-            position="absolute"
-            right={2}
-            size="xs"
-            aria-label={"close"}
-            icon={<SmallCloseIcon />}
-          />
-        </Tab>
         {openTabs.map((tab) => (
-          <Tab>{tab}</Tab>
+          <CustomTab name={tab} onOpen={onOpen} onClose={onClose} />
         ))}
       </TabList>
       <TabPanels>

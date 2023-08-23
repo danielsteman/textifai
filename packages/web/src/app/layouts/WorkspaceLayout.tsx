@@ -23,7 +23,7 @@ export type ContextType = {
 };
 
 const WorkspaceLayout = () => {
-  const [openTabs, setOpenTabs] = useState<string[]>([]);
+  const [openTabs, setOpenTabs] = useState<string[]>(["Editor"]);
   return (
     <Flex direction="column" h="100%">
       <Flex direction="row" p={2}>
