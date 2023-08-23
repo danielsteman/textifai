@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "main": "index.ts",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
     "test": "jest",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q src/index.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
