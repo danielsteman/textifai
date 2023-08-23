@@ -38,26 +38,26 @@ async function initializeClient() {
   }
 }
 
-export async function processFile(file: File) {
+export async function processFile(rawDoc: string) {
   const index = await initializeClient();
 
   // Convert Buffer to Blob
   // const fileBlob = new Blob([fileBuffer], { type: "application/pdf" });
 
-  let rawDoc;
-  try {
-    console.log("Starting to load PDF document.");
+  // let rawDoc;
+  // try {
+  //   console.log("Starting to load PDF document.");
 
-    const loader = new PDFLoader(file);
-    rawDoc = await loader.load();
+  //   const loader = new PDFLoader(file);
+  //   rawDoc = await loader.load();
 
-    console.log("PDF document loaded successfully.");
-  } catch (error) {
-    console.error("Failed to read document:", error);
-    throw new Error("Failed to read document");
-  }
+  //   console.log("PDF document loaded successfully.");
+  // } catch (error) {
+  //   console.error("Failed to read document:", error);
+  //   throw new Error("Failed to read document");
+  // }
 
-  let docs;
+  let chunks;
   try {
     console.log("Starting to split document into chunks.");
     const textSplitter = new RecursiveCharacterTextSplitter({
@@ -65,8 +65,8 @@ export async function processFile(file: File) {
       chunkOverlap: 200,
     });
 
-    docs = await textSplitter.splitDocuments(rawDoc);
-    console.log(`Document successfully split into ${docs.length} chunks.`);
+    chunks = await textSplitter.splitText(rawDoc);
+    console.log(`Document successfully split into ${chunks.length} chunks.`);
   } catch (error) {
     console.error("Failed to chunk document:", error);
     throw new Error("Failed to chunk document");
@@ -81,10 +81,14 @@ export async function processFile(file: File) {
     console.log("OpenAI client initialized.");
 
     // Embed the PDF documents
-    await PineconeStore.fromDocuments(docs, embeddings, {
-      pineconeIndex: index,
-      textKey: "text",
-    });
+    await PineconeStore.fromTexts(
+      chunks, 
+      {}, 
+      embeddings, 
+      {
+        pineconeIndex: index,
+        textKey: "text"
+      });
     console.log("Embeddings successfully stored in vector store.");
   } catch (error) {
     console.error("Failed to embed data in the vector store:", error);
