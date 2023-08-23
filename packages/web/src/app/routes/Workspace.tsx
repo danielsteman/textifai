@@ -19,10 +19,10 @@ const Workspace = () => {
   };
 
   return (
-    <Tabs isFitted variant="enclosed" size="md">
+    <Tabs isFitted variant="soft-rounded" size="md">
       <TabList mb="1em">
         {openTabs.map((tab) => (
-          <CustomTab name={tab} onOpen={onOpen} onClose={onClose} />
+          <CustomTab key={tab} name={tab} onOpen={onOpen} onClose={onClose} />
         ))}
       </TabList>
       <TabPanels>

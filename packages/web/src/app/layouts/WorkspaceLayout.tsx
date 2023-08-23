@@ -16,6 +16,8 @@ import {
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Outlet } from "react-router-dom";
+import { addItemIfNotExist } from "../../common/utils/arrayManager";
+import { FaBook } from "react-icons/fa";
 
 export type ContextType = {
   openTabs: string[];
@@ -40,7 +42,17 @@ const WorkspaceLayout = () => {
           </BreadcrumbItem>
         </Breadcrumb>
         <Spacer />
-        <IconButton aria-label={"chat"} icon={<ChatIcon />} />
+        <IconButton
+          aria-label={"chat"}
+          icon={<FaBook />}
+          onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Documents"))}
+        />
+        <Box w={2} />
+        <IconButton
+          aria-label={"chat"}
+          icon={<ChatIcon />}
+          onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Chat"))}
+        />
         <Box w={2} />
         <Menu>
           <MenuButton as={Button} p={0}>

@@ -9,17 +9,19 @@ interface Props {
 
 const CustomTab: React.FC<Props> = (props) => {
   return (
-    <Tab position="relative">
-      {props.name}
+    <>
+      <Tab _hover={{ background: "lightgrey" }}>{props.name}</Tab>
       <IconButton
         variant="ghost"
-        position="absolute"
-        right={2}
-        size="xs"
+        right={9}
+        borderRadius={20}
+        top={1}
+        size="sm"
         aria-label={"close"}
         icon={<SmallCloseIcon />}
+        onClick={() => props.onClose(props.name)}
       />
-    </Tab>
+    </>
   );
 };
 
