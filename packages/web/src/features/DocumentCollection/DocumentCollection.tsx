@@ -14,6 +14,7 @@ import { SearchIcon } from "@chakra-ui/icons";
 const DocumentCollection = () => {
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
+  const [documentQuery, setDocumentQuery] = useState<string>("");
   const listRef = ref(storage, `users/${currentUser?.uid}/uploads`);
 
   useEffect(() => {
@@ -22,10 +23,16 @@ const DocumentCollection = () => {
         setDocuments(res.items);
       })
       .catch((error) => {
-        console.log("Something went wrong listing your files");
-        console.log(error);
+        console.warn("Something went wrong listing your files");
+        console.error(error);
       });
   }, []);
+
+  const handleChangeDocumentQuery = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setDocumentQuery(e.target.value);
+  };
 
   return (
     <VStack bgColor={"lightgrey"}>
@@ -33,11 +40,13 @@ const DocumentCollection = () => {
         <InputLeftElement pointerEvents="none">
           <SearchIcon />
         </InputLeftElement>
-        <Input placeholder="Search" />
+        <Input placeholder="Search" onChange={handleChangeDocumentQuery} />
       </InputGroup>
-      {documents.map((doc) => (
-        <Text key={doc.fullPath}>{doc.name}</Text>
-      ))}
+      {documents
+        .filter((doc) => doc.name.includes(documentQuery))
+        .map((doc) => (
+          <Text key={doc.fullPath}>{doc.name}</Text>
+        ))}
     </VStack>
   );
 };
