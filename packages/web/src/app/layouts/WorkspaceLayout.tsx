@@ -17,7 +17,7 @@ import {
 import { Dispatch, SetStateAction, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
-import { FaBook } from "react-icons/fa";
+import { FaBook, FaEdit } from "react-icons/fa";
 
 export type ContextType = {
   openTabs: string[];
@@ -43,7 +43,13 @@ const WorkspaceLayout = () => {
         </Breadcrumb>
         <Spacer />
         <IconButton
-          aria-label={"chat"}
+          aria-label={"editor"}
+          icon={<FaEdit />}
+          onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Editor"))}
+        />
+        <Box w={2} />
+        <IconButton
+          aria-label={"documents"}
           icon={<FaBook />}
           onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Documents"))}
         />
