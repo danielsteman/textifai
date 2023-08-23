@@ -45,7 +45,6 @@ const Chat = () => {
   };
 
   const history = getConversation();
-  console.log(history)
   useEffect(() => {
     scrollToBottom();
   }, [messageStack, answerStack]);
@@ -61,7 +60,7 @@ const Chat = () => {
       setLoading(true);
       const res = await axios.post("http://localhost:3001/api/chat/ask", {
         prompt: message,
-        history: history
+        history: history,
       });
       setAnswerStack([...answerStack, res.data.answer]);
       setLoading(false);
