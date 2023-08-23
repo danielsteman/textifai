@@ -17,11 +17,12 @@ import {
   keyframes,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
-import { app } from "../../app/config/firebase";
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../app/config/firebase";
+import { AuthContext } from "../../app/providers/AuthProvider";
 
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
@@ -30,9 +31,10 @@ const UploadForm = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onDrop = useCallback((acceptedFiles: any) => {
-    console.log(acceptedFiles);
     setFiles(acceptedFiles);
   }, []);
+
+  const currentUser = useContext(AuthContext);
 
   const acceptedFormats = { "application/pdf": [".pdf"] };
 
@@ -40,8 +42,6 @@ const UploadForm = () => {
     onDrop,
     accept: acceptedFormats,
   });
-
-  const storage = getStorage(app);
 
   const resetForm = () => {
     setUploadSuccessful(false);
@@ -52,10 +52,10 @@ const UploadForm = () => {
     setLoading(true);
     if (files && files.length > 0) {
       files.forEach((file: any) => {
-        const data = new FormData();
-        data.append("file", file);
-
-        const docRef = ref(storage, `upload-form-documents/${file.name}`);
+        const docRef = ref(
+          storage,
+          `users/${currentUser?.uid}/uploads/${file.name}`
+        );
         uploadBytes(docRef, file).then((snapshot) => {
           console.log("Uploaded a blob or file!");
           console.log(snapshot);

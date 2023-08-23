@@ -1,8 +1,9 @@
-import { Box, Grid, GridItem } from "@chakra-ui/react";
+import { Grid, GridItem } from "@chakra-ui/react";
 import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Chat from "../../features/Chat/Chat";
+import DocumentCollection from "../../features/DocumentCollection/DocumentCollection";
 
 function Editor() {
   const [value, setValue] = useState("");
@@ -24,7 +25,7 @@ function Editor() {
           />
         </GridItem>
         <GridItem colSpan={1} rowSpan={1}>
-          <Box>Document list</Box>
+          <DocumentCollection />
         </GridItem>
         <GridItem colSpan={1} rowSpan={1}>
           <Chat />
