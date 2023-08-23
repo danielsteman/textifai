@@ -1,16 +1,11 @@
-import {
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  CloseButton,
-  IconButton,
-} from "@chakra-ui/react";
+import { Tabs, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { ContextType } from "../layouts/WorkspaceLayout";
-import { SmallCloseIcon } from "@chakra-ui/icons";
 import CustomTab from "../../common/components/CustomTab";
+import {
+  addItemIfNotExist,
+  removeItemIfExists,
+} from "../../common/utils/arrayManager";
 
 const Workspace = () => {
   const { openTabs, setOpenTabs } = useOutletContext<ContextType>();
