@@ -18,6 +18,9 @@ const Workspace = () => {
     setOpenTabs(addItemIfNotExist(openTabs, tab));
   };
 
+  // TODO: add logic that focuses a tab when another one is closed etc.
+  // TODO: make tabpanels dynamic. probably change ContextType to a more complex type containing child components
+
   return (
     <Tabs isFitted variant="soft-rounded" size="md">
       <TabList mb="1em">
@@ -28,6 +31,9 @@ const Workspace = () => {
       <TabPanels>
         <TabPanel>
           <p>Paste editor here...</p>
+        </TabPanel>
+        <TabPanel>
+          <p>Paste document collection here...</p>
         </TabPanel>
       </TabPanels>
     </Tabs>
