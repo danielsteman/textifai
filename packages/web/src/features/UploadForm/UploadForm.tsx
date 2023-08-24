@@ -23,6 +23,7 @@ import { useColorModeValue } from "@chakra-ui/react";
 import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
+import axios from "axios";
 
 const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
@@ -51,7 +52,7 @@ const UploadForm = () => {
   const handleSubmit = () => {
     setLoading(true);
     if (files && files.length > 0) {
-      files.forEach((file: any) => {
+      files.forEach(async (file: any) => {
         const docRef = ref(
           storage,
           `users/${currentUser?.uid}/uploads/${file.name}`
@@ -62,6 +63,30 @@ const UploadForm = () => {
           setUploadSuccessful(true);
           setLoading(false);
         });
+
+        // Create FormData and append the fileBlob
+        const data = new FormData();
+        data.append("file", file);
+        console.log(data)
+        // Post the data to the server
+        await axios({
+          method: "post",
+          baseURL: "http://localhost:3000/api/documents/upload",
+          headers: { 'Content-Type': 'multipart/form-data' },
+          data: data
+        })
+
+        // axios.post(, data)
+          .then(response => {
+              console.log('File uploaded successfully:', response.data);
+              setUploadSuccessful(true);
+              setLoading(false);
+          })
+          .catch(error => {
+              console.error('An error occurred while uploading the file:', error);
+              setLoading(false);
+          });
+
       });
       resetForm();
     } else {

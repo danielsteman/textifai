@@ -41,22 +41,6 @@ async function initializeClient() {
 export async function processFile(rawDoc: string) {
   const index = await initializeClient();
 
-  // Convert Buffer to Blob
-  // const fileBlob = new Blob([fileBuffer], { type: "application/pdf" });
-
-  // let rawDoc;
-  // try {
-  //   console.log("Starting to load PDF document.");
-
-  //   const loader = new PDFLoader(file);
-  //   rawDoc = await loader.load();
-
-  //   console.log("PDF document loaded successfully.");
-  // } catch (error) {
-  //   console.error("Failed to read document:", error);
-  //   throw new Error("Failed to read document");
-  // }
-
   let chunks;
   try {
     console.log("Starting to split document into chunks.");

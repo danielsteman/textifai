@@ -6,7 +6,8 @@ import pdfParse from "pdf-parse";
 const router = express.Router();
 
 // Configure Multer for file upload handling
-const upload = multer({ storage: multer.memoryStorage() });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 async function extractTextFromPDF(pdfBuffer: Buffer): Promise<string> {
   try {
@@ -20,20 +21,22 @@ async function extractTextFromPDF(pdfBuffer: Buffer): Promise<string> {
 
 router.post(
   "/upload",
-  upload.single("file"),
+  upload.single('file'),
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log("Headers:", req.headers);
+    console.log("File info:", req.file);
+    console.log("Body:", req.body);
     try {
       // Access the uploaded file
-      console.log("Request received", req.file);
-      const pdfBuffer: Buffer | undefined = req.file?.buffer;
+      console.log("Request received", req.body);
 
-      if (!pdfBuffer) {
-        res.status(400).json({ error: "No PDF file uploaded" });
-        return;
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
       }
 
-      const text = await extractTextFromPDF(pdfBuffer)
-
+      const fileBuffer = Buffer.from(req.file.buffer)
+      const text = await extractTextFromPDF(fileBuffer)
+      // console.log(text)
       // Pass the file buffer directly to the processFile function
       await processFile(text);
 

@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const openai_1 = require("langchain/chat_models/openai");
-const constants_1 = require("../../utils/constants");
+const prompts_1 = require("./prompts");
 const langchain_1 = require("langchain");
 const bottleneck_1 = __importDefault(require("bottleneck"));
 const llm = new openai_1.ChatOpenAI({
@@ -12,7 +12,7 @@ const llm = new openai_1.ChatOpenAI({
     temperature: 0,
     modelName: "gpt-3.5-turbo",
 });
-const { summarizerTemplate, summarizerDocumentTemplate } = constants_1.templates;
+const { summarizerTemplate, summarizerDocumentTemplate } = prompts_1.templates;
 const limiter = new bottleneck_1.default({
     minTime: 5050,
 });

@@ -1,5 +1,5 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { templates } from "../../utils/constants";
+import { templates } from "./prompts";
 import { LLMChain, PromptTemplate } from "langchain";
 import Bottleneck from "bottleneck";
 

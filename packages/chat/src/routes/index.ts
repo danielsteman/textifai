@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { getMatchesFromEmbeddings } from '../../lib/matches';
 import summarizer from '../../lib/summarizer';
-import { templates } from '../../../utils/constants'
+import { templates } from '../../lib/prompts'
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { LLMChain } from "langchain/chains";
