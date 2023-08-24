@@ -23,21 +23,17 @@ router.post(
   "/upload",
   upload.single('file'),
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("Headers:", req.headers);
-    console.log("File info:", req.file);
-    console.log("Body:", req.body);
     try {
-      // Access the uploaded file
-      console.log("Request received", req.body);
-
+ 
       if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
       }
-
+      
+      // Read file and extract text
       const fileBuffer = Buffer.from(req.file.buffer)
       const text = await extractTextFromPDF(fileBuffer)
-      // console.log(text)
-      // Pass the file buffer directly to the processFile function
+
+      // Pass text to the processFile for chunking and embedding
       await processFile(text);
 
       // Send a success response
