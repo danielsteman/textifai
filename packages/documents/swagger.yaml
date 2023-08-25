@@ -1,19 +1,27 @@
 swagger: "2.0"
 info:
-  title: Sample API
-  description: API description in Markdown.
+  title: Textifai API
+  description: API for handling document uploads and processing.
   version: 1.0.0
 host: api.example.com
 basePath: /v1
 schemes:
-  - https
+  - http
 paths:
-  /users:
-    get:
-      summary: Returns a list of users.
-      description: Optional extended description in Markdown.
-      produces:
-        - application/json
+  /upload:
+    post:
+      summary: Uploads a PDF document.
+      description: Endpoint to accept PDF document uploads for text analytics.
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          description: The file to upload.
+          required: true
       responses:
         200:
-          description: OK
+          description: Successful upload
+          # Add any relevant schema details here if you return specific data in the response
+
