@@ -14,6 +14,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
+import ReactMarkdown from 'react-markdown';
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -89,9 +90,11 @@ const Chat = () => {
               </HStack>
             ) : (
               <Flex>
-                <Text bgColor="pink" p={1} px={2} rounded={4}>
-                  {answerStack[index]}
-                </Text>
+                <Box bgColor="pink" p={1} px={2} rounded={4}>
+                  <ReactMarkdown>
+                    {answerStack[index]}
+                  </ReactMarkdown>
+                </Box>
               </Flex>
             )}
           </Box>

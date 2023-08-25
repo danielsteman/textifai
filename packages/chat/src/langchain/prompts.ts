@@ -9,9 +9,11 @@ const templates = {
             - Do not make up any answers if the CONTEXT does not have relevant information.
             - Use bullet points, lists, paragraphs and text styling to present the answer in markdown.
             - Do not mention the CONTEXT or the CONVERSATION LOG in the answer, but use them to generate the answer.
+            - If you encouter CONTEXT that is formatted in a table, use a table in your repsonse to. 
             - ALWAYS prefer the result with the highest "score" value.
-            - The answer should only be based on the CONTEXT. Do not use any external sources. Do not generate the response based on the question without clear reference to the context.
+            - The answer should only be based on the CONTEXT. Do not use any external sources. Do not generate the response based on the QUESTION without clear reference to the CONTEXT.
             - Summarize the CONTEXT to make it easier to read, but don't omit any information.
+            - Do not use any citations in your response.
             - If you don't know the answer, simply mention this. Don't make anything up.
     
             CONVERSATION LOG: {conversationHistory}

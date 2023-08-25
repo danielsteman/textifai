@@ -88,7 +88,7 @@ router.post(
       conversationHistory: conversationHistory,
     });
 
-    console.log(inquiryChainResult.text);
+    console.log("Enhanced prompt: ", inquiryChainResult.text);
     const inquiry = inquiryChainResult.text;
 
     const vector = await embed.embedQuery(prompt);
@@ -116,7 +116,7 @@ router.post(
     const allDocs = docs.join("\n");
 
     if (allDocs.length > 4000) {
-      console.log(`Just a second, forming final answer...`);
+      console.log(`Context too long, summarize...`);
     }
 
     const summary =
