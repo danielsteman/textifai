@@ -11,16 +11,17 @@ import {
   HStack,
   Spacer,
   Flex,
-  useColorMode,
 } from "@chakra-ui/react";
 import AccountAvatar from "../../common/components/AccountAvatar";
 import MenuItem from "../../common/components/MenuItem";
 import LogoutButton from "../Authentication/LogoutButton";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
+import { auth } from "../../app/config/firebase";
 
 const AccountMenuDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const fakeUser = "Daniel";
+  const currentUserDisplayName = auth.currentUser?.email;
+
   return (
     <>
       <AccountAvatar onClick={onOpen} />
@@ -41,7 +42,7 @@ const AccountMenuDrawer = () => {
                   Welcome back,{" "}
                 </Text>
                 <Text fontWeight={700} fontSize={18}>
-                  {fakeUser}
+                  {currentUserDisplayName}
                 </Text>
               </VStack>
             </HStack>

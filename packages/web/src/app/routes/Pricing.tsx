@@ -9,8 +9,7 @@ import {
   VStack,
   Button,
 } from "@chakra-ui/react";
-import { FaBox, FaCheck, FaCross, FaCrosshairs, FaXbox } from "react-icons/fa";
-import { MdCheckBox, MdPlayDisabled } from "react-icons/md";
+import { FaCheck } from "react-icons/fa";
 
 const pricingData = [
   {
