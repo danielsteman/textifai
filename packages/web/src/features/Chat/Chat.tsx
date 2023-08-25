@@ -1,51 +1,43 @@
 import {
   Box,
+  Button,
   Flex,
   HStack,
   IconButton,
   Input,
   InputGroup,
   InputRightElement,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   SkeletonCircle,
   Spacer,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import axios from "axios";
+import { ArrowRightIcon } from '@chakra-ui/icons';
 import React, { useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
 import ReactMarkdown from 'react-markdown';
+import axios from "axios";
+
+type SystemMessageProps = {
+  message: string;
+};
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const [messageStack, setMessageStack] = useState<string[]>([]);
   const [answerStack, setAnswerStack] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const getConversation = () => {
-    const lastThreeConversations: string[] = [];
-
-    // Loop from the end of the stacks to get the last 3 conversations
-    for (let i = 1; i <= 3 && i <= messageStack.length; i++) {
-      // Get the user message and AI answer
-      const userMessage = messageStack[messageStack.length - i];
-      const aiAnswer = answerStack[answerStack.length - i];
-
-      // Format and add them to the result array
-      lastThreeConversations.unshift(`USER: ${userMessage}`);
-      lastThreeConversations.unshift(`AI: ${aiAnswer}`);
-    }
-
-    return lastThreeConversations;
-  };
-
-  const history = getConversation();
   useEffect(() => {
     scrollToBottom();
   }, [messageStack, answerStack]);
@@ -61,14 +53,46 @@ const Chat = () => {
       setLoading(true);
       const res = await axios.post("http://localhost:3001/api/chat/ask", {
         prompt: message,
-        history: history,
       });
       setAnswerStack([...answerStack, res.data.answer]);
       setLoading(false);
     } catch (error) {
       console.log(error);
     }
-    console.log(messageStack);
+  };
+
+  const SystemMessage = ({ message }: { message: string }) => {
+    return (
+      <Flex align="center" justifyContent="flex-start">
+        <Box 
+          display="flex" 
+          alignItems="center" 
+          bgColor="pink" 
+          p={1} 
+          px={2} 
+          rounded={4} 
+          position="relative"
+        >
+          <Text whiteSpace="pre-line">
+            {message}
+          </Text>
+          
+          <Box position="absolute" right={2} top={1}>
+            <Menu>
+              <MenuButton aria-label="Options" p={0} color="grey">
+                <ArrowRightIcon />
+              </MenuButton>
+              <MenuList>
+                <MenuItem>Elaborate</MenuItem>
+                <MenuItem>Shorten</MenuItem>
+                <MenuItem>Paraphrase</MenuItem>
+                <MenuItem>Show in Document</MenuItem>
+              </MenuList>
+            </Menu>
+          </Box>
+        </Box>
+      </Flex>
+    );
   };
 
   return (
@@ -89,13 +113,7 @@ const Chat = () => {
                 <SkeletonCircle size="2" />
               </HStack>
             ) : (
-              <Flex>
-                <Box bgColor="pink" p={1} px={2} rounded={4}>
-                  <ReactMarkdown>
-                    {answerStack[index]}
-                  </ReactMarkdown>
-                </Box>
-              </Flex>
+              <SystemMessage message={answerStack[index]} />
             )}
           </Box>
         ))}
