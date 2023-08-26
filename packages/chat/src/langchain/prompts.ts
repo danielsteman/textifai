@@ -70,6 +70,20 @@ const templates = {
         `,
     summerierTemplate:
       `Summarize the following text. You should follow the following rules when generating and answer:`,
+    paraphrasingTemplate: 
+      `Paraphrase the text in the CONTENT. You should follow the following rules when generating the paraphrase:
+      - Any code found in the CONTENT should ALWAYS be preserved in the paraphrase, unchanged.
+      - Any tables found in the CONTENT should ALWAYS be preserved in the paraphrase, unchanged.
+      - Code will be surrounded by backticks (\`) or triple backticks (\`\`\`).
+      - Paraphrase should include code examples when they are present in the original content. Do not make up any code examples on your own.
+      - The paraphrase should maintain the original intent and meaning of the CONTENT.
+      - Avoid changing technical terms or specific jargon, but aim to make the text more concise or clearer if possible.
+      - You should ALWAYS return your paraphrased answer in markdown
+    
+      CONTENT: {document}
+
+      Final answer:
+      `
   };
   
   export { templates };
