@@ -5,19 +5,29 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
   IconButton,
+  Input,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
   Spacer,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import { FaBook, FaEdit } from "react-icons/fa";
+import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 
 export type ContextType = {
   openTabs: string[];
@@ -26,10 +36,28 @@ export type ContextType = {
 
 const WorkspaceLayout = () => {
   const [openTabs, setOpenTabs] = useState<string[]>(["Editor"]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Flex direction="column" h="100%">
       <Flex direction="row" p={2}>
-        <IconButton aria-label={"settings"} icon={<SettingsIcon />} />
+        <IconButton
+          aria-label={"settings"}
+          icon={<SettingsIcon />}
+          onClick={onOpen}
+        />
+        <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader>Workspace settings</DrawerHeader>
+            <DrawerBody>
+              <Input placeholder="Search..." />
+            </DrawerBody>
+            <DrawerFooter>
+              <ColorModeSwitcher />
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
         <Box w={4} />
         <Breadcrumb alignSelf={"center"}>
           <BreadcrumbItem>
