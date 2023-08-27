@@ -27,7 +27,7 @@ const Workspace = () => {
         {openTabs.map((tab) => (
           <CustomTab
             key={tab.name}
-            name={tab.name}
+            tab={tab}
             onOpen={onOpen}
             onClose={onClose}
           />

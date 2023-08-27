@@ -3,7 +3,7 @@ import { Tab, IconButton, Box, Flex } from "@chakra-ui/react";
 import { ITab } from "../../app/layouts/WorkspaceLayout";
 
 interface Props {
-  name: string;
+  tab: ITab;
   onOpen: (tab: ITab) => void;
   onClose: (tab: ITab) => void;
 }
@@ -12,7 +12,7 @@ const CustomTab: React.FC<Props> = (props) => {
   return (
     <Box flex={1} position={"relative"}>
       <Tab width="100%" _hover={{ background: "lightgrey" }}>
-        {props.name}
+        {props.tab.name}
       </Tab>
       <IconButton
         position={"absolute"}
@@ -23,7 +23,7 @@ const CustomTab: React.FC<Props> = (props) => {
         size="xs"
         aria-label={"close"}
         icon={<SmallCloseIcon />}
-        onClick={() => props.onClose(props.name)}
+        onClick={() => props.onClose(props.tab)}
       />
     </Box>
   );

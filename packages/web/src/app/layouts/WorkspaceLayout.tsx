@@ -80,19 +80,43 @@ const WorkspaceLayout = () => {
         <IconButton
           aria-label={"editor"}
           icon={<FaEdit />}
-          onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Editor"))}
+          onClick={() =>
+            setOpenTabs(
+              addItemIfNotExist(
+                openTabs,
+                { name: "Editor", panel: <p>Editor</p> },
+                "name"
+              )
+            )
+          }
         />
         <Box w={2} />
         <IconButton
           aria-label={"documents"}
           icon={<FaBook />}
-          onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Documents"))}
+          onClick={() =>
+            setOpenTabs(
+              addItemIfNotExist(
+                openTabs,
+                { name: "Documents", panel: <p>Documents</p> },
+                "name"
+              )
+            )
+          }
         />
         <Box w={2} />
         <IconButton
           aria-label={"chat"}
           icon={<ChatIcon />}
-          onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Chat"))}
+          onClick={() =>
+            setOpenTabs(
+              addItemIfNotExist(
+                openTabs,
+                { name: "Chat", panel: <p>Chat</p> },
+                "name"
+              )
+            )
+          }
         />
         <Box w={2} />
         <Menu>
