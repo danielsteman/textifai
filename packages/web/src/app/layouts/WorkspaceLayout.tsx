@@ -23,19 +23,26 @@ import {
   Spacer,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import { FaBook, FaEdit } from "react-icons/fa";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 
+export type ITab = {
+  name: string;
+  panel: ReactNode;
+};
+
 export type ContextType = {
-  openTabs: string[];
-  setOpenTabs: Dispatch<SetStateAction<string[]>>;
+  openTabs: ITab[];
+  setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
 };
 
 const WorkspaceLayout = () => {
-  const [openTabs, setOpenTabs] = useState<string[]>(["Editor"]);
+  const [openTabs, setOpenTabs] = useState<ITab[]>([
+    { name: "Editor", panel: <Box>henk</Box> },
+  ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Flex direction="column" h="100%">

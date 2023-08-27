@@ -1,10 +1,11 @@
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import { Tab, IconButton, Box, Flex } from "@chakra-ui/react";
+import { ITab } from "../../app/layouts/WorkspaceLayout";
 
 interface Props {
   name: string;
-  onOpen: (tab: string) => void;
-  onClose: (tab: string) => void;
+  onOpen: (tab: ITab) => void;
+  onClose: (tab: ITab) => void;
 }
 
 const CustomTab: React.FC<Props> = (props) => {
