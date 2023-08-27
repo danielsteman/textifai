@@ -28,6 +28,7 @@ import { Outlet } from "react-router-dom";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import { FaBook, FaEdit } from "react-icons/fa";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
+import Chat from "../../features/Chat/Chat";
 
 export type ITab = {
   name: string;
@@ -112,7 +113,7 @@ const WorkspaceLayout = () => {
             setOpenTabs(
               addItemIfNotExist(
                 openTabs,
-                { name: "Chat", panel: <p>Chat</p> },
+                { name: "Chat", panel: <Chat /> },
                 "name"
               )
             )
