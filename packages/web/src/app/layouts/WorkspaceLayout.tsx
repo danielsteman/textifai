@@ -41,7 +41,7 @@ export type ContextType = {
 
 const WorkspaceLayout = () => {
   const [openTabs, setOpenTabs] = useState<ITab[]>([
-    { name: "Editor", panel: <Box>henk</Box> },
+    { name: "Editor", panel: <p>Editor</p> },
   ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (

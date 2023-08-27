@@ -19,7 +19,6 @@ const Workspace = () => {
   };
 
   // TODO: add logic that focuses a tab when another one is closed etc.
-  // TODO: make tabpanels dynamic. probably change ContextType to a more complex type containing child components
 
   return (
     <Tabs variant="soft-rounded" size="sm">
@@ -34,12 +33,9 @@ const Workspace = () => {
         ))}
       </TabList>
       <TabPanels>
-        <TabPanel>
-          <p>Paste editor here...</p>
-        </TabPanel>
-        <TabPanel>
-          <p>Paste document collection here...</p>
-        </TabPanel>
+        {openTabs.map((tab) => (
+          <TabPanel key={tab.name}>{tab.panel}</TabPanel>
+        ))}
       </TabPanels>
     </Tabs>
   );
