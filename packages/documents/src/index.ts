@@ -17,7 +17,7 @@ const app: Express = express();
 app.use(cors());
 app.use(morgan("tiny"));
 app.use(express.static("public"));
-app.use(fileupload());
+// app.use(fileupload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
