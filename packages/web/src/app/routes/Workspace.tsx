@@ -22,8 +22,8 @@ const Workspace = () => {
   // TODO: make tabpanels dynamic. probably change ContextType to a more complex type containing child components
 
   return (
-    <Tabs isFitted variant="soft-rounded" size="md">
-      <TabList mb="1em">
+    <Tabs variant="soft-rounded" size="sm">
+      <TabList mb="1em" bgColor={"orange"}>
         {openTabs.map((tab) => (
           <CustomTab key={tab} name={tab} onOpen={onOpen} onClose={onClose} />
         ))}

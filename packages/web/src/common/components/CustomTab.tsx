@@ -1,5 +1,5 @@
 import { SmallCloseIcon } from "@chakra-ui/icons";
-import { Tab, IconButton } from "@chakra-ui/react";
+import { Tab, IconButton, Box, Flex } from "@chakra-ui/react";
 
 interface Props {
   name: string;
@@ -9,19 +9,22 @@ interface Props {
 
 const CustomTab: React.FC<Props> = (props) => {
   return (
-    <>
-      <Tab _hover={{ background: "lightgrey" }}>{props.name}</Tab>
+    <Box flex={1} position={"relative"}>
+      <Tab width="100%" _hover={{ background: "lightgrey" }}>
+        {props.name}
+      </Tab>
       <IconButton
+        position={"absolute"}
+        right={0.5}
         variant="ghost"
-        right={9}
         borderRadius={20}
-        top={1}
-        size="sm"
+        top={0.5}
+        size="xs"
         aria-label={"close"}
         icon={<SmallCloseIcon />}
         onClick={() => props.onClose(props.name)}
       />
-    </>
+    </Box>
   );
 };
 
