@@ -26,10 +26,10 @@ import {
 import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { Outlet } from "react-router-dom";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
-import TextEditor from "../../features/TextEditor/TextEditor";
 import OpenEditorTab from "../../features/WorkspaceTabs/OpenEditorTab";
 import OpenDocumentCollectionTab from "../../features/WorkspaceTabs/OpenDocumentCollectionTab";
 import OpenChatTab from "../../features/WorkspaceTabs/OpenChatTab";
+import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
 
 export type ITab = {
   name: string;
@@ -43,7 +43,7 @@ export type OpenTabsContext = {
 
 const WorkspaceLayout = () => {
   const [openTabs, setOpenTabs] = useState<ITab[]>([
-    { name: "Editor", panel: <TextEditor /> },
+    { name: "Editor", panel: <EditorPanel /> },
   ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (

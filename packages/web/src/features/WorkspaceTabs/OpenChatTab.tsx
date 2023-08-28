@@ -3,7 +3,7 @@ import { OpenTabsContext } from "../../app/layouts/WorkspaceLayout";
 import { ChatIcon } from "@chakra-ui/icons";
 import { IconButton } from "@chakra-ui/react";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
-import Chat from "../Chat/Chat";
+import ChatPanel from "./ChatPanel";
 
 const OpenChatTab: React.FC<OpenTabsContext> = (props) => {
   return (
@@ -14,7 +14,7 @@ const OpenChatTab: React.FC<OpenTabsContext> = (props) => {
         props.setOpenTabs(
           addItemIfNotExist(
             props.openTabs,
-            { name: "Chat", panel: <Chat /> },
+            { name: "Chat", panel: <ChatPanel /> },
             "name"
           )
         )
