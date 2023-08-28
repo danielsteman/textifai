@@ -60,12 +60,7 @@ const Workspace = () => {
         <Flex direction="row" p={2}>
           <TabList mb="1em">
             {openTabs.map((tab) => (
-              <CustomTab
-                key={tab.name}
-                tab={tab}
-                onOpen={onTabOpen}
-                onClose={onTabClose}
-              />
+              <CustomTab key={tab.name} tab={tab} onClose={onTabClose} />
             ))}
           </TabList>
           <Spacer />
