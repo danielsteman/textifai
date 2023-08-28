@@ -18,7 +18,7 @@ const CustomTab: React.FC<Props> = (props) => {
         position={"absolute"}
         right={0.5}
         variant="ghost"
-        borderRadius={20}
+        borderRadius={16}
         top={0.5}
         size="xs"
         aria-label={"close"}
