@@ -1,9 +1,6 @@
-import { HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
+import { ChatIcon, SettingsIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
   Button,
   Drawer,
   DrawerBody,
@@ -14,22 +11,18 @@ import {
   DrawerOverlay,
   Flex,
   IconButton,
-  Input,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
   Spacer,
+  VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { Outlet } from "react-router-dom";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
-import OpenEditorTab from "../../features/WorkspaceTabs/OpenEditorTab";
-import OpenDocumentCollectionTab from "../../features/WorkspaceTabs/OpenDocumentCollectionTab";
-import OpenChatTab from "../../features/WorkspaceTabs/OpenChatTab";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
+import { FaBook, FaEdit } from "react-icons/fa";
+import { addItemIfNotExist } from "../../common/utils/arrayManager";
+import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
+import DocumentCollectionPanel from "../../features/WorkspaceTabs/DocumentCollectionPanel";
 
 export type ITab = {
   name: string;
@@ -49,56 +42,83 @@ const WorkspaceLayout = () => {
   return (
     <Flex direction="column" h="100%">
       <Flex direction="row" p={2}>
+        <Spacer />
         <IconButton
           aria-label={"settings"}
           icon={<SettingsIcon />}
           onClick={onOpen}
         />
-        <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+        <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
           <DrawerOverlay />
           <DrawerContent>
             <DrawerCloseButton />
             <DrawerHeader>Workspace settings</DrawerHeader>
             <DrawerBody>
-              <Input placeholder="Search..." />
+              <VStack>
+                <Button
+                  w="100%"
+                  justifyContent="flex-start"
+                  aria-label={"editor"}
+                  leftIcon={<FaEdit />}
+                  onClick={() => {
+                    setOpenTabs(
+                      addItemIfNotExist(
+                        openTabs,
+                        { name: "Editor", panel: <EditorPanel /> },
+                        "name"
+                      )
+                    );
+                    onClose();
+                  }}
+                >
+                  Editor
+                </Button>
+                <Button
+                  w="100%"
+                  justifyContent="flex-start"
+                  aria-label={"chat"}
+                  leftIcon={<ChatIcon />}
+                  onClick={() => {
+                    setOpenTabs(
+                      addItemIfNotExist(
+                        openTabs,
+                        { name: "Chat", panel: <ChatPanel /> },
+                        "name"
+                      )
+                    );
+                    onClose();
+                  }}
+                >
+                  Chat
+                </Button>
+                <Button
+                  w="100%"
+                  justifyContent="flex-start"
+                  aria-label={"documents"}
+                  leftIcon={<FaBook />}
+                  onClick={() => {
+                    setOpenTabs(
+                      addItemIfNotExist(
+                        openTabs,
+                        {
+                          name: "Documents",
+                          panel: <DocumentCollectionPanel />,
+                        },
+                        "name"
+                      )
+                    );
+                    onClose();
+                  }}
+                >
+                  Library
+                </Button>
+              </VStack>
             </DrawerBody>
             <DrawerFooter>
               <ColorModeSwitcher />
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
-        <Box w={4} />
-        <Breadcrumb alignSelf={"center"}>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink href="/features/workspace">
-              Workspace
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-        <Spacer />
-        <OpenEditorTab openTabs={openTabs} setOpenTabs={setOpenTabs} />
-        <Box w={2} />
-        <OpenDocumentCollectionTab
-          openTabs={openTabs}
-          setOpenTabs={setOpenTabs}
-        />
-        <Box w={2} />
-        <OpenChatTab openTabs={openTabs} setOpenTabs={setOpenTabs} />
-        <Box w={2} />
-        <Menu>
-          <MenuButton as={Button} p={0}>
-            <HamburgerIcon />
-          </MenuButton>
-          <MenuList>
-            <MenuItem>MenuItem1</MenuItem>
-            <MenuDivider />
-            <MenuItem>MenuItem2</MenuItem>
-            <MenuItem>MenuItem3</MenuItem>
-          </MenuList>
-        </Menu>
       </Flex>
       <Box px={2}>
         <Outlet context={{ openTabs, setOpenTabs } satisfies OpenTabsContext} />
