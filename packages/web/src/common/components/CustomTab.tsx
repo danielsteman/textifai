@@ -10,7 +10,7 @@ interface Props {
 const CustomTab: React.FC<Props> = (props) => {
   return (
     <Box flex={1} position={"relative"}>
-      <Tab width="100%" _hover={{ background: "lightgrey" }} px={12}>
+      <Tab _hover={{ background: "lightgrey" }} px={12}>
         {props.tab.name}
       </Tab>
       <IconButton
@@ -18,7 +18,7 @@ const CustomTab: React.FC<Props> = (props) => {
         right={0.5}
         variant="ghost"
         borderRadius={16}
-        top={0.5}
+        top={1}
         size="xs"
         aria-label={"close"}
         icon={<SmallCloseIcon />}

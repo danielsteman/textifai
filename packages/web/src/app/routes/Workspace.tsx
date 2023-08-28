@@ -56,7 +56,7 @@ const Workspace = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Flex direction="column" h="100%">
-      <Tabs variant="soft-rounded" size="sm">
+      <Tabs variant="enclosed" size="sm">
         <Flex direction="row" p={2}>
           <TabList mb="1em">
             {openTabs.map((tab) => (
