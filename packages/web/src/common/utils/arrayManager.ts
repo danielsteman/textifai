@@ -1,6 +1,24 @@
-export function addItemIfNotExist<T>(array: T[], item: T): T[] {
-  if (!array.includes(item)) {
+function doesObjectExistByKey<T>(
+  array: T[],
+  key: keyof T,
+  value: any
+): boolean {
+  const index = array.findIndex((item) => item[key] === value[key]);
+  return index !== -1;
+}
+
+export function addItemIfNotExist<T>(
+  array: T[],
+  item: T,
+  primaryKey?: keyof T
+): T[] {
+  if (!primaryKey && !array.includes(item)) {
     return [...array, item];
+  } else if (primaryKey) {
+    const newItemExists = doesObjectExistByKey(array, primaryKey, item);
+    if (!newItemExists) {
+      return [...array, item];
+    }
   }
   return array;
 }

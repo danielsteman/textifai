@@ -3,7 +3,6 @@ import Docs from "./routes/Docs";
 import ErrorPage from "./routes/ErrorPage";
 import Login from "./routes/Login";
 import Pricing from "./routes/Pricing";
-import Features from "./routes/Features";
 import Root from "./routes/Root";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Settings from "./routes/Settings";

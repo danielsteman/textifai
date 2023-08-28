@@ -5,31 +5,67 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
   IconButton,
+  Input,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
   Spacer,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import { FaBook, FaEdit } from "react-icons/fa";
+import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
+import Chat from "../../features/Chat/Chat";
+
+export type ITab = {
+  name: string;
+  panel: ReactNode;
+};
 
 export type ContextType = {
-  openTabs: string[];
-  setOpenTabs: Dispatch<SetStateAction<string[]>>;
+  openTabs: ITab[];
+  setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
 };
 
 const WorkspaceLayout = () => {
-  const [openTabs, setOpenTabs] = useState<string[]>(["Editor"]);
+  const [openTabs, setOpenTabs] = useState<ITab[]>([
+    { name: "Editor", panel: <p>Editor</p> },
+  ]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Flex direction="column" h="100%">
       <Flex direction="row" p={2}>
-        <IconButton aria-label={"settings"} icon={<SettingsIcon />} />
+        <IconButton
+          aria-label={"settings"}
+          icon={<SettingsIcon />}
+          onClick={onOpen}
+        />
+        <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader>Workspace settings</DrawerHeader>
+            <DrawerBody>
+              <Input placeholder="Search..." />
+            </DrawerBody>
+            <DrawerFooter>
+              <ColorModeSwitcher />
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
         <Box w={4} />
         <Breadcrumb alignSelf={"center"}>
           <BreadcrumbItem>
@@ -45,19 +81,43 @@ const WorkspaceLayout = () => {
         <IconButton
           aria-label={"editor"}
           icon={<FaEdit />}
-          onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Editor"))}
+          onClick={() =>
+            setOpenTabs(
+              addItemIfNotExist(
+                openTabs,
+                { name: "Editor", panel: <p>Editor</p> },
+                "name"
+              )
+            )
+          }
         />
         <Box w={2} />
         <IconButton
           aria-label={"documents"}
           icon={<FaBook />}
-          onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Documents"))}
+          onClick={() =>
+            setOpenTabs(
+              addItemIfNotExist(
+                openTabs,
+                { name: "Documents", panel: <p>Documents</p> },
+                "name"
+              )
+            )
+          }
         />
         <Box w={2} />
         <IconButton
           aria-label={"chat"}
           icon={<ChatIcon />}
-          onClick={() => setOpenTabs(addItemIfNotExist(openTabs, "Chat"))}
+          onClick={() =>
+            setOpenTabs(
+              addItemIfNotExist(
+                openTabs,
+                { name: "Chat", panel: <Chat /> },
+                "name"
+              )
+            )
+          }
         />
         <Box w={2} />
         <Menu>
