@@ -31,13 +31,16 @@ import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import Chat from "../../features/Chat/Chat";
 import DocumentCollection from "../../features/DocumentCollection/DocumentCollection";
 import TextEditor from "../../features/TextEditor/TextEditor";
+import OpenEditorTab from "../../features/WorkspaceTabs/OpenEditorTab";
+import OpenDocumentCollectionTab from "../../features/WorkspaceTabs/OpenDocumentCollectionTab";
+import OpenChatTab from "../../features/WorkspaceTabs/OpenChatTab";
 
 export type ITab = {
   name: string;
   panel: ReactNode;
 };
 
-export type ContextType = {
+export type OpenTabsContext = {
   openTabs: ITab[];
   setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
 };
@@ -80,47 +83,14 @@ const WorkspaceLayout = () => {
           </BreadcrumbItem>
         </Breadcrumb>
         <Spacer />
-        <IconButton
-          aria-label={"editor"}
-          icon={<FaEdit />}
-          onClick={() =>
-            setOpenTabs(
-              addItemIfNotExist(
-                openTabs,
-                { name: "Editor", panel: <TextEditor /> },
-                "name"
-              )
-            )
-          }
+        <OpenEditorTab openTabs={openTabs} setOpenTabs={setOpenTabs} />
+        <Box w={2} />
+        <OpenDocumentCollectionTab
+          openTabs={openTabs}
+          setOpenTabs={setOpenTabs}
         />
         <Box w={2} />
-        <IconButton
-          aria-label={"documents"}
-          icon={<FaBook />}
-          onClick={() =>
-            setOpenTabs(
-              addItemIfNotExist(
-                openTabs,
-                { name: "Documents", panel: <DocumentCollection /> },
-                "name"
-              )
-            )
-          }
-        />
-        <Box w={2} />
-        <IconButton
-          aria-label={"chat"}
-          icon={<ChatIcon />}
-          onClick={() =>
-            setOpenTabs(
-              addItemIfNotExist(
-                openTabs,
-                { name: "Chat", panel: <Chat /> },
-                "name"
-              )
-            )
-          }
-        />
+        <OpenChatTab openTabs={openTabs} setOpenTabs={setOpenTabs} />
         <Box w={2} />
         <Menu>
           <MenuButton as={Button} p={0}>
@@ -135,7 +105,7 @@ const WorkspaceLayout = () => {
         </Menu>
       </Flex>
       <Box px={2}>
-        <Outlet context={{ openTabs, setOpenTabs } satisfies ContextType} />
+        <Outlet context={{ openTabs, setOpenTabs } satisfies OpenTabsContext} />
       </Box>
     </Flex>
   );

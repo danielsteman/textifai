@@ -1,6 +1,6 @@
 import { Tabs, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { ContextType, ITab } from "../layouts/WorkspaceLayout";
+import { OpenTabsContext, ITab } from "../layouts/WorkspaceLayout";
 import CustomTab from "../../common/components/CustomTab";
 import {
   addItemIfNotExist,
@@ -8,7 +8,7 @@ import {
 } from "../../common/utils/arrayManager";
 
 const Workspace = () => {
-  const { openTabs, setOpenTabs } = useOutletContext<ContextType>();
+  const { openTabs, setOpenTabs } = useOutletContext<OpenTabsContext>();
 
   const onClose = (tab: ITab) => {
     setOpenTabs(removeItemIfExists(openTabs, tab));
