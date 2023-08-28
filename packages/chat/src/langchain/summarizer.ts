@@ -1,6 +1,7 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { templates } from "./prompts";
-import { LLMChain, PromptTemplate } from "langchain";
+import { LLMChain } from "langchain/chains";
+import { PromptTemplate } from "langchain/prompts";
 import Bottleneck from "bottleneck";
 
 const llm = new ChatOpenAI({
