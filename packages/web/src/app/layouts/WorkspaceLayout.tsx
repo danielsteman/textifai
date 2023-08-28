@@ -1,4 +1,4 @@
-import { ChatIcon, HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
 import {
   Box,
   Breadcrumb,
@@ -25,11 +25,7 @@ import {
 } from "@chakra-ui/react";
 import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { addItemIfNotExist } from "../../common/utils/arrayManager";
-import { FaBook, FaEdit } from "react-icons/fa";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
-import Chat from "../../features/Chat/Chat";
-import DocumentCollection from "../../features/DocumentCollection/DocumentCollection";
 import TextEditor from "../../features/TextEditor/TextEditor";
 import OpenEditorTab from "../../features/WorkspaceTabs/OpenEditorTab";
 import OpenDocumentCollectionTab from "../../features/WorkspaceTabs/OpenDocumentCollectionTab";
