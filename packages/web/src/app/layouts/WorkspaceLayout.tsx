@@ -29,6 +29,8 @@ import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import { FaBook, FaEdit } from "react-icons/fa";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import Chat from "../../features/Chat/Chat";
+import DocumentCollection from "../../features/DocumentCollection/DocumentCollection";
+import TextEditor from "../../features/TextEditor/TextEditor";
 
 export type ITab = {
   name: string;
@@ -42,7 +44,7 @@ export type ContextType = {
 
 const WorkspaceLayout = () => {
   const [openTabs, setOpenTabs] = useState<ITab[]>([
-    { name: "Editor", panel: <p>Editor</p> },
+    { name: "Editor", panel: <TextEditor /> },
   ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
@@ -85,7 +87,7 @@ const WorkspaceLayout = () => {
             setOpenTabs(
               addItemIfNotExist(
                 openTabs,
-                { name: "Editor", panel: <p>Editor</p> },
+                { name: "Editor", panel: <TextEditor /> },
                 "name"
               )
             )
@@ -99,7 +101,7 @@ const WorkspaceLayout = () => {
             setOpenTabs(
               addItemIfNotExist(
                 openTabs,
-                { name: "Documents", panel: <p>Documents</p> },
+                { name: "Documents", panel: <DocumentCollection /> },
                 "name"
               )
             )
