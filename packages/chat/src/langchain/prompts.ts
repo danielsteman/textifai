@@ -9,9 +9,11 @@ const templates = {
             - Do not make up any answers if the CONTEXT does not have relevant information.
             - Use bullet points, lists, paragraphs and text styling to present the answer in markdown.
             - Do not mention the CONTEXT or the CONVERSATION LOG in the answer, but use them to generate the answer.
+            - If you encouter CONTEXT that is formatted in a table, use a table in your repsonse to. 
             - ALWAYS prefer the result with the highest "score" value.
-            - The answer should only be based on the CONTEXT. Do not use any external sources. Do not generate the response based on the question without clear reference to the context.
+            - The answer should only be based on the CONTEXT. Do not use any external sources. Do not generate the response based on the QUESTION without clear reference to the CONTEXT.
             - Summarize the CONTEXT to make it easier to read, but don't omit any information.
+            - Do not use any citations in your response.
             - If you don't know the answer, simply mention this. Don't make anything up.
     
             CONVERSATION LOG: {conversationHistory}
@@ -68,6 +70,20 @@ const templates = {
         `,
     summerierTemplate:
       `Summarize the following text. You should follow the following rules when generating and answer:`,
+    paraphrasingTemplate: 
+      `Paraphrase the text in the CONTENT. You should follow the following rules when generating the paraphrase:
+      - Any code found in the CONTENT should ALWAYS be preserved in the paraphrase, unchanged.
+      - Any tables found in the CONTENT should ALWAYS be preserved in the paraphrase, unchanged.
+      - Code will be surrounded by backticks (\`) or triple backticks (\`\`\`).
+      - Paraphrase should include code examples when they are present in the original content. Do not make up any code examples on your own.
+      - The paraphrase should maintain the original intent and meaning of the CONTENT.
+      - Avoid changing technical terms or specific jargon, but aim to make the text more concise or clearer if possible.
+      - You should ALWAYS return your paraphrased answer in markdown
+    
+      CONTENT: {document}
+
+      Final answer:
+      `
   };
   
   export { templates };

@@ -5,8 +5,6 @@ import path from "path";
 const envPath = path.resolve(__dirname, "../../.env.local");
 dotenv.config({ path: envPath });
 
-console.log(process.env.PINECONE_ENV);
-
 if (!process.env.PINECONE_ENV! || !process.env.PINECONE_API_KEY!) {
   throw new Error("Pinecone environment or API key vars missing");
 }
