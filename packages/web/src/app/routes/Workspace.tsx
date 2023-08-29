@@ -87,7 +87,11 @@ const Workspace = () => {
                 position={"relative"}
                 {...activeProps}
               >
-                <Tab _hover={{ background: "lightgrey" }} px={12}>
+                <Tab
+                  _hover={{ background: "lightgrey" }}
+                  px={12}
+                  onClick={() => setCurrentTab(tab)}
+                >
                   {tab.name}
                 </Tab>
                 <IconButton
@@ -101,7 +105,6 @@ const Workspace = () => {
                   icon={<SmallCloseIcon />}
                   onClick={() => {
                     onTabClose(tab);
-                    setCurrentTab(tab);
                   }}
                 />
               </Box>
