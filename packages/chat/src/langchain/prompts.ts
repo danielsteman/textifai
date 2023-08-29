@@ -2,7 +2,8 @@ const templates = {
     qaTemplate:
       `Answer the question based on the context below. You should follow ALL the following rules when generating and answer:
             - There will be a CONVERSATION LOG, CONTEXT, and a QUESTION.
-            - The final answer must always be styled using markdown.
+            - The final answer must always start with an introductory story around the inquiry. 
+            - If the final answer includes any lists, always return a markdown list.
             - Your secondary goal is to provide the user with an answer that is relevant to the question.
             - Take into account the entire conversation so far, marked as CONVERSATION LOG, but prioritize the CONTEXT.
             - Based on the CONTEXT, choose the source that is most relevant to the QUESTION.

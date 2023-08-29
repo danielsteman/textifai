@@ -16,11 +16,11 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ArrowRightIcon } from '@chakra-ui/icons';
+import { RepeatIcon } from '@chakra-ui/icons';
+import { PiDotsThreeBold } from "react-icons/pi";  
 import React, { useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
-import ReactMarkdown from 'react-markdown';
 import axios from "axios";
 
 type SystemMessageProps = {
@@ -40,25 +40,16 @@ const Chat = () => {
 
   const getConversation = () => {
     const lastThreeConversations: string[] = [];
-
-    // Loop from the end of the stacks to get the last 3 conversations
     for (let i = 1; i <= 3 && i <= messageStack.length; i++) {
-      // Get the user message and AI answer
       const userMessage = messageStack[messageStack.length - i];
       const aiAnswer = answerStack[answerStack.length - i];
-
-      // Format and add them to the result array
       lastThreeConversations.unshift(`USER: ${userMessage}`);
       lastThreeConversations.unshift(`AI: ${aiAnswer}`);
     }
-
     return lastThreeConversations;
   };
 
   const history = getConversation();
-  useEffect(() => {
-    scrollToBottom();
-  }, [messageStack, answerStack]);
 
   useEffect(() => {
     scrollToBottom();
@@ -68,7 +59,6 @@ const Chat = () => {
     setMessage(e.target.value);
   };
 
-  // Handle submit for question asked through input field
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessageStack([...messageStack, message]);
@@ -87,25 +77,12 @@ const Chat = () => {
     }
   };
 
-  // Handle submit for option selected through drowpdown menu from system message
-  const handleOptionSelect = async (option: string, originalMessage: string) => {
-      try {
-        const res = await axios.post("http://localhost:3001/api/chat/ask", {
-          prompt: originalMessage,
-          option: option
-        });
-        setAnswerStack((prevAnswers) => {
-          const updatedAnswers = [...prevAnswers];
-          updatedAnswers[updatedAnswers.length - 1] = res.data.answer;
-          return updatedAnswers;
-        });
-      } catch (error) {
-        console.log(error);
-      }
+  const handleRegenerate = () => {
+    // Your regenerate logic here
   };
 
   const SystemMessage = ({ message }: SystemMessageProps) => (
-    <Flex align="center" justifyContent="flex-start">
+    <Flex align="left" justifyContent="flex-start" flexDirection="column">
       <Box
         display="flex"
         alignItems="center"
@@ -118,27 +95,28 @@ const Chat = () => {
         <Text whiteSpace="pre-line">
           {message}
         </Text>
-        
-        <Box position="absolute" right={2} top={1}>
+        <Box position="absolute" right={2} top={0}>
           <Menu>
-            <MenuButton aria-label="Options" p={0} color="grey">
-              <ArrowRightIcon />
-            </MenuButton>
+            <MenuButton
+              as={IconButton}
+              aria-label="Options"
+              icon={<PiDotsThreeBold size="2.5em" />}
+              variant="ghost"
+              size="sm"
+            />
             <MenuList>
-              <MenuItem onClick={() => handleOptionSelect("Elaborate", message)}>Elaborate</MenuItem>
-              <MenuItem onClick={() => handleOptionSelect("Shorten", message)}>Shorten</MenuItem>
-              <MenuItem onClick={() => handleOptionSelect("Paraphrase", message)}>Paraphrase</MenuItem>
-              <MenuItem onClick={() => handleOptionSelect("Show in Document", message)}>Show in Document</MenuItem>
+              <MenuItem onClick={() => {/* Your logic here */}}>Copy to Working Document</MenuItem>
+              <MenuItem onClick={() => {/* Your logic here */}}>Show in Source Document</MenuItem>
             </MenuList>
           </Menu>
         </Box>
       </Box>
     </Flex>
   );
-
+  
   return (
     <Flex flexDir="column" flex={1} p={8} h="100vh" overflowY="hidden">
-      <Box mb={4} flex="1" overflowY="scroll">
+      <Box mb={4} flex="1" overflowY="scroll" overflowX="hidden">
         {messageStack.map((msg, index) => (
           <Box key={uuidv4()} py={2}>
             <Flex mb={2}>
@@ -154,7 +132,17 @@ const Chat = () => {
                 <SkeletonCircle size="2" />
               </HStack>
             ) : (
-              <SystemMessage message={answerStack[index]} />
+              <>
+                <SystemMessage message={answerStack[index]} />
+                {index === answerStack.length - 1 && (
+                  <Flex justifyContent="center" alignItems="center" py={4}>
+                      <Button leftIcon={<RepeatIcon />} 
+                          onClick={() => {/* Your regenerate logic here */}}>
+                          Regenerate
+                      </Button>
+                  </Flex>
+                )}
+              </>
             )}
           </Box>
         ))}

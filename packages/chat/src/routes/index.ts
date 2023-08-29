@@ -115,7 +115,6 @@ router.post(
 
     if (option==="Paraphrase"){
       try {
-        console.log(prompt)
         const answer = await paraphrasingChain.call({
           document: prompt
         });
