@@ -4,12 +4,12 @@ import TextEditor from "../TextEditor/TextEditor";
 const EditorPanel = () => {
   return (
     <Box h="100%" position="relative" overflow="hidden">
-      <HStack>
-        <Text>Project title</Text>
+      <HStack mb={2}>
+        <Text ml={4}>Project title</Text>
         <Spacer />
-        <Button>Templates</Button>
-        <Button>Refine</Button>
-        <Button>Settings</Button>
+        <Button size="sm">Templates</Button>
+        <Button size="sm">Refine</Button>
+        <Button size="sm">Settings</Button>
       </HStack>
       <TextEditor />
     </Box>
