@@ -49,7 +49,7 @@ export type OpenTabsContext = {
 
 const Workspace = () => {
   const [openTabs, setOpenTabs] = useState<ITab[]>([]);
-
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<ITab>();
 
   const onTabClose = (tab: ITab) => {
@@ -69,6 +69,8 @@ const Workspace = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Tabs
+      index={activeTabIndex}
+      onChange={setActiveTabIndex}
       h="100%"
       variant="unstyled"
       size="md"
