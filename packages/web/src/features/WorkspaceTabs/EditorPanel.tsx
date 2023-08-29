@@ -3,7 +3,7 @@ import TextEditor from "../TextEditor/TextEditor";
 
 const EditorPanel = () => {
   return (
-    <Box h="100%">
+    <Box h="100%" position="relative" overflow="hidden">
       <HStack>
         <Text>Project title</Text>
         <Spacer />

@@ -1,6 +1,5 @@
 import { ChatIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
-  Box,
   Button,
   Drawer,
   DrawerBody,
@@ -10,7 +9,6 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
-  Grid,
   IconButton,
   Spacer,
   TabList,

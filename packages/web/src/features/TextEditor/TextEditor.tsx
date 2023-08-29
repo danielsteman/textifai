@@ -9,7 +9,12 @@ const TextEditor = () => {
       theme="snow"
       value={value}
       onChange={setValue}
-      style={{ width: "100%", height: "100%" }}
+      style={{
+        height: "100%",
+        display: "absolute",
+        right: 0,
+        top: 0,
+      }}
     />
   );
 };
