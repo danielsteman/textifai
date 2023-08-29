@@ -79,7 +79,7 @@ const Workspace = () => {
         <TabList>
           {openTabs.map((tab) => {
             const activeProps =
-              tab === currentTab ? { borderBottom: "2px" } : {};
+              tab.name === currentTab?.name ? { borderBottom: "2px" } : {};
             return (
               <Box
                 key={tab.name}
@@ -88,7 +88,7 @@ const Workspace = () => {
                 {...activeProps}
               >
                 <Tab
-                  _hover={{ background: "lightgrey" }}
+                  _hover={{ background: "teal" }}
                   px={12}
                   onClick={() => setCurrentTab(tab)}
                 >
@@ -99,7 +99,7 @@ const Workspace = () => {
                   right={0.5}
                   variant="ghost"
                   borderRadius={16}
-                  top={0.5}
+                  top={1.5}
                   size="xs"
                   aria-label={"close"}
                   icon={<SmallCloseIcon />}
@@ -133,6 +133,7 @@ const Workspace = () => {
                     const tab = { name: "Editor", panel: <EditorPanel /> };
                     setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
                     setCurrentTab(tab);
+                    console.log(tab);
                     onClose();
                   }}
                 >
