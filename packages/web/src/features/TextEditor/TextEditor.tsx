@@ -9,7 +9,7 @@ const TextEditor = () => {
       theme="snow"
       value={value}
       onChange={setValue}
-      style={{ height: "100%", width: "100%", flex: 1, overflowY: "auto" }}
+      style={{ width: "100%", height: "100%" }}
     />
   );
 };
