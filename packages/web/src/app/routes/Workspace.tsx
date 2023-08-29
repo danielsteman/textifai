@@ -1,5 +1,6 @@
 import { ChatIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Button,
   Drawer,
   DrawerBody,
@@ -52,101 +53,105 @@ const Workspace = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Flex direction="column" h="100%">
-      <Tabs variant="unstyled" size="md">
-        <Flex direction="row" p={2}>
-          <TabList>
-            {openTabs.map((tab) => (
-              <CustomTab key={tab.name} tab={tab} onClose={onTabClose} />
-            ))}
-          </TabList>
-          <Spacer />
-          <IconButton
-            aria-label={"settings"}
-            icon={<HamburgerIcon />}
-            onClick={onOpen}
-          />
-          <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
-            <DrawerOverlay />
-            <DrawerContent>
-              <DrawerCloseButton />
-              <DrawerHeader>Workspace settings</DrawerHeader>
-              <DrawerBody>
-                <VStack>
-                  <Button
-                    w="100%"
-                    justifyContent="flex-start"
-                    aria-label={"editor"}
-                    leftIcon={<FaEdit />}
-                    onClick={() => {
-                      setOpenTabs(
-                        addItemIfNotExist(
-                          openTabs,
-                          { name: "Editor", panel: <EditorPanel /> },
-                          "name"
-                        )
-                      );
-                      onClose();
-                    }}
-                  >
-                    Editor
-                  </Button>
-                  <Button
-                    w="100%"
-                    justifyContent="flex-start"
-                    aria-label={"chat"}
-                    leftIcon={<ChatIcon />}
-                    onClick={() => {
-                      setOpenTabs(
-                        addItemIfNotExist(
-                          openTabs,
-                          { name: "Chat", panel: <ChatPanel /> },
-                          "name"
-                        )
-                      );
-                      onClose();
-                    }}
-                  >
-                    Chat
-                  </Button>
-                  <Button
-                    w="100%"
-                    justifyContent="flex-start"
-                    aria-label={"documents"}
-                    leftIcon={<FaBook />}
-                    onClick={() => {
-                      setOpenTabs(
-                        addItemIfNotExist(
-                          openTabs,
-                          {
-                            name: "Documents",
-                            panel: <DocumentCollectionPanel />,
-                          },
-                          "name"
-                        )
-                      );
-                      onClose();
-                    }}
-                  >
-                    Library
-                  </Button>
-                </VStack>
-              </DrawerBody>
-              <DrawerFooter>
-                <ColorModeSwitcher />
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
-        </Flex>
-        <TabPanels>
-          <Grid>
-            {openTabs.map((tab) => (
-              <TabPanel key={tab.name}>{tab.panel}</TabPanel>
-            ))}
-          </Grid>
-        </TabPanels>
-      </Tabs>
-    </Flex>
+    <Tabs
+      h="100%"
+      variant="unstyled"
+      size="md"
+      display="flex"
+      flexDirection="column"
+    >
+      <Flex direction="row" p={2}>
+        <TabList>
+          {openTabs.map((tab) => (
+            <CustomTab key={tab.name} tab={tab} onClose={onTabClose} />
+          ))}
+        </TabList>
+        <Spacer />
+        <IconButton
+          aria-label={"settings"}
+          icon={<HamburgerIcon />}
+          onClick={onOpen}
+        />
+        <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader>Workspace settings</DrawerHeader>
+            <DrawerBody>
+              <VStack>
+                <Button
+                  w="100%"
+                  justifyContent="flex-start"
+                  aria-label={"editor"}
+                  leftIcon={<FaEdit />}
+                  onClick={() => {
+                    setOpenTabs(
+                      addItemIfNotExist(
+                        openTabs,
+                        { name: "Editor", panel: <EditorPanel /> },
+                        "name"
+                      )
+                    );
+                    onClose();
+                  }}
+                >
+                  Editor
+                </Button>
+                <Button
+                  w="100%"
+                  justifyContent="flex-start"
+                  aria-label={"chat"}
+                  leftIcon={<ChatIcon />}
+                  onClick={() => {
+                    setOpenTabs(
+                      addItemIfNotExist(
+                        openTabs,
+                        { name: "Chat", panel: <ChatPanel /> },
+                        "name"
+                      )
+                    );
+                    onClose();
+                  }}
+                >
+                  Chat
+                </Button>
+                <Button
+                  w="100%"
+                  justifyContent="flex-start"
+                  aria-label={"documents"}
+                  leftIcon={<FaBook />}
+                  onClick={() => {
+                    setOpenTabs(
+                      addItemIfNotExist(
+                        openTabs,
+                        {
+                          name: "Documents",
+                          panel: <DocumentCollectionPanel />,
+                        },
+                        "name"
+                      )
+                    );
+                    onClose();
+                  }}
+                >
+                  Library
+                </Button>
+              </VStack>
+            </DrawerBody>
+            <DrawerFooter>
+              <ColorModeSwitcher />
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      </Flex>
+      <TabPanels>
+        {openTabs.map((tab) => (
+          <TabPanel key={tab.name} display={"flex"} flexDirection={"column"}>
+            {tab.panel}
+          </TabPanel>
+        ))}
+      </TabPanels>
+    </Tabs>
   );
 };
 
