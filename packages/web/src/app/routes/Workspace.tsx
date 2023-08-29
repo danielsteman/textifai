@@ -9,6 +9,7 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
+  Grid,
   IconButton,
   Spacer,
   TabList,
@@ -49,16 +50,12 @@ const Workspace = () => {
     setOpenTabs(removeItemIfExists(openTabs, tab));
   };
 
-  const onTabOpen = (tab: ITab) => {
-    setOpenTabs(addItemIfNotExist(openTabs, tab));
-  };
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Flex direction="column" h="100%">
-      <Tabs variant="enclosed" size="sm">
+      <Tabs variant="unstyled" size="md">
         <Flex direction="row" p={2}>
-          <TabList mb="1em">
+          <TabList>
             {openTabs.map((tab) => (
               <CustomTab key={tab.name} tab={tab} onClose={onTabClose} />
             ))}
@@ -142,9 +139,11 @@ const Workspace = () => {
           </Drawer>
         </Flex>
         <TabPanels>
-          {openTabs.map((tab) => (
-            <TabPanel key={tab.name}>{tab.panel}</TabPanel>
-          ))}
+          <Grid>
+            {openTabs.map((tab) => (
+              <TabPanel key={tab.name}>{tab.panel}</TabPanel>
+            ))}
+          </Grid>
         </TabPanels>
       </Tabs>
     </Flex>

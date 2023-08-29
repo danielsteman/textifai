@@ -1,12 +1,15 @@
-import { Box, Button, HStack, Text } from "@chakra-ui/react";
+import { Box, Button, HStack, Spacer, Text } from "@chakra-ui/react";
 import TextEditor from "../TextEditor/TextEditor";
 
 const EditorPanel = () => {
   return (
-    <Box p={2}>
-      <HStack bgColor={"black"} borderTopRadius={16} p={2}>
+    <Box>
+      <HStack bgColor={"black"} borderTopRadius={16} py={2} px={4}>
         <Text>Project title</Text>
+        <Spacer />
         <Button>Templates</Button>
+        <Button>Refine</Button>
+        <Button>Settings</Button>
       </HStack>
       <TextEditor />
     </Box>
