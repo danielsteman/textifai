@@ -149,7 +149,7 @@ const Chat = () => {
   );
 
   return (
-    <Flex flexDir="column" flex={1} p={8} h="100vh" overflowY="hidden">
+    <Flex flexDir="column" flex={1} h="100%" overflowY="hidden">
       <Box mb={4} flex="1" overflowY="scroll">
         {messageStack.map((msg, index) => (
           <Box key={uuidv4()} py={2}>

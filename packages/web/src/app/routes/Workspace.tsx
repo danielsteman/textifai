@@ -144,9 +144,9 @@ const Workspace = () => {
           </DrawerContent>
         </Drawer>
       </Flex>
-      <TabPanels>
+      <TabPanels flex="1" display="flex" flexDirection="column">
         {openTabs.map((tab) => (
-          <TabPanel key={tab.name} display={"flex"} flexDirection={"column"}>
+          <TabPanel key={tab.name} flex="1">
             {tab.panel}
           </TabPanel>
         ))}
