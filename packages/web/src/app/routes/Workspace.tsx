@@ -125,7 +125,7 @@ const Workspace = () => {
                       addItemIfNotExist(
                         openTabs,
                         {
-                          name: "Documents",
+                          name: "Library",
                           panel: <DocumentCollectionPanel />,
                         },
                         "name"
