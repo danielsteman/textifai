@@ -36,7 +36,6 @@ import {
 } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
 import DocumentCollectionPanel from "../../features/WorkspaceTabs/DocumentCollectionPanel";
-import CustomTab from "../../common/components/CustomTab";
 
 export type ITab = {
   name: string;
