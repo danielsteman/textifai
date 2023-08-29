@@ -1,5 +1,6 @@
-import { ChatIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { ChatIcon, HamburgerIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Button,
   Drawer,
   DrawerBody,
@@ -11,6 +12,7 @@ import {
   Flex,
   IconButton,
   Spacer,
+  Tab,
   TabList,
   TabPanel,
   TabPanels,
@@ -18,7 +20,13 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
 import { FaBook, FaEdit } from "react-icons/fa";
@@ -41,13 +49,23 @@ export type OpenTabsContext = {
 };
 
 const Workspace = () => {
-  const [openTabs, setOpenTabs] = useState<ITab[]>([
-    { name: "Editor", panel: <EditorPanel /> },
-  ]);
+  const [openTabs, setOpenTabs] = useState<ITab[]>([]);
+
+  const [currentTab, setCurrentTab] = useState<ITab>();
 
   const onTabClose = (tab: ITab) => {
     setOpenTabs(removeItemIfExists(openTabs, tab));
   };
+
+  const defaultTab: ITab = {
+    name: "Editor",
+    panel: <EditorPanel />,
+  };
+
+  useEffect(() => {
+    setOpenTabs(addItemIfNotExist(openTabs, defaultTab, "name"));
+    setCurrentTab(defaultTab);
+  }, []);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
@@ -60,9 +78,36 @@ const Workspace = () => {
     >
       <Flex direction="row" p={2}>
         <TabList>
-          {openTabs.map((tab) => (
-            <CustomTab key={tab.name} tab={tab} onClose={onTabClose} />
-          ))}
+          {openTabs.map((tab) => {
+            const activeProps =
+              tab === currentTab ? { borderBottom: "2px" } : {};
+            return (
+              <Box
+                key={tab.name}
+                flex={1}
+                position={"relative"}
+                {...activeProps}
+              >
+                <Tab _hover={{ background: "lightgrey" }} px={12}>
+                  {tab.name}
+                </Tab>
+                <IconButton
+                  position={"absolute"}
+                  right={0.5}
+                  variant="ghost"
+                  borderRadius={16}
+                  top={0.5}
+                  size="xs"
+                  aria-label={"close"}
+                  icon={<SmallCloseIcon />}
+                  onClick={() => {
+                    onTabClose(tab);
+                    setCurrentTab(tab);
+                  }}
+                />
+              </Box>
+            );
+          })}
         </TabList>
         <Spacer />
         <IconButton
@@ -83,13 +128,9 @@ const Workspace = () => {
                   aria-label={"editor"}
                   leftIcon={<FaEdit />}
                   onClick={() => {
-                    setOpenTabs(
-                      addItemIfNotExist(
-                        openTabs,
-                        { name: "Editor", panel: <EditorPanel /> },
-                        "name"
-                      )
-                    );
+                    const tab = { name: "Editor", panel: <EditorPanel /> };
+                    setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+                    setCurrentTab(tab);
                     onClose();
                   }}
                 >
@@ -101,13 +142,9 @@ const Workspace = () => {
                   aria-label={"chat"}
                   leftIcon={<ChatIcon />}
                   onClick={() => {
-                    setOpenTabs(
-                      addItemIfNotExist(
-                        openTabs,
-                        { name: "Chat", panel: <ChatPanel /> },
-                        "name"
-                      )
-                    );
+                    const tab = { name: "Chat", panel: <ChatPanel /> };
+                    setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+                    setCurrentTab(tab);
                     onClose();
                   }}
                 >
@@ -119,16 +156,12 @@ const Workspace = () => {
                   aria-label={"documents"}
                   leftIcon={<FaBook />}
                   onClick={() => {
-                    setOpenTabs(
-                      addItemIfNotExist(
-                        openTabs,
-                        {
-                          name: "Library",
-                          panel: <DocumentCollectionPanel />,
-                        },
-                        "name"
-                      )
-                    );
+                    const tab = {
+                      name: "Library",
+                      panel: <DocumentCollectionPanel />,
+                    };
+                    setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+                    setCurrentTab(tab);
                     onClose();
                   }}
                 >

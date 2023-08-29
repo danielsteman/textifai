@@ -5,11 +5,14 @@ import { ITab } from "../../app/routes/Workspace";
 interface Props {
   tab: ITab;
   onClose: (tab: ITab) => void;
+  active: boolean;
+  setCurrentTab: (tab: ITab) => void;
 }
 
 const CustomTab: React.FC<Props> = (props) => {
+  const activeProps = props.active ? { borderBottom: "2px" } : {};
   return (
-    <Box flex={1} position={"relative"}>
+    <Box flex={1} position={"relative"} {...activeProps}>
       <Tab _hover={{ background: "lightgrey" }} px={12}>
         {props.tab.name}
       </Tab>
@@ -22,7 +25,10 @@ const CustomTab: React.FC<Props> = (props) => {
         size="xs"
         aria-label={"close"}
         icon={<SmallCloseIcon />}
-        onClick={() => props.onClose(props.tab)}
+        onClick={() => {
+          props.onClose(props.tab);
+          props.setCurrentTab(props.tab);
+        }}
       />
     </Box>
   );
