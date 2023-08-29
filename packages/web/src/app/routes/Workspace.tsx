@@ -144,9 +144,15 @@ const Workspace = () => {
           </DrawerContent>
         </Drawer>
       </Flex>
-      <TabPanels flex="1" display="flex" flexDirection="column">
+      <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
         {openTabs.map((tab) => (
-          <TabPanel key={tab.name} flex="1">
+          <TabPanel
+            key={tab.name}
+            flex="1"
+            bgColor={"black"}
+            borderRadius={16}
+            p={4}
+          >
             {tab.panel}
           </TabPanel>
         ))}

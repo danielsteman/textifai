@@ -3,8 +3,8 @@ import TextEditor from "../TextEditor/TextEditor";
 
 const EditorPanel = () => {
   return (
-    <Box h="100%" bgColor={"black"} borderTopRadius={16} px={2}>
-      <HStack py={2} px={4}>
+    <Box h="100%">
+      <HStack>
         <Text>Project title</Text>
         <Spacer />
         <Button>Templates</Button>
