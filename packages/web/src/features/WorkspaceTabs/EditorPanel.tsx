@@ -9,12 +9,12 @@ import {
 } from "@chakra-ui/react";
 import TextEditor from "../TextEditor/TextEditor";
 
-interface Props {
+export interface CustomTabPanelProps {
   openChatSupport: boolean;
   openMiniLibrary: boolean;
 }
 
-const EditorPanel: React.FC<Props> = (props) => {
+const EditorPanel: React.FC<CustomTabPanelProps> = (props) => {
   return (
     <Grid
       h="100%"

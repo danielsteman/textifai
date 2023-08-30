@@ -1,6 +1,7 @@
 import DocumentCollection from "../DocumentCollection/DocumentCollection";
+import { CustomTabPanelProps } from "./EditorPanel";
 
-const DocumentCollectionPanel = () => {
+const DocumentCollectionPanel: React.FC<CustomTabPanelProps> = () => {
   return <DocumentCollection />;
 };
 

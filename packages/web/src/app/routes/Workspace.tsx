@@ -178,7 +178,12 @@ const Workspace = () => {
                   onClick={() => {
                     const tab: ITab = {
                       name: "Chat",
-                      panel: <ChatPanel />,
+                      panel: (
+                        <ChatPanel
+                          openChatSupport={false}
+                          openMiniLibrary={false}
+                        />
+                      ),
                       openChatSupport: false,
                       openMiniLibrary: false,
                     };
@@ -197,7 +202,12 @@ const Workspace = () => {
                   onClick={() => {
                     const tab: ITab = {
                       name: "Library",
-                      panel: <DocumentCollectionPanel />,
+                      panel: (
+                        <DocumentCollectionPanel
+                          openChatSupport={false}
+                          openMiniLibrary={false}
+                        />
+                      ),
                       openChatSupport: false,
                       openMiniLibrary: false,
                     };
