@@ -10,8 +10,6 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
-  Grid,
-  GridItem,
   IconButton,
   Spacer,
   Tab,
@@ -31,7 +29,7 @@ import {
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
-import { FaBook, FaBookMedical, FaBookOpen, FaEdit } from "react-icons/fa";
+import { FaBook, FaBookOpen, FaEdit } from "react-icons/fa";
 import {
   addItemIfNotExist,
   removeItemIfExists,
@@ -42,8 +40,8 @@ import DocumentCollectionPanel from "../../features/WorkspaceTabs/DocumentCollec
 export type ITab = {
   name: string;
   panel: ReactNode;
-  colSpan: number;
-  rowSpan: number;
+  openChatSupport: boolean;
+  openMiniLibrary: boolean;
 };
 
 export type OpenTabsContext = {
@@ -62,9 +60,9 @@ const Workspace = () => {
 
   const defaultTab: ITab = {
     name: "Editor",
-    panel: <EditorPanel />,
-    colSpan: 2,
-    rowSpan: 2,
+    panel: <EditorPanel openChatSupport={false} openMiniLibrary={false} />,
+    openChatSupport: false,
+    openMiniLibrary: false,
   };
 
   useEffect(() => {
@@ -156,9 +154,14 @@ const Workspace = () => {
                   onClick={() => {
                     const tab = {
                       name: "Editor",
-                      panel: <EditorPanel />,
-                      colSpan: 1,
-                      rowSpan: 2,
+                      panel: (
+                        <EditorPanel
+                          openChatSupport={false}
+                          openMiniLibrary={false}
+                        />
+                      ),
+                      openChatSupport: false,
+                      openMiniLibrary: false,
                     };
                     setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
                     setCurrentTab(tab);
@@ -173,11 +176,11 @@ const Workspace = () => {
                   aria-label={"chat"}
                   leftIcon={<ChatIcon />}
                   onClick={() => {
-                    const tab = {
+                    const tab: ITab = {
                       name: "Chat",
                       panel: <ChatPanel />,
-                      colSpan: 1,
-                      rowSpan: 1,
+                      openChatSupport: false,
+                      openMiniLibrary: false,
                     };
                     setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
                     setCurrentTab(tab);
@@ -192,11 +195,11 @@ const Workspace = () => {
                   aria-label={"documents"}
                   leftIcon={<FaBook />}
                   onClick={() => {
-                    const tab = {
+                    const tab: ITab = {
                       name: "Library",
                       panel: <DocumentCollectionPanel />,
-                      colSpan: 1,
-                      rowSpan: 1,
+                      openChatSupport: false,
+                      openMiniLibrary: false,
                     };
                     setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
                     setCurrentTab(tab);

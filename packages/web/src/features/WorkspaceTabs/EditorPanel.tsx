@@ -8,18 +8,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import TextEditor from "../TextEditor/TextEditor";
-import { useState } from "react";
-import { calculateTotal } from "../../common/utils/calculateTotal";
 
-const EditorPanel = () => {
-  const [openChatSupport, setOpenChatSupport] = useState<boolean>(false);
-  const [openMiniLibrary, setOpenMiniLibrary] = useState<boolean>(false);
+interface Props {
+  openChatSupport: boolean;
+  openMiniLibrary: boolean;
+}
 
-  const gridItemsCount = calculateTotal(
-    [1],
-    [openChatSupport, openMiniLibrary]
-  );
-
+const EditorPanel: React.FC<Props> = (props) => {
   return (
     <Grid
       h="100%"
