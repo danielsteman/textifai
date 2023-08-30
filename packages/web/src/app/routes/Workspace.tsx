@@ -125,13 +125,23 @@ const Workspace = () => {
         <IconButton
           aria-label={"library-support"}
           icon={<FaBookOpen />}
-          onClick={onOpen}
+          onClick={() => {
+            const targetIndex = openTabs.findIndex(
+              (tab) => tab.name === "Library"
+            );
+            openTabs[targetIndex].openChatSupport = true;
+          }}
         />
         <Box w={2} />
         <IconButton
           aria-label={"chat-support"}
           icon={<ChatIcon />}
-          onClick={onOpen}
+          onClick={() => {
+            const targetIndex = openTabs.findIndex(
+              (tab) => tab.name === "Chat"
+            );
+            openTabs[targetIndex].openChatSupport = true;
+          }}
         />
         <Box w={2} />
         <IconButton
