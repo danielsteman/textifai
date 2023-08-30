@@ -1,4 +1,4 @@
-import { Box, Button, Flex, HStack, Spacer, Text } from "@chakra-ui/react";
+import { Box, Button, HStack, Spacer, Text } from "@chakra-ui/react";
 import TextEditor from "../TextEditor/TextEditor";
 
 const EditorPanel = () => {

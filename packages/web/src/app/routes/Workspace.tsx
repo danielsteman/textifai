@@ -10,6 +10,8 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
+  Grid,
+  GridItem,
   IconButton,
   Spacer,
   Tab,
@@ -40,6 +42,8 @@ import DocumentCollectionPanel from "../../features/WorkspaceTabs/DocumentCollec
 export type ITab = {
   name: string;
   panel: ReactNode;
+  colSpan: number;
+  rowSpan: number;
 };
 
 export type OpenTabsContext = {
@@ -59,6 +63,8 @@ const Workspace = () => {
   const defaultTab: ITab = {
     name: "Editor",
     panel: <EditorPanel />,
+    colSpan: 1,
+    rowSpan: 2,
   };
 
   useEffect(() => {
@@ -136,7 +142,12 @@ const Workspace = () => {
                   aria-label={"editor"}
                   leftIcon={<FaEdit />}
                   onClick={() => {
-                    const tab = { name: "Editor", panel: <EditorPanel /> };
+                    const tab = {
+                      name: "Editor",
+                      panel: <EditorPanel />,
+                      colSpan: 1,
+                      rowSpan: 2,
+                    };
                     setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
                     setCurrentTab(tab);
                     onClose();
@@ -150,7 +161,12 @@ const Workspace = () => {
                   aria-label={"chat"}
                   leftIcon={<ChatIcon />}
                   onClick={() => {
-                    const tab = { name: "Chat", panel: <ChatPanel /> };
+                    const tab = {
+                      name: "Chat",
+                      panel: <ChatPanel />,
+                      colSpan: 1,
+                      rowSpan: 1,
+                    };
                     setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
                     setCurrentTab(tab);
                     onClose();
@@ -167,6 +183,8 @@ const Workspace = () => {
                     const tab = {
                       name: "Library",
                       panel: <DocumentCollectionPanel />,
+                      colSpan: 1,
+                      rowSpan: 1,
                     };
                     setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
                     setCurrentTab(tab);
@@ -184,17 +202,30 @@ const Workspace = () => {
         </Drawer>
       </Flex>
       <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
-        {openTabs.map((tab) => (
-          <TabPanel
-            key={tab.name}
-            flex="1"
-            bgColor={"black"}
-            borderRadius={16}
-            p={4}
-          >
-            {tab.panel}
-          </TabPanel>
-        ))}
+        <Grid
+          h="100%"
+          templateRows="repeat(2, 1fr)"
+          templateColumns="repeat(2, 1fr)"
+          gap={4}
+        >
+          {openTabs.map((tab) => (
+            <GridItem
+              rowSpan={tab.rowSpan}
+              colSpan={tab.colSpan}
+              key={tab.name}
+            >
+              <TabPanel
+                h="100%"
+                flex="1"
+                bgColor={"black"}
+                borderRadius={16}
+                p={2}
+              >
+                {tab.panel}
+              </TabPanel>
+            </GridItem>
+          ))}
+        </Grid>
       </TabPanels>
     </Tabs>
   );
