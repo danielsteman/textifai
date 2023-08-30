@@ -31,7 +31,7 @@ import {
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
-import { FaBook, FaEdit } from "react-icons/fa";
+import { FaBook, FaBookMedical, FaBookOpen, FaEdit } from "react-icons/fa";
 import {
   addItemIfNotExist,
   removeItemIfExists,
@@ -63,7 +63,7 @@ const Workspace = () => {
   const defaultTab: ITab = {
     name: "Editor",
     panel: <EditorPanel />,
-    colSpan: 1,
+    colSpan: 2,
     rowSpan: 2,
   };
 
@@ -124,6 +124,18 @@ const Workspace = () => {
           })}
         </TabList>
         <Spacer />
+        <IconButton
+          aria-label={"library-support"}
+          icon={<FaBookOpen />}
+          onClick={onOpen}
+        />
+        <Box w={2} />
+        <IconButton
+          aria-label={"chat-support"}
+          icon={<ChatIcon />}
+          onClick={onOpen}
+        />
+        <Box w={2} />
         <IconButton
           aria-label={"settings"}
           icon={<HamburgerIcon />}
@@ -202,30 +214,18 @@ const Workspace = () => {
         </Drawer>
       </Flex>
       <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
-        <Grid
-          h="100%"
-          templateRows="repeat(2, 1fr)"
-          templateColumns="repeat(2, 1fr)"
-          gap={4}
-        >
-          {openTabs.map((tab) => (
-            <GridItem
-              rowSpan={tab.rowSpan}
-              colSpan={tab.colSpan}
-              key={tab.name}
-            >
-              <TabPanel
-                h="100%"
-                flex="1"
-                bgColor={"black"}
-                borderRadius={16}
-                p={2}
-              >
-                {tab.panel}
-              </TabPanel>
-            </GridItem>
-          ))}
-        </Grid>
+        {openTabs.map((tab) => (
+          <TabPanel
+            key={tab.name}
+            h="100%"
+            flex="1"
+            bgColor={"black"}
+            borderRadius={16}
+            p={2}
+          >
+            {tab.panel}
+          </TabPanel>
+        ))}
       </TabPanels>
     </Tabs>
   );
