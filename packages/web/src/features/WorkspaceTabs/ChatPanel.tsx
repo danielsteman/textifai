@@ -1,7 +1,6 @@
 import Chat from "../Chat/Chat";
-import { CustomTabPanelProps } from "./EditorPanel";
 
-const ChatPanel: React.FC<CustomTabPanelProps> = (props) => {
+const ChatPanel = () => {
   return <Chat />;
 };
 

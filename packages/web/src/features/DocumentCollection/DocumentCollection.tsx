@@ -35,7 +35,7 @@ const DocumentCollection = () => {
   };
 
   return (
-    <VStack>
+    <VStack h="100%">
       <InputGroup>
         <InputLeftElement pointerEvents="none">
           <SearchIcon />

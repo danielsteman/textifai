@@ -17,6 +17,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Tooltip,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -36,6 +37,7 @@ import {
 } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
 import DocumentCollectionPanel from "../../features/WorkspaceTabs/DocumentCollectionPanel";
+import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
 
 export type ITab = {
   name: string;
@@ -60,7 +62,7 @@ const Workspace = () => {
 
   const defaultTab: ITab = {
     name: "Editor",
-    panel: <EditorPanel openChatSupport={false} openMiniLibrary={false} />,
+    panel: <EditorPanel />,
     openChatSupport: false,
     openMiniLibrary: false,
   };
@@ -122,28 +124,40 @@ const Workspace = () => {
           })}
         </TabList>
         <Spacer />
-        <IconButton
-          aria-label={"library-support"}
-          icon={<FaBookOpen />}
-          onClick={() => {
-            const targetIndex = openTabs.findIndex(
-              (tab) => tab.name === "Library"
-            );
-            openTabs[targetIndex].openChatSupport = true;
-          }}
-        />
-        <Box w={2} />
-        <IconButton
-          aria-label={"chat-support"}
-          icon={<ChatIcon />}
-          onClick={() => {
-            const targetIndex = openTabs.findIndex(
-              (tab) => tab.name === "Chat"
-            );
-            openTabs[targetIndex].openChatSupport = true;
-          }}
-        />
-        <Box w={2} />
+        {currentTab?.name === "Editor" && (
+          <>
+            <Tooltip label="Open mini library">
+              <IconButton
+                aria-label={"library-support"}
+                icon={<FaBookOpen />}
+                onClick={() => {
+                  const updatedOpenTabs = openTabs.map((tab) =>
+                    tab.name == currentTab?.name
+                      ? { ...tab, openMiniLibrary: true }
+                      : tab
+                  );
+                  setOpenTabs(updatedOpenTabs);
+                }}
+              />
+            </Tooltip>
+            <Box w={2} />
+            <Tooltip label="Open support chat">
+              <IconButton
+                aria-label={"chat-support"}
+                icon={<ChatIcon />}
+                onClick={() => {
+                  const updatedOpenTabs = openTabs.map((tab) =>
+                    tab.name == currentTab?.name
+                      ? { ...tab, openChatSupport: true }
+                      : tab
+                  );
+                  setOpenTabs(updatedOpenTabs);
+                }}
+              />
+            </Tooltip>
+            <Box w={2} />
+          </>
+        )}
         <IconButton
           aria-label={"settings"}
           icon={<HamburgerIcon />}
@@ -164,12 +178,7 @@ const Workspace = () => {
                   onClick={() => {
                     const tab = {
                       name: "Editor",
-                      panel: (
-                        <EditorPanel
-                          openChatSupport={false}
-                          openMiniLibrary={false}
-                        />
-                      ),
+                      panel: <EditorPanel />,
                       openChatSupport: false,
                       openMiniLibrary: false,
                     };
@@ -188,12 +197,7 @@ const Workspace = () => {
                   onClick={() => {
                     const tab: ITab = {
                       name: "Chat",
-                      panel: (
-                        <ChatPanel
-                          openChatSupport={false}
-                          openMiniLibrary={false}
-                        />
-                      ),
+                      panel: <ChatPanel />,
                       openChatSupport: false,
                       openMiniLibrary: false,
                     };
@@ -212,12 +216,7 @@ const Workspace = () => {
                   onClick={() => {
                     const tab: ITab = {
                       name: "Library",
-                      panel: (
-                        <DocumentCollectionPanel
-                          openChatSupport={false}
-                          openMiniLibrary={false}
-                        />
-                      ),
+                      panel: <DocumentCollectionPanel />,
                       openChatSupport: false,
                       openMiniLibrary: false,
                     };
@@ -238,16 +237,7 @@ const Workspace = () => {
       </Flex>
       <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
         {openTabs.map((tab) => (
-          <TabPanel
-            key={tab.name}
-            h="100%"
-            flex="1"
-            bgColor={"black"}
-            borderRadius={16}
-            p={2}
-          >
-            {tab.panel}
-          </TabPanel>
+          <PanelWrapper tab={tab} key={tab.name} />
         ))}
       </TabPanels>
     </Tabs>
