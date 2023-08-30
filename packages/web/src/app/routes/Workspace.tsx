@@ -66,6 +66,10 @@ const Workspace = () => {
     setCurrentTab(defaultTab);
   }, []);
 
+  useEffect(() => {
+    setActiveTabIndex(openTabs.length - 1);
+  }, [openTabs]);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Tabs
@@ -135,7 +139,6 @@ const Workspace = () => {
                     const tab = { name: "Editor", panel: <EditorPanel /> };
                     setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
                     setCurrentTab(tab);
-                    console.log(tab);
                     onClose();
                   }}
                 >
