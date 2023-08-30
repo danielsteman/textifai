@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Flex,
   HStack,
   IconButton,
@@ -14,13 +13,11 @@ import {
   SkeletonCircle,
   Spacer,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
-import { ArrowRightIcon } from '@chakra-ui/icons';
+import { ArrowRightIcon } from "@chakra-ui/icons";
 import React, { useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
-import ReactMarkdown from 'react-markdown';
 import axios from "axios";
 
 type SystemMessageProps = {
@@ -78,7 +75,7 @@ const Chat = () => {
       const res = await axios.post("http://localhost:3001/api/chat/ask", {
         prompt: message,
         history: history,
-        option: "GeneralQa"
+        option: "GeneralQa",
       });
       setAnswerStack([...answerStack, res.data.answer]);
       setLoading(false);
@@ -88,20 +85,23 @@ const Chat = () => {
   };
 
   // Handle submit for option selected through drowpdown menu from system message
-  const handleOptionSelect = async (option: string, originalMessage: string) => {
-      try {
-        const res = await axios.post("http://localhost:3001/api/chat/ask", {
-          prompt: originalMessage,
-          option: option
-        });
-        setAnswerStack((prevAnswers) => {
-          const updatedAnswers = [...prevAnswers];
-          updatedAnswers[updatedAnswers.length - 1] = res.data.answer;
-          return updatedAnswers;
-        });
-      } catch (error) {
-        console.log(error);
-      }
+  const handleOptionSelect = async (
+    option: string,
+    originalMessage: string
+  ) => {
+    try {
+      const res = await axios.post("http://localhost:3001/api/chat/ask", {
+        prompt: originalMessage,
+        option: option,
+      });
+      setAnswerStack((prevAnswers) => {
+        const updatedAnswers = [...prevAnswers];
+        updatedAnswers[updatedAnswers.length - 1] = res.data.answer;
+        return updatedAnswers;
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const SystemMessage = ({ message }: SystemMessageProps) => (
@@ -115,20 +115,32 @@ const Chat = () => {
         rounded={8}
         position="relative"
       >
-        <Text whiteSpace="pre-line">
-          {message}
-        </Text>
-        
+        <Text whiteSpace="pre-line">{message}</Text>
+
         <Box position="absolute" right={2} top={1}>
           <Menu>
             <MenuButton aria-label="Options" p={0} color="grey">
               <ArrowRightIcon />
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={() => handleOptionSelect("Elaborate", message)}>Elaborate</MenuItem>
-              <MenuItem onClick={() => handleOptionSelect("Shorten", message)}>Shorten</MenuItem>
-              <MenuItem onClick={() => handleOptionSelect("Paraphrase", message)}>Paraphrase</MenuItem>
-              <MenuItem onClick={() => handleOptionSelect("Show in Document", message)}>Show in Document</MenuItem>
+              <MenuItem
+                onClick={() => handleOptionSelect("Elaborate", message)}
+              >
+                Elaborate
+              </MenuItem>
+              <MenuItem onClick={() => handleOptionSelect("Shorten", message)}>
+                Shorten
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleOptionSelect("Paraphrase", message)}
+              >
+                Paraphrase
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleOptionSelect("Show in Document", message)}
+              >
+                Show in Document
+              </MenuItem>
             </MenuList>
           </Menu>
         </Box>
@@ -137,7 +149,7 @@ const Chat = () => {
   );
 
   return (
-    <Flex flexDir="column" flex={1} p={8} h="100vh" overflowY="hidden">
+    <Flex flexDir="column" flex={1} h="100%" overflowY="hidden">
       <Box mb={4} flex="1" overflowY="scroll">
         {messageStack.map((msg, index) => (
           <Box key={uuidv4()} py={2}>

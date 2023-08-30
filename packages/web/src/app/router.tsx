@@ -13,18 +13,11 @@ import Layout from "./layouts/FlexLayout";
 import Upload from "./routes/Upload";
 import Editor from "./routes/Editor";
 import Workspace from "./routes/Workspace";
-import WorkspaceLayout from "./layouts/WorkspaceLayout";
 
 export const router = createBrowserRouter([
   {
-    element: <WorkspaceLayout />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        path: "/features/workspace",
-        element: <Workspace />,
-      },
-    ],
+    element: <Workspace />,
+    path: "/features/workspace",
   },
   {
     element: <FlexLayout />,
