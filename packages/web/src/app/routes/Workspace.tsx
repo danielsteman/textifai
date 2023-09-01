@@ -14,7 +14,6 @@ import {
   Spacer,
   Tab,
   TabList,
-  TabPanel,
   TabPanels,
   Tabs,
   Tooltip,
@@ -36,7 +35,6 @@ import {
   removeItemIfExists,
 } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
-import DocumentCollectionPanel from "../../features/WorkspaceTabs/MiniLibraryPanel";
 import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
 import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
 
