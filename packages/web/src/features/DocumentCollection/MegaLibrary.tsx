@@ -13,30 +13,41 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Spacer,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { storage } from "../../app/config/firebase";
 import { StorageReference, listAll, ref } from "firebase/storage";
-import { ChatIcon, SearchIcon, StarIcon } from "@chakra-ui/icons";
+import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
 import { MdAnalytics } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 
 const MegaLibrary = () => {
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
-  const listRef = ref(storage, `users/${currentUser?.uid}/uploads`);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const userDocumentsRef = ref(storage, `users/${currentUser?.uid}/uploads`);
 
   useEffect(() => {
-    listAll(listRef)
+    listAll(userDocumentsRef)
       .then((res) => {
         setDocuments(res.items);
       })
@@ -46,10 +57,28 @@ const MegaLibrary = () => {
       });
   }, []);
 
+  const handleDocumentCheckboxChange = (documentId: string) => {
+    // Toggle the selected state of the document
+    setSelectedDocuments((prevSelected) =>
+      prevSelected.includes(documentId)
+        ? prevSelected.filter((id) => id !== documentId)
+        : [...prevSelected, documentId]
+    );
+  };
+
   const handleChangeDocumentQuery = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setDocumentQuery(e.target.value);
+  };
+
+  const handleDeleteDocument = async () => {
+    try {
+      // const fileRef = storage.ref(filePath);
+      // await fileRef.delete();
+    } catch (error) {
+      console.error("Error deleting file: ", error);
+    }
   };
 
   return (
@@ -123,7 +152,42 @@ const MegaLibrary = () => {
             Ask TAI
           </Button>
           <Button size="sm">View selected documents</Button>
-          <IconButton size="sm" aria-label={"delete"} icon={<FaTrash />} />
+          <IconButton
+            size="sm"
+            aria-label={"delete"}
+            icon={<FaTrash />}
+            onClick={onOpen}
+          />
+          <Modal isOpen={isOpen} onClose={onClose} size="xs">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                <ModalCloseButton />
+              </ModalHeader>
+              <ModalBody>
+                <VStack>
+                  <Text>
+                    Are you sure that you want to delete the selected document?
+                  </Text>
+                  {selectedDocuments.map((docId) => (
+                    <Text key={docId}>{docId}</Text>
+                  ))}
+                </VStack>
+              </ModalBody>
+              <ModalFooter>
+                <Button colorScheme="blue" mr={3} onClick={onClose}>
+                  Close
+                </Button>
+                <Button
+                  variant="ghost"
+                  colorScheme="red"
+                  onClick={handleDeleteDocument}
+                >
+                  Delete
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         </HStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1} overflow="auto">
@@ -142,24 +206,29 @@ const MegaLibrary = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {documents
-                .filter((doc) => doc.name.includes(documentQuery))
-                .map((doc) => (
-                  <Tr key={doc.fullPath}>
-                    <Td>
-                      <Checkbox />
-                    </Td>
-                    <Td>{doc.name}</Td>
-                    <Td>Henk</Td>
-                    <Td isNumeric>1995</Td>
-                    <Td>Collection1</Td>
-                    <Td>This is summarized</Td>
-                    <Td>Topic1, topic2, topic3</Td>
-                    <Td textAlign="center">
-                      <Icon as={FaStar} color="teal" />
-                    </Td>
-                  </Tr>
-                ))}
+              {documents.length > 0 &&
+                documents
+                  .filter((doc) => doc.name.includes(documentQuery))
+                  .map((doc) => (
+                    <Tr key={doc.fullPath}>
+                      <Td>
+                        <Checkbox
+                          onChange={() =>
+                            handleDocumentCheckboxChange(doc.fullPath)
+                          }
+                        />
+                      </Td>
+                      <Td>{doc.name}</Td>
+                      <Td>Henk</Td>
+                      <Td isNumeric>1995</Td>
+                      <Td>Collection1</Td>
+                      <Td>This is summarized</Td>
+                      <Td>Topic1, topic2, topic3</Td>
+                      <Td textAlign="center">
+                        <Icon as={FaStar} color="teal" />
+                      </Td>
+                    </Tr>
+                  ))}
             </Tbody>
           </Table>
         </TableContainer>
