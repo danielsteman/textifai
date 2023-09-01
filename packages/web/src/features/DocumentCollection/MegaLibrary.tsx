@@ -55,7 +55,7 @@ const MegaLibrary = () => {
         console.warn("Something went wrong listing your files");
         console.error(error);
       });
-  }, []);
+  }, [selectedDocuments]);
 
   const handleDocumentCheckboxChange = (documentId: string) => {
     setSelectedDocuments((prevSelected) =>
@@ -76,6 +76,11 @@ const MegaLibrary = () => {
       const documentRef = ref(storage, fullPath);
       deleteObject(documentRef)
         .then(() => {
+          const updatedSelectedDocuments = selectedDocuments.filter(
+            (str) => str !== fullPath
+          );
+          setSelectedDocuments(updatedSelectedDocuments);
+          onClose();
           console.log(`${fullPath} is deleted`);
         })
         .catch((error) => {
