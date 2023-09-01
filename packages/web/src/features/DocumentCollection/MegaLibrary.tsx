@@ -7,13 +7,20 @@ import {
   GridItem,
   HStack,
   Heading,
-  Icon,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
   Spacer,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
   Text,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
   VStack,
 } from "@chakra-ui/react";
 import { storage } from "../../app/config/firebase";
@@ -71,7 +78,12 @@ const MegaLibrary = () => {
         </HStack>
       </GridItem>
       <GridItem rowSpan={2} colSpan={1}>
-        <VStack p={4} bgColor={"yellow.900"} alignItems="left" borderRadius={8}>
+        <VStack
+          p={4}
+          bgColor={"yellow.900"}
+          borderRadius={8}
+          align="flex-start"
+        >
           <Heading size="xs">Filters</Heading>
           <Button variant="ghost" size="xs">
             Any time
@@ -91,6 +103,10 @@ const MegaLibrary = () => {
           <Button variant="ghost" size="xs">
             Only show favorites
           </Button>
+          <Box h={4} />
+          <Heading size="xs">Collections</Heading>
+          <Box h={4} />
+          <Heading size="xs">Projects</Heading>
         </VStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1}>
@@ -108,11 +124,28 @@ const MegaLibrary = () => {
         </HStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1}>
-        {documents
-          .filter((doc) => doc.name.includes(documentQuery))
-          .map((doc) => (
-            <Text key={doc.fullPath}>{doc.name}</Text>
-          ))}
+        <TableContainer>
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th>Title</Th>
+                <Th>Author</Th>
+                <Th isNumeric>Year</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {documents
+                .filter((doc) => doc.name.includes(documentQuery))
+                .map((doc) => (
+                  <Tr key={doc.fullPath}>
+                    <Td>{doc.name}</Td>
+                    <Td>Henk</Td>
+                    <Td isNumeric>1995</Td>
+                  </Tr>
+                ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
       </GridItem>
     </Grid>
   );
