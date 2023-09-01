@@ -18,20 +18,25 @@ Done
 
 ### Create project
 
-User fills in:
-
-- Name
-- Description
-- Industry? tags: finance | law | research | more...
-
 Create new `project` in firestore in `projects` collection.
 
-- projectId: string
-- name: string
-- description: string
-- industry: string[]
-- users: string[]
-- creationDate: timestamp
+```ts
+interface User {
+  userId: string;
+  admin: boolean;
+}
+```
+
+```ts
+interface Project {
+  projectId: string;
+  name: string;
+  description: string;
+  industry: string[];
+  users: User[];
+  creationDate: timestamp;
+}
+```
 
 ### Workspace home
 
@@ -41,39 +46,51 @@ Personal dashboard in Figma, where most components are empty
 
 New user starts uploading documents. Each document has metadata in `uploads` collection:
 
-- documentId: string
-- projectId: string
-- uploadedBy: string
-- fileName: string
-- author: string
-- creationDate: timestamp
-- uploadDate: timestamp
-- summary: string
-- topics: string[]
-- tags: string[]
-- fileSize: number
-- wordCount: number
-- extractedText: string
-- favoritedBy: string[]
+```ts
+interface Document {
+  documentId: string;
+  projectId: string;
+  uploadedBy: string;
+  fileName: string;
+  author: string;
+  creationDate: timestamp;
+  uploadDate: timestamp;
+  summary: string;
+  topics: string[];
+  tags: string[];
+  fileSize: number;
+  wordCount: number;
+  extractedText: string;
+  favoritedBy: string[];
+}
+```
 
 ### Start new chat
 
 New user opens a chat to ask questions about the uploaded documents. Create conversation in `conversations` collection.
 
-- conversationId: string
-- userId: string
-- projectId: string
-- creationDate: timestamp
+```ts
+interface Conversation {
+  conversationId: string;
+  userId: string;
+  projectId: string;
+  creationDate: timestamp;
+}
+```
 
 Send each message to `messages` collection.
 
-- messageId: string
-- conversationId: string
-- creationDate: timestamp
-- variant: 'user' | 'agent'
-- messageBody: string
-- agentMessageId?: string
-- userMessageId?: string
+```ts
+interface Message {
+  messageId: string;
+  conversationId: string;
+  creationDate: timestamp;
+  variant: "user" | "agent";
+  messageBody: string;
+  agentMessageId?: string;
+  userMessageId?: string;
+}
+```
 
 ## Existing user
 
