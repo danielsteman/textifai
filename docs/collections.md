@@ -24,6 +24,7 @@ Create new `project` in firestore in `projects` collection.
 interface User {
   userId: string;
   admin: boolean;
+  projects: string[];
 }
 ```
 
