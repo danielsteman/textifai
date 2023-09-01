@@ -33,7 +33,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { storage } from "../../app/config/firebase";
-import { StorageReference, listAll, ref } from "firebase/storage";
+import { StorageReference, deleteObject, listAll, ref } from "firebase/storage";
 import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
 import { MdAnalytics } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
@@ -58,7 +58,6 @@ const MegaLibrary = () => {
   }, []);
 
   const handleDocumentCheckboxChange = (documentId: string) => {
-    // Toggle the selected state of the document
     setSelectedDocuments((prevSelected) =>
       prevSelected.includes(documentId)
         ? prevSelected.filter((id) => id !== documentId)
@@ -73,12 +72,17 @@ const MegaLibrary = () => {
   };
 
   const handleDeleteDocument = async () => {
-    try {
-      // const fileRef = storage.ref(filePath);
-      // await fileRef.delete();
-    } catch (error) {
-      console.error("Error deleting file: ", error);
-    }
+    selectedDocuments.map((fullPath) => {
+      const documentRef = ref(storage, fullPath);
+      deleteObject(documentRef)
+        .then(() => {
+          console.log(`${fullPath} is deleted`);
+        })
+        .catch((error) => {
+          console.log("Error deleting file");
+          console.log(error);
+        });
+    });
   };
 
   return (
@@ -169,8 +173,8 @@ const MegaLibrary = () => {
                   <Text>
                     Are you sure that you want to delete the selected document?
                   </Text>
-                  {selectedDocuments.map((docId) => (
-                    <Text key={docId}>{docId}</Text>
+                  {selectedDocuments.map((doc) => (
+                    <Text key={doc}>{doc}</Text>
                   ))}
                 </VStack>
               </ModalBody>
