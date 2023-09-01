@@ -57,6 +57,7 @@ const Workspace = () => {
 
   const onTabClose = (tab: ITab) => {
     setOpenTabs(removeItemIfExists(openTabs, tab));
+    setCurrentTab(openTabs[openTabs.length - 2]);
   };
 
   const defaultTab: ITab = {
