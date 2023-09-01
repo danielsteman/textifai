@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import {
+  Box,
+  HStack,
+  Heading,
   Input,
   InputGroup,
   InputLeftElement,
@@ -11,7 +14,7 @@ import { storage } from "../../app/config/firebase";
 import { StorageReference, listAll, ref } from "firebase/storage";
 import { SearchIcon } from "@chakra-ui/icons";
 
-const DocumentCollection = () => {
+const MegaLibrary = () => {
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
@@ -36,17 +39,22 @@ const DocumentCollection = () => {
 
   return (
     <VStack h="100%">
-      <InputGroup>
-        <InputLeftElement pointerEvents="none">
-          <SearchIcon />
-        </InputLeftElement>
-        <Input
-          placeholder="Search"
-          onChange={handleChangeDocumentQuery}
-          rounded="full"
-          bgColor={"grey"}
-        />
-      </InputGroup>
+      <HStack w="100%" p={2} bgColor={"green.900"} borderRadius={8}>
+        <Box w={2} />
+        <Heading size="md">Library</Heading>
+        <Box w={4} />
+        <InputGroup>
+          <InputLeftElement pointerEvents="none">
+            <SearchIcon />
+          </InputLeftElement>
+          <Input
+            placeholder="Search"
+            onChange={handleChangeDocumentQuery}
+            rounded="full"
+            bgColor={"grey"}
+          />
+        </InputGroup>
+      </HStack>
       {documents
         .filter((doc) => doc.name.includes(documentQuery))
         .map((doc) => (
@@ -56,4 +64,4 @@ const DocumentCollection = () => {
   );
 };
 
-export default DocumentCollection;
+export default MegaLibrary;

@@ -36,8 +36,9 @@ import {
   removeItemIfExists,
 } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
-import DocumentCollectionPanel from "../../features/WorkspaceTabs/DocumentCollectionPanel";
+import DocumentCollectionPanel from "../../features/WorkspaceTabs/MiniLibraryPanel";
 import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
+import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
 
 export type ITab = {
   name: string;
@@ -216,7 +217,7 @@ const Workspace = () => {
                   onClick={() => {
                     const tab: ITab = {
                       name: "Library",
-                      panel: <DocumentCollectionPanel />,
+                      panel: <MegaLibraryPanel />,
                       openChatSupport: false,
                       openMiniLibrary: false,
                     };
