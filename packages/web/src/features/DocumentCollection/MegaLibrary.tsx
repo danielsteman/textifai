@@ -7,6 +7,7 @@ import {
   GridItem,
   HStack,
   Heading,
+  Icon,
   IconButton,
   Input,
   InputGroup,
@@ -16,8 +17,6 @@ import {
   TableContainer,
   Tbody,
   Td,
-  Text,
-  Tfoot,
   Th,
   Thead,
   Tr,
@@ -25,9 +24,9 @@ import {
 } from "@chakra-ui/react";
 import { storage } from "../../app/config/firebase";
 import { StorageReference, listAll, ref } from "firebase/storage";
-import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
+import { ChatIcon, SearchIcon, StarIcon } from "@chakra-ui/icons";
 import { MdAnalytics } from "react-icons/md";
-import { FaTrash } from "react-icons/fa";
+import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 
 const MegaLibrary = () => {
   const currentUser = useContext(AuthContext);
@@ -107,23 +106,26 @@ const MegaLibrary = () => {
           <Heading size="xs">Collections</Heading>
           <Box h={4} />
           <Heading size="xs">Projects</Heading>
+          <Button size="sm" leftIcon={<FaRocket />}>
+            New project
+          </Button>
         </VStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1}>
-        <HStack borderRadius={8} bgColor="blue.900">
-          <Heading size="sm">All documents</Heading>
+        <HStack borderRadius={8} bgColor="blue.900" p={2}>
+          <Heading size="xs">Documents</Heading>
           <Spacer />
-          <IconButton aria-label={"analyse"} icon={<MdAnalytics />}>
+          <Button size="sm" aria-label={"analyse"} leftIcon={<MdAnalytics />}>
             Analyse
-          </IconButton>
-          <IconButton aria-label={"ask tai"} icon={<ChatIcon />}>
+          </Button>
+          <Button size="sm" aria-label={"ask tai"} leftIcon={<ChatIcon />}>
             Ask TAI
-          </IconButton>
-          <Button>View selected documents</Button>
-          <IconButton aria-label={"delete"} icon={<FaTrash />} />
+          </Button>
+          <Button size="sm">View selected documents</Button>
+          <IconButton size="sm" aria-label={"delete"} icon={<FaTrash />} />
         </HStack>
       </GridItem>
-      <GridItem rowSpan={1} colSpan={1}>
+      <GridItem rowSpan={1} colSpan={1} overflow="auto">
         <TableContainer>
           <Table size="sm">
             <Thead>
@@ -131,6 +133,10 @@ const MegaLibrary = () => {
                 <Th>Title</Th>
                 <Th>Author</Th>
                 <Th isNumeric>Year</Th>
+                <Th>Collection</Th>
+                <Th>Summary</Th>
+                <Th>Topics</Th>
+                <Th>Favorite</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -141,6 +147,12 @@ const MegaLibrary = () => {
                     <Td>{doc.name}</Td>
                     <Td>Henk</Td>
                     <Td isNumeric>1995</Td>
+                    <Td>Collection1</Td>
+                    <Td>This is summarized</Td>
+                    <Td>Topic1, topic2, topic3</Td>
+                    <Td textAlign="center">
+                      <Icon as={FaStar} color="teal" />
+                    </Td>
                   </Tr>
                 ))}
             </Tbody>
