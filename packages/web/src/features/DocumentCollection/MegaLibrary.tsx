@@ -3,6 +3,7 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import {
   Box,
   Button,
+  Checkbox,
   Grid,
   GridItem,
   HStack,
@@ -130,6 +131,7 @@ const MegaLibrary = () => {
           <Table size="sm">
             <Thead>
               <Tr>
+                <Th />
                 <Th>Title</Th>
                 <Th>Author</Th>
                 <Th isNumeric>Year</Th>
@@ -144,6 +146,9 @@ const MegaLibrary = () => {
                 .filter((doc) => doc.name.includes(documentQuery))
                 .map((doc) => (
                   <Tr key={doc.fullPath}>
+                    <Td>
+                      <Checkbox />
+                    </Td>
                     <Td>{doc.name}</Td>
                     <Td>Henk</Td>
                     <Td isNumeric>1995</Td>
