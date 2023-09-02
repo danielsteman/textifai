@@ -17,7 +17,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { RepeatIcon } from '@chakra-ui/icons';
-import { PiDotsThreeBold } from "react-icons/pi";  
+import { BsClipboard2Plus } from "react-icons/bs";  
 import React, { useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
@@ -81,73 +81,95 @@ const Chat = () => {
     // Your regenerate logic here
   };
 
-  const SystemMessage = ({ message }: SystemMessageProps) => (
-    <Flex align="left" justifyContent="flex-start" flexDirection="column">
-      <Box
-        display="flex"
-        alignItems="center"
-        bgColor="pink"
-        p={1}
-        px={8}
-        rounded={8}
-        position="relative"
-      >
-        <Text whiteSpace="pre-line">
-          {message}
-        </Text>
-        <Box position="absolute" right={2} top={0}>
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              aria-label="Options"
-              icon={<PiDotsThreeBold size="2.5em" />}
-              variant="ghost"
-              size="sm"
-            />
-            <MenuList>
-              <MenuItem onClick={() => {/* Your logic here */}}>Copy to Working Document</MenuItem>
-              <MenuItem onClick={() => {/* Your logic here */}}>Show in Source Document</MenuItem>
-            </MenuList>
-          </Menu>
+  const SystemMessage = ({ message }: SystemMessageProps) => {
+    const [menuClicked, setMenuClicked] = useState(false);  // Add state to track menu click
+  
+    return (
+      <Flex align="left" justifyContent="flex-start" flexDirection="column">
+        <Box
+          display="flex"
+          alignItems="center"
+          bgColor="pink"
+          p={1}
+          px={8}
+          rounded={8}
+          position="relative"
+        >
+          <Text whiteSpace="pre-line">
+            {message}
+          </Text>
+          {!menuClicked && (  // Conditionally render menu based on state
+            <Box position="absolute" right={2} top={0}>
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  aria-label="Options"
+                  icon={<BsClipboard2Plus size="2.5em" />}  // Use the new icon
+                  variant="ghost"
+                  size="sm"
+                />
+                <MenuList>
+                  <MenuItem onClick={() => { setMenuClicked(true); /* Your logic here */ }}>
+                    Copy to Working Document
+                  </MenuItem>
+                  <MenuItem onClick={() => { setMenuClicked(true); /* Your logic here */ }}>
+                    Show in Source Document
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </Box>
+          )}
         </Box>
-      </Box>
-    </Flex>
-  );
+      </Flex>
+    );
+  };
   
   return (
     <Flex flexDir="column" flex={1} p={8} h="100vh" overflowY="hidden">
-      <Box mb={4} flex="1" overflowY="scroll" overflowX="hidden">
-        {messageStack.map((msg, index) => (
-          <Box key={uuidv4()} py={2}>
-            <Flex mb={2}>
-              <Spacer />
-              <Text bgColor="teal" p={1} px={4} rounded={4}>
-                {msg}
-              </Text>
-            </Flex>
-            {loading && index === messageStack.length - 1 ? (
-              <HStack>
-                <SkeletonCircle size="2" />
-                <SkeletonCircle size="2" />
-                <SkeletonCircle size="2" />
-              </HStack>
-            ) : (
-              <>
-                <SystemMessage message={answerStack[index]} />
-                {index === answerStack.length - 1 && (
-                  <Flex justifyContent="center" alignItems="center" py={4}>
-                      <Button leftIcon={<RepeatIcon />} 
-                          onClick={() => {/* Your regenerate logic here */}}>
-                          Regenerate
-                      </Button>
-                  </Flex>
-                )}
-              </>
-            )}
-          </Box>
-        ))}
-        <Box ref={messagesEndRef} />
-      </Box>
+    <Box mb={4} flex="1" overflowY="scroll" overflowX="hidden">
+      {messageStack.map((msg, index) => (
+        <Box key={uuidv4()} py={2}>
+          <Flex mb={2}>
+            <Spacer />
+            <Text bgColor="teal" p={1} px={4} rounded={4}>
+              {msg}
+            </Text>
+          </Flex>
+          {loading && index === messageStack.length - 1 ? (
+            <HStack>
+              <SkeletonCircle size="2" />
+              <SkeletonCircle size="2" />
+              <SkeletonCircle size="2" />
+            </HStack>
+          ) : (
+            <>
+              <SystemMessage message={answerStack[index]} />
+              {index === answerStack.length - 1 && messageStack.length === answerStack.length && (
+                <Flex justifyContent="center" alignItems="center" py={4}>
+                  <Button leftIcon={<RepeatIcon />} 
+                      onClick={() => {/* Your regenerate logic here */}}>
+                      Regenerate
+                  </Button>
+                </Flex>
+              )}
+            </>
+          )}
+        </Box>
+      ))}
+      <Box ref={messagesEndRef} />
+    </Box>
+      {messageStack.length === 0 && (
+        <Flex flexDirection="column" alignItems="center" justifyContent="center" mb={4} pb={6}>
+          <HStack mb={2}>
+            <Button onClick={() => {/* Your logic here */}}>Sample Question 1</Button>
+            <Button onClick={() => {/* Your logic here */}}>Sample Question 2</Button>
+          </HStack>
+          <HStack>
+            <Button onClick={() => {/* Your logic here */}}>Sample Question 3</Button>
+            <Button onClick={() => {/* Your logic here */}}>Sample Question 4</Button>
+          </HStack>
+        </Flex>
+      )}
       <form onSubmit={handleSubmit}>
         <InputGroup>
           <Input
@@ -168,7 +190,7 @@ const Chat = () => {
         </InputGroup>
       </form>
     </Flex>
-  );
+  );  
 };
 
 export default Chat;
