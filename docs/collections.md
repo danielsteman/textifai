@@ -94,5 +94,19 @@ interface Message {
 ```
 
 ## Existing user
+```ts
+interface UserAccount {
+  userId: string;
+  email: string;
+  passwordHash: string; 
+  firstName: string; 
+  lastName: string;
+  profilePicture;
+  createdDate: timestamp;
+  updatedDate: timestamp;
+  language: string;
+  isActive: binary;
+}
+```
 
 User logs in > workspace home
