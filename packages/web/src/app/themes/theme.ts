@@ -2,7 +2,7 @@ import { extendTheme } from "@chakra-ui/react";
 
 const config = {
   colors: {
-    textifai_dark:{
+    textifai_dark: {
       primary: "#3CDCCF",
       on_primary: "#003733",
       primary_container: "#00504A",
