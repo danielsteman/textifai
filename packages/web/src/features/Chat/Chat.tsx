@@ -16,7 +16,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { RepeatIcon } from '@chakra-ui/icons';
+import { RepeatIcon, PlusSquareIcon } from '@chakra-ui/icons';
 import { BsClipboard2Plus } from "react-icons/bs";  
 import React, { useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
@@ -125,7 +125,7 @@ const Chat = () => {
                 <MenuButton
                   as={IconButton}
                   aria-label="Options"
-                  icon={<BsClipboard2Plus size="2.5em" />}  // Use the new icon
+                  icon={<PlusSquareIcon/>}  // Use the new icon
                   variant="ghost"
                   size="sm"
                 />
