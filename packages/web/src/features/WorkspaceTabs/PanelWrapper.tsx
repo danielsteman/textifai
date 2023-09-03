@@ -1,7 +1,7 @@
 import { Grid, GridItem, TabPanel } from "@chakra-ui/react";
 import { ITab } from "../../app/routes/Workspace";
-import DocumentCollection from "../DocumentCollection/DocumentCollection";
-import Chat from "../Chat/Chat";
+import MiniLibraryPanel from "./MiniLibraryPanel";
+import ChatPanel from "./ChatPanel";
 
 interface Props {
   tab: ITab;
@@ -26,12 +26,12 @@ const PanelWrapper: React.FC<Props> = (props) => {
         </GridItem>
         {props.tab.openMiniLibrary && (
           <GridItem rowSpan={1} colSpan={1} h="100%">
-            <DocumentCollection />
+            <MiniLibraryPanel />
           </GridItem>
         )}
         {props.tab.openChatSupport && (
           <GridItem rowSpan={1} colSpan={1} h="100%">
-            <Chat />
+            <ChatPanel />
           </GridItem>
         )}
       </Grid>

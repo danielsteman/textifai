@@ -14,7 +14,6 @@ import {
   Spacer,
   Tab,
   TabList,
-  TabPanel,
   TabPanels,
   Tabs,
   Tooltip,
@@ -36,8 +35,8 @@ import {
   removeItemIfExists,
 } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
-import DocumentCollectionPanel from "../../features/WorkspaceTabs/DocumentCollectionPanel";
 import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
+import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
 
 export type ITab = {
   name: string;
@@ -58,6 +57,7 @@ const Workspace = () => {
 
   const onTabClose = (tab: ITab) => {
     setOpenTabs(removeItemIfExists(openTabs, tab));
+    setCurrentTab(openTabs[openTabs.length - 2]);
   };
 
   const defaultTab: ITab = {
@@ -216,7 +216,7 @@ const Workspace = () => {
                   onClick={() => {
                     const tab: ITab = {
                       name: "Library",
-                      panel: <DocumentCollectionPanel />,
+                      panel: <MegaLibraryPanel />,
                       openChatSupport: false,
                       openMiniLibrary: false,
                     };

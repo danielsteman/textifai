@@ -11,7 +11,7 @@ import { storage } from "../../app/config/firebase";
 import { StorageReference, listAll, ref } from "firebase/storage";
 import { SearchIcon } from "@chakra-ui/icons";
 
-const DocumentCollection = () => {
+const MiniLibrary = () => {
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
@@ -40,7 +40,12 @@ const DocumentCollection = () => {
         <InputLeftElement pointerEvents="none">
           <SearchIcon />
         </InputLeftElement>
-        <Input placeholder="Search" onChange={handleChangeDocumentQuery} />
+        <Input
+          placeholder="Search"
+          onChange={handleChangeDocumentQuery}
+          rounded="full"
+          bgColor={"grey"}
+        />
       </InputGroup>
       {documents
         .filter((doc) => doc.name.includes(documentQuery))
@@ -51,4 +56,4 @@ const DocumentCollection = () => {
   );
 };
 
-export default DocumentCollection;
+export default MiniLibrary;
