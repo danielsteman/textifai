@@ -98,11 +98,18 @@ const MegaLibrary = () => {
       gap={2}
     >
       <GridItem rowSpan={1} colSpan={2}>
-        <HStack w="100%" p={2} bgColor={"green.900"} borderRadius={8}>
+        <HStack
+          w="100%"
+          p={2}
+          bgColor={"taiDark.surfaceContainerLow"}
+          borderRadius={8}
+        >
           <Box w={2} />
-          <Heading size="md">Library</Heading>
+          <Heading size="md" textColor="taiDark.onSurface">
+            Library
+          </Heading>
           <Box w={4} />
-          <InputGroup>
+          <InputGroup borderColor="taiDark.surfaceContainerHigh">
             <InputLeftElement pointerEvents="none">
               <SearchIcon />
             </InputLeftElement>
@@ -110,7 +117,8 @@ const MegaLibrary = () => {
               placeholder="Search"
               onChange={handleChangeDocumentQuery}
               rounded="full"
-              bgColor={"grey"}
+              bgColor="taiDark.surfaceContainerHigh"
+              _placeholder={{ color: "taiDark.onSurfaceVariant" }}
             />
           </InputGroup>
         </HStack>
@@ -118,49 +126,81 @@ const MegaLibrary = () => {
       <GridItem rowSpan={2} colSpan={1}>
         <VStack
           p={4}
-          bgColor={"yellow.900"}
+          bgColor="taiDark.surfaceContainer"
           borderRadius={8}
           align="flex-start"
+          textColor="taiDark.onSurface"
         >
           <Heading size="xs">Filters</Heading>
-          <Button variant="ghost" size="xs">
+          <Button variant="ghost" size="xs" textColor="taiDark.onSurface">
             Any time
           </Button>
-          <Button variant="ghost" size="xs">
+          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
             Since 2023
           </Button>
-          <Button variant="ghost" size="xs">
+          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
             Since 2022
           </Button>
-          <Button variant="ghost" size="xs">
+          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
             Since 2021
           </Button>
-          <Button variant="ghost" size="xs">
+          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
             Custom range
           </Button>
-          <Button variant="ghost" size="xs">
+          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
             Only show favorites
           </Button>
           <Box h={4} />
           <Heading size="xs">Collections</Heading>
           <Box h={4} />
           <Heading size="xs">Projects</Heading>
-          <Button size="sm" leftIcon={<FaRocket />}>
+          <Button
+            textColor="taiDark.onTertiaryContainer"
+            bgColor="taiDark.tertiaryContainer"
+            size="sm"
+            leftIcon={<FaRocket />}
+          >
             New project
           </Button>
         </VStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1}>
-        <HStack borderRadius={8} bgColor="blue.900" p={2}>
+        <HStack
+          borderRadius={8}
+          bgColor="taiDark.surfaceContainer"
+          textColor="taiDark.onSurface"
+          p={2}
+        >
           <Heading size="xs">Documents</Heading>
           <Spacer />
-          <Button size="sm" aria-label={"analyse"} leftIcon={<MdAnalytics />}>
+          <Button
+            size="sm"
+            aria-label={"analyse"}
+            leftIcon={<MdAnalytics />}
+            borderRadius={100}
+            bgColor="taiDark.secondaryContainer"
+            textColor="taiDark.onSecondaryContainer"
+          >
             Analyse
           </Button>
-          <Button size="sm" aria-label={"ask tai"} leftIcon={<ChatIcon />}>
+          <Button
+            size="sm"
+            aria-label={"ask tai"}
+            leftIcon={<ChatIcon />}
+            borderRadius={100}
+            bgColor="taiDark.secondaryContainer"
+            textColor="taiDark.onSecondaryContainer"
+          >
             Ask TAI
           </Button>
-          <Button size="sm">View selected documents</Button>
+          <Button
+            size="sm"
+            borderRadius={100}
+            bgColor="taiDark.tertiaryContainer"
+            textColor="taiDark.onTertiaryContainer"
+          >
+            View selected documents
+          </Button>
           <IconButton
             size="sm"
             aria-label={"delete"}
