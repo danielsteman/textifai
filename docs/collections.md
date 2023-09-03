@@ -35,7 +35,7 @@ interface Project {
   description: string;
   industry: string[];
   users: User[];
-  creationDate: timestamp;
+  creationDate: Date;
 }
 ```
 
@@ -54,8 +54,8 @@ interface Document {
   uploadedBy: string;
   fileName: string;
   author: string;
-  creationDate: timestamp;
-  uploadDate: timestamp;
+  creationDate: Date;
+  uploadDate: Date;
   summary: string;
   topics: string[];
   tags: string[];
@@ -75,7 +75,7 @@ interface Conversation {
   conversationId: string;
   userId: string;
   projectId: string;
-  creationDate: timestamp;
+  creationDate: Date;
 }
 ```
 
@@ -85,7 +85,7 @@ Send each message to `messages` collection.
 interface Message {
   messageId: string;
   conversationId: string;
-  creationDate: timestamp;
+  creationDate: Date;
   variant: "user" | "agent";
   messageBody: string;
   agentMessageId?: string;
@@ -94,18 +94,19 @@ interface Message {
 ```
 
 ## Existing user
+
 ```ts
 interface UserAccount {
   userId: string;
   email: string;
-  passwordHash: string; 
-  firstName: string; 
+  passwordHash: string;
+  firstName: string;
   lastName: string;
   profilePicture;
-  createdDate: timestamp;
-  updatedDate: timestamp;
+  createdDate: Date;
+  updatedDate: Date;
   language: string;
-  isActive: binary;
+  isActive: boolean;
 }
 ```
 
