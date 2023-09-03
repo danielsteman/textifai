@@ -1,13 +1,10 @@
 import { Grid, GridItem } from "@chakra-ui/react";
-import { useState } from "react";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Chat from "../../features/Chat/Chat";
 import DocumentCollection from "../../features/DocumentCollection/DocumentCollection";
+import TextEditor from "../../features/TextEditor/TextEditor";
 
 function Editor() {
-  const [value, setValue] = useState("");
-
   return (
     <>
       <Grid
@@ -17,12 +14,7 @@ function Editor() {
         flex={1}
       >
         <GridItem colSpan={2} rowSpan={2} p={4}>
-          <ReactQuill
-            theme="snow"
-            value={value}
-            onChange={setValue}
-            style={{ height: "100%", width: "100%" }}
-          />
+          <TextEditor />
         </GridItem>
         <GridItem colSpan={1} rowSpan={1}>
           <DocumentCollection />
