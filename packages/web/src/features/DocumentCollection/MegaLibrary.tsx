@@ -130,6 +130,7 @@ const MegaLibrary = () => {
           borderRadius={8}
           align="flex-start"
           textColor="taiDark.onSurface"
+          h="100%"
         >
           <Heading size="xs">Filters</Heading>
           <Button variant="ghost" size="xs" textColor="taiDark.onSurface">
@@ -154,11 +155,13 @@ const MegaLibrary = () => {
           <Heading size="xs">Collections</Heading>
           <Box h={4} />
           <Heading size="xs">Projects</Heading>
+          <Spacer />
           <Button
             textColor="taiDark.onTertiaryContainer"
             bgColor="taiDark.tertiaryContainer"
             size="sm"
             leftIcon={<FaRocket />}
+            borderRadius={100}
           >
             New project
           </Button>
