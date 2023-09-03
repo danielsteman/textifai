@@ -91,7 +91,9 @@ const Workspace = () => {
         <TabList>
           {openTabs.map((tab) => {
             const activeProps =
-              tab.name === currentTab?.name ? { borderBottom: "2px" } : {};
+              tab.name === currentTab?.name
+                ? { borderBottom: "2px", borderColor: "taiDark.primary" }
+                : {};
             return (
               <Box
                 key={tab.name}
@@ -99,11 +101,7 @@ const Workspace = () => {
                 position={"relative"}
                 {...activeProps}
               >
-                <Tab
-                  _hover={{ background: "teal" }}
-                  px={12}
-                  onClick={() => setCurrentTab(tab)}
-                >
+                <Tab px={12} onClick={() => setCurrentTab(tab)}>
                   {tab.name}
                 </Tab>
                 <IconButton
