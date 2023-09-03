@@ -77,9 +77,30 @@ const Chat = () => {
     }
   };
 
-  const handleRegenerate = () => {
-    // Your regenerate logic here
-  };
+  const handleRegenerate = async (
+      option: string,
+      originalMessage: string
+    ) => {
+    // Capture the last message from answerStack
+    const lastSystemMessage = answerStack[answerStack.length - 1];
+
+    try {
+      // Make the API call with the last system message
+      const res = await axios.post("http://localhost:3001/api/chat/ask", {
+        prompt: lastSystemMessage,  // Sending the last system message
+        option: "regenerate",  // The option is set to "regenerate"
+      });
+
+      // Replace the last message in answerStack with the regenerated one
+      setAnswerStack((prevAnswers) => {
+        const updatedAnswers = [...prevAnswers];
+        updatedAnswers[updatedAnswers.length - 1] = res.data.answer;
+        return updatedAnswers;
+      });
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
   const SystemMessage = ({ message }: SystemMessageProps) => {
     const [menuClicked, setMenuClicked] = useState(false);  // Add state to track menu click
@@ -146,8 +167,8 @@ const Chat = () => {
               <SystemMessage message={answerStack[index]} />
               {index === answerStack.length - 1 && messageStack.length === answerStack.length && (
                 <Flex justifyContent="center" alignItems="center" py={4}>
-                  <Button leftIcon={<RepeatIcon />} 
-                      onClick={() => {/* Your regenerate logic here */}}>
+                  <Button leftIcon={< RepeatIcon />} 
+                      onClick={() => handleRegenerate("regenerate", message)}>
                       Regenerate
                   </Button>
                 </Flex>
