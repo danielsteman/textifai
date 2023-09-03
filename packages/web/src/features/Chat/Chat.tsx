@@ -17,7 +17,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { RepeatIcon, PlusSquareIcon } from '@chakra-ui/icons';
-import { BsClipboard2Plus } from "react-icons/bs";  
 import React, { useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
