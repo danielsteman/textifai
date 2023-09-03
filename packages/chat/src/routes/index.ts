@@ -74,7 +74,7 @@ initializedInquiryChain().then((initializedInquiryChain) => {
 });
 
 // initialize Paraphrasing Chain
-const initializedParapharingChain = async () => {
+const initializedRegenerateChain = async () => {
   const llm = new ChatOpenAI({
     modelName: "gpt-3.5-turbo",
     temperature: 0.3,
@@ -85,7 +85,7 @@ const initializedParapharingChain = async () => {
   const ppChain = new LLMChain({
     llm,
     prompt: new PromptTemplate({
-      template: templates.paraphrasingTemplate,
+      template: templates.regenerateTemplate,
       inputVariables: ["document"],
     }),
     verbose: false,
@@ -95,9 +95,9 @@ const initializedParapharingChain = async () => {
 };
 
 // Paraphrasing Chain
-let paraphrasingChain: LLMChain;
-initializedParapharingChain().then((initializedParapharingChain) => {
-  paraphrasingChain = initializedParapharingChain;
+let regenerateChain: LLMChain;
+initializedRegenerateChain().then((initializedRenegerateChain) => {
+  regenerateChain = initializedRenegerateChain;
 });
 
 dotenv.config({ path: envPath });
@@ -113,10 +113,10 @@ router.post(
     const conversationHistory = await req.body.history;
     const option = await req.body.option;
 
-    if (option==="Paraphrase"){
+    if (option==="regenerate"){
       try {
-        console.log(prompt)
-        const answer = await paraphrasingChain.call({
+        console.log("Regenerating answer...")
+        const answer = await regenerateChain.call({
           document: prompt
         });
 
