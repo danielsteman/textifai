@@ -33,6 +33,10 @@ const CreateProject = () => {
     setFormData(updatedFormData);
   };
 
+  const handleSubmit = () => {
+    console.log(formData);
+  };
+
   const gap: number = 4;
 
   return (
@@ -60,7 +64,6 @@ const CreateProject = () => {
           <Input
             type="text"
             placeholder="Project name"
-            value={formData.name}
             onChange={(e) => onChange("name", e)}
           />
         </FormControl>
@@ -69,7 +72,6 @@ const CreateProject = () => {
           <Input
             type="text"
             placeholder="Project description"
-            value={formData.name}
             onChange={(e) => onChange("description", e)}
           />
         </FormControl>
@@ -78,12 +80,11 @@ const CreateProject = () => {
           <Input
             type="text"
             placeholder="Industry"
-            value={formData.name}
             onChange={(e) => onChange("industry", e)}
           />
         </FormControl>
         <Center>
-          <Button mt={4} type="submit">
+          <Button mt={4} type="submit" onClick={handleSubmit}>
             Create project
           </Button>
         </Center>

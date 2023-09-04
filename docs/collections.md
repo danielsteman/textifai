@@ -17,7 +17,7 @@ In the future, we could [combine vector stores](https://python.langchain.com/doc
 User signs up > project creation page > create project > workspace home > upload document call to action
 
 ```ts
-interface UserAccount {
+interface User {
   userId: string;
   avatarUrl: string;
   createdDate: Date;
