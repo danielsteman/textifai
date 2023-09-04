@@ -86,6 +86,13 @@ const config = {
       900: "#cc3c27",
     },
   },
+  styles: {
+    global: (props: any) => ({
+      body: {
+        bgColor: props.colorMode === "dark" ? "dark.surface" : "light.surface",
+      },
+    }),
+  },
 };
 
 const theme = extendTheme(config);
