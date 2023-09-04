@@ -1,5 +1,9 @@
 # User journey
 
+## Useful docs
+
+https://firebase.google.com/docs/firestore/data-model
+
 ## Relationships (for now)
 
 One user can have multiple projects. (users/{userId}/{projectId}/uploads/{fileName}.pdf)
@@ -21,9 +25,14 @@ Done
 Create new `project` in firestore in `projects` collection.
 
 ```ts
-interface User {
+interface UserAccount {
   userId: string;
   admin: boolean;
+  avatarUrl: string;
+  createdDate: Date;
+  updatedDate: Date;
+  language: string;
+  isActive: boolean;
   projects: string[];
 }
 ```
@@ -94,20 +103,5 @@ interface Message {
 ```
 
 ## Existing user
-
-```ts
-interface UserAccount {
-  userId: string;
-  email: string;
-  passwordHash: string;
-  firstName: string;
-  lastName: string;
-  profilePicture;
-  createdDate: Date;
-  updatedDate: Date;
-  language: string;
-  isActive: boolean;
-}
-```
 
 User logs in > workspace home
