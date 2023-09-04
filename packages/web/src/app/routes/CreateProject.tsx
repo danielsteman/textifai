@@ -41,7 +41,8 @@ const CreateProject = () => {
     setFormData(updatedFormData);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
     const projectsCollection = collection(db, "projects");
     if (currentUser) {
       const projectData: Project = {
@@ -52,6 +53,7 @@ const CreateProject = () => {
       try {
         const docRef = await addDoc(projectsCollection, projectData);
         console.log("Document written with ID: ", docRef.id);
+        navigate("/features/workspace");
       } catch (error) {
         console.error("Error adding document: ", error);
       }
