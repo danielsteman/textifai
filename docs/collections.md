@@ -16,14 +16,6 @@ In the future, we could [combine vector stores](https://python.langchain.com/doc
 
 User signs up > project creation page > create project > workspace home > upload document call to action
 
-### Sign up
-
-Done
-
-### Create project
-
-Create new `project` in firestore in `projects` collection.
-
 ```ts
 interface UserAccount {
   userId: string;
@@ -36,6 +28,10 @@ interface UserAccount {
   projects: string[];
 }
 ```
+
+### Create project
+
+Create new `project` in firestore in `projects` collection.
 
 ```ts
 interface Project {
