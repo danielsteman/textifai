@@ -8,11 +8,12 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import theme from "../themes/theme";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Project } from "@shared/firestoreInterfaces/Project";
 import { Timestamp, addDoc, collection } from "firebase/firestore";
 import { db } from "../config/firebase";
+import { AuthContext } from "../providers/AuthProvider";
 
 interface FormData {
   name: string;
@@ -29,6 +30,8 @@ const CreateProject = () => {
     industry: "",
   });
 
+  const currentUser = useContext(AuthContext);
+
   const onChange = (
     field: keyof FormData,
     e: ChangeEvent<HTMLInputElement>
@@ -40,17 +43,20 @@ const CreateProject = () => {
 
   const handleSubmit = async () => {
     const projectsCollection = collection(db, "projects");
-    const projectData: Project = {
-      ...formData,
-      users: [],
-      creationDate: Timestamp.fromDate(new Date()),
-    };
-
-    try {
-      const docRef = await addDoc(projectsCollection, projectData);
-      console.log("Document written with ID: ", docRef.id);
-    } catch (error) {
-      console.error("Error adding document: ", error);
+    if (currentUser) {
+      const projectData: Project = {
+        ...formData,
+        users: [currentUser?.uid],
+        creationDate: Timestamp.fromDate(new Date()),
+      };
+      try {
+        const docRef = await addDoc(projectsCollection, projectData);
+        console.log("Document written with ID: ", docRef.id);
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
+    } else {
+      console.error("Current user not found");
     }
   };
 
