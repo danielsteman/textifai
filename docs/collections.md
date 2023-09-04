@@ -19,12 +19,12 @@ User signs up > project creation page > create project > workspace home > upload
 ```ts
 interface UserAccount {
   userId: string;
-  admin: boolean;
   avatarUrl: string;
   createdDate: Date;
   updatedDate: Date;
   language: string;
   isActive: boolean;
+  adminForProjects: string[];
   projects: string[];
 }
 ```
@@ -60,7 +60,6 @@ interface Document {
   fileName: string;
   author: string;
   creationDate: Date;
-  uploadDate: Date;
   summary: string;
   topics: string[];
   tags: string[];
@@ -81,6 +80,7 @@ interface Conversation {
   userId: string;
   projectId: string;
   creationDate: Date;
+  updatedDate: Date;
 }
 ```
 
@@ -93,8 +93,7 @@ interface Message {
   creationDate: Date;
   variant: "user" | "agent";
   messageBody: string;
-  agentMessageId?: string;
-  userMessageId?: string;
+  parentMessageId?: string;
 }
 ```
 
