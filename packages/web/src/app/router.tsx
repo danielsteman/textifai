@@ -13,11 +13,16 @@ import Layout from "./layouts/FlexLayout";
 import Upload from "./routes/Upload";
 import Editor from "./routes/Editor";
 import Workspace from "./routes/Workspace";
+import CreateProject from "./routes/CreateProject";
 
 export const router = createBrowserRouter([
   {
     element: <Workspace />,
     path: "/features/workspace",
+  },
+  {
+    path: "/features/onboarding",
+    element: <CreateProject />,
   },
   {
     element: <FlexLayout />,
