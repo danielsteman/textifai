@@ -17,7 +17,7 @@ const Root = () => {
           mt={8}
           variant="solid"
           size="lg"
-          onClick={() => navigate("/features/create-project")}
+          onClick={() => navigate("/features/onboarding")}
         >
           Get started
         </Button>

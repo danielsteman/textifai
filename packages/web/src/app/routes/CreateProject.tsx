@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import theme from "../themes/theme";
 import { ChangeEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   name: string;
@@ -18,6 +19,7 @@ interface FormData {
 
 const CreateProject = () => {
   const { colorMode } = useColorMode();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     name: "",
   });
@@ -48,6 +50,7 @@ const CreateProject = () => {
         position="absolute"
         top={"2em"}
         right={"2em"}
+        onClick={() => navigate("/")}
       >
         Cancel
       </Button>
