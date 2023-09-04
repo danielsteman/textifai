@@ -1,4 +1,4 @@
-interface Document {
+export interface Document {
   documentId: string;
   projectId: string;
   uploadedBy: string;

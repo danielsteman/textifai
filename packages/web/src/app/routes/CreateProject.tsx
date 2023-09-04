@@ -10,11 +10,14 @@ import {
 import theme from "../themes/theme";
 import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Project } from "@shared/firestoreInterfaces/Project";
+import { Timestamp, addDoc, collection } from "firebase/firestore";
+import { db } from "../config/firebase";
 
 interface FormData {
   name: string;
-  description?: string | undefined;
-  industry?: string | undefined;
+  description: string;
+  industry: string;
 }
 
 const CreateProject = () => {
@@ -22,6 +25,8 @@ const CreateProject = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     name: "",
+    description: "",
+    industry: "",
   });
 
   const onChange = (
@@ -33,8 +38,20 @@ const CreateProject = () => {
     setFormData(updatedFormData);
   };
 
-  const handleSubmit = () => {
-    console.log(formData);
+  const handleSubmit = async () => {
+    const projectsCollection = collection(db, "projects");
+    const projectData: Project = {
+      ...formData,
+      users: [],
+      creationDate: Timestamp.fromDate(new Date()),
+    };
+
+    try {
+      const docRef = await addDoc(projectsCollection, projectData);
+      console.log("Document written with ID: ", docRef.id);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
   const gap: number = 4;

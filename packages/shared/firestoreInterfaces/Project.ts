@@ -1,8 +1,10 @@
-interface Project {
-  projectId: string;
+import { Timestamp } from "firebase/firestore";
+
+export interface Project {
+  projectId?: string;
   name: string;
   description: string;
-  industry: string[];
+  industry: string;
   users: string[];
-  creationDate: Date;
+  creationDate: Timestamp;
 }

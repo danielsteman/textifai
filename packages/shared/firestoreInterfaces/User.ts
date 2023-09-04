@@ -1,4 +1,4 @@
-interface User {
+export interface User {
   userId: string;
   avatarUrl: string;
   createdDate: Date;

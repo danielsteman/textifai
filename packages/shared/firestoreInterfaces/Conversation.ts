@@ -1,4 +1,4 @@
-interface Conversation {
+export interface Conversation {
   conversationId: string;
   userId: string;
   projectId: string;
