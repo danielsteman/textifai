@@ -40,6 +40,7 @@ import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
 import { MdAnalytics, MdUpload } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 import theme from "../../app/themes/theme";
+import UploadForm from "../UploadForm/UploadForm";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -47,7 +48,16 @@ const MegaLibrary = () => {
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isDeleteFileOpen,
+    onOpen: onDeleteFileOpen,
+    onClose: onDeleteFileClose,
+  } = useDisclosure();
+  const {
+    isOpen: isUploadFileOpen,
+    onOpen: onUploadFileOpen,
+    onClose: onUploadFileClose,
+  } = useDisclosure();
   const userDocumentsRef = ref(storage, `users/${currentUser?.uid}/uploads`);
 
   useEffect(() => {
@@ -84,7 +94,7 @@ const MegaLibrary = () => {
             (str) => str !== fullPath
           );
           setSelectedDocuments(updatedSelectedDocuments);
-          onClose();
+          onDeleteFileClose();
           console.log(`${fullPath} is deleted`);
         })
         .catch((error) => {
@@ -213,9 +223,20 @@ const MegaLibrary = () => {
             borderRadius={100}
             bgColor={theme.colors[colorMode].secondaryContainer}
             textColor={theme.colors[colorMode].onSecondaryContainer}
+            onClick={onUploadFileOpen}
           >
             Upload
           </Button>
+          <Modal isOpen={isUploadFileOpen} onClose={onUploadFileClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Modal Title</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <UploadForm />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
           <Button
             size="sm"
             aria-label={"analyse"}
@@ -249,11 +270,15 @@ const MegaLibrary = () => {
               size="sm"
               aria-label={"delete"}
               icon={<FaTrash />}
-              onClick={onOpen}
+              onClick={onDeleteFileOpen}
               isDisabled={selectedDocuments.length === 0}
             />
           </Tooltip>
-          <Modal isOpen={isOpen} onClose={onClose} size="xs">
+          <Modal
+            isOpen={isDeleteFileOpen}
+            onClose={onDeleteFileClose}
+            size="xs"
+          >
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>
@@ -270,7 +295,7 @@ const MegaLibrary = () => {
                 </VStack>
               </ModalBody>
               <ModalFooter>
-                <Button colorScheme="blue" mr={3} onClick={onClose}>
+                <Button colorScheme="blue" mr={3} onClick={onDeleteFileClose}>
                   Close
                 </Button>
                 <Button
