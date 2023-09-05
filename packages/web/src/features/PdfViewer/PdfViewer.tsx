@@ -43,6 +43,12 @@ function PdfCollection() {
     setDocumentQuery(e.target.value);
   };
 
+  const pageContainerStyle = {
+    borderBottom: '1px solid black',
+    marginBottom: '10px'
+  };
+
+
   return (
     <div style={{ display: 'flex', height: '100%' }}>
         {/* Sidebar */}
@@ -77,10 +83,16 @@ function PdfCollection() {
                 <Document 
                     file={selectedPdfUrl} 
                     onLoadSuccess={onDocumentLoadSuccess}
-                    renderMode="svg"
+                    // renderMode="svg"
                 >
                     {Array.from(new Array(numPages), (_, index) => (
-                        <Page key={`page_${index + 1}`} pageNumber={index + 1} width={window.innerWidth * 0.6} />
+                        <div style={pageContainerStyle} key={`page-container_${index + 1}`}>  {/* Wrap the Page component */}
+                            <Page 
+                                key={`page_${index + 1}`} 
+                                pageNumber={index + 1} 
+                                width={window.innerWidth * 0.6}
+                            />
+                        </div>
                     ))}
                 </Document>
             )}
