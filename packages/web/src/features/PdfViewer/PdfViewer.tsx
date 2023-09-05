@@ -28,7 +28,7 @@ function PdfViewer() {
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
   const [numPages, setNumPages] = useState<number>(0);
-
+  const listRef = ref(storage, `users/${currentUser?.uid}/uploads`);
   // Reference to the PDF viewer container
   const pdfRef = useRef<HTMLDivElement>(null);
 
