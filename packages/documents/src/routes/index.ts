@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { processFile } from "../lib/pineconeUpload";
 import pdfParse from "pdf-parse";
+import CredentialsManager from "@shared/managers/credentialsManager";
 
 const router = express.Router();
 
@@ -19,22 +20,28 @@ async function extractTextFromPDF(pdfBuffer: Buffer): Promise<string> {
   }
 }
 
+const credentialsManager = new CredentialsManager();
+
 router.post(
   "/upload",
-  upload.single('file'),
+  upload.single("file"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
- 
       if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
+        return res.status(400).json({ error: "No file uploaded" });
       }
-      
+
       // Read file and extract text
-      const fileBuffer = Buffer.from(req.file.buffer)
-      const text = await extractTextFromPDF(fileBuffer)
+      const fileBuffer = Buffer.from(req.file.buffer);
+      const text = await extractTextFromPDF(fileBuffer);
 
       // Pass text to the processFile for chunking and embedding
-      await processFile(text);
+      await processFile(
+        text,
+        credentialsManager.getApiKey(),
+        credentialsManager.getEnvironment(),
+        credentialsManager.getPineconeIndex()
+      );
 
       // Send a success response
       res.json({ success: true, message: "File processed successfully" });

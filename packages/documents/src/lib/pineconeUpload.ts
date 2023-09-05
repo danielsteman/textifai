@@ -2,26 +2,12 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { PineconeClient } from "@pinecone-database/pinecone";
-import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 
-import dotenv from "dotenv";
-import path from "path";
-
-const envPath = path.resolve(__dirname, "../../.env.local");
-dotenv.config({ path: envPath });
-
-const apiKey = process.env.PINECONE_API_KEY!;
-const environment = process.env.PINECONE_ENV!;
-const pineconeIndex = process.env.PINECONE_INDEX!;
-
-if (!apiKey || !environment || !pineconeIndex) {
-  console.error("Missing environment variables");
-  throw new Error(
-    "Failed to initialize Pinecone Client due to missing environment variables"
-  );
-}
-
-async function initializeClient() {
+async function initializeClient(
+  apiKey: string,
+  environment: string,
+  pineconeIndex: string
+) {
   try {
     const client = new PineconeClient();
     await client.init({
@@ -38,8 +24,13 @@ async function initializeClient() {
   }
 }
 
-export async function processFile(rawDoc: string) {
-  const index = await initializeClient();
+export async function processFile(
+  rawDoc: string,
+  apiKey: string,
+  environment: string,
+  pineconeIndex: string
+) {
+  const index = await initializeClient(apiKey, environment, pineconeIndex);
 
   let chunks;
   try {
@@ -65,14 +56,10 @@ export async function processFile(rawDoc: string) {
     console.log("OpenAI client initialized.");
 
     // Embed the PDF documents
-    await PineconeStore.fromTexts(
-      chunks, 
-      {}, 
-      embeddings, 
-      {
-        pineconeIndex: index,
-        textKey: "text"
-      });
+    await PineconeStore.fromTexts(chunks, {}, embeddings, {
+      pineconeIndex: index,
+      textKey: "text",
+    });
     console.log("Embeddings successfully stored in vector store.");
   } catch (error) {
     console.error("Failed to embed data in the vector store:", error);
