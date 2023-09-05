@@ -28,6 +28,7 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
   VStack,
   useColorMode,
@@ -243,12 +244,15 @@ const MegaLibrary = () => {
           >
             View selected documents
           </Button>
-          <IconButton
-            size="sm"
-            aria-label={"delete"}
-            icon={<FaTrash />}
-            onClick={onOpen}
-          />
+          <Tooltip label="Select documents in the table below!">
+            <IconButton
+              size="sm"
+              aria-label={"delete"}
+              icon={<FaTrash />}
+              onClick={onOpen}
+              isDisabled={selectedDocuments.length === 0}
+            />
+          </Tooltip>
           <Modal isOpen={isOpen} onClose={onClose} size="xs">
             <ModalOverlay />
             <ModalContent>
