@@ -230,7 +230,7 @@ const MegaLibrary = () => {
           <Modal isOpen={isUploadFileOpen} onClose={onUploadFileClose}>
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>Modal Title</ModalHeader>
+              <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
                 <UploadForm />
