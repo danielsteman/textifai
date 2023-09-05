@@ -36,7 +36,7 @@ import {
 import { storage } from "../../app/config/firebase";
 import { StorageReference, deleteObject, listAll, ref } from "firebase/storage";
 import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
-import { MdAnalytics } from "react-icons/md";
+import { MdAnalytics, MdUpload } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 import theme from "../../app/themes/theme";
 
@@ -205,6 +205,16 @@ const MegaLibrary = () => {
         >
           <Heading size="xs">Documents</Heading>
           <Spacer />
+          <Button
+            size="sm"
+            aria-label={"upload"}
+            leftIcon={<MdUpload />}
+            borderRadius={100}
+            bgColor={theme.colors[colorMode].secondaryContainer}
+            textColor={theme.colors[colorMode].onSecondaryContainer}
+          >
+            Upload
+          </Button>
           <Button
             size="sm"
             aria-label={"analyse"}
