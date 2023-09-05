@@ -1,3 +1,6 @@
+import '../../../node_modules/react-pdf/dist/esm/Page/AnnotationLayer.css';
+import '../../../node_modules/react-pdf/dist/esm/Page/TextLayer.css';
+
 import React, { useState, useEffect, useContext } from 'react';
 import { Document, Page } from 'react-pdf';
 import { pdfjs } from 'react-pdf';
@@ -74,9 +77,10 @@ function PdfCollection() {
                 <Document 
                     file={selectedPdfUrl} 
                     onLoadSuccess={onDocumentLoadSuccess}
+                    renderMode="svg"
                 >
                     {Array.from(new Array(numPages), (_, index) => (
-                        numPages > 0 ? <Page key={`page_${index + 1}`} pageNumber={index + 1} width={window.innerWidth * 0.6} /> : null
+                        <Page key={`page_${index + 1}`} pageNumber={index + 1} width={window.innerWidth * 0.6} />
                     ))}
                 </Document>
             )}
