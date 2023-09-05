@@ -13,6 +13,7 @@ import Layout from "./layouts/FlexLayout";
 import Upload from "./routes/Upload";
 import Editor from "./routes/Editor";
 import Workspace from "./routes/Workspace";
+import PdfViewer from "./routes/PdfViewer";
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +49,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Upload />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "features/pdfviewer",
+        element: (
+          <PrivateRoute>
+            <PdfViewer />
           </PrivateRoute>
         ),
       },
