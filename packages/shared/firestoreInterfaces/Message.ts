@@ -1,7 +1,9 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface Message {
   messageId: string;
   conversationId: string;
-  creationDate: Date;
+  creationDate: Timestamp;
   variant: "user" | "agent";
   messageBody: string;
   parentMessageId?: string;

@@ -1,8 +1,10 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface User {
   userId: string;
   avatarUrl: string;
-  createdDate: Date;
-  updatedDate: Date;
+  createdDate: Timestamp;
+  updatedDate: Timestamp;
   language: string;
   isActive: boolean;
   adminForProjects: string[];
