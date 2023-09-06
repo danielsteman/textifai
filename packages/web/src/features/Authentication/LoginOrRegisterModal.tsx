@@ -72,10 +72,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
   const handleSubmit = useCallback(
     async (e: any) => {
-      // if (!validateEmail(email)) {
-      //   setError("This email address is invalid.");
-      //   return;
-      // }
       setAttempts(attempts + 1);
       setLoading(true);
       e.preventDefault();

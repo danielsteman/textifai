@@ -18,6 +18,7 @@ import {
   Tabs,
   Tooltip,
   VStack,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import {
@@ -37,6 +38,7 @@ import {
 import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
 import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
 import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
+import theme from "../themes/theme";
 
 export type ITab = {
   name: string;
@@ -51,6 +53,7 @@ export type OpenTabsContext = {
 };
 
 const Workspace = () => {
+  const { colorMode } = useColorMode();
   const [openTabs, setOpenTabs] = useState<ITab[]>([]);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<ITab>();
@@ -92,7 +95,10 @@ const Workspace = () => {
           {openTabs.map((tab) => {
             const activeProps =
               tab.name === currentTab?.name
-                ? { borderBottom: "2px", borderColor: "taiDark.primary" }
+                ? {
+                    borderBottom: "2px",
+                    borderColor: theme.colors[colorMode].primary,
+                  }
                 : {};
             return (
               <Box

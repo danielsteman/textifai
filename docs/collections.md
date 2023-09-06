@@ -1,5 +1,9 @@
 # User journey
 
+## Useful docs
+
+https://firebase.google.com/docs/firestore/data-model
+
 ## Relationships (for now)
 
 One user can have multiple projects. (users/{userId}/{projectId}/uploads/{fileName}.pdf)
@@ -12,21 +16,22 @@ In the future, we could [combine vector stores](https://python.langchain.com/doc
 
 User signs up > project creation page > create project > workspace home > upload document call to action
 
-### Sign up
-
-Done
+```ts
+interface User {
+  userId: string;
+  avatarUrl: string;
+  createdDate: Date;
+  updatedDate: Date;
+  language: string;
+  isActive: boolean;
+  adminForProjects: string[];
+  projects: string[];
+}
+```
 
 ### Create project
 
 Create new `project` in firestore in `projects` collection.
-
-```ts
-interface User {
-  userId: string;
-  admin: boolean;
-  projects: string[];
-}
-```
 
 ```ts
 interface Project {
@@ -55,7 +60,6 @@ interface Document {
   fileName: string;
   author: string;
   creationDate: Date;
-  uploadDate: Date;
   summary: string;
   topics: string[];
   tags: string[];
@@ -76,6 +80,7 @@ interface Conversation {
   userId: string;
   projectId: string;
   creationDate: Date;
+  updatedDate: Date;
 }
 ```
 
@@ -88,26 +93,10 @@ interface Message {
   creationDate: Date;
   variant: "user" | "agent";
   messageBody: string;
-  agentMessageId?: string;
-  userMessageId?: string;
+  parentMessageId?: string;
 }
 ```
 
 ## Existing user
-
-```ts
-interface UserAccount {
-  userId: string;
-  email: string;
-  passwordHash: string;
-  firstName: string;
-  lastName: string;
-  profilePicture;
-  createdDate: Date;
-  updatedDate: Date;
-  language: string;
-  isActive: boolean;
-}
-```
 
 User logs in > workspace home

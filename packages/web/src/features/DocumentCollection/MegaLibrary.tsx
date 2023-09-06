@@ -28,22 +28,36 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
   VStack,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import { storage } from "../../app/config/firebase";
 import { StorageReference, deleteObject, listAll, ref } from "firebase/storage";
 import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
-import { MdAnalytics } from "react-icons/md";
+import { MdAnalytics, MdUpload } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
+import theme from "../../app/themes/theme";
+import UploadForm from "../UploadForm/UploadForm";
 
 const MegaLibrary = () => {
+  const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isDeleteFileOpen,
+    onOpen: onDeleteFileOpen,
+    onClose: onDeleteFileClose,
+  } = useDisclosure();
+  const {
+    isOpen: isUploadFileOpen,
+    onOpen: onUploadFileOpen,
+    onClose: onUploadFileClose,
+  } = useDisclosure();
   const userDocumentsRef = ref(storage, `users/${currentUser?.uid}/uploads`);
 
   useEffect(() => {
@@ -80,7 +94,7 @@ const MegaLibrary = () => {
             (str) => str !== fullPath
           );
           setSelectedDocuments(updatedSelectedDocuments);
-          onClose();
+          onDeleteFileClose();
           console.log(`${fullPath} is deleted`);
         })
         .catch((error) => {
@@ -101,15 +115,17 @@ const MegaLibrary = () => {
         <HStack
           w="100%"
           p={2}
-          bgColor={"taiDark.surfaceContainerLow"}
+          bgColor={theme.colors[colorMode].surfaceContainerLow}
           borderRadius={8}
         >
           <Box w={2} />
-          <Heading size="md" textColor="taiDark.onSurface">
+          <Heading size="md" textColor={theme.colors[colorMode].onSurface}>
             Library
           </Heading>
           <Box w={4} />
-          <InputGroup borderColor="taiDark.surfaceContainerHigh">
+          <InputGroup
+            borderColor={theme.colors[colorMode].surfaceContainerHigh}
+          >
             <InputLeftElement pointerEvents="none">
               <SearchIcon />
             </InputLeftElement>
@@ -117,8 +133,8 @@ const MegaLibrary = () => {
               placeholder="Search"
               onChange={handleChangeDocumentQuery}
               rounded="full"
-              bgColor="taiDark.surfaceContainerHigh"
-              _placeholder={{ color: "taiDark.onSurfaceVariant" }}
+              bgColor={theme.colors[colorMode].surfaceContainerHigh}
+              _placeholder={{ color: theme.colors[colorMode].onSurfaceVariant }}
             />
           </InputGroup>
         </HStack>
@@ -126,29 +142,53 @@ const MegaLibrary = () => {
       <GridItem rowSpan={2} colSpan={1}>
         <VStack
           p={4}
-          bgColor="taiDark.surfaceContainer"
+          bgColor={theme.colors[colorMode].surfaceContainer}
           borderRadius={8}
           align="flex-start"
-          textColor="taiDark.onSurface"
+          textColor={theme.colors[colorMode].onSurface}
           h="100%"
         >
           <Heading size="xs">Filters</Heading>
-          <Button variant="ghost" size="xs" textColor="taiDark.onSurface">
+          <Button
+            variant="ghost"
+            size="xs"
+            textColor={theme.colors[colorMode].onSurface}
+          >
             Any time
           </Button>
-          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
+          <Button
+            textColor={theme.colors[colorMode].onSurface}
+            variant="ghost"
+            size="xs"
+          >
             Since 2023
           </Button>
-          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
+          <Button
+            textColor={theme.colors[colorMode].onSurface}
+            variant="ghost"
+            size="xs"
+          >
             Since 2022
           </Button>
-          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
+          <Button
+            textColor={theme.colors[colorMode].onSurface}
+            variant="ghost"
+            size="xs"
+          >
             Since 2021
           </Button>
-          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
+          <Button
+            textColor={theme.colors[colorMode].onSurface}
+            variant="ghost"
+            size="xs"
+          >
             Custom range
           </Button>
-          <Button textColor="taiDark.onSurface" variant="ghost" size="xs">
+          <Button
+            textColor={theme.colors[colorMode].onSurface}
+            variant="ghost"
+            size="xs"
+          >
             Only show favorites
           </Button>
           <Box h={4} />
@@ -157,8 +197,8 @@ const MegaLibrary = () => {
           <Heading size="xs">Projects</Heading>
           <Spacer />
           <Button
-            textColor="taiDark.onTertiaryContainer"
-            bgColor="taiDark.tertiaryContainer"
+            textColor={theme.colors[colorMode].onTertiaryContainer}
+            bgColor={theme.colors[colorMode].tertiaryContainer}
             size="sm"
             leftIcon={<FaRocket />}
             borderRadius={100}
@@ -170,19 +210,40 @@ const MegaLibrary = () => {
       <GridItem rowSpan={1} colSpan={1}>
         <HStack
           borderRadius={8}
-          bgColor="taiDark.surfaceContainer"
-          textColor="taiDark.onSurface"
+          bgColor={theme.colors[colorMode].surfaceContainer}
+          textColor={theme.colors[colorMode].onSurface}
           p={2}
         >
           <Heading size="xs">Documents</Heading>
           <Spacer />
           <Button
             size="sm"
+            aria-label={"upload"}
+            leftIcon={<MdUpload />}
+            borderRadius={100}
+            bgColor={theme.colors[colorMode].secondaryContainer}
+            textColor={theme.colors[colorMode].onSecondaryContainer}
+            onClick={onUploadFileOpen}
+          >
+            Upload
+          </Button>
+          <Modal isOpen={isUploadFileOpen} onClose={onUploadFileClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Upload files</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <UploadForm />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+          <Button
+            size="sm"
             aria-label={"analyse"}
             leftIcon={<MdAnalytics />}
             borderRadius={100}
-            bgColor="taiDark.secondaryContainer"
-            textColor="taiDark.onSecondaryContainer"
+            bgColor={theme.colors[colorMode].secondaryContainer}
+            textColor={theme.colors[colorMode].onSecondaryContainer}
           >
             Analyse
           </Button>
@@ -191,26 +252,33 @@ const MegaLibrary = () => {
             aria-label={"ask tai"}
             leftIcon={<ChatIcon />}
             borderRadius={100}
-            bgColor="taiDark.secondaryContainer"
-            textColor="taiDark.onSecondaryContainer"
+            bgColor={theme.colors[colorMode].secondaryContainer}
+            textColor={theme.colors[colorMode].onSecondaryContainer}
           >
             Ask TAI
           </Button>
           <Button
             size="sm"
             borderRadius={100}
-            bgColor="taiDark.tertiaryContainer"
-            textColor="taiDark.onTertiaryContainer"
+            bgColor={theme.colors[colorMode].tertiaryContainer}
+            textColor={theme.colors[colorMode].onTertiaryContainer}
           >
             View selected documents
           </Button>
-          <IconButton
-            size="sm"
-            aria-label={"delete"}
-            icon={<FaTrash />}
-            onClick={onOpen}
-          />
-          <Modal isOpen={isOpen} onClose={onClose} size="xs">
+          <Tooltip label="Select documents in the table below!">
+            <IconButton
+              size="sm"
+              aria-label={"delete"}
+              icon={<FaTrash />}
+              onClick={onDeleteFileOpen}
+              isDisabled={selectedDocuments.length === 0}
+            />
+          </Tooltip>
+          <Modal
+            isOpen={isDeleteFileOpen}
+            onClose={onDeleteFileClose}
+            size="xs"
+          >
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>
@@ -227,7 +295,7 @@ const MegaLibrary = () => {
                 </VStack>
               </ModalBody>
               <ModalFooter>
-                <Button colorScheme="blue" mr={3} onClick={onClose}>
+                <Button colorScheme="blue" mr={3} onClick={onDeleteFileClose}>
                   Close
                 </Button>
                 <Button
