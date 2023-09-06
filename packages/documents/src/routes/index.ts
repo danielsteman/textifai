@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { processFile } from "../lib/pineconeUpload";
 import pdfParse from "pdf-parse";
-import CredentialsManager from "@shared/managers/credentialsManager";
+import { CredentialsManager } from "@shared/managers/credentialsManager";
 
 const router = express.Router();
 
