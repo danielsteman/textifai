@@ -4,11 +4,11 @@ import { pdfjs } from 'react-pdf';
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { storage } from '../../app/config/firebase';
 import { getDownloadURL, listAll, ref, StorageReference } from 'firebase/storage';
-import { Input, InputGroup, InputLeftElement, Text, VStack } from "@chakra-ui/react";
+import { Input, InputGroup, InputLeftElement, Text, VStack, Box, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 
 // Importing required CSS files for react-pdf components
-import '../../../node_modules/react-pdf/dist/esm/Page/AnnotationLayer.css';
-import '../../../node_modules/react-pdf/dist/esm/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 
 // Set the worker source for pdf.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -28,6 +28,7 @@ function PdfViewer() {
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
   const [numPages, setNumPages] = useState<number>(0);
+  const [selectedText, setSelectedText] = useState<string>("");
   const listRef = ref(storage, `users/${currentUser?.uid}/uploads`);
   // Reference to the PDF viewer container
   const pdfRef = useRef<HTMLDivElement>(null);
@@ -52,14 +53,18 @@ function PdfViewer() {
       const selection = window.getSelection();
       const selectedText = selection ? selection.toString().trim() : '';
 
-      // If text is selected, show context menu at mouse position
+      // If text is selected, show context menu at mouse position and set selected text
       if (selectedText && pdfRef.current) {
+        e.preventDefault(); // Prevent the default context menu
         const x = e.clientX;
         const y = e.clientY;
         setContextMenuPosition({ x, y });
         setContextMenuVisible(true);
+        setSelectedText(selectedText);
+        console.log("Selected Text:", selectedText); // Display selected text in the console
       } else {
         setContextMenuVisible(false);
+        setSelectedText("");
       }
     };
 
@@ -84,9 +89,9 @@ function PdfViewer() {
 
   // JSX rendering
   return (
-    <div style={{ display: 'flex', height: '100%' }}>
+    <Box display="flex" height="100%">
       {/* Sidebar */}
-      <VStack style={{ flex: '1', borderRight: '1px solid gray', overflowY: 'auto' }}>
+      <VStack flex="1" borderRight="1px solid gray" overflowY="auto">
         <InputGroup>
           <InputLeftElement pointerEvents="none">
             <span role="img" aria-label="Search">🔍</span>
@@ -96,23 +101,18 @@ function PdfViewer() {
         {documents
           .filter((doc) => doc.name.includes(documentQuery) && doc.name.endsWith('.pdf'))
           .map((doc) => (
-            <div key={doc.fullPath}>
-              <Text
-                onClick={async () => {
-                  const url = await getPdfUrl(doc);
-                  setSelectedPdfUrl(url);
-                }}
-                cursor="pointer"
-              >
-                {doc.name}
-              </Text>
-            </div>
+            <Box key={doc.fullPath} onClick={async () => {
+              const url = await getPdfUrl(doc);
+              setSelectedPdfUrl(url);
+            }} cursor="pointer">
+              <Text>{doc.name}</Text>
+            </Box>
           ))
         }
       </VStack>
 
       {/* PDF Viewer */}
-      <div style={{ flex: '2', padding: '1rem' }} ref={pdfRef}>
+      <Box flex="2" padding="1rem" ref={pdfRef}>
         {selectedPdfUrl && (
           <Document 
             file={selectedPdfUrl} 
@@ -123,29 +123,37 @@ function PdfViewer() {
             ))}
           </Document>
         )}
-      </div>
+      </Box>
 
-      {/* Context Menu */}
+      {/* Mock Context Menu */}
       {contextMenuVisible && (
-        <div
-          style={{
-            position: "fixed",
-            top: contextMenuPosition.y,
-            left: contextMenuPosition.x,
-            background: "#f0f0f0",
-            border: "1px solid #ccc",
-            boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
-            zIndex: 9999,
-            padding: "5px",
-            minWidth: "120px",
-          }}
-        >
-          <div>Option 1</div>
-          <div>Option 2</div>
-          <div>Option 3</div>
-        </div>
+        <Menu isOpen={contextMenuVisible}>
+          <MenuButton
+            style={{
+              position: "fixed",
+              top: contextMenuPosition.y,
+              left: contextMenuPosition.x,
+            }}
+          >
+            Right-click me
+          </MenuButton>
+          <MenuList
+            style={{
+              background: "#f0f0f0",
+              border: "1px solid #ccc",
+              boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+              zIndex: 9999,
+              padding: "5px",
+              minWidth: "120px",
+            }}
+          >
+            <MenuItem>Option 1</MenuItem>
+            <MenuItem>Option 2</MenuItem>
+            <MenuItem>Option 3</MenuItem>
+          </MenuList>
+        </Menu>
       )}
-    </div>
+    </Box>
   );
 }
 
