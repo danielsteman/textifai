@@ -14,11 +14,11 @@ import {
   Spacer,
   Tab,
   TabList,
-  TabPanel,
   TabPanels,
   Tabs,
   Tooltip,
   VStack,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import {
@@ -36,8 +36,9 @@ import {
   removeItemIfExists,
 } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
-import DocumentCollectionPanel from "../../features/WorkspaceTabs/DocumentCollectionPanel";
 import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
+import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
+import theme from "../themes/theme";
 
 export type ITab = {
   name: string;
@@ -52,12 +53,14 @@ export type OpenTabsContext = {
 };
 
 const Workspace = () => {
+  const { colorMode } = useColorMode();
   const [openTabs, setOpenTabs] = useState<ITab[]>([]);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<ITab>();
 
   const onTabClose = (tab: ITab) => {
     setOpenTabs(removeItemIfExists(openTabs, tab));
+    setCurrentTab(openTabs[openTabs.length - 2]);
   };
 
   const defaultTab: ITab = {
@@ -91,7 +94,12 @@ const Workspace = () => {
         <TabList>
           {openTabs.map((tab) => {
             const activeProps =
-              tab.name === currentTab?.name ? { borderBottom: "2px" } : {};
+              tab.name === currentTab?.name
+                ? {
+                    borderBottom: "2px",
+                    borderColor: theme.colors[colorMode].primary,
+                  }
+                : {};
             return (
               <Box
                 key={tab.name}
@@ -99,11 +107,7 @@ const Workspace = () => {
                 position={"relative"}
                 {...activeProps}
               >
-                <Tab
-                  _hover={{ background: "teal" }}
-                  px={12}
-                  onClick={() => setCurrentTab(tab)}
-                >
+                <Tab px={12} onClick={() => setCurrentTab(tab)}>
                   {tab.name}
                 </Tab>
                 <IconButton
@@ -216,7 +220,7 @@ const Workspace = () => {
                   onClick={() => {
                     const tab: ITab = {
                       name: "Library",
-                      panel: <DocumentCollectionPanel />,
+                      panel: <MegaLibraryPanel />,
                       openChatSupport: false,
                       openMiniLibrary: false,
                     };

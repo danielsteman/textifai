@@ -1,7 +1,7 @@
 import { Box, Button, Center, Heading } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
-export default function Root() {
+const Root = () => {
   const navigate = useNavigate();
   return (
     <Center
@@ -17,11 +17,13 @@ export default function Root() {
           mt={8}
           variant="solid"
           size="lg"
-          onClick={() => navigate("/features/assistant")}
+          onClick={() => navigate("/features/onboarding")}
         >
           Get started
         </Button>
       </Box>
     </Center>
   );
-}
+};
+
+export default Root;

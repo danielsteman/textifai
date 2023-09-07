@@ -1,15 +1,23 @@
-import { Grid, GridItem, TabPanel } from "@chakra-ui/react";
+import { Grid, GridItem, TabPanel, useColorMode } from "@chakra-ui/react";
 import { ITab } from "../../app/routes/Workspace";
-import DocumentCollection from "../DocumentCollection/DocumentCollection";
-import Chat from "../Chat/Chat";
+import MiniLibraryPanel from "./MiniLibraryPanel";
+import ChatPanel from "./ChatPanel";
+import theme from "../../app/themes/theme";
 
 interface Props {
   tab: ITab;
 }
 
 const PanelWrapper: React.FC<Props> = (props) => {
+  const { colorMode } = useColorMode();
   return (
-    <TabPanel h="100%" flex="1" bgColor={"black"} borderRadius={16} p={2}>
+    <TabPanel
+      h="100%"
+      flex="1"
+      bgColor={theme.colors[colorMode].surfaceContainer}
+      borderRadius={16}
+      p={2}
+    >
       <Grid
         h="100%"
         templateRows="repeat(2, 1fr)"
@@ -26,12 +34,12 @@ const PanelWrapper: React.FC<Props> = (props) => {
         </GridItem>
         {props.tab.openMiniLibrary && (
           <GridItem rowSpan={1} colSpan={1} h="100%">
-            <DocumentCollection />
+            <MiniLibraryPanel />
           </GridItem>
         )}
         {props.tab.openChatSupport && (
           <GridItem rowSpan={1} colSpan={1} h="100%">
-            <Chat />
+            <ChatPanel />
           </GridItem>
         )}
       </Grid>

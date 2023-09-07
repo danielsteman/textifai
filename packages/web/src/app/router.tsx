@@ -13,12 +13,17 @@ import Layout from "./layouts/FlexLayout";
 import Upload from "./routes/Upload";
 import Editor from "./routes/Editor";
 import Workspace from "./routes/Workspace";
-import PdfViewer from "./routes/PdfViewer";
+import CreateProject from "./routes/CreateProject";
+import PdfViewer from "src/features/PdfViewer/PdfViewer";
 
 export const router = createBrowserRouter([
   {
     element: <Workspace />,
     path: "/features/workspace",
+  },
+  {
+    path: "/features/onboarding",
+    element: <CreateProject />,
   },
   {
     element: <FlexLayout />,

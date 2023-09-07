@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Flex,
   HStack,
   IconButton,
@@ -14,7 +15,7 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
-import { ArrowRightIcon } from "@chakra-ui/icons";
+import { RepeatIcon, PlusSquareIcon } from "@chakra-ui/icons";
 import React, { useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
@@ -37,25 +38,16 @@ const Chat = () => {
 
   const getConversation = () => {
     const lastThreeConversations: string[] = [];
-
-    // Loop from the end of the stacks to get the last 3 conversations
     for (let i = 1; i <= 3 && i <= messageStack.length; i++) {
-      // Get the user message and AI answer
       const userMessage = messageStack[messageStack.length - i];
       const aiAnswer = answerStack[answerStack.length - i];
-
-      // Format and add them to the result array
       lastThreeConversations.unshift(`USER: ${userMessage}`);
       lastThreeConversations.unshift(`AI: ${aiAnswer}`);
     }
-
     return lastThreeConversations;
   };
 
   const history = getConversation();
-  useEffect(() => {
-    scrollToBottom();
-  }, [messageStack, answerStack]);
 
   useEffect(() => {
     scrollToBottom();
@@ -65,7 +57,6 @@ const Chat = () => {
     setMessage(e.target.value);
   };
 
-  // Handle submit for question asked through input field
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessageStack([...messageStack, message]);
@@ -84,16 +75,18 @@ const Chat = () => {
     }
   };
 
-  // Handle submit for option selected through drowpdown menu from system message
-  const handleOptionSelect = async (
-    option: string,
-    originalMessage: string
-  ) => {
+  const handleRegenerate = async (option: string, originalMessage: string) => {
+    // Capture the last message from answerStack
+    const lastSystemMessage = answerStack[answerStack.length - 1];
+
     try {
+      // Make the API call with the last system message
       const res = await axios.post("http://localhost:3001/api/chat/ask", {
-        prompt: originalMessage,
-        option: option,
+        prompt: lastSystemMessage, // Sending the last system message
+        option: "regenerate", // The option is set to "regenerate"
       });
+
+      // Replace the last message in answerStack with the regenerated one
       setAnswerStack((prevAnswers) => {
         const updatedAnswers = [...prevAnswers];
         updatedAnswers[updatedAnswers.length - 1] = res.data.answer;
@@ -104,53 +97,58 @@ const Chat = () => {
     }
   };
 
-  const SystemMessage = ({ message }: SystemMessageProps) => (
-    <Flex align="center" justifyContent="flex-start">
-      <Box
-        display="flex"
-        alignItems="center"
-        bgColor="pink"
-        p={1}
-        px={8}
-        rounded={8}
-        position="relative"
-      >
-        <Text whiteSpace="pre-line">{message}</Text>
+  const SystemMessage = ({ message }: SystemMessageProps) => {
+    const [menuClicked, setMenuClicked] = useState(false); // Add state to track menu click
 
-        <Box position="absolute" right={2} top={1}>
-          <Menu>
-            <MenuButton aria-label="Options" p={0} color="grey">
-              <ArrowRightIcon />
-            </MenuButton>
-            <MenuList>
-              <MenuItem
-                onClick={() => handleOptionSelect("Elaborate", message)}
-              >
-                Elaborate
-              </MenuItem>
-              <MenuItem onClick={() => handleOptionSelect("Shorten", message)}>
-                Shorten
-              </MenuItem>
-              <MenuItem
-                onClick={() => handleOptionSelect("Paraphrase", message)}
-              >
-                Paraphrase
-              </MenuItem>
-              <MenuItem
-                onClick={() => handleOptionSelect("Show in Document", message)}
-              >
-                Show in Document
-              </MenuItem>
-            </MenuList>
-          </Menu>
+    return (
+      <Flex align="left" justifyContent="flex-start" flexDirection="column">
+        <Box
+          display="flex"
+          alignItems="center"
+          bgColor="pink"
+          p={1}
+          px={8}
+          rounded={8}
+          position="relative"
+        >
+          <Text whiteSpace="pre-line">{message}</Text>
+          {!menuClicked && ( // Conditionally render menu based on state
+            <Box position="absolute" right={2} top={0}>
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  aria-label="Options"
+                  icon={<PlusSquareIcon />} // Use the new icon
+                  variant="ghost"
+                  size="sm"
+                />
+                <MenuList>
+                  <MenuItem
+                    onClick={() => {
+                      setMenuClicked(true); /* Your logic here */
+                    }}
+                  >
+                    Copy to Working Document
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setMenuClicked(true); /* Your logic here */
+                    }}
+                  >
+                    Show in Source Document
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </Box>
+          )}
         </Box>
-      </Box>
-    </Flex>
-  );
+      </Flex>
+    );
+  };
 
   return (
-    <Flex flexDir="column" flex={1} h="100%" overflowY="hidden">
-      <Box mb={4} flex="1" overflowY="scroll">
+    <Flex flexDir="column" flex={1} p={8} overflowY="hidden" h="100%">
+      <Box mb={4} overflowY="scroll" overflowX="hidden" h="100%">
         {messageStack.map((msg, index) => (
           <Box key={uuidv4()} py={2}>
             <Flex mb={2}>
@@ -166,12 +164,67 @@ const Chat = () => {
                 <SkeletonCircle size="2" />
               </HStack>
             ) : (
-              <SystemMessage message={answerStack[index]} />
+              <>
+                <SystemMessage message={answerStack[index]} />
+                {index === answerStack.length - 1 &&
+                  messageStack.length === answerStack.length && (
+                    <Flex justifyContent="center" alignItems="center" py={4}>
+                      <Button
+                        leftIcon={<RepeatIcon />}
+                        onClick={() => handleRegenerate("regenerate", message)}
+                      >
+                        Regenerate
+                      </Button>
+                    </Flex>
+                  )}
+              </>
             )}
           </Box>
         ))}
         <Box ref={messagesEndRef} />
       </Box>
+      {messageStack.length === 0 && (
+        <Flex
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          mb={4}
+          pb={6}
+        >
+          <HStack mb={2}>
+            <Button
+              onClick={() => {
+                /* Your logic here */
+              }}
+            >
+              Sample Question 1
+            </Button>
+            <Button
+              onClick={() => {
+                /* Your logic here */
+              }}
+            >
+              Sample Question 2
+            </Button>
+          </HStack>
+          <HStack>
+            <Button
+              onClick={() => {
+                /* Your logic here */
+              }}
+            >
+              Sample Question 3
+            </Button>
+            <Button
+              onClick={() => {
+                /* Your logic here */
+              }}
+            >
+              Sample Question 4
+            </Button>
+          </HStack>
+        </Flex>
+      )}
       <form onSubmit={handleSubmit}>
         <InputGroup>
           <Input
