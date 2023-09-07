@@ -14,7 +14,7 @@ import Upload from "./routes/Upload";
 import Editor from "./routes/Editor";
 import Workspace from "./routes/Workspace";
 import CreateProject from "./routes/CreateProject";
-import PdfViewer from "src/features/PdfViewer/PdfViewer";
+import PdfViewer from "./routes/PdfViewer";
 
 export const router = createBrowserRouter([
   {

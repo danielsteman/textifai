@@ -129,23 +129,19 @@ function PdfViewer() {
       {contextMenuVisible && (
         <Menu isOpen={contextMenuVisible}>
           <MenuButton
-            style={{
-              position: "fixed",
-              top: contextMenuPosition.y,
-              left: contextMenuPosition.x,
-            }}
+              position="fixed"
+              top={contextMenuPosition.y}
+              left={contextMenuPosition.x}
           >
             Right-click me
           </MenuButton>
           <MenuList
-            style={{
-              background: "#f0f0f0",
-              border: "1px solid #ccc",
-              boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
-              zIndex: 9999,
-              padding: "5px",
-              minWidth: "120px",
-            }}
+              background="#f0f0f0"
+              border="1px solid #ccc"
+              boxShadow="0px 0px 5px rgba(0, 0, 0, 0.2)"
+              zIndex={9999}
+              padding="5px"
+              minWidth="120px"
           >
             <MenuItem>Option 1</MenuItem>
             <MenuItem>Option 2</MenuItem>
