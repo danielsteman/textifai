@@ -166,7 +166,7 @@ const Workspace = () => {
             <Tooltip label="Open PDF Viewer">
               <IconButton
                 aria-label={"pdf-viewer"}
-                icon={<FaRegFilePdf />} 
+                icon={< FaRegFilePdf/>} 
                 onClick={() => {
                   const updatedOpenTabs = openTabs.map((tab) =>
                     tab.name === currentTab?.name
