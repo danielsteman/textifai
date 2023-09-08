@@ -6,6 +6,10 @@ import {
   Flex,
   HStack,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Spacer,
   Tab,
   TabList,
@@ -35,6 +39,8 @@ import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
 import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
 import theme from "../themes/theme";
 import { AuthContext } from "../providers/AuthProvider";
+import { auth } from "../config/firebase";
+import { useNavigate } from "react-router-dom";
 
 export type ITab = {
   name: string;
@@ -54,6 +60,7 @@ const Workspace = () => {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<ITab>();
 
+  const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
 
   const onTabClose = (tab: ITab) => {
@@ -140,17 +147,29 @@ const Workspace = () => {
         >
           Library
         </Button>
-        <ColorModeSwitcher />
         <Spacer />
         <HStack p={1} gap={3}>
           <Avatar size="sm" />
           <Box fontSize={14}>{currentUser?.email}</Box>
-          <IconButton
-            aria-label={""}
-            icon={<UpDownIcon />}
-            size="sm"
-            variant="ghost"
-          />
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              icon={<UpDownIcon />}
+              size="sm"
+              variant="ghost"
+            />
+            <MenuList>
+              <MenuItem
+                onClick={() => {
+                  auth.signOut();
+                  navigate("/");
+                }}
+              >
+                Sign out
+              </MenuItem>
+              <ColorModeSwitcher />
+            </MenuList>
+          </Menu>
         </HStack>
       </VStack>
       <Tabs
