@@ -29,12 +29,13 @@ import {
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
-import { FaBook, FaBookOpen, FaEdit } from "react-icons/fa";
+import { FaBook, FaBookOpen, FaEdit, FaFilePdf, FaRegFilePdf } from "react-icons/fa";
 import {
   addItemIfNotExist,
   removeItemIfExists,
 } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
+import PdfViewerPanel from "../../features/WorkspaceTabs/PdfViewerPanel";
 import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
 import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
 import theme from "../themes/theme";
@@ -47,6 +48,7 @@ export type ITab = {
   panel: ReactNode;
   openChatSupport: boolean;
   openMiniLibrary: boolean;
+  openPdfViewer: boolean;
 };
 
 export type OpenTabsContext = {
@@ -73,6 +75,7 @@ const Workspace = () => {
     panel: <EditorPanel />,
     openChatSupport: false,
     openMiniLibrary: false,
+    openPdfViewer: false
   };
 
   useEffect(() => {
@@ -100,6 +103,7 @@ const Workspace = () => {
               panel: <EditorPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
+              openPdfViewer: false
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -120,6 +124,7 @@ const Workspace = () => {
               panel: <ChatPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
+              openPdfViewer: false
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -140,6 +145,7 @@ const Workspace = () => {
               panel: <MegaLibraryPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
+              openPdfViewer: false
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -252,6 +258,21 @@ const Workspace = () => {
                 />
               </Tooltip>
               <Box w={2} />
+              <Tooltip label="Open PDF Viewer">
+                <IconButton
+                  aria-label={"pdf-viewer"}
+                  icon={< FaRegFilePdf/>} 
+                  onClick={() => {
+                    const updatedOpenTabs = openTabs.map((tab) =>
+                      tab.name === currentTab?.name
+                        ? { ...tab, openPdfViewer: true }
+                        : tab
+                    );
+                    setOpenTabs(updatedOpenTabs);
+                  }}
+                />
+            </Tooltip>
+            <Box w={2} />
             </>
           )}
         </Flex>

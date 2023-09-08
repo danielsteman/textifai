@@ -1,8 +1,11 @@
-import { Grid, GridItem, TabPanel, useColorMode } from "@chakra-ui/react";
-import { ITab } from "../../app/routes/Workspace";
-import MiniLibraryPanel from "./MiniLibraryPanel";
-import ChatPanel from "./ChatPanel";
-import theme from "../../app/themes/theme";
+// PanelWrapper.tsx
+import React from 'react';
+import { Grid, GridItem, TabPanel, useColorMode } from '@chakra-ui/react';
+import { ITab } from '../../app/routes/Workspace';
+import MiniLibraryPanel from './MiniLibraryPanel';
+import ChatPanel from './ChatPanel';
+import PdfViewerPanel from './PdfViewerPanel'; 
+import theme from '../../app/themes/theme';
 
 interface Props {
   tab: ITab;
@@ -27,7 +30,7 @@ const PanelWrapper: React.FC<Props> = (props) => {
         <GridItem
           rowSpan={2}
           colSpan={
-            props.tab.openChatSupport || props.tab.openMiniLibrary ? 2 : 3
+            props.tab.openChatSupport || props.tab.openMiniLibrary || props.tab.openPdfViewer ? 2 : 3
           }
         >
           {props.tab.panel}
@@ -40,6 +43,11 @@ const PanelWrapper: React.FC<Props> = (props) => {
         {props.tab.openChatSupport && (
           <GridItem rowSpan={1} colSpan={1} h="100%">
             <ChatPanel />
+          </GridItem>
+        )}
+        {props.tab.openPdfViewer && (
+          <GridItem rowSpan={1} colSpan={1} h="100%">
+            <PdfViewerPanel />
           </GridItem>
         )}
       </Grid>
