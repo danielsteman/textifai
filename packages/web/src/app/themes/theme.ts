@@ -93,6 +93,9 @@ const config = {
       },
     }),
   },
+  fonts: {
+    body: "Roboto",
+  },
 };
 
 const theme = extendTheme(config);
