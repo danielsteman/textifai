@@ -35,13 +35,13 @@ import {
   removeItemIfExists,
 } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
-import PdfViewerPanel from "../../features/WorkspaceTabs/PdfViewerPanel";
 import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
 import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
 import theme from "../themes/theme";
 import { AuthContext } from "../providers/AuthProvider";
 import { auth } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
+import PdfViewerPanel from "../../features/WorkspaceTabs/PdfViewerPanel";
 
 export type ITab = {
   name: string;
@@ -65,9 +65,20 @@ const Workspace = () => {
   const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
 
-  const onTabClose = (tab: ITab) => {
-    setOpenTabs(removeItemIfExists(openTabs, tab));
-    setCurrentTab(openTabs[openTabs.length - 2]);
+  const onTabClose = (tabToClose: ITab) => {
+    const newTabs = openTabs.filter(tab => tab.name !== tabToClose.name);
+    setOpenTabs(newTabs);
+
+    if (tabToClose.name === currentTab?.name) {
+        setCurrentTab(newTabs[newTabs.length - 1] || defaultTab);
+    }
+  };
+
+  const closeSupportingPanel = (panelType: 'openChatSupport' | 'openMiniLibrary' | 'openPdfViewer') => {
+    const updatedOpenTabs = openTabs.map((tab) =>
+      tab.name === currentTab?.name ? { ...tab, [panelType]: false } : tab
+    );
+    setOpenTabs(updatedOpenTabs);
   };
 
   const defaultTab: ITab = {
@@ -88,7 +99,7 @@ const Workspace = () => {
   }, [openTabs]);
 
   return (
-    <HStack h="100%">
+<HStack h="100%">
       <VStack bgColor={theme.colors[colorMode].surfaceContainer} h="100%" p={2}>
         <Button
           w="100%"
@@ -152,6 +163,27 @@ const Workspace = () => {
           }}
         >
           Library
+        </Button>
+        <Button
+          w="100%"
+          justifyContent="flex-start"
+          aria-label={"documents"}
+          leftIcon={<FaFilePdf />}
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            const tab: ITab = {
+              name: "PdfViewer",
+              panel: <PdfViewerPanel />,
+              openChatSupport: false,
+              openMiniLibrary: false,
+              openPdfViewer: false
+            };
+            setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+            setCurrentTab(tab);
+          }}
+        >
+          Pdf Viewer
         </Button>
         <Spacer />
         <HStack p={1} gap={3}>
@@ -276,11 +308,11 @@ const Workspace = () => {
             </>
           )}
         </Flex>
-        <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
-          {openTabs.map((tab) => (
-            <PanelWrapper tab={tab} key={tab.name} />
-          ))}
-        </TabPanels>
+          <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
+            {openTabs.map((tab) => (
+                <PanelWrapper tab={tab} key={tab.name} onClose={closeSupportingPanel} />
+            ))}
+          </TabPanels>
       </Tabs>
     </HStack>
   );
