@@ -1,10 +1,13 @@
 .react-quill {
-  height: 100%;
+  height: calc(100% - 42px);
 }
 
 .ql-container {
+  height: calc(100% - 42px);
   padding: 24px 36px;
   font-size: 16px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 .ql-toolbar {
@@ -18,7 +21,6 @@
 
 .ql-container.ql-snow {
   font-family: "Arial", sans-serif;
-  font-size: 16;
   color: white;
   border-color: grey;
 }
