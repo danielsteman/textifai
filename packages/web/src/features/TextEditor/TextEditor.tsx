@@ -2,6 +2,7 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./textEditor.css";
+import { Box } from "@chakra-ui/react";
 
 const TextEditor = () => {
   const [value, setValue] = useState("");

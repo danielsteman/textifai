@@ -16,7 +16,7 @@ export interface CustomTabPanelProps {
 
 const EditorPanel = () => {
   return (
-    <Box h="100%" position="relative" overflow="hidden">
+    <Box h="100%">
       <HStack mb={2}>
         <Text ml={4}>Project title</Text>
         <Spacer />
