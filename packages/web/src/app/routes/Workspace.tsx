@@ -10,6 +10,8 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
+  Grid,
+  HStack,
   IconButton,
   Spacer,
   Tab,
@@ -81,170 +83,161 @@ const Workspace = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Tabs
-      index={activeTabIndex}
-      onChange={setActiveTabIndex}
-      h="100%"
-      variant="unstyled"
-      size="md"
-      display="flex"
-      flexDirection="column"
-    >
-      <Flex direction="row" p={2}>
-        <TabList>
-          {openTabs.map((tab) => {
-            const activeProps =
-              tab.name === currentTab?.name
-                ? {
-                    borderBottom: "2px",
-                    borderColor: theme.colors[colorMode].primary,
-                  }
-                : {};
-            return (
-              <Box
-                key={tab.name}
-                flex={1}
-                position={"relative"}
-                {...activeProps}
-              >
-                <Tab px={12} onClick={() => setCurrentTab(tab)}>
-                  {tab.name}
-                </Tab>
+    <HStack h="100%">
+      <VStack bgColor={theme.colors[colorMode].surfaceContainer} h="100%" p={2}>
+        <Button
+          w="100%"
+          justifyContent="flex-start"
+          aria-label={"editor"}
+          leftIcon={<FaEdit />}
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            const tab = {
+              name: "Editor",
+              panel: <EditorPanel />,
+              openChatSupport: false,
+              openMiniLibrary: false,
+            };
+            setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+            setCurrentTab(tab);
+          }}
+        >
+          Editor
+        </Button>
+        <Button
+          w="100%"
+          justifyContent="flex-start"
+          aria-label={"chat"}
+          leftIcon={<ChatIcon />}
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            const tab: ITab = {
+              name: "Chat",
+              panel: <ChatPanel />,
+              openChatSupport: false,
+              openMiniLibrary: false,
+            };
+            setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+            setCurrentTab(tab);
+          }}
+        >
+          Chat
+        </Button>
+        <Button
+          w="100%"
+          justifyContent="flex-start"
+          aria-label={"documents"}
+          leftIcon={<FaBook />}
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            const tab: ITab = {
+              name: "Library",
+              panel: <MegaLibraryPanel />,
+              openChatSupport: false,
+              openMiniLibrary: false,
+            };
+            setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+            setCurrentTab(tab);
+          }}
+        >
+          Library
+        </Button>
+        <Spacer />
+        <ColorModeSwitcher />
+      </VStack>
+      <Tabs
+        index={activeTabIndex}
+        onChange={setActiveTabIndex}
+        h="100%"
+        w="100%"
+        variant="unstyled"
+        size="md"
+        display="flex"
+        flexDirection="column"
+      >
+        <Flex direction="row" p={2}>
+          <TabList>
+            {openTabs.map((tab) => {
+              const activeProps =
+                tab.name === currentTab?.name
+                  ? {
+                      borderBottom: "2px",
+                      borderColor: theme.colors[colorMode].primary,
+                    }
+                  : {};
+              return (
+                <Box
+                  key={tab.name}
+                  flex={1}
+                  position={"relative"}
+                  {...activeProps}
+                >
+                  <Tab px={12} onClick={() => setCurrentTab(tab)}>
+                    {tab.name}
+                  </Tab>
+                  <IconButton
+                    position={"absolute"}
+                    right={0.5}
+                    variant="ghost"
+                    borderRadius={16}
+                    top={1.5}
+                    size="xs"
+                    aria-label={"close"}
+                    icon={<SmallCloseIcon />}
+                    onClick={() => {
+                      onTabClose(tab);
+                    }}
+                  />
+                </Box>
+              );
+            })}
+          </TabList>
+          <Spacer />
+          {currentTab?.name === "Editor" && (
+            <>
+              <Tooltip label="Open mini library">
                 <IconButton
-                  position={"absolute"}
-                  right={0.5}
-                  variant="ghost"
-                  borderRadius={16}
-                  top={1.5}
-                  size="xs"
-                  aria-label={"close"}
-                  icon={<SmallCloseIcon />}
+                  aria-label={"library-support"}
+                  icon={<FaBookOpen />}
                   onClick={() => {
-                    onTabClose(tab);
+                    const updatedOpenTabs = openTabs.map((tab) =>
+                      tab.name == currentTab?.name
+                        ? { ...tab, openMiniLibrary: true }
+                        : tab
+                    );
+                    setOpenTabs(updatedOpenTabs);
                   }}
                 />
-              </Box>
-            );
-          })}
-        </TabList>
-        <Spacer />
-        {currentTab?.name === "Editor" && (
-          <>
-            <Tooltip label="Open mini library">
-              <IconButton
-                aria-label={"library-support"}
-                icon={<FaBookOpen />}
-                onClick={() => {
-                  const updatedOpenTabs = openTabs.map((tab) =>
-                    tab.name == currentTab?.name
-                      ? { ...tab, openMiniLibrary: true }
-                      : tab
-                  );
-                  setOpenTabs(updatedOpenTabs);
-                }}
-              />
-            </Tooltip>
-            <Box w={2} />
-            <Tooltip label="Open support chat">
-              <IconButton
-                aria-label={"chat-support"}
-                icon={<ChatIcon />}
-                onClick={() => {
-                  const updatedOpenTabs = openTabs.map((tab) =>
-                    tab.name == currentTab?.name
-                      ? { ...tab, openChatSupport: true }
-                      : tab
-                  );
-                  setOpenTabs(updatedOpenTabs);
-                }}
-              />
-            </Tooltip>
-            <Box w={2} />
-          </>
-        )}
-        <IconButton
-          aria-label={"settings"}
-          icon={<HamburgerIcon />}
-          onClick={onOpen}
-        />
-        <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader>Workspace settings</DrawerHeader>
-            <DrawerBody>
-              <VStack>
-                <Button
-                  w="100%"
-                  justifyContent="flex-start"
-                  aria-label={"editor"}
-                  leftIcon={<FaEdit />}
+              </Tooltip>
+              <Box w={2} />
+              <Tooltip label="Open support chat">
+                <IconButton
+                  aria-label={"chat-support"}
+                  icon={<ChatIcon />}
                   onClick={() => {
-                    const tab = {
-                      name: "Editor",
-                      panel: <EditorPanel />,
-                      openChatSupport: false,
-                      openMiniLibrary: false,
-                    };
-                    setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-                    setCurrentTab(tab);
-                    onClose();
+                    const updatedOpenTabs = openTabs.map((tab) =>
+                      tab.name == currentTab?.name
+                        ? { ...tab, openChatSupport: true }
+                        : tab
+                    );
+                    setOpenTabs(updatedOpenTabs);
                   }}
-                >
-                  Editor
-                </Button>
-                <Button
-                  w="100%"
-                  justifyContent="flex-start"
-                  aria-label={"chat"}
-                  leftIcon={<ChatIcon />}
-                  onClick={() => {
-                    const tab: ITab = {
-                      name: "Chat",
-                      panel: <ChatPanel />,
-                      openChatSupport: false,
-                      openMiniLibrary: false,
-                    };
-                    setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-                    setCurrentTab(tab);
-                    onClose();
-                  }}
-                >
-                  Chat
-                </Button>
-                <Button
-                  w="100%"
-                  justifyContent="flex-start"
-                  aria-label={"documents"}
-                  leftIcon={<FaBook />}
-                  onClick={() => {
-                    const tab: ITab = {
-                      name: "Library",
-                      panel: <MegaLibraryPanel />,
-                      openChatSupport: false,
-                      openMiniLibrary: false,
-                    };
-                    setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-                    setCurrentTab(tab);
-                    onClose();
-                  }}
-                >
-                  Library
-                </Button>
-              </VStack>
-            </DrawerBody>
-            <DrawerFooter>
-              <ColorModeSwitcher />
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-      </Flex>
-      <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
-        {openTabs.map((tab) => (
-          <PanelWrapper tab={tab} key={tab.name} />
-        ))}
-      </TabPanels>
-    </Tabs>
+                />
+              </Tooltip>
+              <Box w={2} />
+            </>
+          )}
+        </Flex>
+        <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
+          {openTabs.map((tab) => (
+            <PanelWrapper tab={tab} key={tab.name} />
+          ))}
+        </TabPanels>
+      </Tabs>
+    </HStack>
   );
 };
 
