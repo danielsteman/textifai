@@ -11,9 +11,16 @@ const TextEditor = () => {
       onChange={setValue}
       style={{
         height: "100%",
-        display: "absolute",
-        right: 0,
-        top: 0,
+      }}
+      modules={{
+        toolbar: [
+          [{ header: "1" }, { header: "2" }],
+          ["bold", "italic", "underline"],
+          ["link"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["image"],
+          ["clean"],
+        ],
       }}
     />
   );
