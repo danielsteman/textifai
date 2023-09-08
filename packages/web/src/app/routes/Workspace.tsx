@@ -1,5 +1,6 @@
-import { ChatIcon, SmallCloseIcon } from "@chakra-ui/icons";
+import { ChatIcon, SmallCloseIcon, UpDownIcon } from "@chakra-ui/icons";
 import {
+  Avatar,
   Box,
   Button,
   Flex,
@@ -18,6 +19,7 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -32,6 +34,7 @@ import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
 import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
 import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
 import theme from "../themes/theme";
+import { AuthContext } from "../providers/AuthProvider";
 
 export type ITab = {
   name: string;
@@ -50,6 +53,8 @@ const Workspace = () => {
   const [openTabs, setOpenTabs] = useState<ITab[]>([]);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<ITab>();
+
+  const currentUser = useContext(AuthContext);
 
   const onTabClose = (tab: ITab) => {
     setOpenTabs(removeItemIfExists(openTabs, tab));
@@ -135,8 +140,18 @@ const Workspace = () => {
         >
           Library
         </Button>
-        <Spacer />
         <ColorModeSwitcher />
+        <Spacer />
+        <HStack p={1} gap={3}>
+          <Avatar size="sm" />
+          <Box fontSize={14}>{currentUser?.email}</Box>
+          <IconButton
+            aria-label={""}
+            icon={<UpDownIcon />}
+            size="sm"
+            variant="ghost"
+          />
+        </HStack>
       </VStack>
       <Tabs
         index={activeTabIndex}
