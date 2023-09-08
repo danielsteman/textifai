@@ -1,16 +1,8 @@
-import { ChatIcon, HamburgerIcon, SmallCloseIcon } from "@chakra-ui/icons";
+import { ChatIcon, SmallCloseIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
   Flex,
-  Grid,
   HStack,
   IconButton,
   Spacer,
@@ -21,7 +13,6 @@ import {
   Tooltip,
   VStack,
   useColorMode,
-  useDisclosure,
 } from "@chakra-ui/react";
 import {
   Dispatch,
@@ -81,7 +72,6 @@ const Workspace = () => {
     setActiveTabIndex(openTabs.length - 1);
   }, [openTabs]);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <HStack h="100%">
       <VStack bgColor={theme.colors[colorMode].surfaceContainer} h="100%" p={2}>
