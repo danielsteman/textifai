@@ -1,26 +1,82 @@
 // PanelWrapper.tsx
 import React from "react";
-import { Grid, GridItem, TabPanel, useColorMode } from "@chakra-ui/react";
+import {
+  Box,
+  Grid,
+  GridItem,
+  HStack,
+  Heading,
+  IconButton,
+  Spacer,
+  TabPanel,
+  Text,
+  useColorMode,
+} from "@chakra-ui/react";
 import { ITab } from "../../app/routes/Workspace";
 import MiniLibraryPanel from "./MiniLibraryPanel";
 import ChatPanel from "./ChatPanel";
 import PdfViewerPanel from "./PdfViewerPanel";
 import theme from "../../app/themes/theme";
+import { SmallCloseIcon } from "@chakra-ui/icons";
 
-interface Props {
+interface PanelWrapperProps {
   tab: ITab;
+  onClose: (
+    panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
+  ) => void;
 }
 
-const PanelWrapper: React.FC<Props> = (props) => {
+interface SupportWindowGridItemProps {
+  children: React.ReactNode;
+  windowName: string;
+  onClose: (
+    panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
+  ) => void;
+}
+
+const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
+  children,
+  windowName,
+  onClose,
+}) => {
   const { colorMode } = useColorMode();
   return (
-    <TabPanel
+    <GridItem
+      rowSpan={1}
+      colSpan={1}
       h="100%"
-      flex="1"
       bgColor={theme.colors[colorMode].surfaceContainer}
-      borderRadius={16}
-      p={2}
+      pb={2}
+      borderRadius={8}
     >
+      <HStack
+        mb={2}
+        pl={2}
+        bgColor={theme.colors[colorMode].primaryContainer}
+        borderTopRadius={8}
+      >
+        <Heading size="xs" color={theme.colors[colorMode].onPrimaryContainer}>
+          {windowName}
+        </Heading>
+        <Spacer />
+        <IconButton
+          variant="ghost"
+          size="xs"
+          aria-label={"close"}
+          icon={<SmallCloseIcon />}
+          onClick={() => onClose("openMiniLibrary")}
+        />
+      </HStack>
+      {children}
+    </GridItem>
+  );
+};
+
+const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
+  const { colorMode } = useColorMode();
+
+  return (
+    <TabPanel h="100%" flex="1" borderRadius={16} p={2}>
       <Grid
         h="100%"
         templateRows="repeat(2, 1fr)"
@@ -30,29 +86,38 @@ const PanelWrapper: React.FC<Props> = (props) => {
         <GridItem
           rowSpan={2}
           colSpan={
-            props.tab.openChatSupport ||
-            props.tab.openMiniLibrary ||
-            props.tab.openPdfViewer
+            tab.openChatSupport || tab.openMiniLibrary || tab.openPdfViewer
               ? 2
               : 3
           }
         >
-          {props.tab.panel}
+          {tab.panel}
         </GridItem>
-        {props.tab.openMiniLibrary && (
-          <GridItem rowSpan={1} colSpan={1} h="100%">
+        {tab.openMiniLibrary && (
+          <SupportWindowGridItem
+            onClose={() => onClose("openMiniLibrary")}
+            windowName="Library"
+          >
             <MiniLibraryPanel />
-          </GridItem>
+          </SupportWindowGridItem>
         )}
-        {props.tab.openChatSupport && (
-          <GridItem rowSpan={1} colSpan={1} h="100%">
+
+        {tab.openChatSupport && (
+          <SupportWindowGridItem
+            onClose={() => onClose("openChatSupport")}
+            windowName="Chat"
+          >
             <ChatPanel />
-          </GridItem>
+          </SupportWindowGridItem>
         )}
-        {props.tab.openPdfViewer && (
-          <GridItem rowSpan={1} colSpan={1} h="100%">
+
+        {tab.openPdfViewer && (
+          <SupportWindowGridItem
+            onClose={() => onClose("openPdfViewer")}
+            windowName="Pdf viewer"
+          >
             <PdfViewerPanel />
-          </GridItem>
+          </SupportWindowGridItem>
         )}
       </Grid>
     </TabPanel>
