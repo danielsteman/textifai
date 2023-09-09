@@ -114,7 +114,7 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
         {tab.openPdfViewer && (
           <SupportWindowGridItem
             onClose={() => onClose("openPdfViewer")}
-            windowName="Chat"
+            windowName="Pdf viewer"
           >
             <PdfViewerPanel />
           </SupportWindowGridItem>
