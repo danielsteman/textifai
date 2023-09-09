@@ -29,7 +29,13 @@ import {
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
-import { FaBook, FaBookOpen, FaEdit, FaFilePdf, FaRegFilePdf } from "react-icons/fa";
+import {
+  FaBook,
+  FaBookOpen,
+  FaEdit,
+  FaFilePdf,
+  FaRegFilePdf,
+} from "react-icons/fa";
 import {
   addItemIfNotExist,
   removeItemIfExists,
@@ -75,7 +81,7 @@ const Workspace = () => {
     panel: <EditorPanel />,
     openChatSupport: false,
     openMiniLibrary: false,
-    openPdfViewer: false
+    openPdfViewer: false,
   };
 
   useEffect(() => {
@@ -103,7 +109,7 @@ const Workspace = () => {
               panel: <EditorPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
-              openPdfViewer: false
+              openPdfViewer: false,
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -124,7 +130,7 @@ const Workspace = () => {
               panel: <ChatPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
-              openPdfViewer: false
+              openPdfViewer: false,
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -145,7 +151,7 @@ const Workspace = () => {
               panel: <MegaLibraryPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
-              openPdfViewer: false
+              openPdfViewer: false,
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -181,8 +187,9 @@ const Workspace = () => {
       <Tabs
         index={activeTabIndex}
         onChange={setActiveTabIndex}
-        h="100%"
         w="100%"
+        h="100%"
+        maxH="100%"
         variant="unstyled"
         size="md"
         display="flex"
@@ -261,7 +268,7 @@ const Workspace = () => {
               <Tooltip label="Open PDF Viewer">
                 <IconButton
                   aria-label={"pdf-viewer"}
-                  icon={< FaRegFilePdf/>} 
+                  icon={<FaRegFilePdf />}
                   onClick={() => {
                     const updatedOpenTabs = openTabs.map((tab) =>
                       tab.name === currentTab?.name
@@ -271,12 +278,19 @@ const Workspace = () => {
                     setOpenTabs(updatedOpenTabs);
                   }}
                 />
-            </Tooltip>
-            <Box w={2} />
+              </Tooltip>
+              <Box w={2} />
             </>
           )}
         </Flex>
-        <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
+        <TabPanels
+          flex="1"
+          display="flex"
+          flexDirection="column"
+          px={2}
+          pb={2}
+          maxH="calc(100% - 58px)"
+        >
           {openTabs.map((tab) => (
             <PanelWrapper tab={tab} key={tab.name} />
           ))}
