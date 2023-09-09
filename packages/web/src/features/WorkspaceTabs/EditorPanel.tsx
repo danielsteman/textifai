@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Grid,
-  GridItem,
-  HStack,
-  Spacer,
-  Text,
-} from "@chakra-ui/react";
+import { Button, HStack, Spacer, Text } from "@chakra-ui/react";
 import TextEditor from "../TextEditor/TextEditor";
 
 export interface CustomTabPanelProps {
@@ -16,7 +8,7 @@ export interface CustomTabPanelProps {
 
 const EditorPanel = () => {
   return (
-    <Box h="100%">
+    <>
       <HStack mb={2}>
         <Text ml={4}>Project title</Text>
         <Spacer />
@@ -25,7 +17,7 @@ const EditorPanel = () => {
         <Button size="sm">Settings</Button>
       </HStack>
       <TextEditor />
-    </Box>
+    </>
   );
 };
 

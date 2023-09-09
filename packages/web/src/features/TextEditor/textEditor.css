@@ -5,7 +5,7 @@
 .ql-container {
   height: calc(100% - 42px);
   padding: 24px 36px;
-  font-size: 16px;
+  font-size: 15px;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
@@ -20,7 +20,11 @@
 }
 
 .ql-container.ql-snow {
-  font-family: "Arial", sans-serif;
   color: white;
   border-color: grey;
+}
+
+.ql-editor {
+  max-height: 100%;
+  overflow: auto;
 }
