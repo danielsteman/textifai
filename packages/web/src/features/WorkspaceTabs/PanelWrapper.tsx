@@ -112,19 +112,12 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
         )}
 
         {tab.openPdfViewer && (
-          <GridItem rowSpan={1} colSpan={1} h="100%" position="relative">
+          <SupportWindowGridItem
+            onClose={() => onClose("openPdfViewer")}
+            windowName="Chat"
+          >
             <PdfViewerPanel />
-            <IconButton
-              position={"absolute"}
-              right={2}
-              top={2}
-              variant="ghost"
-              size="sm"
-              aria-label={"close"}
-              icon={<SmallCloseIcon />}
-              onClick={() => onClose("openPdfViewer")}
-            />
-          </GridItem>
+          </SupportWindowGridItem>
         )}
       </Grid>
     </TabPanel>
