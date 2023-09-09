@@ -187,6 +187,7 @@ const Workspace = () => {
       <Tabs
         index={activeTabIndex}
         onChange={setActiveTabIndex}
+        w="100%"
         h="100%"
         maxH="100%"
         variant="unstyled"
