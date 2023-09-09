@@ -1,10 +1,15 @@
 // PanelWrapper.tsx
 import React from "react";
 import {
+  Box,
   Grid,
   GridItem,
+  HStack,
+  Heading,
   IconButton,
+  Spacer,
   TabPanel,
+  Text,
   useColorMode,
 } from "@chakra-ui/react";
 import { ITab } from "../../app/routes/Workspace";
@@ -14,14 +19,60 @@ import PdfViewerPanel from "./PdfViewerPanel";
 import theme from "../../app/themes/theme";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 
-interface Props {
+interface PanelWrapperProps {
   tab: ITab;
   onClose: (
     panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
   ) => void;
 }
 
-const PanelWrapper: React.FC<Props> = ({ tab, onClose }) => {
+interface SupportWindowGridItemProps {
+  children: React.ReactNode;
+  windowName: string;
+  onClose: (
+    panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
+  ) => void;
+}
+
+const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
+  children,
+  windowName,
+  onClose,
+}) => {
+  const { colorMode } = useColorMode();
+  return (
+    <GridItem
+      rowSpan={1}
+      colSpan={1}
+      h="100%"
+      bgColor={theme.colors[colorMode].surfaceContainer}
+      pb={2}
+      borderRadius={8}
+    >
+      <HStack
+        mb={2}
+        pl={2}
+        bgColor={theme.colors[colorMode].primaryContainer}
+        borderTopRadius={8}
+      >
+        <Heading size="xs" color={theme.colors[colorMode].onPrimaryContainer}>
+          {windowName}
+        </Heading>
+        <Spacer />
+        <IconButton
+          variant="ghost"
+          size="xs"
+          aria-label={"close"}
+          icon={<SmallCloseIcon />}
+          onClick={() => onClose("openMiniLibrary")}
+        />
+      </HStack>
+      {children}
+    </GridItem>
+  );
+};
+
+const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
   const { colorMode } = useColorMode();
 
   return (
@@ -42,37 +93,22 @@ const PanelWrapper: React.FC<Props> = ({ tab, onClose }) => {
         >
           {tab.panel}
         </GridItem>
-
         {tab.openMiniLibrary && (
-          <GridItem rowSpan={1} colSpan={1} h="100%" position="relative">
+          <SupportWindowGridItem
+            onClose={() => onClose("openMiniLibrary")}
+            windowName="Library"
+          >
             <MiniLibraryPanel />
-            <IconButton
-              position={"absolute"}
-              right={2}
-              top={2}
-              variant="ghost"
-              size="sm"
-              aria-label={"close"}
-              icon={<SmallCloseIcon />}
-              onClick={() => onClose("openMiniLibrary")}
-            />
-          </GridItem>
+          </SupportWindowGridItem>
         )}
 
         {tab.openChatSupport && (
-          <GridItem rowSpan={1} colSpan={1} h="100%" position="relative">
+          <SupportWindowGridItem
+            onClose={() => onClose("openChatSupport")}
+            windowName="Chat"
+          >
             <ChatPanel />
-            <IconButton
-              position={"absolute"}
-              right={2}
-              top={2}
-              variant="ghost"
-              size="sm"
-              aria-label={"close"}
-              icon={<SmallCloseIcon />}
-              onClick={() => onClose("openChatSupport")}
-            />
-          </GridItem>
+          </SupportWindowGridItem>
         )}
 
         {tab.openPdfViewer && (
