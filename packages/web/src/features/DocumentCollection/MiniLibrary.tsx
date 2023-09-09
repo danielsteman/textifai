@@ -36,8 +36,8 @@ const MiniLibrary = () => {
 
   return (
     <VStack h="100%">
-      <InputGroup>
-        <InputLeftElement pointerEvents="none">
+      <InputGroup px={2}>
+        <InputLeftElement pointerEvents="none" ml={2}>
           <SearchIcon />
         </InputLeftElement>
         <Input
