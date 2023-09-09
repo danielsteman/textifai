@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import "./textEditor.css";
 
 const TextEditor = () => {
   const [value, setValue] = useState("");
@@ -9,9 +10,7 @@ const TextEditor = () => {
       theme="snow"
       value={value}
       onChange={setValue}
-      style={{
-        height: "100%",
-      }}
+      className="react-quill"
       modules={{
         toolbar: [
           [{ header: "1" }, { header: "2" }],

@@ -29,7 +29,13 @@ import {
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
-import { FaBook, FaBookOpen, FaEdit, FaFilePdf, FaRegFilePdf } from "react-icons/fa";
+import {
+  FaBook,
+  FaBookOpen,
+  FaEdit,
+  FaFilePdf,
+  FaRegFilePdf,
+} from "react-icons/fa";
 import {
   addItemIfNotExist,
   removeItemIfExists,
@@ -66,15 +72,17 @@ const Workspace = () => {
   const currentUser = useContext(AuthContext);
 
   const onTabClose = (tabToClose: ITab) => {
-    const newTabs = openTabs.filter(tab => tab.name !== tabToClose.name);
+    const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
     setOpenTabs(newTabs);
 
     if (tabToClose.name === currentTab?.name) {
-        setCurrentTab(newTabs[newTabs.length - 1] || defaultTab);
+      setCurrentTab(newTabs[newTabs.length - 1] || defaultTab);
     }
   };
 
-  const closeSupportingPanel = (panelType: 'openChatSupport' | 'openMiniLibrary' | 'openPdfViewer') => {
+  const closeSupportingPanel = (
+    panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
+  ) => {
     const updatedOpenTabs = openTabs.map((tab) =>
       tab.name === currentTab?.name ? { ...tab, [panelType]: false } : tab
     );
@@ -86,7 +94,7 @@ const Workspace = () => {
     panel: <EditorPanel />,
     openChatSupport: false,
     openMiniLibrary: false,
-    openPdfViewer: false
+    openPdfViewer: false,
   };
 
   useEffect(() => {
@@ -99,7 +107,7 @@ const Workspace = () => {
   }, [openTabs]);
 
   return (
-<HStack h="100%">
+    <HStack h="100%">
       <VStack bgColor={theme.colors[colorMode].surfaceContainer} h="100%" p={2}>
         <Button
           w="100%"
@@ -114,7 +122,7 @@ const Workspace = () => {
               panel: <EditorPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
-              openPdfViewer: false
+              openPdfViewer: false,
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -135,7 +143,7 @@ const Workspace = () => {
               panel: <ChatPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
-              openPdfViewer: false
+              openPdfViewer: false,
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -156,7 +164,7 @@ const Workspace = () => {
               panel: <MegaLibraryPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
-              openPdfViewer: false
+              openPdfViewer: false,
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -177,7 +185,7 @@ const Workspace = () => {
               panel: <PdfViewerPanel />,
               openChatSupport: false,
               openMiniLibrary: false,
-              openPdfViewer: false
+              openPdfViewer: false,
             };
             setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
             setCurrentTab(tab);
@@ -213,8 +221,9 @@ const Workspace = () => {
       <Tabs
         index={activeTabIndex}
         onChange={setActiveTabIndex}
-        h="100%"
         w="100%"
+        h="100%"
+        maxH="100%"
         variant="unstyled"
         size="md"
         display="flex"
@@ -293,7 +302,7 @@ const Workspace = () => {
               <Tooltip label="Open PDF Viewer">
                 <IconButton
                   aria-label={"pdf-viewer"}
-                  icon={< FaRegFilePdf/>} 
+                  icon={<FaRegFilePdf />}
                   onClick={() => {
                     const updatedOpenTabs = openTabs.map((tab) =>
                       tab.name === currentTab?.name
@@ -303,16 +312,27 @@ const Workspace = () => {
                     setOpenTabs(updatedOpenTabs);
                   }}
                 />
-            </Tooltip>
-            <Box w={2} />
+              </Tooltip>
+              <Box w={2} />
             </>
           )}
         </Flex>
-          <TabPanels flex="1" display="flex" flexDirection="column" px={2} pb={2}>
-            {openTabs.map((tab) => (
-                <PanelWrapper tab={tab} key={tab.name} onClose={closeSupportingPanel} />
-            ))}
-          </TabPanels>
+        <TabPanels
+          flex="1"
+          display="flex"
+          flexDirection="column"
+          px={2}
+          pb={2}
+          maxH="calc(100% - 58px)"
+        >
+          {openTabs.map((tab) => (
+            <PanelWrapper
+              onClose={closeSupportingPanel}
+              tab={tab}
+              key={tab.name}
+            />
+          ))}
+        </TabPanels>
       </Tabs>
     </HStack>
   );
