@@ -1,4 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import {
   Box,
@@ -41,8 +47,14 @@ import { MdAnalytics, MdUpload } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 import theme from "../../app/themes/theme";
 import UploadForm from "../UploadForm/UploadForm";
+import { ITab } from "src/app/routes/Workspace";
 
-const MegaLibrary = () => {
+export interface MegaLibraryProps {
+  openTabs: ITab[];
+  setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
+}
+
+const MegaLibrary: React.FC<MegaLibraryProps> = ({ openTabs, setOpenTabs }) => {
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
@@ -336,6 +348,9 @@ const MegaLibrary = () => {
                         bgColor:
                           theme.colors[colorMode].surfaceContainerHighest,
                         cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        // open document in new tab
                       }}
                     >
                       <Td>

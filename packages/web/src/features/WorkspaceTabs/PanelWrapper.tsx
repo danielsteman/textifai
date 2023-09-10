@@ -1,7 +1,6 @@
 // PanelWrapper.tsx
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import {
-  Box,
   Grid,
   GridItem,
   HStack,
@@ -9,7 +8,6 @@ import {
   IconButton,
   Spacer,
   TabPanel,
-  Text,
   useColorMode,
 } from "@chakra-ui/react";
 import { ITab } from "../../app/routes/Workspace";
@@ -71,8 +69,6 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
 };
 
 const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
-  const { colorMode } = useColorMode();
-
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} p={2}>
       <Grid

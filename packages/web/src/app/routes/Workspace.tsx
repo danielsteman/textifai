@@ -158,7 +158,12 @@ const Workspace = () => {
           onClick={() => {
             const tab: ITab = {
               name: "Library",
-              panel: <MegaLibraryPanel />,
+              panel: (
+                <MegaLibraryPanel
+                  openTabs={openTabs}
+                  setOpenTabs={setOpenTabs}
+                />
+              ),
               openChatSupport: false,
               openMiniLibrary: false,
               openPdfViewer: false,
