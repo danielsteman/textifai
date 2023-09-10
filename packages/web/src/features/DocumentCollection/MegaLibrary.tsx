@@ -330,7 +330,14 @@ const MegaLibrary = () => {
                 documents
                   .filter((doc) => doc.name.includes(documentQuery))
                   .map((doc) => (
-                    <Tr key={doc.fullPath}>
+                    <Tr
+                      key={doc.fullPath}
+                      _hover={{
+                        bgColor:
+                          theme.colors[colorMode].surfaceContainerHighest,
+                        cursor: "pointer",
+                      }}
+                    >
                       <Td>
                         <Checkbox
                           onChange={() =>
