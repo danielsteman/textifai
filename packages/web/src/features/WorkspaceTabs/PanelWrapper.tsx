@@ -29,9 +29,7 @@ interface PanelWrapperProps {
 interface SupportWindowGridItemProps {
   children: React.ReactNode;
   windowName: string;
-  onClose: (
-    panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
-  ) => void;
+  onClose: () => void;
 }
 
 const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
@@ -64,7 +62,7 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
           size="xs"
           aria-label={"close"}
           icon={<SmallCloseIcon />}
-          onClick={() => onClose("openMiniLibrary")}
+          onClick={onClose}
         />
       </HStack>
       {children}
