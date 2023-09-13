@@ -223,7 +223,7 @@ const Workspace = () => {
           Pdf Viewer
         </Button>
         <Spacer />
-        <HStack p={1} gap={3}>
+        {/* <HStack p={1} gap={3}>
           <Avatar size="sm" />
           <Box fontSize={14}>{currentUser?.email}</Box>
           <Menu>
@@ -245,7 +245,7 @@ const Workspace = () => {
               <ColorModeSwitcher />
             </MenuList>
           </Menu>
-        </HStack>
+        </HStack> */}
       </VStack>
     )}
     {!isMenuOpen && (
