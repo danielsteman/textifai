@@ -50,6 +50,7 @@ import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "src/app/routes/Workspace";
 import PdfViewer from "../PdfViewer/PdfViewer";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
+import { shortenString } from "../../common/utils/shortenString";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
@@ -125,7 +126,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 
   const handleOpenDocumentInTab = (document: StorageReference) => {
     const tab: ITab = {
-      name: document.fullPath.split("/").pop() || "pdf",
+      name: shortenString(document.fullPath.split("/").pop() || "pdf", 16),
       panel: <PdfViewer document={ref(storage, document.fullPath)} />,
       openChatSupport: false,
       openMiniLibrary: false,
