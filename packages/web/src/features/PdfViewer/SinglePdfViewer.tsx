@@ -9,7 +9,6 @@ interface Props {
 
 const SinglePdfViewer: React.FC<Props> = ({ document }) => {
   const [numPages, setNumPages] = useState<number>(0);
-  const [scale, setScale] = useState<number>(1);
   const [pdfURL, setPdfURL] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,7 +45,7 @@ const SinglePdfViewer: React.FC<Props> = ({ document }) => {
                 borderBottom="1px solid black"
                 marginBottom="1rem"
               >
-                <Page pageNumber={index + 1} scale={scale} />
+                <Page pageNumber={index + 1} scale={1} />
               </Box>
             ))}
           </Document>
