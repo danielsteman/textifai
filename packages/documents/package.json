@@ -1,13 +1,13 @@
 {
-  "name": "backend",
+  "name": "documents",
   "version": "1.0.0",
   "main": "index.ts",
   "license": "MIT",
   "scripts": {
     "build": "npx tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/documents/src/index.js",
     "test": "jest",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/documents/src/index.js\""
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",

@@ -1,0 +1,9 @@
+{
+  "license": "MIT",
+  "workspaces": [
+    "packages/chat",
+    "packages/documents",
+    "packages/web",
+    "packages/shared"
+  ]
+}
