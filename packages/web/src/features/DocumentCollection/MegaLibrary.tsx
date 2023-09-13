@@ -368,17 +368,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                           theme.colors[colorMode].surfaceContainerHighest,
                         cursor: "pointer",
                       }}
-                      onClick={() => {
-                        const tab: ITab = {
-                          name: doc.fullPath.split("/").pop() || "pdf",
-                          panel: <PdfViewer document={doc} />,
-                          openChatSupport: false,
-                          openMiniLibrary: false,
-                          openPdfViewer: false,
-                        };
-                        setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-                        setCurrentTab(tab);
-                      }}
+                      onClick={() => handleOpenDocumentInTab(doc)}
                     >
                       <Td>
                         <Checkbox
