@@ -123,6 +123,18 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     });
   };
 
+  const handleOpenDocumentInTab = (document: StorageReference) => {
+    const tab: ITab = {
+      name: document.fullPath.split("/").pop() || "pdf",
+      panel: <PdfViewer document={ref(storage, document.fullPath)} />,
+      openChatSupport: false,
+      openMiniLibrary: false,
+      openPdfViewer: false,
+    };
+    setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+    setCurrentTab(tab);
+  };
+
   return (
     <Grid
       h="100%"
@@ -359,9 +371,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                       onClick={() => {
                         const tab: ITab = {
                           name: doc.fullPath.split("/").pop() || "pdf",
-                          panel: (
-                            <PdfViewer document={ref(storage, doc.fullPath)} />
-                          ),
+                          panel: <PdfViewer document={doc} />,
                           openChatSupport: false,
                           openMiniLibrary: false,
                           openPdfViewer: false,
