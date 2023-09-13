@@ -1,13 +1,13 @@
 {
-  "name": "documents",
+  "name": "@textifai/documents",
   "version": "1.0.0",
   "main": "index.ts",
   "license": "MIT",
   "scripts": {
     "build": "npx tsc",
-    "start": "node dist/documents/src/index.js",
+    "start": "node dist/index.js",
     "test": "jest",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/documents/src/index.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
@@ -31,7 +31,6 @@
     "multer": "^1.4.3",
     "nodemon": "^2.0.22",
     "pdf-parse": "^1.1.1",
-    "shared": "../shared",
     "swagger": "^0.7.5",
     "swagger-ui-express": "^4.6.3",
     "typescript": "^5.0.4",

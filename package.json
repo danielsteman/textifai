@@ -1,9 +1,6 @@
 {
-  "license": "MIT",
+  "private": true,
   "workspaces": [
-    "packages/chat",
-    "packages/documents",
-    "packages/web",
-    "packages/shared"
+    "packages/*"
   ]
 }
