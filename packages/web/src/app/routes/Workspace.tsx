@@ -18,6 +18,7 @@ import {
   Tooltip,
   VStack,
   useColorMode,
+  Divider
 } from "@chakra-ui/react";
 import {
   Dispatch,
@@ -28,6 +29,7 @@ import {
   useState,
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
+import UserCard from "../../common/components/UserCard";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
 import {
   FaBook,
@@ -122,6 +124,15 @@ const Workspace = () => {
             mb={2}
           />
         </Flex>
+        {/* User Card Component */}
+        <UserCard 
+            onLogout={() => {
+                auth.signOut();
+                navigate("/");
+            }} 
+        />
+        {/* Divider */}
+        <Divider />
         <Button
           w="100%"
           justifyContent="flex-start"
