@@ -42,9 +42,11 @@ import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
 import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
 import theme from "../themes/theme";
 import { AuthContext } from "../providers/AuthProvider";
-import { auth } from "../config/firebase";
+import { auth, storage } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 import PdfViewerPanel from "../../features/WorkspaceTabs/PdfViewerPanel";
+import SinglePdfViewer from "../../features/PdfViewer/PdfViewer";
+import { ref } from "firebase/storage";
 
 export type ITab = {
   name: string;
@@ -63,7 +65,7 @@ const Workspace = () => {
   const { colorMode } = useColorMode();
   const [openTabs, setOpenTabs] = useState<ITab[]>([]);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [currentTab, setCurrentTab] = useState<ITab>();
+  const [currentTab, setCurrentTab] = useState<ITab | undefined>();
 
   const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
@@ -162,6 +164,7 @@ const Workspace = () => {
                 <MegaLibraryPanel
                   openTabs={openTabs}
                   setOpenTabs={setOpenTabs}
+                  setCurrentTab={setCurrentTab}
                 />
               ),
               openChatSupport: false,

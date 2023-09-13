@@ -1,7 +1,7 @@
-import PdfViewer from "../PdfViewer/PdfViewer";
+import PdfWithSelectorViewer from "../PdfViewer/PdfViewerWithSelector";
 
 const PdfViewerPanel = () => {
-  return <PdfViewer />;
+  return <PdfWithSelectorViewer />;
 };
 
 export default PdfViewerPanel;

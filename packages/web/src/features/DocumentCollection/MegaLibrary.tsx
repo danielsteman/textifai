@@ -48,13 +48,20 @@ import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 import theme from "../../app/themes/theme";
 import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "src/app/routes/Workspace";
+import PdfViewer from "../PdfViewer/PdfViewer";
+import { addItemIfNotExist } from "../../common/utils/arrayManager";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
   setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
+  setCurrentTab: Dispatch<SetStateAction<ITab | undefined>>;
 }
 
-const MegaLibrary: React.FC<MegaLibraryProps> = ({ openTabs, setOpenTabs }) => {
+const MegaLibrary: React.FC<MegaLibraryProps> = ({
+  openTabs,
+  setOpenTabs,
+  setCurrentTab,
+}) => {
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
@@ -350,7 +357,17 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({ openTabs, setOpenTabs }) => {
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        // open document in new tab
+                        const tab: ITab = {
+                          name: doc.fullPath.split("/").pop() || "pdf",
+                          panel: (
+                            <PdfViewer document={ref(storage, doc.fullPath)} />
+                          ),
+                          openChatSupport: false,
+                          openMiniLibrary: false,
+                          openPdfViewer: false,
+                        };
+                        setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+                        setCurrentTab(tab);
                       }}
                     >
                       <Td>
