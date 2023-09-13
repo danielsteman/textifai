@@ -1,4 +1,4 @@
-import { ChatIcon, SmallCloseIcon, UpDownIcon } from "@chakra-ui/icons";
+import { ChatIcon, SmallCloseIcon, UpDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
@@ -64,9 +64,14 @@ const Workspace = () => {
   const [openTabs, setOpenTabs] = useState<ITab[]>([]);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState<ITab>();
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
 
   const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const onTabClose = (tabToClose: ITab) => {
     const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
@@ -105,7 +110,18 @@ const Workspace = () => {
 
   return (
     <HStack h="100%">
+    {/* Side Menu */}
+    {isMenuOpen && (
       <VStack bgColor={theme.colors[colorMode].surfaceContainer} h="100%" p={2}>
+        {/* Close button */}
+        <Flex justifyContent="flex-end" w="100%">
+          <IconButton
+            aria-label="Close Menu"
+            icon={<SmallCloseIcon />}
+            onClick={toggleMenu}
+            mb={2}
+          />
+        </Flex>
         <Button
           w="100%"
           justifyContent="flex-start"
@@ -220,6 +236,25 @@ const Workspace = () => {
           </Menu>
         </HStack>
       </VStack>
+    )}
+    {!isMenuOpen && (
+      <VStack
+        bgColor={theme.colors[colorMode].surfaceContainer}
+        w="3.5rem"
+        h="100%"
+        justifyContent="start"
+        alignItems="center"
+        spacing={2}
+        //pl={1}
+        pt={2}
+      >
+        <IconButton
+          aria-label="Open Menu"
+          icon={<HamburgerIcon />}
+          onClick={toggleMenu}
+        />
+      </VStack>
+    )}
       <Tabs
         index={activeTabIndex}
         onChange={setActiveTabIndex}
