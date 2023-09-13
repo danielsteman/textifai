@@ -244,15 +244,45 @@ const Workspace = () => {
         h="100%"
         justifyContent="start"
         alignItems="center"
-        spacing={2}
-        //pl={1}
-        pt={2}
+        spacing={4}
+        pb={3}
+        pt={3}
       >
         <IconButton
           aria-label="Open Menu"
           icon={<HamburgerIcon />}
           onClick={toggleMenu}
         />
+        <IconButton
+          aria-label={"Editor"}
+          icon={<FaEdit />}
+          onClick={() => {
+            //... onClick logic for Editor button...
+          }}
+        />
+        <IconButton
+          aria-label={"Chat"}
+          icon={<ChatIcon />}
+          onClick={() => {
+            //... onClick logic for Chat button...
+          }}
+        />
+        <IconButton
+          aria-label={"Library"}
+          icon={<FaBook />}
+          onClick={() => {
+            //... onClick logic for Library button...
+          }}
+        />
+        <IconButton
+          aria-label={"Pdf Viewer"}
+          icon={<FaFilePdf />}
+          onClick={() => {
+            //... onClick logic for Pdf Viewer button...
+          }}
+        />
+        <Spacer />
+        <ColorModeSwitcher />
       </VStack>
     )}
       <Tabs
