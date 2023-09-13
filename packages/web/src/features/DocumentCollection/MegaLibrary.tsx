@@ -126,7 +126,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 
   const handleOpenDocumentInTab = (document: StorageReference) => {
     const tab: ITab = {
-      name: shortenString(document.fullPath.split("/").pop() || "pdf", 16),
+      name: shortenString(document.fullPath.split("/").pop() || "pdf", 20),
       panel: <PdfViewer document={ref(storage, document.fullPath)} />,
       openChatSupport: false,
       openMiniLibrary: false,

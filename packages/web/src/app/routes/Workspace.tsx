@@ -251,7 +251,11 @@ const Workspace = () => {
                   position={"relative"}
                   {...activeProps}
                 >
-                  <Tab px={12} onClick={() => setCurrentTab(tab)}>
+                  <Tab
+                    px={12}
+                    onClick={() => setCurrentTab(tab)}
+                    whiteSpace="nowrap"
+                  >
                     {tab.name}
                   </Tab>
                   <IconButton
