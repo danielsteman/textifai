@@ -132,7 +132,13 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-    setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+    // Check if the tab is already open
+    const existingTab = openTabs.find(t => t.name === tab.name);
+    if (!existingTab) {
+      // Add new tab to the list of open tabs
+      setOpenTabs(prevTabs => [...prevTabs, tab]);
+    }
+    // Set the new tab as the current tab
     setCurrentTab(tab);
   };
 
