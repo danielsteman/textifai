@@ -11,8 +11,10 @@ import {
     VStack,
     HStack
   } from "@chakra-ui/react";
-  import { AiOutlineArrowUp, AiFillExclamationCircle } from "react-icons/ai";
-  import React, { useRef } from 'react';
+  import { AiOutlineArrowUp, AiFillExclamationCircle, AiOutlineWarning } from "react-icons/ai";
+  import { getAuth, sendEmailVerification, deleteUser } from "firebase/auth";
+  import React, { useRef, useState } from 'react';
+  import { useNavigate } from "react-router-dom";
 
   const AccountSettings = () => {
     const user = {
@@ -31,6 +33,40 @@ import {
             console.log(file);
         }
     };
+
+    const [message, setMessage] = useState(''); 
+
+    const sendVerificationEmail = () => {
+        const auth = getAuth();
+    
+        if (auth.currentUser) {
+            sendEmailVerification(auth.currentUser)
+                .then(() => {
+                    setMessage('Verification email sent successfully!');
+                })
+                .catch(error => {
+                    setMessage(`Error sending verification email: ${error.message}`);
+                });
+        } else {
+            setMessage('Current user not found.');
+        }
+    }
+
+    const navigate = useNavigate();
+    const handleDeleteAccount = () => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (user) {
+            deleteUser(user).then(() => {
+                navigate('/');
+            }).catch((error) => {
+                // Handle error during user deletion
+            });
+        } else {
+            // Handle scenario where current user is not found
+        }
+    }
   
     return (
       <Box p={6} boxShadow="base" borderRadius="md" bg="white" w="50%" m="auto">
@@ -81,13 +117,22 @@ import {
         <VStack spacing={4} mb={4} align="start">
         <Text mb={2}>Email</Text>
         <Input variant="flushed" borderRadius="sm" placeholder={user.email} w="60%" />
-        {
-          user.emailVerified ? (
-            <Button colorScheme="blue" mt={2}>Update email</Button>
-          ) : (
-            <Button colorScheme="orange" mt={2} leftIcon={<Icon as={AiFillExclamationCircle} />}>Send verification mail</Button>
-          )
-        }
+            {
+                !user.emailVerified ? 
+                <Button 
+                    leftIcon={<Icon as={ AiOutlineWarning } />} 
+                    colorScheme="orange" 
+                    variant="outline" 
+                    mt={2}
+                    onClick={sendVerificationEmail}
+                >
+                    Send verification mail
+                </Button> 
+                : 
+                <Button colorScheme="blue" variant="outline" mt={2}>
+                    Update Email
+                </Button>
+            }
 
         <Text mb={2}>Phone Number</Text>
         <Input variant="flushed" borderRadius="sm" placeholder="Enter phone number" w="60%" />
@@ -123,7 +168,12 @@ import {
         <Text fontSize="xl" mb={4}>Delete Account</Text>
         <Text fontSize="sm" mb={4}>If you no longer want to use Textifai, you can permenantly delete your account. You can't undo this action.</Text>
         {/* Delete Account Section */}
-        <Button colorScheme="red" variant="outline" leftIcon={<Icon as={AiFillExclamationCircle} />}>
+        <Button 
+            colorScheme="red" 
+            variant="outline" 
+            leftIcon={<Icon as={AiFillExclamationCircle} />}
+            onClick={handleDeleteAccount}    
+        >
             Delete Account
         </Button>
         </Box>
