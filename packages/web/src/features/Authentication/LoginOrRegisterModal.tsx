@@ -86,12 +86,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
         // TODO: create user with first name and last name
         switch (props.loginOrRegister) {
           case "signUp":
-            const userCredential = await createUserWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
-            console.log(userCredential);
             const userData: User = {
               firstName: firstname,
               lastName: lastname,
@@ -103,7 +97,11 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               isActive: false,
               projects: [],
             };
-            console.log(userData);
+            const userCredential = await createUserWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
             console.log("User created with User object");
           case "signIn":
