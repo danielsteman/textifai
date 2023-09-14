@@ -1,4 +1,4 @@
-import { ChatIcon, SmallCloseIcon, UpDownIcon } from "@chakra-ui/icons";
+import { ChatIcon, SmallCloseIcon, UpDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
@@ -18,6 +18,7 @@ import {
   Tooltip,
   VStack,
   useColorMode,
+  Divider
 } from "@chakra-ui/react";
 import {
   Dispatch,
@@ -28,6 +29,7 @@ import {
   useState,
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
+import UserCard from "../../common/components/UserCard";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
 import {
   FaBook,
@@ -65,10 +67,16 @@ const Workspace = () => {
   const { colorMode } = useColorMode();
   const [openTabs, setOpenTabs] = useState<ITab[]>([]);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [currentTab, setCurrentTab] = useState<ITab | undefined>();
+
+  const [currentTab, setCurrentTab] = useState<ITab>();
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
 
   const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const onTabClose = (tabToClose: ITab) => {
     const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
@@ -107,7 +115,27 @@ const Workspace = () => {
 
   return (
     <HStack h="100%">
+    {/* Side Menu */}
+    {isMenuOpen && (
       <VStack bgColor={theme.colors[colorMode].surfaceContainer} h="100%" p={2}>
+        {/* Close button */}
+        <Flex justifyContent="flex-end" w="100%">
+          <IconButton
+            aria-label="Close Menu"
+            icon={<SmallCloseIcon />}
+            onClick={toggleMenu}
+            mb={2}
+          />
+        </Flex>
+        {/* User Card Component */}
+        <UserCard 
+            onLogout={() => {
+                auth.signOut();
+                navigate("/");
+            }} 
+        />
+        {/* Divider */}
+        <Divider />
         <Button
           w="100%"
           justifyContent="flex-start"
@@ -199,7 +227,7 @@ const Workspace = () => {
           Pdf Viewer
         </Button>
         <Spacer />
-        <HStack p={1} gap={3}>
+        {/* <HStack p={1} gap={3}>
           <Avatar size="sm" />
           <Box fontSize={14}>{currentUser?.email}</Box>
           <Menu>
@@ -221,8 +249,57 @@ const Workspace = () => {
               <ColorModeSwitcher />
             </MenuList>
           </Menu>
-        </HStack>
+        </HStack> */}
       </VStack>
+    )}
+    {!isMenuOpen && (
+      <VStack
+        bgColor={theme.colors[colorMode].surfaceContainer}
+        w="3.5rem"
+        h="100%"
+        justifyContent="start"
+        alignItems="center"
+        spacing={4}
+        pb={3}
+        pt={3}
+      >
+        <IconButton
+          aria-label="Open Menu"
+          icon={<HamburgerIcon />}
+          onClick={toggleMenu}
+        />
+        <IconButton
+          aria-label={"Editor"}
+          icon={<FaEdit />}
+          onClick={() => {
+            //... onClick logic for Editor button...
+          }}
+        />
+        <IconButton
+          aria-label={"Chat"}
+          icon={<ChatIcon />}
+          onClick={() => {
+            //... onClick logic for Chat button...
+          }}
+        />
+        <IconButton
+          aria-label={"Library"}
+          icon={<FaBook />}
+          onClick={() => {
+            //... onClick logic for Library button...
+          }}
+        />
+        <IconButton
+          aria-label={"Pdf Viewer"}
+          icon={<FaFilePdf />}
+          onClick={() => {
+            //... onClick logic for Pdf Viewer button...
+          }}
+        />
+        <Spacer />
+        <ColorModeSwitcher />
+      </VStack>
+    )}
       <Tabs
         index={activeTabIndex}
         onChange={setActiveTabIndex}
