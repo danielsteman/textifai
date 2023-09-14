@@ -2,7 +2,11 @@ import express, { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { processFile } from "../lib/pineconeUpload";
 import pdfParse from "pdf-parse";
-import { CredentialsManager } from "@textifai/shared/managers/credentialsManager";
+import dotenv from "dotenv";
+import path from "path";
+
+const envPath = path.resolve(__dirname, "../../.env.local");
+dotenv.config({ path: envPath });
 
 const router = express.Router();
 
@@ -20,8 +24,6 @@ async function extractTextFromPDF(pdfBuffer: Buffer): Promise<string> {
   }
 }
 
-const credentialsManager = new CredentialsManager();
-
 router.post(
   "/upload",
   upload.single("file"),
@@ -38,9 +40,9 @@ router.post(
       // Pass text to the processFile for chunking and embedding
       await processFile(
         text,
-        credentialsManager.getApiKey(),
-        credentialsManager.getEnvironment(),
-        credentialsManager.getPineconeIndex()
+        process.env.PINECONE_API_KEY || "",
+        process.env.PINECONE_ENV || "",
+        process.env.PINECONE_INDEX || ""
       );
 
       // Send a success response

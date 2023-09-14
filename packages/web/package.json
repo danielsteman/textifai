@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@textifai/web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -16,6 +16,7 @@
     "@chakra-ui/react": "^2.5.1",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@firebase/storage": "^0.11.2",
     "@pinecone-database/pinecone": "^0.1.6",
     "@reduxjs/toolkit": "^1.9.3",
     "@types/pdfjs-dist": "^2.10.378",
@@ -44,7 +45,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/firebase": "^3.2.1",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
