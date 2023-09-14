@@ -5,8 +5,15 @@ import MegaLibrary, {
 const MegaLibraryPanel: React.FC<MegaLibraryProps> = ({
   openTabs,
   setOpenTabs,
+  setCurrentTab,
 }) => {
-  return <MegaLibrary openTabs={openTabs} setOpenTabs={setOpenTabs} />;
+  return (
+    <MegaLibrary
+      openTabs={openTabs}
+      setOpenTabs={setOpenTabs}
+      setCurrentTab={setCurrentTab}
+    />
+  );
 };
 
 export default MegaLibraryPanel;

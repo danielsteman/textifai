@@ -48,13 +48,21 @@ import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 import theme from "../../app/themes/theme";
 import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "src/app/routes/Workspace";
+import PdfViewer from "../PdfViewer/PdfViewer";
+import { addItemIfNotExist } from "../../common/utils/arrayManager";
+import { shortenString } from "../../common/utils/shortenString";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
   setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
+  setCurrentTab: Dispatch<SetStateAction<ITab | undefined>>;
 }
 
-const MegaLibrary: React.FC<MegaLibraryProps> = ({ openTabs, setOpenTabs }) => {
+const MegaLibrary: React.FC<MegaLibraryProps> = ({
+  openTabs,
+  setOpenTabs,
+  setCurrentTab,
+}) => {
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
@@ -114,6 +122,24 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({ openTabs, setOpenTabs }) => {
           console.log(error);
         });
     });
+  };
+
+  const handleOpenDocumentInTab = (document: StorageReference) => {
+    const tab: ITab = {
+      name: shortenString(document.fullPath.split("/").pop() || "pdf", 20),
+      panel: <PdfViewer document={ref(storage, document.fullPath)} />,
+      openChatSupport: false,
+      openMiniLibrary: false,
+      openPdfViewer: false,
+    };
+    // Check if the tab is already open
+    const existingTab = openTabs.find(t => t.name === tab.name);
+    if (!existingTab) {
+      // Add new tab to the list of open tabs
+      setOpenTabs(prevTabs => [...prevTabs, tab]);
+    }
+    // Set the new tab as the current tab
+    setCurrentTab(tab);
   };
 
   return (
@@ -349,9 +375,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({ openTabs, setOpenTabs }) => {
                           theme.colors[colorMode].surfaceContainerHighest,
                         cursor: "pointer",
                       }}
-                      onClick={() => {
-                        // open document in new tab
-                      }}
+                      onClick={() => handleOpenDocumentInTab(doc)}
                     >
                       <Td>
                         <Checkbox

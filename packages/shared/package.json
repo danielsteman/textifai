@@ -1,10 +1,13 @@
 {
-  "name": "shared",
+  "name": "@textifai/shared",
   "version": "1.0.0",
   "main": "index.ts",
   "license": "MIT",
   "dependencies": {
     "@types/firebase": "^3.2.1",
     "firebase": "^10.3.1"
+  },
+  "scripts": {
+    "build": "tsc --build"
   }
 }
