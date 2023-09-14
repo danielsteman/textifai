@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "@textifai/documents",
   "version": "1.0.0",
   "main": "index.ts",
   "license": "MIT",
@@ -31,7 +31,6 @@
     "multer": "^1.4.3",
     "nodemon": "^2.0.22",
     "pdf-parse": "^1.1.1",
-    "shared": "../shared",
     "swagger": "^0.7.5",
     "swagger-ui-express": "^4.6.3",
     "typescript": "^5.0.4",

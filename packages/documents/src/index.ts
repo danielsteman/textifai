@@ -6,7 +6,6 @@ import swaggerUi from "swagger-ui-express";
 import router from "./routes";
 import YAML from "yaml";
 import fs from "fs";
-import fileupload from "express-fileupload";
 import bodyParser from "body-parser";
 
 dotenv.config();
