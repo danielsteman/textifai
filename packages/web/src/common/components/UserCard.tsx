@@ -1,14 +1,17 @@
 import React from 'react';
-import { Box, Text, Flex, IconButton, useTheme, useColorMode, Avatar, HStack, Button, Spacer, VStack } from "@chakra-ui/react";
+import { Box, Text, useTheme, useColorMode, Avatar, HStack, Button, VStack } from "@chakra-ui/react";
 import { FaCog, FaSignOutAlt } from "react-icons/fa"; 
+import { useNavigate } from 'react-router-dom';
 
 interface UserCardProps {
-  onLogout: () => void;  // Assuming onLogout is a function that doesn't take arguments and doesn't return anything
+  onLogout: () => void;  
 }
 
 const UserCard: React.FC<UserCardProps> = ({ onLogout }) => {
     const theme = useTheme();
     const { colorMode } = useColorMode(); // Get the current color mode
+
+    const navigate = useNavigate(); // Initialize the useHistory hook
 
     return (
         <Box
@@ -30,16 +33,16 @@ const UserCard: React.FC<UserCardProps> = ({ onLogout }) => {
             </HStack>
     
             <HStack spacing={3} mt={2}>
-          <Button leftIcon={<FaCog />} size="xs" variant="ghost">
-            Account settings
-          </Button>
-          <Button leftIcon={<FaSignOutAlt />} size="xs" variant="ghost" onClick={onLogout}>
-            Logout
-          </Button>
+            <Button leftIcon={<FaCog />} size="xs" variant="ghost" onClick={() => navigate('/account-settings')}>
+                Account settings
+            </Button>
+            <Button leftIcon={<FaSignOutAlt />} size="xs" variant="ghost" onClick={onLogout}>
+                Logout
+            </Button>
         </HStack>
       </VStack>
     </Box>
   );
 };
 
-    export default UserCard;
+export default UserCard;
