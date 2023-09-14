@@ -20,17 +20,19 @@ import {
   Text,
   Center,
   Divider,
-  Flex
+  Flex,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useCallback, useState } from "react";
-import { auth } from "../../app/config/firebase";
+import { auth, db } from "../../app/config/firebase";
 import Socials from "./Socials";
 import AuthError from "./AuthError";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { Timestamp, doc, setDoc } from "firebase/firestore";
+import { User } from "@shared/firestoreInterfaces/User";
 
 export type AuthProvider = "facebook" | "google";
 
@@ -84,7 +86,26 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
         // TODO: create user with first name and last name
         switch (props.loginOrRegister) {
           case "signUp":
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+            console.log(userCredential);
+            const userData: User = {
+              firstName: firstname,
+              lastName: lastname,
+              admin: [],
+              avatarUrl: "",
+              createdDate: Timestamp.fromDate(new Date()),
+              updatedDate: Timestamp.fromDate(new Date()),
+              language: "english",
+              isActive: false,
+              projects: [],
+            };
+            console.log(userData);
+            await setDoc(doc(db, "users", userCredential.user.uid), userData);
+            console.log("User created with User object");
           case "signIn":
             await signInWithEmailAndPassword(auth, email, password);
         }
@@ -125,21 +146,21 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
   const handleForgotPasswordClick = () => {
     setIsForgotPassword(true);
-    setFeedback(null); 
+    setFeedback(null);
   };
 
-const handleResetPassword = async () => {
-  if (email === "") {
+  const handleResetPassword = async () => {
+    if (email === "") {
       setFeedback("Please provide an email.");
       return;
-  }
+    }
 
-  const auth = getAuth();
-  try {
+    const auth = getAuth();
+    try {
       await sendPasswordResetEmail(auth, email);
       setFeedback("Reset link has been sent to your email!");
       setIsForgotPassword(false);
-  } catch (error: any) {
+    } catch (error: any) {
       setFeedback("Error sending reset link. Please try again.");
     }
   };
@@ -158,145 +179,153 @@ const handleResetPassword = async () => {
               <ModalHeader>Forgot password?</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                  <Text mb={2}>Enter your email to reset your password</Text> {/* You can adjust this value for the desired spacing */}
-                  <FormControl mt={2}> {/* Add margin-top to the FormControl */}
-                      <InputGroup>
-                          <InputLeftElement
-                              pointerEvents="none"
-                              color="gray.300"
-                              children={<AtSignIcon color="gray.300" />}
-                          />
-                          <Input
-                              value={email}
-                              onChange={handleChangeEmail}
-                              placeholder="Enter email address"
-                              type="email"
-                          />
-                      </InputGroup>
-                  </FormControl>
+                <Text mb={2}>Enter your email to reset your password</Text>{" "}
+                {/* You can adjust this value for the desired spacing */}
+                <FormControl mt={2}>
+                  {" "}
+                  {/* Add margin-top to the FormControl */}
+                  <InputGroup>
+                    <InputLeftElement
+                      pointerEvents="none"
+                      color="gray.300"
+                      children={<AtSignIcon color="gray.300" />}
+                    />
+                    <Input
+                      value={email}
+                      onChange={handleChangeEmail}
+                      placeholder="Enter email address"
+                      type="email"
+                    />
+                  </InputGroup>
+                </FormControl>
               </ModalBody>
               <ModalFooter>
-                  <Center width="100%">
-                      <Button onClick={handleResetPassword}>Reset Password</Button>
-                  </Center>
+                <Center width="100%">
+                  <Button onClick={handleResetPassword}>Reset Password</Button>
+                </Center>
               </ModalFooter>
             </>
           ) : (
-              // Login/Register Form
-              <>
-                <ModalHeader>{buttonProps.text}</ModalHeader>
-                <ModalCloseButton />
-                <form>
-                  <ModalBody>
-                    <VStack spacing={2}>
-                      {error && <AuthError code={error} />}
-                      <FormControl isInvalid={missingEmailError}>
-                        <InputGroup size="md">
-                          <InputLeftElement
-                            pointerEvents="none"
-                            color="gray.300"
-                            children={<AtSignIcon color="gray.300" />}
-                          />
-                          <Input
-                            value={email}
-                            onChange={handleChangeEmail}
-                            placeholder="Enter email address"
-                            type="email"
-                          />
-                        </InputGroup>
-                        {missingEmailError && (
-                          <FormErrorMessage>Email is required.</FormErrorMessage>
-                        )}
-                      </FormControl>
-                      <FormControl isInvalid={missingPasswordError}>
-                        <InputGroup size="md">
-                          <InputLeftElement
-                            pointerEvents="none"
-                            color="gray.300"
-                            children={<LockIcon color="gray.300" />}
-                          />
-                          <Input
-                            value={password}
-                            onChange={handleChangePassword}
-                            pr="4.5rem"
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Enter password"
-                          />
-                          <InputRightElement width="4.5rem">
-                            <Button
-                              h="1.75rem"
-                              size="sm"
-                              onClick={handleShowPassword}
-                            >
-                              {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                            </Button>
-                          </InputRightElement>
-                        </InputGroup>
-                        {missingPasswordError && (
-                          <FormErrorMessage>Password is required.</FormErrorMessage>
-                        )}
-                      </FormControl>
-                      {props.loginOrRegister === "signIn" && (
-                        <Button variant="link" onClick={handleForgotPasswordClick}>
-                          Forgot password?
-                        </Button>
+            // Login/Register Form
+            <>
+              <ModalHeader>{buttonProps.text}</ModalHeader>
+              <ModalCloseButton />
+              <form>
+                <ModalBody>
+                  <VStack spacing={2}>
+                    {error && <AuthError code={error} />}
+                    <FormControl isInvalid={missingEmailError}>
+                      <InputGroup size="md">
+                        <InputLeftElement
+                          pointerEvents="none"
+                          color="gray.300"
+                          children={<AtSignIcon color="gray.300" />}
+                        />
+                        <Input
+                          value={email}
+                          onChange={handleChangeEmail}
+                          placeholder="Enter email address"
+                          type="email"
+                        />
+                      </InputGroup>
+                      {missingEmailError && (
+                        <FormErrorMessage>Email is required.</FormErrorMessage>
                       )}
-                      {props.loginOrRegister === "signUp" && (
-                        <>
-                          <FormControl>
-                            <InputGroup>
-                              <InputLeftElement
-                                pointerEvents="none"
-                                color="gray.300"
-                                children={<LockIcon color="gray.300" />}
-                              />
-                              <Input
-                                placeholder="Repeat password"
-                                type={showPassword ? "text" : "password"}
-                                value={repeatedPassword}
-                                onChange={handleChangeRepeatedPassword}
-                              />
-                            </InputGroup>
-                          </FormControl>
-                          <FormControl>
-                            <InputGroup>
-                              <Input
-                                placeholder="First name"
-                                value={firstname}
-                                onChange={handleChangeFirstname}
-                              />
-                            </InputGroup>
-                          </FormControl>
-                          <FormControl>
-                            <InputGroup>
-                              <Input
-                                placeholder="Last name"
-                                value={lastname}
-                                onChange={handleChangeLastname}
-                              />
-                            </InputGroup>
-                          </FormControl>
-                        </>
+                    </FormControl>
+                    <FormControl isInvalid={missingPasswordError}>
+                      <InputGroup size="md">
+                        <InputLeftElement
+                          pointerEvents="none"
+                          color="gray.300"
+                          children={<LockIcon color="gray.300" />}
+                        />
+                        <Input
+                          value={password}
+                          onChange={handleChangePassword}
+                          pr="4.5rem"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter password"
+                        />
+                        <InputRightElement width="4.5rem">
+                          <Button
+                            h="1.75rem"
+                            size="sm"
+                            onClick={handleShowPassword}
+                          >
+                            {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                          </Button>
+                        </InputRightElement>
+                      </InputGroup>
+                      {missingPasswordError && (
+                        <FormErrorMessage>
+                          Password is required.
+                        </FormErrorMessage>
                       )}
-                    </VStack>
-                  </ModalBody>
-                  <ModalFooter>
-                    {loading ? (
-                      <Spinner size="md" />
-                    ) : (
-                        <Button
-                          w="100%"
-                          type="submit"
-                          onClick={handleSubmit}
-                          isDisabled={disableSubmitButton()}
-                        >
-                          {buttonProps.text}
-                        </Button>
-                      )}
-                  </ModalFooter>
-                </form>
-              </>
-            )}
+                    </FormControl>
+                    {props.loginOrRegister === "signIn" && (
+                      <Button
+                        variant="link"
+                        onClick={handleForgotPasswordClick}
+                      >
+                        Forgot password?
+                      </Button>
+                    )}
+                    {props.loginOrRegister === "signUp" && (
+                      <>
+                        <FormControl>
+                          <InputGroup>
+                            <InputLeftElement
+                              pointerEvents="none"
+                              color="gray.300"
+                              children={<LockIcon color="gray.300" />}
+                            />
+                            <Input
+                              placeholder="Repeat password"
+                              type={showPassword ? "text" : "password"}
+                              value={repeatedPassword}
+                              onChange={handleChangeRepeatedPassword}
+                            />
+                          </InputGroup>
+                        </FormControl>
+                        <FormControl>
+                          <InputGroup>
+                            <Input
+                              placeholder="First name"
+                              value={firstname}
+                              onChange={handleChangeFirstname}
+                            />
+                          </InputGroup>
+                        </FormControl>
+                        <FormControl>
+                          <InputGroup>
+                            <Input
+                              placeholder="Last name"
+                              value={lastname}
+                              onChange={handleChangeLastname}
+                            />
+                          </InputGroup>
+                        </FormControl>
+                      </>
+                    )}
+                  </VStack>
+                </ModalBody>
+                <ModalFooter>
+                  {loading ? (
+                    <Spinner size="md" />
+                  ) : (
+                    <Button
+                      w="100%"
+                      type="submit"
+                      onClick={handleSubmit}
+                      isDisabled={disableSubmitButton()}
+                    >
+                      {buttonProps.text}
+                    </Button>
+                  )}
+                </ModalFooter>
+              </form>
+            </>
+          )}
           <Center mt={4}>
             <Flex align="center" width="100%" my={2}>
               <Divider flex="1" borderColor="gray.600" borderWidth="0.01rem" />
@@ -315,6 +344,6 @@ const handleResetPassword = async () => {
       </Modal>
     </>
   );
-}
+};
 
 export default LoginOrRegisterModal;
