@@ -28,7 +28,9 @@ export async function processFile(
   rawDoc: string,
   apiKey: string,
   environment: string,
-  pineconeIndex: string
+  pineconeIndex: string,
+  userId: string,
+  title: string,
 ) {
   const index = await initializeClient(apiKey, environment, pineconeIndex);
 
@@ -47,6 +49,12 @@ export async function processFile(
     throw new Error("Failed to chunk document");
   }
 
+  // Creating metadata for each chunk
+  const metadataArray = chunks.map(() => ({
+    userId: userId,
+    title: title,
+  }));
+
   try {
     console.log("Starting to create and store embeddings.");
     const embeddings = new OpenAIEmbeddings({
@@ -56,10 +64,17 @@ export async function processFile(
     console.log("OpenAI client initialized.");
 
     // Embed the PDF documents
-    await PineconeStore.fromTexts(chunks, {}, embeddings, {
-      pineconeIndex: index,
-      textKey: "text",
-    });
+    // Here I assume you need a way to pass the metadata alongside the chunks.
+    // If PineconeStore doesn't handle metadata, you might have to handle it separately.
+    await PineconeStore.fromTexts(
+      chunks, 
+      metadataArray, // passing metadata here
+      embeddings, 
+      {
+        pineconeIndex: index,
+        textKey: "text",
+      }
+    );
     console.log("Embeddings successfully stored in vector store.");
   } catch (error) {
     console.error("Failed to embed data in the vector store:", error);

@@ -78,9 +78,13 @@ const UploadForm = () => {
               console.log(snapshot);
             });
 
-            // Create FormData and append the fileBlob
+            // Create FormData and append the fileBlob and userId
             const data = new FormData();
             data.append("file", file);
+            if (currentUser && currentUser.uid) {
+              data.append("userId", currentUser.uid);  // appending userId to FormData
+            }
+
             // Post the data to the server
             await axios({
               method: "post",
