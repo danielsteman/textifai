@@ -56,17 +56,22 @@ export interface MegaLibraryProps {
   openTabs: ITab[];
   setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
   setCurrentTab: Dispatch<SetStateAction<ITab | undefined>>;
+  selectedDocuments: string[];
+  setSelectedDocuments: Dispatch<SetStateAction<string[]>>;
 }
 
 const MegaLibrary: React.FC<MegaLibraryProps> = ({
   openTabs,
   setOpenTabs,
   setCurrentTab,
+  selectedDocuments,
+  setSelectedDocuments
 }) => {
+  
+  selectedDocuments = selectedDocuments || [];
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
-  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
   const {
     isOpen: isDeleteFileOpen,
@@ -91,12 +96,13 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       });
   }, [selectedDocuments]);
 
-  const handleDocumentCheckboxChange = (documentId: string) => {
+  const handleDocumentCheckboxChange = (documentName: string) => {
     setSelectedDocuments((prevSelected) =>
-      prevSelected.includes(documentId)
-        ? prevSelected.filter((id) => id !== documentId)
-        : [...prevSelected, documentId]
+      prevSelected.includes(documentName)
+        ? prevSelected.filter((name) => name !== documentName)
+        : [...prevSelected, documentName]      
     );
+    console.log(selectedDocuments)
   };
 
   const handleChangeDocumentQuery = (
@@ -132,13 +138,10 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-    // Check if the tab is already open
     const existingTab = openTabs.find(t => t.name === tab.name);
     if (!existingTab) {
-      // Add new tab to the list of open tabs
       setOpenTabs(prevTabs => [...prevTabs, tab]);
     }
-    // Set the new tab as the current tab
     setCurrentTab(tab);
   };
 
@@ -309,7 +312,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               aria-label={"delete"}
               icon={<FaTrash />}
               onClick={onDeleteFileOpen}
-              isDisabled={selectedDocuments.length === 0}
+              isDisabled={!selectedDocuments?.length}
             />
           </Tooltip>
           <Modal
@@ -375,25 +378,30 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                           theme.colors[colorMode].surfaceContainerHighest,
                         cursor: "pointer",
                       }}
-                      onClick={() => handleOpenDocumentInTab(doc)}
                     >
-                      <Td>
-                        <Checkbox
-                          onChange={() =>
-                            handleDocumentCheckboxChange(doc.fullPath)
-                          }
-                        />
-                      </Td>
-                      <Td>{doc.name}</Td>
-                      <Td>Henk</Td>
-                      <Td isNumeric>1995</Td>
-                      <Td>Collection1</Td>
-                      <Td>This is summarized</Td>
-                      <Td>Topic1, topic2, topic3</Td>
-                      <Td textAlign="center">
-                        <Icon as={FaStar} color="teal" />
-                      </Td>
-                    </Tr>
+                    <Td>
+                      <Checkbox
+                        isChecked={selectedDocuments.includes(doc.name)}
+                        onChange={() => handleDocumentCheckboxChange(doc.name)}
+                      />
+                    </Td>
+                    <Td>
+                      <Button 
+                        variant="link" 
+                        onClick={() => handleOpenDocumentInTab(doc)}
+                      >
+                        {doc.name}
+                      </Button>
+                    </Td>
+                    <Td>Henk</Td>
+                    <Td isNumeric>1995</Td>
+                    <Td>Collection1</Td>
+                    <Td>This is summarized</Td>
+                    <Td>Topic1, topic2, topic3</Td>
+                    <Td textAlign="center">
+                      <Icon as={FaStar} color="teal" />
+                    </Td>
+                  </Tr>
                   ))}
             </Tbody>
           </Table>
