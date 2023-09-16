@@ -60,6 +60,10 @@ Explore:
 - Firebase hosting
 - In combination with cloud run
 
+## Payments
+
+Use Stripe and explore [stripe Terraform providers](https://github.com/franckverrot/terraform-provider-stripe) to track pricing changes with git. 
+
 ## Notes
 
 ✅ Terraform TODO: add credentials to Terraform Cloud.
