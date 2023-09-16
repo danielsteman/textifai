@@ -71,6 +71,8 @@ const Workspace = () => {
   const [currentTab, setCurrentTab] = useState<ITab>();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+
   const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
 
