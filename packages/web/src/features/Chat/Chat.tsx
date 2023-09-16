@@ -16,13 +16,64 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { RepeatIcon, PlusSquareIcon } from "@chakra-ui/icons";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext, ChangeEvent } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
+import { db } from "../../app/config/firebase"; 
+import { AuthContext } from "../../app/providers/AuthProvider";
+import { User } from "firebase/auth";
 
 type SystemMessageProps = {
   message: string;
+};
+
+const conversationsCollection = collection(db, "conversations");
+const messagesCollection = collection(db, "messages");
+
+const startConversation = async (currentUserUid: string) => {
+  try {
+    const conversationDoc = {
+      userId: currentUserUid,  
+      projectId: "currentProject", 
+      creationDate: serverTimestamp(),
+      updatedDate: serverTimestamp(),
+    };
+    const conversationRef = await addDoc(conversationsCollection, conversationDoc);
+    return conversationRef.id;
+  } catch (error) {
+    console.error("Error creating new conversation:", error);
+  }
+};
+
+
+
+const addMessageToCollection = async (message: any, variant: any, conversationId: any, parentMessageId = null) => {
+  try {
+    const messageDoc = {
+      messageId: uuidv4(),
+      conversationId: conversationId,
+      creationDate: serverTimestamp(),
+      variant: variant,
+      messageBody: message,
+      parentMessageId: parentMessageId,
+    };
+    await addDoc(messagesCollection, messageDoc);
+  } catch (error) {
+    console.error("Error adding message to collection:", error);
+  }
+};
+
+const updateConversationDate = async (conversationId: string) => {
+  try {
+    const conversationRef = doc(db, "conversations", conversationId);
+    await updateDoc(conversationRef, {
+      updatedDate: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error("Error updating conversation date:", error);
+  }
 };
 
 const Chat = () => {
@@ -31,6 +82,9 @@ const Chat = () => {
   const [answerStack, setAnswerStack] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+
+  const currentUser: User | null | undefined = useContext(AuthContext);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -50,14 +104,26 @@ const Chat = () => {
   const history = getConversation();
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messageStack, answerStack]);
+    const fetchConversationId = async () => {
+      if (currentUser) {
+        const conversationsCollection = collection(db, "conversations");
+        const q = query(conversationsCollection, where("userId", "==", currentUser.uid));
+        const querySnapshot = await getDocs(q);
+  
+        if (!querySnapshot.empty) {
+          setCurrentConversationId(querySnapshot.docs[0].id);
+        } else {
+          // No existing conversation found for this user, so let's start a new one.
+          const newConversationId = await startConversation(currentUser.uid);
+          setCurrentConversationId(newConversationId || null);
+        }
+      }
+    };
+  
+    fetchConversationId();
+  }, [currentUser]);
 
-  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setMessageStack([...messageStack, message]);
     setMessage("");
@@ -70,10 +136,26 @@ const Chat = () => {
       });
       setAnswerStack([...answerStack, res.data.answer]);
       setLoading(false);
+  
+      // Ensure currentConversationId is not null before using it
+      if (currentConversationId) {
+        // Add user's message to the collection
+        await addMessageToCollection(message, "user", currentConversationId);
+  
+        // Add AI's response to the collection
+        await addMessageToCollection(res.data.answer, "agent", currentConversationId);
+  
+        // Update the conversation's updatedDate
+        await updateConversationDate(currentConversationId);
+      } else {
+        console.error("currentConversationId is null.");
+      }
+      
     } catch (error) {
       console.log(error);
     }
-  };
+};
+  
 
   const handleRegenerate = async (option: string, originalMessage: string) => {
     // Capture the last message from answerStack
@@ -145,6 +227,10 @@ const Chat = () => {
       </Flex>
     );
   };
+
+  function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
+    setMessage(event.target.value);
+}
 
   return (
     <Flex flexDir="column" flex={1} p={8} overflowY="hidden" h="100%">
