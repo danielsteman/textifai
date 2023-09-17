@@ -20,7 +20,7 @@ import React, { useEffect, useRef, useState, useContext, ChangeEvent } from "rea
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, where, updateDoc, doc, orderBy, limit } from "firebase/firestore";
 import { db } from "../../app/config/firebase"; 
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
@@ -32,11 +32,11 @@ type SystemMessageProps = {
 const conversationsCollection = collection(db, "conversations");
 const messagesCollection = collection(db, "messages");
 
-const startConversation = async (currentUserUid: string) => {
+const startConversation = async (currentUserUid: string): Promise<string | void> => {
   try {
     const conversationDoc = {
       userId: currentUserUid,  
-      projectId: "currentProject", 
+      projectId: "currentProject", // TO DO --> Make dynamic 
       creationDate: serverTimestamp(),
       updatedDate: serverTimestamp(),
     };
@@ -46,8 +46,6 @@ const startConversation = async (currentUserUid: string) => {
     console.error("Error creating new conversation:", error);
   }
 };
-
-
 
 const addMessageToCollection = async (message: any, variant: any, conversationId: any, parentMessageId = null) => {
   try {
@@ -83,6 +81,7 @@ const Chat = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [conversationHistory, setConversationHistory] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
@@ -90,18 +89,28 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const getConversation = () => {
+  const getConversation = async (conversationId: string) => {
+    
+    const messagesCollection = collection(db, "messages");
+    const q = query(
+      messagesCollection, 
+      where("conversationId", "==", conversationId),  
+      orderBy("creationDate", "desc"), 
+      limit(6) 
+    );
+  
+    const querySnapshot = await getDocs(q);
+  
     const lastThreeConversations: string[] = [];
-    for (let i = 1; i <= 3 && i <= messageStack.length; i++) {
-      const userMessage = messageStack[messageStack.length - i];
-      const aiAnswer = answerStack[answerStack.length - i];
-      lastThreeConversations.unshift(`USER: ${userMessage}`);
-      lastThreeConversations.unshift(`AI: ${aiAnswer}`);
-    }
-    return lastThreeConversations;
+    querySnapshot.docs.reverse().forEach(doc => {
+      const data = doc.data();
+      console.log(data)
+      const prefix = data.variant === 'user' ? 'USER: ' : 'AI: ';
+      lastThreeConversations.push(prefix + data.messageBody);
+    });
+  
+    return lastThreeConversations.join('\n');
   };
-
-  const history = getConversation();
 
   useEffect(() => {
     const fetchConversationId = async () => {
@@ -112,50 +121,59 @@ const Chat = () => {
   
         if (!querySnapshot.empty) {
           setCurrentConversationId(querySnapshot.docs[0].id);
+          console.log("Current conversationId: ", querySnapshot.docs[0].id); // Using the value directly from querySnapshot
         } else {
           // No existing conversation found for this user, so let's start a new one.
           const newConversationId = await startConversation(currentUser.uid);
           setCurrentConversationId(newConversationId || null);
+          console.log("Current conversationId: ", newConversationId || null); // Using the value directly from newConversationId
         }
       }
     };
   
     fetchConversationId();
   }, [currentUser]);
+  
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setMessageStack([...messageStack, message]);
     setMessage("");
+
     try {
-      setLoading(true);
-      const res = await axios.post("http://localhost:3001/api/chat/ask", {
-        prompt: message,
-        history: history,
-        option: "GeneralQa",
-      });
-      setAnswerStack([...answerStack, res.data.answer]);
-      setLoading(false);
-  
-      // Ensure currentConversationId is not null before using it
-      if (currentConversationId) {
-        // Add user's message to the collection
-        await addMessageToCollection(message, "user", currentConversationId);
-  
-        // Add AI's response to the collection
-        await addMessageToCollection(res.data.answer, "agent", currentConversationId);
-  
-        // Update the conversation's updatedDate
-        await updateConversationDate(currentConversationId);
-      } else {
-        console.error("currentConversationId is null.");
-      }
-      
+        setLoading(true);
+
+        // Ensure currentConversationId is not null before using it
+        if (currentConversationId) {
+            // Fetch the conversation history
+            const updatedConversationHistory = await getConversation(currentConversationId!);
+            setConversationHistory(updatedConversationHistory);
+            console.log(updatedConversationHistory)
+            // Now, send the updated history to the Axios server
+            const res = await axios.post("http://localhost:3001/api/chat/ask", {
+                prompt: message,
+                history: updatedConversationHistory,
+                option: "GeneralQa",
+            });
+
+            setAnswerStack([...answerStack, res.data.answer]);
+            setLoading(false);
+
+            // Add user's message to the collection
+            await addMessageToCollection(message, "user", currentConversationId);
+
+            // Add AI's response to the collection
+            await addMessageToCollection(res.data.answer, "agent", currentConversationId);
+
+            // Update the conversation's updatedDate
+            await updateConversationDate(currentConversationId);
+        } else {
+            console.error("currentConversationId is null.");
+        }  
     } catch (error) {
-      console.log(error);
+        console.log(error);
     }
-};
-  
+  };
 
   const handleRegenerate = async (option: string, originalMessage: string) => {
     // Capture the last message from answerStack
