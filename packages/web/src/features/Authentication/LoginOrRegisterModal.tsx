@@ -55,14 +55,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
   const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const handleChangeFirstname = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFirstname(e.target.value);
-  };
-
-  const handleChangeLastname = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLastname(e.target.value);
-  };
-
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
@@ -172,16 +164,12 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
         <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
         <ModalContent pb={4}>
           {isForgotPassword ? (
-            // Forgot Password Form
             <>
               <ModalHeader>Forgot password?</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
                 <Text mb={2}>Enter your email to reset your password</Text>{" "}
-                {/* You can adjust this value for the desired spacing */}
                 <FormControl mt={2}>
-                  {" "}
-                  {/* Add margin-top to the FormControl */}
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
@@ -204,7 +192,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               </ModalFooter>
             </>
           ) : (
-            // Login/Register Form
             <>
               <ModalHeader>{buttonProps.text}</ModalHeader>
               <ModalCloseButton />
