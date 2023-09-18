@@ -82,8 +82,8 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
       setAttempts(attempts + 1);
       setLoading(true);
       e.preventDefault();
+
       try {
-        // TODO: create user with first name and last name
         switch (props.loginOrRegister) {
           case "signUp":
             const userData: User = {
@@ -103,7 +103,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               password
             );
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
-            console.log("User created with User object");
+            break;
           case "signIn":
             await signInWithEmailAndPassword(auth, email, password);
         }
@@ -113,7 +113,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
       }
       setLoading(false);
     },
-    [email, password]
+    [email, password, firstname, lastname]
   );
 
   const missingEmailError = email === "" && attempts >= 1;
@@ -288,18 +288,20 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                         <FormControl>
                           <InputGroup>
                             <Input
+                              type="text"
                               placeholder="First name"
                               value={firstname}
-                              onChange={handleChangeFirstname}
+                              onChange={(e) => setFirstname(e.target.value)}
                             />
                           </InputGroup>
                         </FormControl>
                         <FormControl>
                           <InputGroup>
                             <Input
+                              type="text"
                               placeholder="Last name"
                               value={lastname}
-                              onChange={handleChangeLastname}
+                              onChange={(e) => setLastname(e.target.value)}
                             />
                           </InputGroup>
                         </FormControl>
