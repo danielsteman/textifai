@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "projects": {
+      ".read": "request.auth != null",
+      ".write": "request.auth != null",
+
+      "$projectID": {
+        ".read": "request.auth != null && request.auth.uid in resource.data.users"
+      }
+    },
+
+    "users": {
+      ".read": "true",
+
+      "$userId": {
+        ".write": "request.auth != null && request.auth.uid == $userId"
+      }
+    }
+  }
+}
