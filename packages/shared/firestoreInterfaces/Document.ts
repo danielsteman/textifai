@@ -6,6 +6,7 @@ export interface Document {
   uploadedBy: string;
   fileName: string;
   author: string;
+  uploadDate: Timestamp;
   creationDate: Timestamp;
   summary: string;
   topics: string[];
