@@ -65,9 +65,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   setOpenTabs,
   setCurrentTab,
   selectedDocuments,
-  setSelectedDocuments
+  setSelectedDocuments,
 }) => {
-  
   selectedDocuments = selectedDocuments || [];
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
@@ -97,12 +96,14 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   }, [selectedDocuments]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
+    console.log(documentName);
+    console.log(selectedDocuments);
     setSelectedDocuments((prevSelected) =>
       prevSelected.includes(documentName)
         ? prevSelected.filter((name) => name !== documentName)
-        : [...prevSelected, documentName]      
+        : [...prevSelected, documentName]
     );
-    console.log(selectedDocuments)
+    console.log(selectedDocuments);
   };
 
   const handleChangeDocumentQuery = (
@@ -138,9 +139,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-    const existingTab = openTabs.find(t => t.name === tab.name);
+    const existingTab = openTabs.find((t) => t.name === tab.name);
     if (!existingTab) {
-      setOpenTabs(prevTabs => [...prevTabs, tab]);
+      setOpenTabs((prevTabs) => [...prevTabs, tab]);
     }
     setCurrentTab(tab);
   };
@@ -379,29 +380,31 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                         cursor: "pointer",
                       }}
                     >
-                    <Td>
-                      <Checkbox
-                        isChecked={selectedDocuments.includes(doc.name)}
-                        onChange={() => handleDocumentCheckboxChange(doc.name)}
-                      />
-                    </Td>
-                    <Td>
-                      <Button 
-                        variant="link" 
-                        onClick={() => handleOpenDocumentInTab(doc)}
-                      >
-                        {doc.name}
-                      </Button>
-                    </Td>
-                    <Td>Henk</Td>
-                    <Td isNumeric>1995</Td>
-                    <Td>Collection1</Td>
-                    <Td>This is summarized</Td>
-                    <Td>Topic1, topic2, topic3</Td>
-                    <Td textAlign="center">
-                      <Icon as={FaStar} color="teal" />
-                    </Td>
-                  </Tr>
+                      <Td>
+                        <Checkbox
+                          isChecked={selectedDocuments.includes(doc.name)}
+                          onChange={() =>
+                            handleDocumentCheckboxChange(doc.name)
+                          }
+                        />
+                      </Td>
+                      <Td>
+                        <Button
+                          variant="link"
+                          onClick={() => handleOpenDocumentInTab(doc)}
+                        >
+                          {doc.name}
+                        </Button>
+                      </Td>
+                      <Td>Henk</Td>
+                      <Td isNumeric>1995</Td>
+                      <Td>Collection1</Td>
+                      <Td>This is summarized</Td>
+                      <Td>Topic1, topic2, topic3</Td>
+                      <Td textAlign="center">
+                        <Icon as={FaStar} color="teal" />
+                      </Td>
+                    </Tr>
                   ))}
             </Tbody>
           </Table>

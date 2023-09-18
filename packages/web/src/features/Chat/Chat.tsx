@@ -25,7 +25,11 @@ type SystemMessageProps = {
   message: string;
 };
 
-const Chat = () => {
+export interface ChatProps {
+  selectedDocuments: string[];
+}
+
+const Chat: React.FC<ChatProps> = ({ selectedDocuments }) => {
   const [message, setMessage] = useState<string>("");
   const [messageStack, setMessageStack] = useState<string[]>([]);
   const [answerStack, setAnswerStack] = useState<string[]>([]);

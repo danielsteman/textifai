@@ -19,6 +19,7 @@ import { SmallCloseIcon } from "@chakra-ui/icons";
 
 interface PanelWrapperProps {
   tab: ITab;
+  selectedDocuments: string[];
   onClose: (
     panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
   ) => void;
@@ -68,7 +69,11 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
   );
 };
 
-const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
+const PanelWrapper: React.FC<PanelWrapperProps> = ({
+  tab,
+  selectedDocuments,
+  onClose,
+}) => {
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} p={2}>
       <Grid
@@ -101,7 +106,7 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
             onClose={() => onClose("openChatSupport")}
             windowName="Chat"
           >
-            <ChatPanel />
+            <ChatPanel selectedDocuments={selectedDocuments} />
           </SupportWindowGridItem>
         )}
 
