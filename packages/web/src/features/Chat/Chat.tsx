@@ -16,7 +16,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { RepeatIcon, PlusSquareIcon } from "@chakra-ui/icons";
-import React, { useEffect, useRef, useState, useContext, ChangeEvent } from "react";
+import React, { useEffect, useRef, useState, useContext, ChangeEvent, useLayoutEffect } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -74,6 +74,46 @@ const updateConversationDate = async (conversationId: string) => {
   }
 };
 
+const getConversation = async (conversationId: string) => {
+    
+  const messagesCollection = collection(db, "messages");
+  const q = query(
+    messagesCollection, 
+    where("conversationId", "==", conversationId),  
+    orderBy("creationDate", "desc"), 
+    limit(6) 
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  const lastThreeConversations: string[] = [];
+  querySnapshot.docs.reverse().forEach(doc => {
+    const data = doc.data();
+    const prefix = data.variant === 'user' ? 'USER: ' : 'AI: ';
+    lastThreeConversations.push(prefix + data.messageBody);
+  });
+
+  return lastThreeConversations.join('\n');
+};
+
+const fetchMessagesForConversation = async (conversationId: string) => {
+  const messagesArray: { variant: string; messageBody: string }[] = [];
+  const q = query(
+    messagesCollection,
+    where("conversationId", "==", conversationId),
+    orderBy("creationDate", "asc")
+  );
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
+    messagesArray.push({
+      variant: data.variant,
+      messageBody: data.messageBody
+    });
+  });
+  return messagesArray;
+};
+
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const [messageStack, setMessageStack] = useState<string[]>([]);
@@ -89,28 +129,29 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const getConversation = async (conversationId: string) => {
-    
-    const messagesCollection = collection(db, "messages");
-    const q = query(
-      messagesCollection, 
-      where("conversationId", "==", conversationId),  
-      orderBy("creationDate", "desc"), 
-      limit(6) 
-    );
-  
-    const querySnapshot = await getDocs(q);
-  
-    const lastThreeConversations: string[] = [];
-    querySnapshot.docs.reverse().forEach(doc => {
-      const data = doc.data();
-      console.log(data)
-      const prefix = data.variant === 'user' ? 'USER: ' : 'AI: ';
-      lastThreeConversations.push(prefix + data.messageBody);
-    });
-  
-    return lastThreeConversations.join('\n');
-  };
+  // Fetch past messages
+  useLayoutEffect(() => {
+    const initializeMessages = async () => {
+      if (currentConversationId) {
+        const messages = await fetchMessagesForConversation(currentConversationId);
+        const userMessages = messages
+          .filter(msg => msg.variant === "user")
+          .map(msg => msg.messageBody);
+        const agentMessages = messages
+          .filter(msg => msg.variant === "agent")
+          .map(msg => msg.messageBody);
+        
+        setMessageStack(userMessages);
+        setAnswerStack(agentMessages);
+
+        // Always scroll to bottom
+        scrollToBottom();
+      }
+    };
+    initializeMessages();
+  }, [currentConversationId]);
+
+  useLayoutEffect(scrollToBottom, [messageStack, answerStack]);  
 
   useEffect(() => {
     const fetchConversationId = async () => {
@@ -148,7 +189,6 @@ const Chat = () => {
             // Fetch the conversation history
             const updatedConversationHistory = await getConversation(currentConversationId!);
             setConversationHistory(updatedConversationHistory);
-            console.log(updatedConversationHistory)
             // Now, send the updated history to the Axios server
             const res = await axios.post("http://localhost:3001/api/chat/ask", {
                 prompt: message,
@@ -157,6 +197,9 @@ const Chat = () => {
             });
 
             setAnswerStack([...answerStack, res.data.answer]);
+
+            // Always scroll to bottom
+            scrollToBottom();
             setLoading(false);
 
             // Add user's message to the collection
