@@ -1,21 +1,10 @@
-// PanelWrapper.tsx
-import React, { Dispatch, SetStateAction } from "react";
-import {
-  Grid,
-  GridItem,
-  HStack,
-  Heading,
-  IconButton,
-  Spacer,
-  TabPanel,
-  useColorMode,
-} from "@chakra-ui/react";
+import React from "react";
+import { Grid, GridItem, TabPanel } from "@chakra-ui/react";
 import { ITab } from "../../app/routes/Workspace";
 import MiniLibraryPanel from "./MiniLibraryPanel";
 import ChatPanel from "./ChatPanel";
 import PdfViewerPanel from "./PdfViewerPanel";
-import theme from "../../app/themes/theme";
-import { SmallCloseIcon } from "@chakra-ui/icons";
+import SupportWindowGridItem from "../../common/components/SupportWindowGridItem";
 
 interface PanelWrapperProps {
   tab: ITab;
@@ -25,55 +14,12 @@ interface PanelWrapperProps {
   ) => void;
 }
 
-interface SupportWindowGridItemProps {
-  children: React.ReactNode;
-  windowName: string;
-  onClose: () => void;
-}
-
-const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
-  children,
-  windowName,
-  onClose,
-}) => {
-  const { colorMode } = useColorMode();
-  return (
-    <GridItem
-      rowSpan={1}
-      colSpan={1}
-      h="100%"
-      bgColor={theme.colors[colorMode].surfaceContainer}
-      pb={2}
-      borderRadius={8}
-    >
-      <HStack
-        mb={2}
-        pl={2}
-        bgColor={theme.colors[colorMode].primaryContainer}
-        borderTopRadius={8}
-      >
-        <Heading size="xs" color={theme.colors[colorMode].onPrimaryContainer}>
-          {windowName}
-        </Heading>
-        <Spacer />
-        <IconButton
-          variant="ghost"
-          size="xs"
-          aria-label={"close"}
-          icon={<SmallCloseIcon />}
-          onClick={onClose}
-        />
-      </HStack>
-      {children}
-    </GridItem>
-  );
-};
-
 const PanelWrapper: React.FC<PanelWrapperProps> = ({
   tab,
   selectedDocuments,
   onClose,
 }) => {
+  console.log(tab);
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} p={2}>
       <Grid
