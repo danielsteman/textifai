@@ -1,45 +1,69 @@
-import React from 'react';
-import { Box, Text, Flex, IconButton, useTheme, useColorMode, Avatar, HStack, Button, Spacer, VStack } from "@chakra-ui/react";
-import { FaCog, FaSignOutAlt } from "react-icons/fa"; 
+import { useContext } from "react";
+import {
+  Box,
+  IconButton,
+  useColorMode,
+  Avatar,
+  HStack,
+  VStack,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Heading,
+} from "@chakra-ui/react";
+import { UpDownIcon } from "@chakra-ui/icons";
+import { auth } from "../../app/config/firebase";
+import ColorModeSwitcher from "./ColorModeSwitcher";
+import { AuthContext } from "../../app/providers/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import theme from "../../app/themes/theme";
 
-interface UserCardProps {
-  onLogout: () => void;  // Assuming onLogout is a function that doesn't take arguments and doesn't return anything
-}
+const UserCard = () => {
+  const currentUser = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { colorMode } = useColorMode();
 
-const UserCard: React.FC<UserCardProps> = ({ onLogout }) => {
-    const theme = useTheme();
-    const { colorMode } = useColorMode(); // Get the current color mode
-
-    return (
-        <Box
-          w="100%"
-          p={5}
-          mb={4}
-          bgColor={colorMode === "light" ? "gray.200" : "gray.700"}
-          borderRadius="md"
-        >
-          <VStack align="start" spacing={2}>
-            <HStack spacing={4}>
-              <Avatar size="sm" />
-              <VStack align="start">
-                <Text fontSize="sm">Henk de Tank</Text>
-                {/* <Text fontSize="xs" color={colorMode === "light" ? "gray.700" : "gray.300"}>
-                  {currentUser?.email}
-                </Text> */}
-              </VStack>
-            </HStack>
-    
-            <HStack spacing={3} mt={2}>
-          <Button leftIcon={<FaCog />} size="xs" variant="ghost">
-            Account settings
-          </Button>
-          <Button leftIcon={<FaSignOutAlt />} size="xs" variant="ghost" onClick={onLogout}>
-            Logout
-          </Button>
+  return (
+    <Box
+      w="100%"
+      p={2}
+      mb={4}
+      bgColor={theme.colors[colorMode].secondaryContainer}
+      borderRadius="md"
+    >
+      <VStack align="start" spacing={2}>
+        <HStack gap={2}>
+          <Avatar size="sm" />
+          <Heading
+            size="xs"
+            color={theme.colors[colorMode].onSecondaryContainer}
+          >
+            {currentUser?.displayName}
+          </Heading>
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              icon={<UpDownIcon />}
+              size="sm"
+              variant="ghost"
+            />
+            <MenuList>
+              <MenuItem
+                onClick={() => {
+                  auth.signOut();
+                  navigate("/");
+                }}
+              >
+                Sign out
+              </MenuItem>
+              <ColorModeSwitcher />
+            </MenuList>
+          </Menu>
         </HStack>
       </VStack>
     </Box>
   );
 };
 
-    export default UserCard;
+export default UserCard;

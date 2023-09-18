@@ -25,6 +25,7 @@ import {
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { useCallback, useState } from "react";
 import { auth, db } from "../../app/config/firebase";
@@ -94,7 +95,12 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               email,
               password
             );
+
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
+            await updateProfile(userCredential.user, {
+              displayName: `${firstname} ${lastname}`,
+            });
+
             break;
           case "signIn":
             await signInWithEmailAndPassword(auth, email, password);
