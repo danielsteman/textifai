@@ -20,8 +20,21 @@ import React, { useEffect, useRef, useState, useContext, ChangeEvent, useLayoutE
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, where, updateDoc, doc, orderBy, limit } from "firebase/firestore";
+import { 
+  collection, 
+  addDoc, 
+  Timestamp, 
+  getDocs, 
+  query, 
+  where, 
+  updateDoc, 
+  doc, 
+  orderBy, 
+  limit, 
+} from "firebase/firestore";
 import { db } from "../../app/config/firebase"; 
+import { Conversation } from "@shared/firestoreInterfaces/Conversation";
+import { Message } from "@shared/firestoreInterfaces/Message";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
 
@@ -34,11 +47,11 @@ const messagesCollection = collection(db, "messages");
 
 const startConversation = async (currentUserUid: string): Promise<string | void> => {
   try {
-    const conversationDoc = {
+    const conversationDoc: Conversation = {
       userId: currentUserUid,  
       projectId: "currentProject", // TO DO --> Make dynamic 
-      creationDate: serverTimestamp(),
-      updatedDate: serverTimestamp(),
+      creationDate: Timestamp.fromDate(new Date()),
+      updatedDate: Timestamp.fromDate(new Date()),
     };
     const conversationRef = await addDoc(conversationsCollection, conversationDoc);
     return conversationRef.id;
@@ -47,12 +60,11 @@ const startConversation = async (currentUserUid: string): Promise<string | void>
   }
 };
 
-const addMessageToCollection = async (message: any, variant: any, conversationId: any, parentMessageId = null) => {
+const addMessageToCollection = async (message: any, variant: any, conversationId: any, parentMessageId: any) => {
   try {
-    const messageDoc = {
-      messageId: uuidv4(),
+    const messageDoc: Message = {
       conversationId: conversationId,
-      creationDate: serverTimestamp(),
+      creationDate: Timestamp.fromDate(new Date()),
       variant: variant,
       messageBody: message,
       parentMessageId: parentMessageId,
@@ -67,7 +79,7 @@ const updateConversationDate = async (conversationId: string) => {
   try {
     const conversationRef = doc(db, "conversations", conversationId);
     await updateDoc(conversationRef, {
-      updatedDate: serverTimestamp(),
+      updatedDate: Timestamp.fromDate(new Date()),
     });
   } catch (error) {
     console.error("Error updating conversation date:", error);
@@ -203,10 +215,10 @@ const Chat = () => {
             setLoading(false);
 
             // Add user's message to the collection
-            await addMessageToCollection(message, "user", currentConversationId);
+            await addMessageToCollection(message, "user", currentConversationId, null);
 
             // Add AI's response to the collection
-            await addMessageToCollection(res.data.answer, "agent", currentConversationId);
+            await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
 
             // Update the conversation's updatedDate
             await updateConversationDate(currentConversationId);
