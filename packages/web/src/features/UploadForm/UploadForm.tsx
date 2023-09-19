@@ -25,7 +25,9 @@ import { storage } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import axios from "axios";
 
-const UploadForm = () => {
+const UploadForm: React.FC<{ onUploadComplete: () => void }> = ({
+  onUploadComplete,
+}) => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadSuccessful, setUploadSuccessful] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,7 +41,7 @@ const UploadForm = () => {
   const onDropFileExist = useCallback((acceptedFiles: any) => {
     setFiles(acceptedFiles);
     setFileExists(false); // Reset the fileExists state
-  }, []); 
+  }, []);
 
   const currentUser = useContext(AuthContext);
 
@@ -48,7 +50,7 @@ const UploadForm = () => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: acceptedFormats,
-  }); 
+  });
 
   const resetForm = () => {
     setUploadSuccessful(false);
@@ -59,11 +61,14 @@ const UploadForm = () => {
     setLoading(true);
     if (files && files.length > 0) {
       files.forEach(async (file: any) => {
-        const fileRef = ref(storage, `users/${currentUser?.uid}/uploads/${file.name}`);
+        const fileRef = ref(
+          storage,
+          `users/${currentUser?.uid}/uploads/${file.name}`
+        );
         getDownloadURL(fileRef)
           .then((url) => {
             // File exists, do nothing
-            console.log("File already exists in Firebase");          
+            console.log("File already exists in Firebase");
             setFileExists(true); // Mark that file exists
             setLoading(false);
           })
@@ -78,26 +83,31 @@ const UploadForm = () => {
               console.log(snapshot);
             });
 
-            // Create FormData and append the fileBlob and userId
+            onUploadComplete();
+
+            // Create FormData and append the fileBlob
             const data = new FormData();
             data.append("file", file);
             if (currentUser && currentUser.uid) {
-              data.append("userId", currentUser.uid);  // appending userId to FormData
+              data.append("userId", currentUser.uid); // appending userId to FormData
             }
 
             // Post the data to the server
             await axios({
               method: "post",
               baseURL: "http://localhost:3000/api/documents/upload",
-              headers: { 'Content-Type': 'multipart/form-data' },
-              data: data
+              headers: { "Content-Type": "multipart/form-data" },
+              data: data,
             })
-              .then(response => {
-                console.log('File uploaded successfully:', response.data);
+              .then((response) => {
+                console.log("File uploaded successfully:", response.data);
                 setUploadSuccessful(true);
               })
-              .catch(error => {
-                console.error('An error occurred while uploading the file:', error);
+              .catch((error) => {
+                console.error(
+                  "An error occurred while uploading the file:",
+                  error
+                );
               });
             setLoading(false);
           });
@@ -107,7 +117,7 @@ const UploadForm = () => {
       console.warn("No files were uploaded");
       setLoading(false);
     }
-};
+  };
 
   useEffect(() => {
     const shouldOpen = localStorage.getItem("showNewsLetterOffer");
@@ -202,13 +212,13 @@ const UploadForm = () => {
           Upload
         </Button>
       </Center>
-        {fileExists && !uploadSuccessful ? (
-          <Text>File already exists!📄 Upload a new one!</Text>
-        ) : uploadSuccessful && fileExists ? (
-          <Text>Done!✅ Want to upload more?</Text>
-        ) : (
-          <></>
-        )}
+      {fileExists && !uploadSuccessful ? (
+        <Text>File already exists!📄 Upload a new one!</Text>
+      ) : uploadSuccessful && fileExists ? (
+        <Text>Done!✅ Want to upload more?</Text>
+      ) : (
+        <></>
+      )}
     </Box>
   );
 };
