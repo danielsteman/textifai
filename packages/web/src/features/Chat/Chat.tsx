@@ -16,7 +16,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { RepeatIcon, PlusSquareIcon } from "@chakra-ui/icons";
-import React, {
+import {
   useEffect,
   useRef,
   useState,
@@ -142,11 +142,7 @@ const fetchMessagesForConversation = async (conversationId: string) => {
   return messagesArray;
 };
 
-export interface ChatProps {
-  selectedDocuments: string[];
-}
-
-const Chat: React.FC<ChatProps> = ({ selectedDocuments }) => {
+const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const [messageStack, setMessageStack] = useState<string[]>([]);
   const [answerStack, setAnswerStack] = useState<string[]>([]);
