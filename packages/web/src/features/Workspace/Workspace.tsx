@@ -149,7 +149,7 @@ const Workspace = () => {
             onClick={() => {
               const tab: ITab = {
                 name: "Chat",
-                panel: <ChatPanel selectedDocuments={selectedDocuments} />,
+                panel: <ChatPanel />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
