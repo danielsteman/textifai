@@ -58,6 +58,10 @@ export interface MegaLibraryProps {
   setCurrentTab: Dispatch<SetStateAction<ITab | undefined>>;
 }
 
+interface UploadProps {
+  onUploadComplete?: () => void;  
+}
+
 const MegaLibrary: React.FC<MegaLibraryProps> = ({
   openTabs,
   setOpenTabs,
