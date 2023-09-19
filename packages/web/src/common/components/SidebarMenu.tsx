@@ -12,15 +12,15 @@ import {
 } from "@chakra-ui/react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
-import EditorPanel from "../../features/Workspace/EditorPanel";
+import EditorPanel from "../../features/Workspace/panels/EditorPanel";
 import { FaBook, FaEdit, FaFilePdf } from "react-icons/fa";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/Workspace/panels/ChatPanel";
-import MegaLibraryPanel from "../../features/Workspace/MegaLibraryPanel";
+import MegaLibraryPanel from "../../features/Workspace/panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import { auth } from "../../app/config/firebase";
-import PdfViewerPanel from "../../features/Workspace/PdfViewerPanel";
-import { ITab } from "src/app/routes/Workspace";
+import PdfViewerPanel from "../../features/Workspace/panels/PdfViewerPanel";
+import { ITab } from "../../features/Workspace/Workspace";
 import { useNavigate } from "react-router-dom";
 
 type SidebarMenuProps = {
@@ -100,7 +100,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             onClick={() => {
               const tab: ITab = {
                 name: "Chat",
-                panel: <ChatPanel />,
+                panel: <ChatPanel selectedDocuments={[]} />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
@@ -126,6 +126,12 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                     openTabs={openTabs}
                     setOpenTabs={setOpenTabs}
                     setCurrentTab={setCurrentTab}
+                    selectedDocuments={[]}
+                    setSelectedDocuments={function (
+                      value: React.SetStateAction<string[]>
+                    ): void {
+                      throw new Error("Function not implemented.");
+                    }}
                   />
                 ),
                 openChatSupport: false,
@@ -199,7 +205,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             onClick={() => {
               const tab: ITab = {
                 name: "Chat",
-                panel: <ChatPanel />,
+                panel: <ChatPanel selectedDocuments={[]} />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
@@ -219,6 +225,12 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                     openTabs={openTabs}
                     setOpenTabs={setOpenTabs}
                     setCurrentTab={setCurrentTab}
+                    selectedDocuments={[]}
+                    setSelectedDocuments={function (
+                      value: React.SetStateAction<string[]>
+                    ): void {
+                      throw new Error("Function not implemented.");
+                    }}
                   />
                 ),
                 openChatSupport: false,
