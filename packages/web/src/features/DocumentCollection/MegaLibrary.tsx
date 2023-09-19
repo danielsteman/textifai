@@ -58,6 +58,10 @@ export interface MegaLibraryProps {
   setCurrentTab: Dispatch<SetStateAction<ITab | undefined>>;
 }
 
+interface UploadProps {
+  onUploadComplete?: () => void;  
+}
+
 const MegaLibrary: React.FC<MegaLibraryProps> = ({
   openTabs,
   setOpenTabs,
@@ -68,6 +72,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+  
   const {
     isOpen: isDeleteFileOpen,
     onOpen: onDeleteFileOpen,
@@ -89,7 +95,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         console.warn("Something went wrong listing your files");
         console.error(error);
       });
-  }, [selectedDocuments]);
+  }, [selectedDocuments, shouldRefresh]);
 
   const handleDocumentCheckboxChange = (documentId: string) => {
     setSelectedDocuments((prevSelected) =>
@@ -271,7 +277,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <UploadForm />
+                <UploadForm onUploadComplete={() => setShouldRefresh(!shouldRefresh)}/>
               </ModalBody>
             </ModalContent>
           </Modal>

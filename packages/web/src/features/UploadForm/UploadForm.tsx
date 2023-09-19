@@ -25,7 +25,7 @@ import { storage } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import axios from "axios";
 
-const UploadForm = () => {
+const UploadForm: React.FC<{ onUploadComplete: () => void }> = ({ onUploadComplete }) => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadSuccessful, setUploadSuccessful] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -77,6 +77,8 @@ const UploadForm = () => {
               console.log("Uploaded a blob or file!");
               console.log(snapshot);
             });
+
+            onUploadComplete();
 
             // Create FormData and append the fileBlob
             const data = new FormData();
