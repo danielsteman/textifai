@@ -1,6 +1,6 @@
 import MegaLibrary, {
   MegaLibraryProps,
-} from "../DocumentCollection/MegaLibrary";
+} from "../../DocumentCollection/MegaLibrary";
 
 const MegaLibraryPanel: React.FC<MegaLibraryProps> = ({
   openTabs,

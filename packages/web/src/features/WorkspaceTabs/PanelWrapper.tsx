@@ -1,9 +1,9 @@
 import React from "react";
 import { Grid, GridItem, TabPanel } from "@chakra-ui/react";
 import { ITab } from "../../app/routes/Workspace";
-import MiniLibraryPanel from "./MiniLibraryPanel";
-import ChatPanel from "./ChatPanel";
-import PdfViewerPanel from "./PdfViewerPanel";
+import MiniLibraryPanel from "./panels/MiniLibraryPanel";
+import ChatPanel from "./panels/ChatPanel";
+import PdfViewerPanel from "./panels/PdfViewerPanel";
 import SupportWindowGridItem from "../../common/components/SupportWindowGridItem";
 
 // allow supportchat for pdf document tabs

@@ -1,5 +1,5 @@
 import { Button, HStack, Spacer, Text } from "@chakra-ui/react";
-import TextEditor from "../TextEditor/TextEditor";
+import TextEditor from "../../TextEditor/TextEditor";
 
 export interface CustomTabPanelProps {
   openChatSupport: boolean;

@@ -45,9 +45,9 @@ import { Message } from "@shared/firestoreInterfaces/Message";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
 
-type SystemMessageProps = {
+interface SystemMessageProps {
   message: string;
-};
+}
 
 const conversationsCollection = collection(db, "conversations");
 const messagesCollection = collection(db, "messages");
@@ -142,7 +142,11 @@ const fetchMessagesForConversation = async (conversationId: string) => {
   return messagesArray;
 };
 
-const Chat = () => {
+export interface ChatProps {
+  selectedDocuments: string[];
+}
+
+const Chat: React.FC<ChatProps> = ({ selectedDocuments }) => {
   const [message, setMessage] = useState<string>("");
   const [messageStack, setMessageStack] = useState<string[]>([]);
   const [answerStack, setAnswerStack] = useState<string[]>([]);
