@@ -175,8 +175,6 @@ const Workspace = () => {
                     openTabs={openTabs}
                     setOpenTabs={setOpenTabs}
                     setCurrentTab={setCurrentTab}
-                    selectedDocuments={selectedDocuments}
-                    setSelectedDocuments={setSelectedDocuments}
                   />
                 ),
                 openChatSupport: false,

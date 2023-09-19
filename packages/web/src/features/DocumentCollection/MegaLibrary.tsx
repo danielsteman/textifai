@@ -50,25 +50,21 @@ import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "../Workspace/Workspace";
 import PdfViewer from "../PdfViewer/PdfViewer";
 import { shortenString } from "../../common/utils/shortenString";
+import { useSelector } from "react-redux";
+import { RootState } from "src/app/store";
+import { useDispatch } from "react-redux";
+import { disableDocument, enableDocument } from "./librarySlice";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
   setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
   setCurrentTab: Dispatch<SetStateAction<ITab | undefined>>;
-  selectedDocuments: string[];
-  setSelectedDocuments: Dispatch<SetStateAction<string[]>>;
-}
-
-interface UploadProps {
-  onUploadComplete?: () => void;
 }
 
 const MegaLibrary: React.FC<MegaLibraryProps> = ({
   openTabs,
   setOpenTabs,
   setCurrentTab,
-  selectedDocuments,
-  setSelectedDocuments,
 }) => {
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
@@ -88,6 +84,11 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   } = useDisclosure();
   const userDocumentsRef = ref(storage, `users/${currentUser?.uid}/uploads`);
 
+  const selectedDocuments = useSelector(
+    (state: RootState) => state.library.selectedDocuments
+  );
+  const dispatch = useDispatch();
+
   useEffect(() => {
     listAll(userDocumentsRef)
       .then((res) => {
@@ -100,12 +101,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   }, [selectedDocuments, shouldRefresh]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
-    console.log(documentName);
-    setSelectedDocuments((prevSelected) =>
-      prevSelected.includes(documentName)
-        ? prevSelected.filter((name) => name !== documentName)
-        : [...prevSelected, documentName]
-    );
+    selectedDocuments.includes(documentName)
+      ? dispatch(disableDocument(documentName))
+      : dispatch(enableDocument(documentName));
   };
 
   const handleChangeDocumentQuery = (
@@ -119,10 +117,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       const documentRef = ref(storage, fullPath);
       deleteObject(documentRef)
         .then(() => {
-          const updatedSelectedDocuments = selectedDocuments.filter(
-            (str) => str !== fullPath
-          );
-          setSelectedDocuments(updatedSelectedDocuments);
+          dispatch(disableDocument(fullPath));
           onDeleteFileClose();
           console.log(`${fullPath} is deleted`);
         })
