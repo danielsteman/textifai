@@ -88,15 +88,15 @@ export const router = createBrowserRouter([
         path: "docs",
         element: <Docs />,
       },
-      {
-        path: "account-settings",
-        element: <AccountSettings />,
-      },
+      // {
+      //   path: "account-settings",
+      //   element: <AccountSettings />,
+      // },
       {
         path: "settings",
         element: (
           <PrivateRoute>
-            <Settings />
+            <AccountSettings />
           </PrivateRoute>
         ),
       },
