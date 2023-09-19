@@ -24,7 +24,7 @@ import {
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
-import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
+import EditorPanel from "../../features/Workspace/panels/EditorPanel";
 import {
   FaBook,
   FaBookOpen,
@@ -33,11 +33,11 @@ import {
   FaRegFilePdf,
 } from "react-icons/fa";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
-import ChatPanel from "../../features/WorkspaceTabs/panels/ChatPanel";
-import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
-import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
-import theme from "../themes/theme";
-import PdfViewerPanel from "../../features/WorkspaceTabs/PdfViewerPanel";
+import ChatPanel from "./panels/ChatPanel";
+import PanelWrapper from "../../features/Workspace/PanelWrapper";
+import MegaLibraryPanel from "./panels/MegaLibraryPanel";
+import theme from "../../app/themes/theme";
+import PdfViewerPanel from "./panels/PdfViewerPanel";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 
 export type ITab = {

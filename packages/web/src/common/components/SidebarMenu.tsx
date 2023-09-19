@@ -12,14 +12,14 @@ import {
 } from "@chakra-ui/react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
-import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
+import EditorPanel from "../../features/Workspace/EditorPanel";
 import { FaBook, FaEdit, FaFilePdf } from "react-icons/fa";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
-import ChatPanel from "../../features/WorkspaceTabs/panels/ChatPanel";
-import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
+import ChatPanel from "../../features/Workspace/panels/ChatPanel";
+import MegaLibraryPanel from "../../features/Workspace/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import { auth } from "../../app/config/firebase";
-import PdfViewerPanel from "../../features/WorkspaceTabs/PdfViewerPanel";
+import PdfViewerPanel from "../../features/Workspace/PdfViewerPanel";
 import { ITab } from "src/app/routes/Workspace";
 import { useNavigate } from "react-router-dom";
 

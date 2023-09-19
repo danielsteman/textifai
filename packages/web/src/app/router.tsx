@@ -11,14 +11,14 @@ import FlexLayout from "./layouts/FlexLayout";
 import Layout from "./layouts/FlexLayout";
 import Upload from "./routes/Upload";
 import Editor from "./routes/Editor";
-import Workspace from "./routes/Workspace";
+import WorkspacePage from "./routes/WorkspacePage";
 import CreateProject from "./routes/CreateProject";
 import PdfViewer from "./routes/PdfViewer";
 import AccountSettings from "./routes/AccountSettings";
 
 export const router = createBrowserRouter([
   {
-    element: <Workspace />,
+    element: <WorkspacePage />,
     path: "/features/workspace",
   },
   {

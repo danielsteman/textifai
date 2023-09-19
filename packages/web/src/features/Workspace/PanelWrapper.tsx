@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, GridItem, TabPanel } from "@chakra-ui/react";
-import { ITab } from "../../app/routes/Workspace";
+import { ITab } from "../../features/Workspace/Workspace";
 import MiniLibraryPanel from "./panels/MiniLibraryPanel";
 import ChatPanel from "./panels/ChatPanel";
 import PdfViewerPanel from "./panels/PdfViewerPanel";

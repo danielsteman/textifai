@@ -47,7 +47,7 @@ import { MdAnalytics, MdUpload } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 import theme from "../../app/themes/theme";
 import UploadForm from "../UploadForm/UploadForm";
-import { ITab } from "src/app/routes/Workspace";
+import { ITab } from "../Workspace/Workspace";
 import PdfViewer from "../PdfViewer/PdfViewer";
 import { shortenString } from "../../common/utils/shortenString";
 
@@ -60,7 +60,7 @@ export interface MegaLibraryProps {
 }
 
 interface UploadProps {
-  onUploadComplete?: () => void;  
+  onUploadComplete?: () => void;
 }
 
 const MegaLibrary: React.FC<MegaLibraryProps> = ({
@@ -75,7 +75,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
   const [shouldRefresh, setShouldRefresh] = useState(false);
-  
+
   const {
     isOpen: isDeleteFileOpen,
     onOpen: onDeleteFileOpen,
@@ -277,7 +277,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <UploadForm onUploadComplete={() => setShouldRefresh(!shouldRefresh)}/>
+                <UploadForm
+                  onUploadComplete={() => setShouldRefresh(!shouldRefresh)}
+                />
               </ModalBody>
             </ModalContent>
           </Modal>
