@@ -5,7 +5,6 @@ import Login from "./routes/Login";
 import Pricing from "./routes/Pricing";
 import Root from "./routes/Root";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
-import Settings from "./routes/Settings";
 import Support from "./routes/Support";
 import Assistant from "./routes/Assistant";
 import FlexLayout from "./layouts/FlexLayout";
@@ -88,10 +87,6 @@ export const router = createBrowserRouter([
         path: "docs",
         element: <Docs />,
       },
-      // {
-      //   path: "account-settings",
-      //   element: <AccountSettings />,
-      // },
       {
         path: "settings",
         element: (
