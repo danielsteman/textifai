@@ -49,7 +49,6 @@ import theme from "../../app/themes/theme";
 import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "src/app/routes/Workspace";
 import PdfViewer from "../PdfViewer/PdfViewer";
-import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import { shortenString } from "../../common/utils/shortenString";
 
 export interface MegaLibraryProps {
