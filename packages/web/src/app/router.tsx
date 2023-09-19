@@ -5,21 +5,20 @@ import Login from "./routes/Login";
 import Pricing from "./routes/Pricing";
 import Root from "./routes/Root";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
-import Settings from "./routes/Settings";
 import Support from "./routes/Support";
 import Assistant from "./routes/Assistant";
 import FlexLayout from "./layouts/FlexLayout";
 import Layout from "./layouts/FlexLayout";
 import Upload from "./routes/Upload";
 import Editor from "./routes/Editor";
-import Workspace from "./routes/Workspace";
+import WorkspacePage from "./routes/WorkspacePage";
 import CreateProject from "./routes/CreateProject";
 import PdfViewer from "./routes/PdfViewer";
 import AccountSettings from "./routes/AccountSettings";
 
 export const router = createBrowserRouter([
   {
-    element: <Workspace />,
+    element: <WorkspacePage />,
     path: "/features/workspace",
   },
   {
@@ -88,10 +87,6 @@ export const router = createBrowserRouter([
         path: "docs",
         element: <Docs />,
       },
-      // {
-      //   path: "account-settings",
-      //   element: <AccountSettings />,
-      // },
       {
         path: "settings",
         element: (

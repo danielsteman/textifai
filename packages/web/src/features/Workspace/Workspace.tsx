@@ -19,13 +19,12 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
-  useContext,
   useEffect,
   useState,
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
-import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
+import EditorPanel from "../../features/Workspace/panels/EditorPanel";
 import {
   FaBook,
   FaBookOpen,
@@ -34,14 +33,11 @@ import {
   FaRegFilePdf,
 } from "react-icons/fa";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
-import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
-import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
-import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
-import theme from "../themes/theme";
-import { AuthContext } from "../providers/AuthProvider";
-import { auth } from "../config/firebase";
-import { useNavigate } from "react-router-dom";
-import PdfViewerPanel from "../../features/WorkspaceTabs/PdfViewerPanel";
+import ChatPanel from "./panels/ChatPanel";
+import PanelWrapper from "../../features/Workspace/PanelWrapper";
+import MegaLibraryPanel from "./panels/MegaLibraryPanel";
+import theme from "../../app/themes/theme";
+import PdfViewerPanel from "./panels/PdfViewerPanel";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 
 export type ITab = {
@@ -65,7 +61,7 @@ const Workspace = () => {
   const [currentTab, setCurrentTab] = useState<ITab>();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
-  const navigate = useNavigate();
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -153,7 +149,7 @@ const Workspace = () => {
             onClick={() => {
               const tab: ITab = {
                 name: "Chat",
-                panel: <ChatPanel />,
+                panel: <ChatPanel selectedDocuments={selectedDocuments} />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
@@ -179,6 +175,8 @@ const Workspace = () => {
                     openTabs={openTabs}
                     setOpenTabs={setOpenTabs}
                     setCurrentTab={setCurrentTab}
+                    selectedDocuments={selectedDocuments}
+                    setSelectedDocuments={setSelectedDocuments}
                   />
                 ),
                 openChatSupport: false,
@@ -379,6 +377,7 @@ const Workspace = () => {
           {openTabs.map((tab) => (
             <PanelWrapper
               onClose={closeSupportingPanel}
+              selectedDocuments={selectedDocuments}
               tab={tab}
               key={tab.name}
             />
