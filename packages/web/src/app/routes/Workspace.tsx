@@ -1,6 +1,7 @@
-import { ChatIcon, SmallCloseIcon  } from "@chakra-ui/icons";
+import { ChatIcon, SmallCloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
   Box,
+  Button,
   Flex,
   HStack,
   IconButton,
@@ -10,7 +11,9 @@ import {
   TabPanels,
   Tabs,
   Tooltip,
+  VStack,
   useColorMode,
+  Divider,
 } from "@chakra-ui/react";
 import {
   Dispatch,
@@ -20,17 +23,26 @@ import {
   useEffect,
   useState,
 } from "react";
+import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
+import UserCard from "../../common/components/UserCard";
 import EditorPanel from "../../features/WorkspaceTabs/EditorPanel";
 import {
+  FaBook,
   FaBookOpen,
+  FaEdit,
+  FaFilePdf,
   FaRegFilePdf,
 } from "react-icons/fa";
 import { addItemIfNotExist } from "../../common/utils/arrayManager";
+import ChatPanel from "../../features/WorkspaceTabs/ChatPanel";
 import PanelWrapper from "../../features/WorkspaceTabs/PanelWrapper";
+import MegaLibraryPanel from "../../features/WorkspaceTabs/MegaLibraryPanel";
 import theme from "../themes/theme";
-import SidebarMenu from "../../common/components/SidebarMenu";
 import { AuthContext } from "../providers/AuthProvider";
+import { auth } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
+import PdfViewerPanel from "../../features/WorkspaceTabs/PdfViewerPanel";
+import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 
 export type ITab = {
   name: string;
@@ -51,6 +63,13 @@ const Workspace = () => {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const [currentTab, setCurrentTab] = useState<ITab>();
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
+
+  const navigate = useNavigate();
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const onTabClose = (tabToClose: ITab) => {
     const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
@@ -89,11 +108,163 @@ const Workspace = () => {
 
   return (
     <HStack h="100%">
-      <SidebarMenu 
-        openTabs={openTabs} 
-        setOpenTabs={setOpenTabs} 
-        setCurrentTab={setCurrentTab}
-      />
+      {isMenuOpen && (
+        <VStack
+          bgColor={theme.colors[colorMode].surfaceContainer}
+          h="100%"
+          p={2}
+        >
+          <Flex justifyContent="flex-end" w="100%">
+            <IconButton
+              aria-label="Close Menu"
+              icon={<MdKeyboardDoubleArrowLeft />}
+              onClick={toggleMenu}
+              size="sm"
+            />
+          </Flex>
+          <Button
+            w="100%"
+            justifyContent="flex-start"
+            aria-label={"editor"}
+            leftIcon={<FaEdit />}
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const tab = {
+                name: "Editor",
+                panel: <EditorPanel />,
+                openChatSupport: false,
+                openMiniLibrary: false,
+                openPdfViewer: false,
+              };
+              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setCurrentTab(tab);
+            }}
+          >
+            Editor
+          </Button>
+          <Button
+            w="100%"
+            justifyContent="flex-start"
+            aria-label={"chat"}
+            leftIcon={<ChatIcon />}
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const tab: ITab = {
+                name: "Chat",
+                panel: <ChatPanel />,
+                openChatSupport: false,
+                openMiniLibrary: false,
+                openPdfViewer: false,
+              };
+              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setCurrentTab(tab);
+            }}
+          >
+            Chat
+          </Button>
+          <Button
+            w="100%"
+            justifyContent="flex-start"
+            aria-label={"documents"}
+            leftIcon={<FaBook />}
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const tab: ITab = {
+                name: "Library",
+                panel: (
+                  <MegaLibraryPanel
+                    openTabs={openTabs}
+                    setOpenTabs={setOpenTabs}
+                    setCurrentTab={setCurrentTab}
+                  />
+                ),
+                openChatSupport: false,
+                openMiniLibrary: false,
+                openPdfViewer: false,
+              };
+              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setCurrentTab(tab);
+            }}
+          >
+            Library
+          </Button>
+          <Button
+            w="100%"
+            justifyContent="flex-start"
+            aria-label={"documents"}
+            leftIcon={<FaFilePdf />}
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const tab: ITab = {
+                name: "PdfViewer",
+                panel: <PdfViewerPanel />,
+                openChatSupport: false,
+                openMiniLibrary: false,
+                openPdfViewer: false,
+              };
+              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setCurrentTab(tab);
+            }}
+          >
+            Pdf Viewer
+          </Button>
+          <Spacer />
+          <Divider />
+          <UserCard />
+        </VStack>
+      )}
+      {!isMenuOpen && (
+        <VStack
+          bgColor={theme.colors[colorMode].surfaceContainer}
+          w="3.5rem"
+          h="100%"
+          justifyContent="start"
+          alignItems="center"
+          spacing={4}
+          pb={3}
+          pt={3}
+        >
+          <IconButton
+            aria-label="Open Menu"
+            icon={<HamburgerIcon />}
+            onClick={toggleMenu}
+          />
+          <IconButton
+            aria-label={"Editor"}
+            icon={<FaEdit />}
+            onClick={() => {
+              //... onClick logic for Editor button...
+            }}
+          />
+          <IconButton
+            aria-label={"Chat"}
+            icon={<ChatIcon />}
+            onClick={() => {
+              //... onClick logic for Chat button...
+            }}
+          />
+          <IconButton
+            aria-label={"Library"}
+            icon={<FaBook />}
+            onClick={() => {
+              //... onClick logic for Library button...
+            }}
+          />
+          <IconButton
+            aria-label={"Pdf Viewer"}
+            icon={<FaFilePdf />}
+            onClick={() => {
+              //... onClick logic for Pdf Viewer button...
+            }}
+          />
+          <Spacer />
+          <ColorModeSwitcher />
+        </VStack>
+      )}
       <Tabs
         index={activeTabIndex}
         onChange={setActiveTabIndex}
