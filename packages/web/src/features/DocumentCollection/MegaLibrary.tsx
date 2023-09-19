@@ -47,27 +47,35 @@ import { MdAnalytics, MdUpload } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 import theme from "../../app/themes/theme";
 import UploadForm from "../UploadForm/UploadForm";
-import { ITab } from "src/app/routes/Workspace";
+import { ITab } from "../Workspace/Workspace";
 import PdfViewer from "../PdfViewer/PdfViewer";
-import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import { shortenString } from "../../common/utils/shortenString";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
   setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
   setCurrentTab: Dispatch<SetStateAction<ITab | undefined>>;
+  selectedDocuments: string[];
+  setSelectedDocuments: Dispatch<SetStateAction<string[]>>;
+}
+
+interface UploadProps {
+  onUploadComplete?: () => void;
 }
 
 const MegaLibrary: React.FC<MegaLibraryProps> = ({
   openTabs,
   setOpenTabs,
   setCurrentTab,
+  selectedDocuments,
+  setSelectedDocuments,
 }) => {
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
-  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+
   const {
     isOpen: isDeleteFileOpen,
     onOpen: onDeleteFileOpen,
@@ -89,13 +97,14 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         console.warn("Something went wrong listing your files");
         console.error(error);
       });
-  }, [selectedDocuments]);
+  }, [selectedDocuments, shouldRefresh]);
 
-  const handleDocumentCheckboxChange = (documentId: string) => {
+  const handleDocumentCheckboxChange = (documentName: string) => {
+    console.log(documentName);
     setSelectedDocuments((prevSelected) =>
-      prevSelected.includes(documentId)
-        ? prevSelected.filter((id) => id !== documentId)
-        : [...prevSelected, documentId]
+      prevSelected.includes(documentName)
+        ? prevSelected.filter((name) => name !== documentName)
+        : [...prevSelected, documentName]
     );
   };
 
@@ -132,13 +141,10 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-    // Check if the tab is already open
-    const existingTab = openTabs.find(t => t.name === tab.name);
+    const existingTab = openTabs.find((t) => t.name === tab.name);
     if (!existingTab) {
-      // Add new tab to the list of open tabs
-      setOpenTabs(prevTabs => [...prevTabs, tab]);
+      setOpenTabs((prevTabs) => [...prevTabs, tab]);
     }
-    // Set the new tab as the current tab
     setCurrentTab(tab);
   };
 
@@ -271,20 +277,25 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <UploadForm />
+                <UploadForm
+                  onUploadComplete={() => setShouldRefresh(!shouldRefresh)}
+                />
               </ModalBody>
             </ModalContent>
           </Modal>
-          <Button
-            size="sm"
-            aria-label={"analyse"}
-            leftIcon={<MdAnalytics />}
-            borderRadius={100}
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            textColor={theme.colors[colorMode].onSecondaryContainer}
-          >
-            Analyse
-          </Button>
+          <Tooltip label="Coming soon!">
+            <Button
+              disabled={true}
+              size="sm"
+              aria-label={"analyse"}
+              leftIcon={<MdAnalytics />}
+              borderRadius={100}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
+            >
+              Analyse
+            </Button>
+          </Tooltip>
           <Button
             size="sm"
             aria-label={"ask tai"}
@@ -293,6 +304,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             bgColor={theme.colors[colorMode].secondaryContainer}
             textColor={theme.colors[colorMode].onSecondaryContainer}
           >
+            {/* onClick(() => open chat window so user can chat with selected documents) */}
             Ask TAI
           </Button>
           <Button
@@ -309,7 +321,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               aria-label={"delete"}
               icon={<FaTrash />}
               onClick={onDeleteFileOpen}
-              isDisabled={selectedDocuments.length === 0}
+              isDisabled={!selectedDocuments?.length}
             />
           </Tooltip>
           <Modal
@@ -375,16 +387,23 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                           theme.colors[colorMode].surfaceContainerHighest,
                         cursor: "pointer",
                       }}
-                      onClick={() => handleOpenDocumentInTab(doc)}
                     >
                       <Td>
                         <Checkbox
+                          isChecked={selectedDocuments.includes(doc.name)}
                           onChange={() =>
-                            handleDocumentCheckboxChange(doc.fullPath)
+                            handleDocumentCheckboxChange(doc.name)
                           }
                         />
                       </Td>
-                      <Td>{doc.name}</Td>
+                      <Td>
+                        <Button
+                          variant="link"
+                          onClick={() => handleOpenDocumentInTab(doc)}
+                        >
+                          {doc.name}
+                        </Button>
+                      </Td>
                       <Td>Henk</Td>
                       <Td isNumeric>1995</Td>
                       <Td>Collection1</Td>

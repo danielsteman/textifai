@@ -20,7 +20,7 @@
     "@firebase/app": "0.x",
     "@firebase/storage": "^0.11.2",
     "@pinecone-database/pinecone": "^0.1.6",
-    "@reduxjs/toolkit": "^1.9.3",
+    "@reduxjs/toolkit": "^1.9.5",
     "@types/pdfjs-dist": "^2.10.378",
     "@types/react-redux": "^7.1.25",
     "@types/uuid": "^9.0.1",
@@ -44,7 +44,8 @@
     "react-quill": "^2.0.0",
     "react-router": "^6.8.2",
     "react-router-dom": "^6.8.2",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

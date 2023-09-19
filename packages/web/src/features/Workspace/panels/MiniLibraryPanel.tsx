@@ -1,4 +1,4 @@
-import MiniLibrary from "../DocumentCollection/MiniLibrary";
+import MiniLibrary from "../../DocumentCollection/MiniLibrary";
 
 const MiniLibraryPanel = () => {
   return <MiniLibrary />;
