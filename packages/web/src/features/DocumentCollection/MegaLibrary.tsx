@@ -66,7 +66,6 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   selectedDocuments,
   setSelectedDocuments,
 }) => {
-  selectedDocuments = selectedDocuments || [];
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
