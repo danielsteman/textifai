@@ -1,7 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 
 export interface Document {
-  documentId: string;
   projectId: string;
   uploadedBy: string;
   fileName: string;

@@ -15,6 +15,7 @@ import Editor from "./routes/Editor";
 import Workspace from "./routes/Workspace";
 import CreateProject from "./routes/CreateProject";
 import PdfViewer from "./routes/PdfViewer";
+import AccountSettings from "./routes/AccountSettings";
 
 export const router = createBrowserRouter([
   {
@@ -87,11 +88,15 @@ export const router = createBrowserRouter([
         path: "docs",
         element: <Docs />,
       },
+      // {
+      //   path: "account-settings",
+      //   element: <AccountSettings />,
+      // },
       {
         path: "settings",
         element: (
           <PrivateRoute>
-            <Settings />
+            <AccountSettings />
           </PrivateRoute>
         ),
       },

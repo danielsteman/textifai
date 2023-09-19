@@ -15,6 +15,20 @@
       "$userId": {
         ".write": "request.auth != null && request.auth.uid == $userId"
       }
+    },
+
+    "conversations": {
+      "$conversationId": {
+        ".read": "request.auth != null && request.auth.uid in resource.data.participants",
+        ".write": "request.auth != null && request.auth.uid in resource.data.participants"
+      }
+    },
+
+    "messages": {
+      "$messageId": {
+        ".read": "request.auth != null && request.auth.uid == resource.data.senderUid",
+        ".write": "request.auth != null && request.auth.uid == resource.data.senderUid"
+      }
     }
   }
 }
