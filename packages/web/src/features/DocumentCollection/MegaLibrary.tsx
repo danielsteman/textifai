@@ -97,13 +97,11 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     console.log(documentName);
-    console.log(selectedDocuments);
     setSelectedDocuments((prevSelected) =>
       prevSelected.includes(documentName)
         ? prevSelected.filter((name) => name !== documentName)
         : [...prevSelected, documentName]
     );
-    console.log(selectedDocuments);
   };
 
   const handleChangeDocumentQuery = (
@@ -279,16 +277,19 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               </ModalBody>
             </ModalContent>
           </Modal>
-          <Button
-            size="sm"
-            aria-label={"analyse"}
-            leftIcon={<MdAnalytics />}
-            borderRadius={100}
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            textColor={theme.colors[colorMode].onSecondaryContainer}
-          >
-            Analyse
-          </Button>
+          <Tooltip label="Coming soon!">
+            <Button
+              disabled={true}
+              size="sm"
+              aria-label={"analyse"}
+              leftIcon={<MdAnalytics />}
+              borderRadius={100}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
+            >
+              Analyse
+            </Button>
+          </Tooltip>
           <Button
             size="sm"
             aria-label={"ask tai"}
@@ -297,6 +298,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             bgColor={theme.colors[colorMode].secondaryContainer}
             textColor={theme.colors[colorMode].onSecondaryContainer}
           >
+            {/* onClick(() => open chat window so user can chat with selected documents) */}
             Ask TAI
           </Button>
           <Button

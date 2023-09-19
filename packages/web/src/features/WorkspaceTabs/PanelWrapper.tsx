@@ -6,6 +6,8 @@ import ChatPanel from "./ChatPanel";
 import PdfViewerPanel from "./PdfViewerPanel";
 import SupportWindowGridItem from "../../common/components/SupportWindowGridItem";
 
+// allow supportchat for pdf document tabs
+
 interface PanelWrapperProps {
   tab: ITab;
   selectedDocuments: string[];
@@ -19,7 +21,6 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({
   selectedDocuments,
   onClose,
 }) => {
-  console.log(tab);
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} p={2}>
       <Grid
