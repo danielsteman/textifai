@@ -16,8 +16,8 @@ export const ProjectProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     // fetch project
     const project: Project = {
-      name: "6969696996",
-      description: "",
+      name: "this is an example of a project object but should be fetched from firestore",
+      description: "alvast bedankt",
       industry: "",
       users: [],
       creationDate: Timestamp.fromDate(new Date()),
