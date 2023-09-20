@@ -13,15 +13,19 @@ ENV NODE_ENV production
 WORKDIR /usr/src/app
 
 COPY package.json ./
-
 COPY yarn.lock ./
+
+COPY packages/documents/package.json ./packages/documents/
+COPY packages/shared ./packages/shared
+
+COPY packages/documents/tsconfig.json ./packages/documents/
 
 RUN yarn install
 
-COPY . .
+COPY packages/documents ./packages/documents
 
-RUN yarn build
+RUN yarn workspace @textifai/documents build
 
 EXPOSE 3000
 
-CMD yarn start
+CMD yarn workspace @textifai/documents start
