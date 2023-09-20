@@ -1,7 +1,7 @@
-import Chat, { ChatProps } from "../../Chat/Chat";
+import Chat from "../../Chat/Chat";
 
-const ChatPanel: React.FC<ChatProps> = ({ selectedDocuments }) => {
-  return <Chat selectedDocuments={selectedDocuments} />;
+const ChatPanel = () => {
+  return <Chat />;
 };
 
 export default ChatPanel;

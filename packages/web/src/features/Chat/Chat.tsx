@@ -16,7 +16,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { RepeatIcon, PlusSquareIcon } from "@chakra-ui/icons";
-import React, {
+import {
   useEffect,
   useRef,
   useState,
@@ -44,6 +44,8 @@ import { Conversation } from "@shared/firestoreInterfaces/Conversation";
 import { Message } from "@shared/firestoreInterfaces/Message";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
+import { useSelector } from "react-redux";
+import { RootState } from "src/app/store";
 
 interface SystemMessageProps {
   message: string;
@@ -142,11 +144,7 @@ const fetchMessagesForConversation = async (conversationId: string) => {
   return messagesArray;
 };
 
-export interface ChatProps {
-  selectedDocuments: string[];
-}
-
-const Chat: React.FC<ChatProps> = ({ selectedDocuments }) => {
+const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const [messageStack, setMessageStack] = useState<string[]>([]);
   const [answerStack, setAnswerStack] = useState<string[]>([]);
@@ -158,6 +156,10 @@ const Chat: React.FC<ChatProps> = ({ selectedDocuments }) => {
   const [conversationHistory, setConversationHistory] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
+
+  const selectedDocuments = useSelector(
+    (state: RootState) => state.library.selectedDocuments
+  );
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
