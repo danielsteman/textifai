@@ -1,6 +1,5 @@
 import express, { Express } from "express";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import router from "./routes";
@@ -8,15 +7,12 @@ import YAML from "yaml";
 import fs from "fs";
 import bodyParser from "body-parser";
 
-dotenv.config();
-
 const port = process.env.PORT || 3000;
 
 const app: Express = express();
 app.use(cors());
 app.use(morgan("tiny"));
 app.use(express.static("public"));
-// app.use(fileupload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -34,7 +30,6 @@ app.use(
   })
 );
 
-// TODO: refactor such that prefix is equal to "api" + {service root folder name}
 app.use("/api/documents", router);
 
 app.listen(port, () => {

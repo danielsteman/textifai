@@ -1,29 +1,25 @@
-FROM node:16 as builder
+FROM node:18
 
-WORKDIR /usr/src/app
+ARG PINECONE_API_KEY
+ARG PINECONE_ENV
+ARG PINECONE_INDEX
 
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-RUN npm run build
-
-FROM node:16
+ENV PINECONE_API_KEY $PINECONE_API_KEY
+ENV PINECONE_ENV $PINECONE_ENV
+ENV PINECONE_INDEX $PINECONE_INDEX
 
 ENV NODE_ENV production
 
-USER node
-
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json ./
 
-RUN npm install
+COPY yarn.lock ./
 
-COPY --from=builder /usr/src/app/dist ./dist
+RUN yarn install
 
-EXPOSE 3000
+COPY . .
 
-CMD [ "node", "dist/index.js" ]
+EXPOSE 3001
+
+CMD yarn start
