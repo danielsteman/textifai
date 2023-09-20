@@ -9,8 +9,6 @@ const envPath = path.resolve(__dirname, "../../.env.local");
 dotenv.config({ path: envPath });
 
 const router = express.Router();
-
-// Configure Multer for file upload handling
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 

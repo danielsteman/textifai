@@ -1,4 +1,4 @@
-FROM node:18.12.1-buster-slim AS builder
+FROM node:18 AS builder
 
 ARG FIREBASE_APIKEY
 ARG FIREBASE_AUTHDOMAIN
@@ -14,29 +14,25 @@ ENV VITE_FIREBASE_STORAGEBUCKET $FIREBASE_STORAGEBUCKET
 ENV VITE_FIREBASE_MESSAGINGSENDERID $FIREBASE_MESSAGINGSENDERID
 ENV VITE_FIREBASE_APPID $FIREBASE_APPID
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY package.json ./
-
 COPY yarn.lock ./
+
+COPY packages/web/package.json ./packages/web/
+COPY packages/shared ./packages/shared
+
+COPY packages/web/tsconfig.json ./packages/web/
 
 RUN yarn install
 
-COPY index.html ./
+COPY packages/web ./packages/web
 
-COPY tsconfig.json ./
-
-COPY tsconfig.node.json ./
-
-COPY public/ public/
-
-COPY src/ src/
-
-RUN yarn build
+RUN yarn workspace @textifai/web build
 
 FROM nginx:1.23.2-alpine
-COPY .nginx/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY packages/web/.nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /usr/src/app/packages/web/dist /usr/share/nginx/html
 RUN touch /var/run/nginx.pid
 RUN chown -R nginx:nginx /var/run/nginx.pid /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
 USER nginx
