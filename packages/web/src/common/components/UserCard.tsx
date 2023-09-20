@@ -42,6 +42,7 @@ const UserCard: React.FC<UserCardProps> = ({ onLogout }) => {
           <Heading
             size="xs"
             color={theme.colors[colorMode].onSecondaryContainer}
+            whiteSpace="nowrap"
           >
             {currentUser?.displayName}
           </Heading>

@@ -10,17 +10,12 @@ import SupportWindowGridItem from "../../common/components/SupportWindowGridItem
 
 interface PanelWrapperProps {
   tab: ITab;
-  selectedDocuments: string[];
   onClose: (
     panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
   ) => void;
 }
 
-const PanelWrapper: React.FC<PanelWrapperProps> = ({
-  tab,
-  selectedDocuments,
-  onClose,
-}) => {
+const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} p={2}>
       <Grid

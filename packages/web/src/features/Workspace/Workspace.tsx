@@ -61,8 +61,6 @@ const Workspace = () => {
   const [currentTab, setCurrentTab] = useState<ITab>();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
-  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -375,7 +373,6 @@ const Workspace = () => {
           {openTabs.map((tab) => (
             <PanelWrapper
               onClose={closeSupportingPanel}
-              selectedDocuments={selectedDocuments}
               tab={tab}
               key={tab.name}
             />
