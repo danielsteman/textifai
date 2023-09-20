@@ -23,7 +23,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   const { colorMode } = useColorMode();
 
   return (
-    <HStack>
+    <HStack mb={2}>
       {variant === "user" && <Spacer />}
       <HStack
         bgColor={

@@ -44,6 +44,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "src/app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
+import ExampleQuestions from "./ExampleQuestions";
 
 const conversationsCollection = collection(db, "conversations");
 const messagesCollection = collection(db, "messages");
@@ -315,48 +316,7 @@ const Chat = () => {
         ))}
         <Box ref={messagesEndRef} />
       </Box>
-      {messageStack.length === 0 && (
-        <Flex
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          mb={4}
-          pb={6}
-        >
-          <HStack mb={2}>
-            <Button
-              onClick={() => {
-                /* Your logic here */
-              }}
-            >
-              Sample Question 1
-            </Button>
-            <Button
-              onClick={() => {
-                /* Your logic here */
-              }}
-            >
-              Sample Question 2
-            </Button>
-          </HStack>
-          <HStack>
-            <Button
-              onClick={() => {
-                /* Your logic here */
-              }}
-            >
-              Sample Question 3
-            </Button>
-            <Button
-              onClick={() => {
-                /* Your logic here */
-              }}
-            >
-              Sample Question 4
-            </Button>
-          </HStack>
-        </Flex>
-      )}
+      {messageStack.length === 0 && <ExampleQuestions />}
       <form onSubmit={handleSubmit}>
         <InputGroup>
           <Input
@@ -368,7 +328,7 @@ const Chat = () => {
           <InputRightElement>
             <IconButton
               type="submit"
-              aria-label="Ask question about your documents"
+              aria-label="submit message"
               icon={<MdSend />}
               variant="ghost"
               isDisabled={message === "" || loading}
