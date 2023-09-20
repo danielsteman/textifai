@@ -20,6 +20,8 @@ RUN yarn install
 
 COPY . .
 
-EXPOSE 3001
+RUN yarn build
+
+EXPOSE 3000
 
 CMD yarn start
