@@ -59,31 +59,23 @@ const UploadForm = () => {
           `users/${currentUser?.uid}/uploads/${file.name}`
         );
         getDownloadURL(fileRef)
-          .then((url) => {
-            // File exists, do nothing
-            console.log("File already exists in Firebase");
-            setFileExists(true); // Mark that file exists
-            setLoading(false);
-          })
-          .catch(async () => {
-            // File does not exist, upload to Firebase
+          .then(async () => {
             const docRef = ref(
               storage,
               `users/${currentUser?.uid}/uploads/${file.name}`
             );
+
             await uploadBytes(docRef, file).then((snapshot) => {
               console.log("Uploaded a blob or file!");
               console.log(snapshot);
             });
 
-            // Create FormData and append the fileBlob
             const data = new FormData();
             data.append("file", file);
             if (currentUser && currentUser.uid) {
-              data.append("userId", currentUser.uid); // appending userId to FormData
+              data.append("userId", currentUser.uid);
             }
 
-            // Post the data to the server
             await axios({
               method: "post",
               baseURL: "http://localhost:3000/api/documents/upload",
@@ -101,6 +93,9 @@ const UploadForm = () => {
                 );
               });
             setLoading(false);
+          })
+          .catch((e) => {
+            console.log(e);
           });
       });
       resetForm();

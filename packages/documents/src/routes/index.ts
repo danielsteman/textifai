@@ -33,23 +33,20 @@ router.post(
         return res.status(400).json({ error: "No file uploaded" });
       }
 
-      // Read file and extract text
       const fileBuffer = Buffer.from(req.file.buffer);
       const text = await extractTextFromPDF(fileBuffer);
       const user = req.body.userId;
       const filename = req.file.originalname;
 
-      // Pass text to the processFile for chunking and embedding
       await processFile(
         text,
         process.env.PINECONE_API_KEY || "",
         process.env.PINECONE_ENV || "",
-        process.env.PINECONE_INDEX || "", 
-        user,  
-        filename,
+        process.env.PINECONE_INDEX || "",
+        user,
+        filename
       );
 
-      // Send a success response
       res.json({ success: true, message: "File processed successfully" });
     } catch (error) {
       next(error);
