@@ -1,7 +1,7 @@
 import Chat from "../../features/Chat/Chat";
 
 const Assistant = () => {
-  return <Chat selectedDocuments={[]} />;
+  return <Chat />;
 };
 
 export default Assistant;

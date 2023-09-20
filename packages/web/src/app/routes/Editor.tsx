@@ -20,7 +20,7 @@ function Editor() {
           <DocumentCollection />
         </GridItem>
         <GridItem colSpan={1} rowSpan={1}>
-          <Chat selectedDocuments={[]} />
+          <Chat />
         </GridItem>
       </Grid>
     </>

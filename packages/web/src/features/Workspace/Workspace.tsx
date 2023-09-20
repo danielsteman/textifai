@@ -61,8 +61,6 @@ const Workspace = () => {
   const [currentTab, setCurrentTab] = useState<ITab>();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
-  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -149,7 +147,7 @@ const Workspace = () => {
             onClick={() => {
               const tab: ITab = {
                 name: "Chat",
-                panel: <ChatPanel selectedDocuments={selectedDocuments} />,
+                panel: <ChatPanel />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
@@ -175,8 +173,6 @@ const Workspace = () => {
                     openTabs={openTabs}
                     setOpenTabs={setOpenTabs}
                     setCurrentTab={setCurrentTab}
-                    selectedDocuments={selectedDocuments}
-                    setSelectedDocuments={setSelectedDocuments}
                   />
                 ),
                 openChatSupport: false,
@@ -377,7 +373,6 @@ const Workspace = () => {
           {openTabs.map((tab) => (
             <PanelWrapper
               onClose={closeSupportingPanel}
-              selectedDocuments={selectedDocuments}
               tab={tab}
               key={tab.name}
             />
