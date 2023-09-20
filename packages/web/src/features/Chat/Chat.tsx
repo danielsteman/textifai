@@ -44,6 +44,8 @@ import { Conversation } from "@shared/firestoreInterfaces/Conversation";
 import { Message } from "@shared/firestoreInterfaces/Message";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
+import { useSelector } from "react-redux";
+import { RootState } from "src/app/store";
 
 interface SystemMessageProps {
   message: string;
@@ -154,6 +156,10 @@ const Chat = () => {
   const [conversationHistory, setConversationHistory] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
+
+  const selectedDocuments = useSelector(
+    (state: RootState) => state.library.selectedDocuments
+  );
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
