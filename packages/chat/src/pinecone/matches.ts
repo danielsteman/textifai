@@ -13,8 +13,8 @@ export type Metadata = {
   text: string;
 };
 
-const userId = "test" ;
-const titleArray = "test" ;
+const userId = "test";
+const titleArray = ["test"];
 
 const getMatchesFromEmbeddings = async (
   embeddings: number[],
@@ -24,10 +24,9 @@ const getMatchesFromEmbeddings = async (
 
   const queryRequest = {
     vector: embeddings,
-    filter:
-      {
-        "$and": [{ "userId": { "$eq": userId } }, { "title": { "$in": titleArray } }]
-      },
+    filter: {
+      $and: [{ userId: { $eq: userId } }, { title: { $in: titleArray } }],
+    },
     topK,
     includeMetadata: true,
   };

@@ -7,15 +7,11 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   SkeletonCircle,
   Spacer,
   Text,
 } from "@chakra-ui/react";
-import { RepeatIcon, PlusSquareIcon } from "@chakra-ui/icons";
+import { RepeatIcon } from "@chakra-ui/icons";
 import {
   useEffect,
   useRef,
@@ -46,10 +42,9 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
 import { useSelector } from "react-redux";
 import { RootState } from "src/app/store";
-
-interface SystemMessageProps {
-  message: string;
-}
+import SystemMessage from "./SystemMessage";
+import MessageLoadingIndicator from "./MessageLoadingIndicator";
+import ExampleQuestions from "./ExampleQuestions";
 
 const conversationsCollection = collection(db, "conversations");
 const messagesCollection = collection(db, "messages");
@@ -165,7 +160,6 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Fetch past messages
   useLayoutEffect(() => {
     const initializeMessages = async () => {
       if (currentConversationId) {
@@ -182,7 +176,6 @@ const Chat = () => {
         setMessageStack(userMessages);
         setAnswerStack(agentMessages);
 
-        // Always scroll to bottom
         scrollToBottom();
       }
     };
@@ -202,13 +195,10 @@ const Chat = () => {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          setCurrentConversationId(querySnapshot.docs[0].id);
-          console.log("Current conversationId: ", querySnapshot.docs[0].id); // Using the value directly from querySnapshot
+          setCurrentConversationId(querySnapshot.docs[0].id); // Using the value directly from querySnapshot
         } else {
-          // No existing conversation found for this user, so let's start a new one.
           const newConversationId = await startConversation(currentUser.uid);
-          setCurrentConversationId(newConversationId || null);
-          console.log("Current conversationId: ", newConversationId || null); // Using the value directly from newConversationId
+          setCurrentConversationId(newConversationId || null); // Using the value directly from newConversationId
         }
       }
     };
@@ -270,7 +260,7 @@ const Chat = () => {
     }
   };
 
-  const handleRegenerate = async (option: string, originalMessage: string) => {
+  const handleRegenerate = async () => {
     // Capture the last message from answerStack
     const lastSystemMessage = answerStack[answerStack.length - 1];
 
@@ -292,55 +282,6 @@ const Chat = () => {
     }
   };
 
-  const SystemMessage = ({ message }: SystemMessageProps) => {
-    const [menuClicked, setMenuClicked] = useState(false); // Add state to track menu click
-
-    return (
-      <Flex align="left" justifyContent="flex-start" flexDirection="column">
-        <Box
-          display="flex"
-          alignItems="center"
-          bgColor="pink"
-          p={1}
-          px={8}
-          rounded={8}
-          position="relative"
-        >
-          <Text whiteSpace="pre-line">{message}</Text>
-          {!menuClicked && ( // Conditionally render menu based on state
-            <Box position="absolute" right={2} top={0}>
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  aria-label="Options"
-                  icon={<PlusSquareIcon />} // Use the new icon
-                  variant="ghost"
-                  size="sm"
-                />
-                <MenuList>
-                  <MenuItem
-                    onClick={() => {
-                      setMenuClicked(true); /* Your logic here */
-                    }}
-                  >
-                    Copy to Working Document
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setMenuClicked(true); /* Your logic here */
-                    }}
-                  >
-                    Show in Source Document
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </Box>
-          )}
-        </Box>
-      </Flex>
-    );
-  };
-
   function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
     setMessage(event.target.value);
   }
@@ -349,28 +290,21 @@ const Chat = () => {
     <Flex flexDir="column" flex={1} p={8} overflowY="hidden" h="100%">
       <Box mb={4} overflowY="scroll" overflowX="hidden" h="100%">
         {messageStack.map((msg, index) => (
-          <Box key={uuidv4()} py={2}>
-            <Flex mb={2}>
-              <Spacer />
-              <Text bgColor="teal" p={1} px={4} rounded={4}>
-                {msg}
-              </Text>
-            </Flex>
+          <Box key={uuidv4()}>
+            <SystemMessage message={msg} variant="user" />
             {loading && index === messageStack.length - 1 ? (
-              <HStack>
-                <SkeletonCircle size="2" />
-                <SkeletonCircle size="2" />
-                <SkeletonCircle size="2" />
-              </HStack>
+              <MessageLoadingIndicator />
             ) : (
               <>
-                <SystemMessage message={answerStack[index]} />
+                <SystemMessage message={answerStack[index]} variant="agent" />
                 {index === answerStack.length - 1 &&
                   messageStack.length === answerStack.length && (
                     <Flex justifyContent="center" alignItems="center" py={4}>
                       <Button
+                        rounded={8}
+                        size="sm"
                         leftIcon={<RepeatIcon />}
-                        onClick={() => handleRegenerate("regenerate", message)}
+                        onClick={() => handleRegenerate()}
                       >
                         Regenerate
                       </Button>
@@ -382,48 +316,7 @@ const Chat = () => {
         ))}
         <Box ref={messagesEndRef} />
       </Box>
-      {messageStack.length === 0 && (
-        <Flex
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          mb={4}
-          pb={6}
-        >
-          <HStack mb={2}>
-            <Button
-              onClick={() => {
-                /* Your logic here */
-              }}
-            >
-              Sample Question 1
-            </Button>
-            <Button
-              onClick={() => {
-                /* Your logic here */
-              }}
-            >
-              Sample Question 2
-            </Button>
-          </HStack>
-          <HStack>
-            <Button
-              onClick={() => {
-                /* Your logic here */
-              }}
-            >
-              Sample Question 3
-            </Button>
-            <Button
-              onClick={() => {
-                /* Your logic here */
-              }}
-            >
-              Sample Question 4
-            </Button>
-          </HStack>
-        </Flex>
-      )}
+      {messageStack.length === 0 && <ExampleQuestions />}
       <form onSubmit={handleSubmit}>
         <InputGroup>
           <Input
@@ -435,7 +328,7 @@ const Chat = () => {
           <InputRightElement>
             <IconButton
               type="submit"
-              aria-label="Ask question about your documents"
+              aria-label="submit message"
               icon={<MdSend />}
               variant="ghost"
               isDisabled={message === "" || loading}
