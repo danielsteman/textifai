@@ -53,7 +53,7 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({
             onClose={() => onClose("openChatSupport")}
             windowName="Chat"
           >
-            <ChatPanel selectedDocuments={selectedDocuments} />
+            <ChatPanel />
           </SupportWindowGridItem>
         )}
 

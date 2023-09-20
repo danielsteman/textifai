@@ -100,7 +100,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             onClick={() => {
               const tab: ITab = {
                 name: "Chat",
-                panel: <ChatPanel selectedDocuments={[]} />,
+                panel: <ChatPanel />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
@@ -126,12 +126,6 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                     openTabs={openTabs}
                     setOpenTabs={setOpenTabs}
                     setCurrentTab={setCurrentTab}
-                    selectedDocuments={[]}
-                    setSelectedDocuments={function (
-                      value: React.SetStateAction<string[]>
-                    ): void {
-                      throw new Error("Function not implemented.");
-                    }}
                   />
                 ),
                 openChatSupport: false,
@@ -205,7 +199,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             onClick={() => {
               const tab: ITab = {
                 name: "Chat",
-                panel: <ChatPanel selectedDocuments={[]} />,
+                panel: <ChatPanel />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
@@ -225,12 +219,6 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                     openTabs={openTabs}
                     setOpenTabs={setOpenTabs}
                     setCurrentTab={setCurrentTab}
-                    selectedDocuments={[]}
-                    setSelectedDocuments={function (
-                      value: React.SetStateAction<string[]>
-                    ): void {
-                      throw new Error("Function not implemented.");
-                    }}
                   />
                 ),
                 openChatSupport: false,
