@@ -1,0 +1,101 @@
+{
+  "@level": "info",
+  "@message": "Terraform 1.4.6",
+  "@module": "terraform.ui",
+  "@timestamp": "2023-09-21T10:48:24.657256Z",
+  "terraform": "1.4.6",
+  "type": "version",
+  "ui": "1.1"
+}
+{
+  "@level": "info",
+  "@message": "google_artifact_registry_repository.textifai: Plan to create",
+  "@module": "terraform.ui",
+  "@timestamp": "2023-09-21T10:48:26.126520Z",
+  "change": {
+    "resource": {
+      "addr": "google_artifact_registry_repository.textifai",
+      "module": "",
+      "resource": "google_artifact_registry_repository.textifai",
+      "implied_provider": "google",
+      "resource_type": "google_artifact_registry_repository",
+      "resource_name": "textifai",
+      "resource_key": null
+    },
+    "action": "create"
+  },
+  "type": "planned_change"
+}
+{
+  "@level": "info",
+  "@message": "google_artifact_registry_repository.textifai: Creating...",
+  "@module": "terraform.ui",
+  "@timestamp": "2023-09-21T10:48:26.532680Z",
+  "hook": {
+    "resource": {
+      "addr": "google_artifact_registry_repository.textifai",
+      "module": "",
+      "resource": "google_artifact_registry_repository.textifai",
+      "implied_provider": "google",
+      "resource_type": "google_artifact_registry_repository",
+      "resource_name": "textifai",
+      "resource_key": null
+    },
+    "action": "create"
+  },
+  "type": "apply_start"
+}
+{
+  "@level": "info",
+  "@message": "google_artifact_registry_repository.textifai: Creation errored after 0s",
+  "@module": "terraform.ui",
+  "@timestamp": "2023-09-21T10:48:26.535469Z",
+  "hook": {
+    "resource": {
+      "addr": "google_artifact_registry_repository.textifai",
+      "module": "",
+      "resource": "google_artifact_registry_repository.textifai",
+      "implied_provider": "google",
+      "resource_type": "google_artifact_registry_repository",
+      "resource_name": "textifai",
+      "resource_key": null
+    },
+    "action": "create",
+    "elapsed_seconds": 0
+  },
+  "type": "apply_errored"
+}
+{
+  "@level": "error",
+  "@message": "Error: project: required field is not set",
+  "@module": "terraform.ui",
+  "@timestamp": "2023-09-21T10:48:27.016492Z",
+  "diagnostic": {
+    "severity": "error",
+    "summary": "project: required field is not set",
+    "detail": "",
+    "address": "google_artifact_registry_repository.textifai",
+    "range": {
+      "filename": "gcp_artifact_registry.tf",
+      "start": {
+        "line": 1,
+        "column": 59,
+        "byte": 58
+      },
+      "end": {
+        "line": 1,
+        "column": 60,
+        "byte": 59
+      }
+    },
+    "snippet": {
+      "context": "resource \"google_artifact_registry_repository\" \"textifai\"",
+      "code": "resource \"google_artifact_registry_repository\" \"textifai\" {",
+      "start_line": 1,
+      "highlight_start_offset": 58,
+      "highlight_end_offset": 59,
+      "values": []
+    }
+  },
+  "type": "diagnostic"
+}
