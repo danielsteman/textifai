@@ -25,9 +25,7 @@ import { storage } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import axios from "axios";
 
-const UploadForm: React.FC<{ onUploadComplete: () => void }> = ({
-  onUploadComplete,
-}) => {
+const UploadForm = () => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadSuccessful, setUploadSuccessful] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,11 +34,6 @@ const UploadForm: React.FC<{ onUploadComplete: () => void }> = ({
 
   const onDrop = useCallback((acceptedFiles: any) => {
     setFiles(acceptedFiles);
-  }, []);
-
-  const onDropFileExist = useCallback((acceptedFiles: any) => {
-    setFiles(acceptedFiles);
-    setFileExists(false); // Reset the fileExists state
   }, []);
 
   const currentUser = useContext(AuthContext);
@@ -66,33 +59,23 @@ const UploadForm: React.FC<{ onUploadComplete: () => void }> = ({
           `users/${currentUser?.uid}/uploads/${file.name}`
         );
         getDownloadURL(fileRef)
-          .then((url) => {
-            // File exists, do nothing
-            console.log("File already exists in Firebase");
-            setFileExists(true); // Mark that file exists
-            setLoading(false);
-          })
-          .catch(async () => {
-            // File does not exist, upload to Firebase
+          .then(async () => {
             const docRef = ref(
               storage,
               `users/${currentUser?.uid}/uploads/${file.name}`
             );
+
             await uploadBytes(docRef, file).then((snapshot) => {
               console.log("Uploaded a blob or file!");
               console.log(snapshot);
             });
 
-            onUploadComplete();
-
-            // Create FormData and append the fileBlob
             const data = new FormData();
             data.append("file", file);
             if (currentUser && currentUser.uid) {
-              data.append("userId", currentUser.uid); // appending userId to FormData
+              data.append("userId", currentUser.uid);
             }
 
-            // Post the data to the server
             await axios({
               method: "post",
               baseURL: "http://localhost:3000/api/documents/upload",
@@ -110,6 +93,9 @@ const UploadForm: React.FC<{ onUploadComplete: () => void }> = ({
                 );
               });
             setLoading(false);
+          })
+          .catch((e) => {
+            console.log(e);
           });
       });
       resetForm();

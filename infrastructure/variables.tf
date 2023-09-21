@@ -8,6 +8,16 @@ variable "project_id" {
   default = "textifai"
 }
 
+variable "artifact_registry_name" {
+  type    = string
+  default = "textifai-registry"
+}
+
+variable "location" {
+  type    = string
+  default = "europe-west4"
+}
+
 variable "billing_account" {
   type    = string
   default = "01C220-00DCED-92B0FE"

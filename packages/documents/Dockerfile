@@ -1,29 +1,33 @@
-FROM node:16 as builder
+FROM node:18
 
-WORKDIR /usr/src/app
+ARG PINECONE_API_KEY
+ARG PINECONE_ENV
+ARG PINECONE_INDEX
+ARG OPENAI_API_KEY
 
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-RUN npm run build
-
-FROM node:16
+ENV PINECONE_API_KEY $PINECONE_API_KEY
+ENV PINECONE_ENV $PINECONE_ENV
+ENV PINECONE_INDEX $PINECONE_INDEX
+ENV OPENAI_API_KEY=$OPENAI_API_KEY
 
 ENV NODE_ENV production
 
-USER node
-
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json ./
+COPY yarn.lock ./
 
-RUN npm install
+COPY packages/documents/package.json ./packages/documents/
+COPY packages/shared ./packages/shared
 
-COPY --from=builder /usr/src/app/dist ./dist
+COPY packages/documents/tsconfig.json ./packages/documents/
+
+RUN yarn install
+
+COPY packages/documents ./packages/documents
+
+RUN yarn workspace @textifai/documents build
 
 EXPOSE 3000
 
-CMD [ "node", "dist/index.js" ]
+CMD yarn workspace @textifai/documents start

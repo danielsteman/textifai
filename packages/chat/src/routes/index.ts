@@ -14,6 +14,8 @@ const router = express.Router();
 
 const envPath = path.resolve(__dirname, "../../../.env.local");
 
+dotenv.config({ path: envPath });
+
 const embed = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY,
   modelName: "text-embedding-ada-002",
@@ -100,8 +102,6 @@ initializedRegenerateChain().then((initializedRenegerateChain) => {
   regenerateChain = initializedRenegerateChain;
 });
 
-dotenv.config({ path: envPath });
-
 router.post(
   "/ask",
   async (
@@ -113,21 +113,19 @@ router.post(
     const conversationHistory = await req.body.history;
     const option = await req.body.option;
 
-    if (option==="regenerate"){
+    if (option === "regenerate") {
       try {
-        console.log("Regenerating answer...")
+        console.log("Regenerating answer...");
         const answer = await regenerateChain.call({
-          document: prompt
+          document: prompt,
         });
 
         console.log(answer.text);
         res.json({ answer: answer.text });
-        
       } catch (error) {
         next(error);
       }
-
-    } else if (option==="GeneralQa") {
+    } else if (option === "GeneralQa") {
       const inquiryChainResult = await inquiryChain.call({
         userPrompt: prompt,
         conversationHistory: conversationHistory,
@@ -181,7 +179,6 @@ router.post(
 
         console.log(answer.text);
         res.json({ answer: answer.text });
-        
       } catch (error) {
         next(error);
       }
