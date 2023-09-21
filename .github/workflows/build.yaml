@@ -36,3 +36,10 @@ jobs:
       - name: Test web package
         run: yarn test
         working-directory: ./packages/web
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: projects/123123123/locations/global/workloadIdentityPools/the-workload-pool/providers/the-provider
+          service_account: githubactions@textifai-g5njdml004.iam.gserviceaccount.com
