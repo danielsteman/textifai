@@ -1,0 +1,53 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies in shared package
+        run: yarn install
+        working-directory: packages/shared
+
+      - name: Build shared package
+        run: yarn build
+        working-directory: packages/shared
+
+      - name: Install dependencies of all packages
+        run: yarn install
+
+      - name: Build all packages
+        run: yarn workspaces run build
+
+      - name: Test all packages
+        run: yarn workspaces run test
+
+  # containerize:
+  #   runs-on: ubuntu-latest
+
+  #   strategy:
+  #     matrix:
+  #       node-version: [18.x]
+
+  #   steps:
+  #     - name: Authenticate to Google Cloud
+  #       id: auth
+  #       uses: google-github-actions/auth@v0
+  #       with:
+  #         service_account: githubactions@textifai-g5njdml004.iam.gserviceaccount.com
