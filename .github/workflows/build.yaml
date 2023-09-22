@@ -30,7 +30,7 @@ jobs:
         working-directory: packages/shared
 
       - name: Install dependencies of all packages
-        run: yarn workspaces run install
+        run: yarn install
 
       - name: Build all packages
         run: yarn workspaces run build
