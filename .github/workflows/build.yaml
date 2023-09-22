@@ -46,18 +46,13 @@ jobs:
         node-version: [18.x]
 
     steps:
-      - name: Authenticate to Google Cloud
+      - name: Login to GAR
         id: auth
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GAR_SA_KEY }}
-
-      - name: Login to Artifact Registry
         uses: docker/login-action@v3
         with:
           registry: europe-west4-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
+          username: _json_key
+          password: ${{ secrets.GAR_SA_KEY }}
 
       - name: Get tag
         id: get-tag
