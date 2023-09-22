@@ -64,6 +64,13 @@ jobs:
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
+          build-args: |
+            FIREBASE_APIKEY=${{ secrets.FIREBASE_APIKEY }}
+            FIREBASE_AUTHDOMAIN=${{ secrets.FIREBASE_AUTHDOMAIN }}
+            FIREBASE_PROJECTID=${{ secrets.FIREBASE_PROJECTID }}
+            FIREBASE_STORAGEBUCKET=${{ secrets.FIREBASE_STORAGEBUCKET }}
+            FIREBASE_MESSAGINGSENDERID=${{ secrets.FIREBASE_MESSAGINGSENDERID }}
+            FIREBASE_APPID=${{ secrets.FIREBASE_APPID }}
 
       - id: docker-push-documents-tagged
         name: Tag textifai/documents image and push to GAR
@@ -74,6 +81,11 @@ jobs:
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
+          build-args: |
+            PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
+            PINECONE_ENV=${{ secrets.PINECONE_ENV }}
+            PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
 
       - id: docker-push-chat-tagged
         name: Tag textifai/chat image and push to GAR
@@ -84,3 +96,5 @@ jobs:
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
+          build-args: |
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
