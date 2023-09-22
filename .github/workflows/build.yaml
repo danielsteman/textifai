@@ -52,11 +52,15 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCR_JSON_KEY }}
 
+      - name: Get Docker Access Token
+        id: get-token
+        run: echo "echo ::set-output name=access_token::$(gcloud auth print-access-token)"
+
       - name: Login to Artifact Registry
         uses: docker/login-action@v3
         with:
           registry: europe-west4-docker.pkg.dev
-          username: oauth2accesstoken
+          username: _json_key
           password: ${{ steps.auth.outputs.access_token }}
 
       - name: Get tag
