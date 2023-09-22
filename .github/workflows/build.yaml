@@ -54,10 +54,6 @@ jobs:
           username: _json_key
           password: ${{ secrets.GAR_SA_KEY }}
 
-      - name: Get tag
-        id: get-tag
-        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
-
       - id: docker-push-tagged
         name: Tag textifai/web image and push to GAR
         uses: docker/build-push-action@v5.0.0
@@ -65,5 +61,5 @@ jobs:
           context: packages/web
           push: true
           tags: |
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ steps.get-tag.outputs.short_ref }}
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
