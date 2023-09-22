@@ -4,7 +4,7 @@ resource "google_service_account" "github" {
   project = google_project.default.project_id
 }
 
-resource "google_project_iam_binding" "project" {
+resource "google_project_iam_binding" "artifact_reader" {
   project = google_project.default.project_id
   role    = "roles/artifactregistry.reader"
 
@@ -13,7 +13,7 @@ resource "google_project_iam_binding" "project" {
   ]
 }
 
-resource "google_project_iam_binding" "project" {
+resource "google_project_iam_binding" "artifact_writer" {
   project = google_project.default.project_id
   role    = "roles/artifactregistry.writer"
 
