@@ -40,6 +40,7 @@ jobs:
 
   containerize:
     runs-on: ubuntu-latest
+    needs: build
 
     strategy:
       matrix:
@@ -63,3 +64,23 @@ jobs:
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
+
+      - id: docker-push-tagged
+        name: Tag textifai/documents image and push to GAR
+        uses: docker/build-push-action@v5
+        with:
+          file: packages/documents/Dockerfile
+          push: true
+          tags: |
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
+
+      - id: docker-push-tagged
+        name: Tag textifai/chat image and push to GAR
+        uses: docker/build-push-action@v5
+        with:
+          file: packages/chat/Dockerfile
+          push: true
+          tags: |
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
