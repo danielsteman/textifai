@@ -111,6 +111,10 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     setDocumentQuery(e.target.value);
   };
 
+  const handleUploadComplete = () => {
+    console.log('Upload complete!');
+  };
+
   const handleDeleteDocument = async () => {
     selectedDocuments.map((fullPath) => {
       const documentRef = ref(storage, fullPath);
@@ -271,7 +275,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <UploadForm />
+                <UploadForm onUploadComplete={handleUploadComplete} />
               </ModalBody>
             </ModalContent>
           </Modal>

@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import multer from "multer";
-import { processFile } from "../lib/pineconeUpload";
-import pdfParse from "pdf-parse";
+import { processFile } from "../lib/pineconeUpload"
+import { extractTextFromPDF, extractMetadataFromPDF } from "../utils/pdfUtils";
 import dotenv from "dotenv";
 import path from "path";
 
@@ -9,18 +9,9 @@ const envPath = path.resolve(__dirname, "../../.env.local");
 dotenv.config({ path: envPath });
 
 const router = express.Router();
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
-async function extractTextFromPDF(pdfBuffer: Buffer): Promise<string> {
-  try {
-    const rawData = await pdfParse(pdfBuffer);
-    return rawData.text;
-  } catch (error) {
-    console.error("Failed to read document:", error);
-    throw new Error("Failed to read document");
-  }
-}
 
 router.post(
   "/upload",
@@ -34,7 +25,9 @@ router.post(
       const fileBuffer = Buffer.from(req.file.buffer);
       const text = await extractTextFromPDF(fileBuffer);
       const user = req.body.userId;
-      const filename = req.file.originalname;
+      
+      const metadata = await extractMetadataFromPDF(fileBuffer, text)
+      const filename = metadata.fileName
 
       await processFile(
         text,
@@ -45,7 +38,12 @@ router.post(
         filename
       );
 
-      res.json({ success: true, message: "File processed successfully" });
+      res.json({
+        success: true,
+        message: "File processed successfully",
+        metadata: metadata  
+      });
+      
     } catch (error) {
       next(error);
       console.error("Failed to process file:", error);

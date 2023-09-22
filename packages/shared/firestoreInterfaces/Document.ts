@@ -13,5 +13,6 @@ export interface Document {
   fileSize: number;
   wordCount: number;
   extractedText: string;
+  topicText: string;
   favoritedBy: string[];
 }
