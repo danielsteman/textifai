@@ -55,7 +55,7 @@ jobs:
           username: _json_key
           password: ${{ secrets.GAR_SA_KEY }}
 
-      - id: docker-push-tagged
+      - id: docker-push-web-tagged
         name: Tag textifai/web image and push to GAR
         uses: docker/build-push-action@v5
         with:
@@ -65,7 +65,7 @@ jobs:
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
 
-      - id: docker-push-tagged
+      - id: docker-push-documents-tagged
         name: Tag textifai/documents image and push to GAR
         uses: docker/build-push-action@v5
         with:
@@ -75,7 +75,7 @@ jobs:
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
 
-      - id: docker-push-tagged
+      - id: docker-push-chat-tagged
         name: Tag textifai/chat image and push to GAR
         uses: docker/build-push-action@v5
         with:
