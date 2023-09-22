@@ -38,16 +38,16 @@ jobs:
       - name: Test all packages
         run: yarn workspaces run test
 
-  # containerize:
-  #   runs-on: ubuntu-latest
+  containerize:
+    runs-on: ubuntu-latest
 
-  #   strategy:
-  #     matrix:
-  #       node-version: [18.x]
+    strategy:
+      matrix:
+        node-version: [18.x]
 
-  #   steps:
-  #     - name: Authenticate to Google Cloud
-  #       id: auth
-  #       uses: google-github-actions/auth@v0
-  #       with:
-  #         service_account: githubactions@textifai-g5njdml004.iam.gserviceaccount.com
+    steps:
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
