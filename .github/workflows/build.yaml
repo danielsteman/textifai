@@ -27,26 +27,26 @@ jobs:
       - name: Build shared package
         run: yarn workspace @textifai/shared build
 
-      - name: Install dependencies in web package
-        run: yarn workspace @textifai/web install
+      - name: Install dependencies of all packages
+        run: yarn workspaces run install
 
-      - name: Build web package
-        run: yarn workspace @textifai/web build
+      - name: Build all packages
+        run: yarn workspaces run build
 
-      - name: Test web package
-        run: yarn workspace @textifai/web test
+      - name: Test all packages
+        run: yarn workspaces run test
 
-  containerize:
-    runs-on: ubuntu-latest
+  # containerize:
+  #   runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x]
+  #   strategy:
+  #     matrix:
+  #       node-version: [18.x]
 
-    steps:
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v0
-        with:
-          workload_identity_provider: projects/123123123/locations/global/workloadIdentityPools/the-workload-pool/providers/the-provider
-          service_account: githubactions@textifai-g5njdml004.iam.gserviceaccount.com
+  #   steps:
+  #     - name: Authenticate to Google Cloud
+  #       id: auth
+  #       uses: google-github-actions/auth@v0
+  #       with:
+  #         workload_identity_provider: projects/123123123/locations/global/workloadIdentityPools/the-workload-pool/providers/the-provider
+  #         service_account: githubactions@textifai-g5njdml004.iam.gserviceaccount.com
