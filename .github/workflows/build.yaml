@@ -56,9 +56,9 @@ jobs:
 
       - id: docker-push-tagged
         name: Tag textifai/web image and push to GAR
-        uses: docker/build-push-action@v5.0.0
+        uses: docker/build-push-action@v5
         with:
-          context: packages/web
+          context: "{{defaultContext}}:packages/web"
           push: true
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
