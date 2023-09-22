@@ -20,11 +20,11 @@ COPY yarn.lock ./
 COPY packages/documents/package.json ./packages/documents/
 COPY packages/shared ./packages/shared
 
-COPY packages/documents/tsconfig.json ./packages/documents/
-
 RUN yarn install
 
 COPY packages/documents ./packages/documents
+
+RUN yarn workspace @textifai/documents add typescript tsc ts-node
 
 RUN yarn workspace @textifai/documents build
 
