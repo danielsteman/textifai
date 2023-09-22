@@ -22,10 +22,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies in shared package
-        run: yarn workspace @textifai/shared install
+        run: yarn install
+        working-directory: packages/shared
 
       - name: Build shared package
-        run: yarn workspace @textifai/shared build
+        run: yarn build
+        working-directory: packages/shared
 
       - name: Install dependencies of all packages
         run: yarn workspaces run install
