@@ -50,7 +50,7 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v0
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          credentials_json: ${{ secrets.GCR_JSON_KEY }}
 
       - name: Login to Artifact Registry
         uses: docker/login-action@v3
@@ -62,3 +62,13 @@ jobs:
       - name: Get tag
         id: get-tag
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+      - id: docker-push-tagged
+        name: Tag textifai/web image and push to GAR
+        uses: docker/build-push-action@v5.0.0
+        with:
+          context: packages/web
+          push: true
+          tags: |
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ steps.get-tag.outputs.short_ref }}
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
