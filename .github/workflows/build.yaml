@@ -22,21 +22,28 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies in shared package
-        run: yarn install
-        working-directory: ./packages/shared
+        run: yarn workspace @textifai/shared install
+
+      - name: Build shared package
+        run: yarn workspace @textifai/shared build
 
       - name: Install dependencies in web package
-        run: yarn install
-        working-directory: ./packages/web
+        run: yarn workspace @textifai/web install
 
       - name: Build web package
-        run: yarn build
-        working-directory: ./packages/web
+        run: yarn workspace @textifai/web build
 
       - name: Test web package
-        run: yarn test
-        working-directory: ./packages/web
+        run: yarn workspace @textifai/web test
 
+  containerize:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v0
