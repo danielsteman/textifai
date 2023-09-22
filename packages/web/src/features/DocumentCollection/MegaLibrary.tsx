@@ -70,7 +70,6 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
-  const [shouldRefresh, setShouldRefresh] = useState(false);
 
   const {
     isOpen: isDeleteFileOpen,
@@ -98,7 +97,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         console.warn("Something went wrong listing your files");
         console.error(error);
       });
-  }, [selectedDocuments, shouldRefresh]);
+  }, [selectedDocuments]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     selectedDocuments.includes(documentName)
@@ -272,9 +271,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <UploadForm
-                  onUploadComplete={() => setShouldRefresh(!shouldRefresh)}
-                />
+                <UploadForm />
               </ModalBody>
             </ModalContent>
           </Modal>

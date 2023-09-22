@@ -1,13 +1,10 @@
 import express, { Express } from "express";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import router from "./routes";
 import YAML from "yaml";
 import fs from "fs";
-
-dotenv.config();
 
 const port = process.env.PORT || 3001;
 
@@ -31,7 +28,6 @@ app.use(
   })
 );
 
-// TODO: refactor such that prefix is equal to "api" + {service root folder name}
 app.use("/api/chat", router);
 
 app.listen(port, () => {
