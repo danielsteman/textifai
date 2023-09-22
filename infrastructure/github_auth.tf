@@ -22,7 +22,11 @@ resource "google_project_iam_binding" "artifact_writer" {
   ]
 }
 
-resource "google_iam_workload_identity_pool" "github" {
-  workload_identity_pool_id = "github-pool"
+resource "google_project_iam_binding" "token_creator" {
   project = google_project.default.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+
+  members = [
+    google_service_account.github.member
+  ]
 }
