@@ -37,7 +37,6 @@ export async function extractMetadataFromPDF (
     pdfBuffer: Buffer, 
     text: string, 
 ): Promise<PdfMetadata> {
-    
     try {
         const pdfDoc = await PDFDocument.load(pdfBuffer);
         

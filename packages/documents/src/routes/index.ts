@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { processFile } from "../lib/pineconeUpload"
-import { extractTextFromPDF, extractMetadataFromPDF } from "../lib/pdfUtils";
+import { extractTextFromPDF, extractMetadataFromPDF } from "../utils/pdfUtils";
 import dotenv from "dotenv";
 import path from "path";
 
@@ -10,7 +10,6 @@ dotenv.config({ path: envPath });
 
 const router = express.Router();
 
-// Configure Multer for file upload handling
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 

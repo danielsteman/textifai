@@ -14,8 +14,6 @@ const TextEditor = () => {
   const [documentId, setDocumentId] = useState<string | null>(null);
   const currentUser: User | null | undefined = useContext(AuthContext);
 
-  console.log(currentUser?.uid)
-
   // Fetching the document ID based on the current user
   useEffect(() => {
     if (currentUser) {
