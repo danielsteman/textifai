@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { User as FirebaseUser } from "firebase/auth";
-import { auth } from "../config/firebase";
 import { Project } from "@shared/firestoreInterfaces/Project";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp, collection } from "firebase/firestore";
+import { db } from "../config/firebase";
 
 interface Props {
   children: React.ReactNode;
@@ -14,6 +13,7 @@ export const ProjectProvider: React.FC<Props> = ({ children }) => {
   const [project, setProject] = useState<Project | null>(null);
 
   useEffect(() => {
+    const projectsRef = collection(db, "projects");
     // fetch project
     const project: Project = {
       name: "this is an example of a project object but should be fetched from firestore",
