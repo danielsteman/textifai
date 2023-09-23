@@ -36,9 +36,7 @@ const Layout = () => {
           </ButtonGroup>
         )}
       </Flex>
-      <Box px={16} py={8}>
-        <Outlet />
-      </Box>
+      <Outlet />
     </Flex>
   );
 };

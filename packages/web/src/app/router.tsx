@@ -7,8 +7,7 @@ import Root from "./routes/Root";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Support from "./routes/Support";
 import Assistant from "./routes/Assistant";
-import FlexLayout from "./layouts/FlexLayout";
-import Layout from "./layouts/FlexLayout";
+import Layout from "./layouts/Layout";
 import Upload from "./routes/Upload";
 import Editor from "./routes/Editor";
 import WorkspacePage from "./routes/WorkspacePage";
@@ -26,7 +25,7 @@ export const router = createBrowserRouter([
     element: <CreateProject />,
   },
   {
-    element: <FlexLayout />,
+    element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -65,12 +64,6 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-    ],
-  },
-  {
-    element: <Layout />,
-    errorElement: <ErrorPage />,
-    children: [
       {
         path: "login",
         element: <Login />,
