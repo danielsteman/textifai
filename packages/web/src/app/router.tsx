@@ -17,12 +17,28 @@ import AccountSettings from "./routes/AccountSettings";
 
 export const router = createBrowserRouter([
   {
-    element: <WorkspacePage />,
     path: "/features/workspace",
+    element: (
+      <PrivateRoute>
+        <WorkspacePage />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "settings",
+    element: (
+      <PrivateRoute>
+        <AccountSettings />
+      </PrivateRoute>
+    ),
   },
   {
     path: "/features/onboarding",
-    element: <CreateProject />,
+    element: (
+      <PrivateRoute>
+        <CreateProject />
+      </PrivateRoute>
+    ),
   },
   {
     element: <Layout />,
@@ -79,14 +95,6 @@ export const router = createBrowserRouter([
       {
         path: "docs",
         element: <Docs />,
-      },
-      {
-        path: "settings",
-        element: (
-          <PrivateRoute>
-            <AccountSettings />
-          </PrivateRoute>
-        ),
       },
     ],
   },

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Navigate, To } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
-import { Spinner } from "@chakra-ui/react";
 
 interface Props {
   children: React.ReactNode;
