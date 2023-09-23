@@ -56,6 +56,13 @@ const UserCard: React.FC<UserCardProps> = ({ onLogout }) => {
             <MenuList>
               <MenuItem
                 onClick={() => {
+                  navigate("/settings");
+                }}
+              >
+                Settings
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
                   auth.signOut();
                   navigate("/");
                 }}
