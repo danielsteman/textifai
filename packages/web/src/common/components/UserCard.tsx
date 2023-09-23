@@ -19,11 +19,7 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import theme from "../../app/themes/theme";
 
-interface UserCardProps {
-  onLogout?: () => void;
-}
-
-const UserCard: React.FC<UserCardProps> = ({ onLogout }) => {
+const UserCard = () => {
   const currentUser = useContext(AuthContext);
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
