@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { ChatIcon, SmallCloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -22,6 +22,7 @@ import { auth } from "../../app/config/firebase";
 import PdfViewerPanel from "../../features/Workspace/panels/PdfViewerPanel";
 import { ITab } from "../../features/Workspace/Workspace";
 import { useNavigate } from "react-router-dom";
+import { ProjectContext } from "src/app/providers/ProjectProvider";
 
 type SidebarMenuProps = {
   openTabs: ITab[];
@@ -37,6 +38,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
+  const userProjects = useContext(ProjectContext);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -44,14 +46,12 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
 
   return (
     <HStack h="100%">
-      {/* Side Menu */}
       {isMenuOpen && (
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}
           h="100%"
           p={2}
         >
-          {/* Close button */}
           <Flex justifyContent="flex-end" w="100%">
             <IconButton
               aria-label="Close Menu"
@@ -60,14 +60,12 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
               mb={2}
             />
           </Flex>
-          {/* User Card Component */}
           <UserCard
             onLogout={() => {
               auth.signOut();
               navigate("/");
             }}
           />
-          {/* Divider */}
           <Divider />
           <Button
             w="100%"
