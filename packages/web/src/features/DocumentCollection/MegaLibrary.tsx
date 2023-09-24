@@ -79,9 +79,11 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
-  const [yearFilter, setYearFilter] = useState(null);
-  const [collectionFilter, setCollectionFilter] = useState(null);
-  const [projectFilter, setProjectFilter] = useState(null);
+  const [yearFilter, setYearFilter] = useState<number | null>(null);
+
+  const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
+  const [projectFilter, setProjectFilter] = useState<string | null>(null);
+  const [onlyFavoritesFilter, setOnlyFavoritesFilter] = useState<boolean>(false);
 
   const allCollections = Array.from(
     new Set(documents.flatMap(doc => doc.tags))
@@ -312,30 +314,40 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         >
           <Heading size="xs">Filters</Heading>
           <Button
+            bgColor={yearFilter === null ? theme.colors[colorMode].selected : "transparent"}  // Adjust this as needed
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
+            onClick={() => {
+              setYearFilter(null);
+            }}
           >
             Any time
           </Button>
           <Button
-            textColor={theme.colors[colorMode].onSurface}
+            colorScheme={yearFilter === 2023 ? "blue" : "gray"}
             variant="ghost"
             size="xs"
+            textColor={theme.colors[colorMode].onSurface}
+            onClick={() => setYearFilter(2023)}
           >
             Since 2023
           </Button>
           <Button
-            textColor={theme.colors[colorMode].onSurface}
+            colorScheme={yearFilter === 2022 ? "blue" : "gray"}
             variant="ghost"
             size="xs"
+            textColor={theme.colors[colorMode].onSurface}
+            onClick={() => setYearFilter(2022)}
           >
             Since 2022
           </Button>
           <Button
+            colorScheme={yearFilter === 2021 ? "blue" : "gray"}
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
             size="xs"
+            onClick={() => setYearFilter(2021)}
           >
             Since 2021
           </Button>
@@ -347,11 +359,13 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Custom range
           </Button>
           <Button
-            textColor={theme.colors[colorMode].onSurface}
-            variant="ghost"
-            size="xs"
+              colorScheme={onlyFavoritesFilter ? "blue" : "gray"}
+              variant="ghost"
+              size="xs"
+              textColor={theme.colors[colorMode].onSurface}
+              onClick={() => setOnlyFavoritesFilter(prev => !prev)}
           >
-            Only show favorites
+              Only show favorites
           </Button>
           <Box h={4} />
           <Heading size="xs">Collections</Heading>
@@ -519,7 +533,19 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             <Tbody>
               {documents.length > 0 &&
                 documents
-                  .filter((doc) => doc.fileName.includes(documentQuery))
+                .filter((doc) => {
+                  // Search filter
+                  let matchesQuery = doc.fileName.includes(documentQuery);
+                  // Year filter
+                  let matchesYear = !yearFilter || doc.creationDate.toDate().getFullYear() === yearFilter;
+                  // Collection filter
+                  let matchesCollection = !collectionFilter || doc.tags.includes(collectionFilter);
+                  // Project filter (mocked for now, you can adjust this when you have real projects data)
+                  let matchesProject = !projectFilter;
+                  // Favorites filter
+                  let matchesFavorites = onlyFavoritesFilter ? !!doc.favoritedBy : true;
+                  return matchesQuery && matchesYear && matchesCollection && matchesProject && matchesFavorites;
+                })
                   .map((doc: Document) => (
                     <Tr
                       key={doc.fileName}
