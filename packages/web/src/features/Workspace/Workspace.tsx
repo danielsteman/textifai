@@ -148,7 +148,7 @@ const Workspace = () => {
             <MenuList>
               <MenuGroup title="All projects">
                 {userProjects.map((project) => (
-                  <MenuItem>{project.name}</MenuItem>
+                  <MenuItem key={project.name}>{project.name}</MenuItem>
                 ))}
               </MenuGroup>
             </MenuList>

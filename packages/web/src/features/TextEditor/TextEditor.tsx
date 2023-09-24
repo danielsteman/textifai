@@ -9,6 +9,7 @@ import { WorkingDocument } from "@shared/firestoreInterfaces/WorkingDocument";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
 import styled from "styled-components";
+import StyledTextEditor from "./StyledTextEditor";
 
 const TextEditor = () => {
   const [value, setValue] = useState("");
@@ -82,43 +83,10 @@ const TextEditor = () => {
     }
   };
 
-  const StyledQuillEditor = styled(ReactQuill)`
-    .react-quill {
-      height: calc(100% - 42px);
-    }
-
-    .ql-container {
-      height: calc(100% - 42px);
-      padding: 12px 24px;
-      font-size: 15px;
-      border-bottom-left-radius: 8px;
-      border-bottom-right-radius: 8px;
-    }
-
-    .ql-toolbar {
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
-    }
-
-    .ql-toolbar.ql-snow {
-      border-color: grey;
-    }
-
-    .ql-container.ql-snow {
-      color: white;
-      border-color: grey;
-    }
-
-    .ql-editor {
-      max-height: 100%;
-      overflow: auto;
-    }
-  `;
-
   return (
-    <StyledQuillEditor
-      theme="snow"
+    <StyledTextEditor
       className="react-quill"
+      theme="snow"
       value={value}
       onChange={setValue}
       modules={{
