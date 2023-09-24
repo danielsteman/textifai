@@ -1,7 +1,10 @@
 import ReactQuill from "react-quill";
 import styled from "styled-components";
 
-const StyledQuillEditor = styled(ReactQuill)`
+const StyledQuillEditor = styled(ReactQuill)<{
+  backgroundColor?: string;
+  textColor?: string;
+}>`
   .react-quill {
     height: calc(100% - 42px);
   }
@@ -31,7 +34,7 @@ const StyledQuillEditor = styled(ReactQuill)`
   .ql-editor {
     max-height: 100%;
     overflow: auto;
-    color: red;
+    color: ${(props) => props.textColor};
   }
 `;
 
