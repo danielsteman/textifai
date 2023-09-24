@@ -1,5 +1,5 @@
 import { FC, KeyboardEvent } from 'react';
-import { Box, Tag, TagCloseButton, TagLabel, Input, VStack, Text } from "@chakra-ui/react";
+import { Tag, TagCloseButton, TagLabel, Input, Flex } from "@chakra-ui/react";
 
 type TagInputProps = {
   tags?: string[];
@@ -21,8 +21,7 @@ const TagInput: React.FC<TagInputProps> = ({ tags = [], onAddTag, onDeleteTag })
   };
 
   return (
-    <Box>
-      <VStack spacing={2} align="start">
+    <Flex direction="column" align="flex-start" justify="center" wrap="wrap">
         {tags.map((tag, index) => (
           <Tag
             size="sm"
@@ -42,8 +41,7 @@ const TagInput: React.FC<TagInputProps> = ({ tags = [], onAddTag, onDeleteTag })
           variant= {tags.length === 0 ? "flushed" : "unstyled"}
           width="auto"
         />
-      </VStack>
-    </Box>
+    </Flex>
   );
 };
 
