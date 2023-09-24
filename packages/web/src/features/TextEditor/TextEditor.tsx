@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./textEditor.css";
 import { Timestamp, onSnapshot } from "firebase/firestore";
 import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
-import { db } from "../../app/config/firebase"; 
+import { db } from "../../app/config/firebase";
 import { WorkingDocument } from "@shared/firestoreInterfaces/WorkingDocument";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
@@ -17,16 +17,19 @@ const TextEditor = () => {
   // Fetching the document ID based on the current user
   useEffect(() => {
     if (currentUser) {
-      const unsubscribe = onSnapshot(collection(db, "workingdocuments"), (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          if (doc.data().users.includes(currentUser.uid)) {
-            setValue(doc.data().content);
-            setDocumentId(doc.id);
-          }
-        });
-      });
+      const unsubscribe = onSnapshot(
+        collection(db, "workingdocuments"),
+        (querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            if (doc.data().users.includes(currentUser.uid)) {
+              setValue(doc.data().content);
+              setDocumentId(doc.id);
+            }
+          });
+        }
+      );
 
-      return () => unsubscribe();  // Cleanup listener on component unmount
+      return () => unsubscribe(); // Cleanup listener on component unmount
     }
   }, [currentUser]);
 
@@ -44,7 +47,10 @@ const TextEditor = () => {
             content: value,
           };
 
-          const docRef = await addDoc(collection(db, "workingdocuments"), newDocument);
+          const docRef = await addDoc(
+            collection(db, "workingdocuments"),
+            newDocument
+          );
           setDocumentId(docRef.id);
         } else {
           // Update existing document
@@ -52,8 +58,8 @@ const TextEditor = () => {
         }
       }
     }, 10000); // save every 10 seconds
-    
-    return () => clearInterval(saveInterval);  // Cleanup on component unmount
+
+    return () => clearInterval(saveInterval); // Cleanup on component unmount
   }, [value, documentId, currentUser]);
 
   const updateTextInFirestore = async (textContent: string) => {
@@ -64,7 +70,10 @@ const TextEditor = () => {
           modifiedDate: Timestamp.fromDate(new Date()),
         };
 
-        await updateDoc(doc(db, "workingdocuments", documentId), documentUpdate);
+        await updateDoc(
+          doc(db, "workingdocuments", documentId),
+          documentUpdate
+        );
         console.log("Document updated successfully");
       } catch (e) {
         console.error("Error updating document: ", e);
