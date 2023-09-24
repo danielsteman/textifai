@@ -39,6 +39,9 @@ import {
   VStack,
   useColorMode,
   useDisclosure,
+  Tag, 
+  TagCloseButton, 
+  TagLabel,
 } from "@chakra-ui/react";
 import { db, storage } from "../../app/config/firebase";
 import { StorageReference, deleteObject, listAll, ref } from "firebase/storage";
@@ -58,6 +61,8 @@ import { collection, doc, getDocs, onSnapshot, query, updateDoc, where } from 'f
 import { Document } from "@shared/firestoreInterfaces/Document"
 import { current } from "@reduxjs/toolkit";
 import ChatPanel from "../Workspace/panels/ChatPanel";
+import CollectionTags from "../../common/components/CollectionTags"
+import TagInput from "../../common/components/CollectionTags";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
@@ -141,10 +146,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     });
   };
 
-  // Refactor to use the uploads collection
-  // Two options: 
-    // 1. Use clickable link in collecion
-    // 2. Map fileName to firestorage
+  // Add uploaded file name in the 
   const handleOpenDocumentInTab = async (filename: string) => {
     const storageLocation = `users/${currentUser?.uid}/uploads/${filename}.pdf`;
     const fileRef = ref(storage, storageLocation);
@@ -175,6 +177,59 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         if (!snapshot.empty) {
             const docRef = doc(db, 'uploads', snapshot.docs[0].id);  
             updateDoc(docRef, { favoritedBy: isFavourite })
+        } else {
+            console.error("Document with the specified fileName not found or user mismatch!");
+        }
+    }).catch(error => {
+        console.error("Error fetching documents:", error);
+    });
+  };
+
+  const addCollectionToDocument = (fileName: string, newCollection: string) => {
+    const documentsCollection = collection(db, 'uploads');
+    const q = query(
+        documentsCollection, 
+        where("uploadedBy", "==", currentUser!.uid),  
+        where("fileName", "==", fileName)
+    );
+
+    getDocs(q).then(snapshot => {
+        if (!snapshot.empty) {
+            const docRef = doc(db, 'uploads', snapshot.docs[0].id);  
+            const currentCollections = snapshot.docs[0].data().tags || [];
+
+            if (!currentCollections.includes(newCollection)) {
+                updateDoc(docRef, { tags: [...currentCollections, newCollection] });
+            } else {
+                console.log("Collection already exists for this document!");
+            }
+        } else {
+            console.error("Document with the specified fileName not found or user mismatch!");
+        }
+    }).catch(error => {
+        console.error("Error fetching documents:", error);
+    });
+  };
+
+  const deleteCollectionFromDocument = (fileName: string, collectionToDelete: string) => {
+    const documentsCollection = collection(db, 'uploads');
+    const q = query(
+        documentsCollection, 
+        where("uploadedBy", "==", currentUser!.uid),  
+        where("fileName", "==", fileName)
+    );
+
+    getDocs(q).then(snapshot => {
+        if (!snapshot.empty) {
+            const docRef = doc(db, 'uploads', snapshot.docs[0].id);  
+            const currentCollections = snapshot.docs[0].data().tags || [];
+
+            if (currentCollections.includes(collectionToDelete)) {
+                const updatedCollections = currentCollections.filter((tag: string) => tag !== collectionToDelete);
+                updateDoc(docRef, { tags: updatedCollections });
+            } else {
+                console.log("Collection not found for this document!");
+            }
         } else {
             console.error("Document with the specified fileName not found or user mismatch!");
         }
@@ -471,7 +526,13 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                       </Td>
                       <Td>{doc.author}</Td>
                       <Td isNumeric>{doc.creationDate.toDate().getFullYear()}</Td>
-                      <Td>CollectionName</Td>
+                      <Td>
+                        <TagInput 
+                          tags={doc.tags}
+                          onAddTag={(newTag) => addCollectionToDocument(doc.fileName, newTag)}
+                          onDeleteTag={(tagToDelete) => deleteCollectionFromDocument(doc.fileName, tagToDelete)}
+                        />
+                      </Td>
                       {/* <Td>This is a summary</Td> */}
                       <Td>{parseTopics(doc.topics)}</Td>
                       <Td textAlign="center">
