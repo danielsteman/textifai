@@ -40,7 +40,7 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
-import { storage } from "../../app/config/firebase";
+import { db, storage } from "../../app/config/firebase";
 import { StorageReference, deleteObject, listAll, ref } from "firebase/storage";
 import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
 import { MdAnalytics, MdUpload } from "react-icons/md";
@@ -54,6 +54,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "src/app/store";
 import { useDispatch } from "react-redux";
 import { disableDocument, enableDocument } from "./librarySlice";
+import { collection, doc, getDocs, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+import { Document } from "@shared/firestoreInterfaces/Document"
+import { current } from "@reduxjs/toolkit";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
@@ -68,7 +71,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 }) => {
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
-  const [documents, setDocuments] = useState<StorageReference[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
 
   const {
@@ -81,6 +84,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     onOpen: onUploadFileOpen,
     onClose: onUploadFileClose,
   } = useDisclosure();
+  
   const userDocumentsRef = ref(storage, `users/${currentUser?.uid}/uploads`);
 
   const selectedDocuments = useSelector(
@@ -89,15 +93,20 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    listAll(userDocumentsRef)
-      .then((res) => {
-        setDocuments(res.items);
-      })
-      .catch((error) => {
-        console.warn("Something went wrong listing your files");
-        console.error(error);
-      });
-  }, [selectedDocuments]);
+    const documentsCollection = collection(db, 'uploads');
+    const q = query(documentsCollection, where("uploadedBy", "==", currentUser!.uid));
+    
+    const unsubscribe = onSnapshot(q, snapshot => {
+        const fetchedDocuments: Document[] = [];
+        snapshot.forEach(doc => {
+            fetchedDocuments.push(doc.data() as Document);  
+        });
+        setDocuments(fetchedDocuments);
+    });
+
+    return () => unsubscribe();
+
+}, [selectedDocuments]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     selectedDocuments.includes(documentName)
@@ -131,10 +140,17 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     });
   };
 
-  const handleOpenDocumentInTab = (document: StorageReference) => {
+  // Refactor to use the uploads collection
+  // Two options: 
+    // 1. Use clickable link in collecion
+    // 2. Map fileName to firestorage
+  const handleOpenDocumentInTab = async (filename: string) => {
+    const storageLocation = `users/${currentUser?.uid}/uploads/${filename}.pdf`;
+    const fileRef = ref(storage, storageLocation);
+
     const tab: ITab = {
-      name: shortenString(document.fullPath.split("/").pop() || "pdf", 20),
-      panel: <PdfViewer document={ref(storage, document.fullPath)} />,
+      name: shortenString(filename, 20),
+      panel: <PdfViewer document={fileRef} />,  // Ensure PdfViewer can handle Firebase Storage ref
       openChatSupport: false,
       openMiniLibrary: false,
       openPdfViewer: false,
@@ -145,6 +161,47 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     }
     setCurrentTab(tab);
   };
+
+  const toggleFavourite = (fileName: string, isFavourite: boolean) => {
+    const documentsCollection = collection(db, 'uploads');
+    const q = query(
+        documentsCollection, 
+        where("uploadedBy", "==", currentUser!.uid),  
+        where("fileName", "==", fileName)
+    );
+
+    getDocs(q).then(snapshot => {
+        if (!snapshot.empty) {
+            const docRef = doc(db, 'uploads', snapshot.docs[0].id);  
+            updateDoc(docRef, { favoritedBy: isFavourite })
+        } else {
+            console.error("Document with the specified fileName not found or user mismatch!");
+        }
+    }).catch(error => {
+        console.error("Error fetching documents:", error);
+    });
+  };
+
+  const parseTopics = (topicsString: string): string => {
+    try {
+        // Convert single quotes to double quotes
+        const correctedString = topicsString.replace(/'/g, '"');
+        const topicsArray = JSON.parse(correctedString);
+        if (Array.isArray(topicsArray)) {
+            return topicsArray.join(', ');
+        } else {
+            console.error('Parsed value is not an array:', topicsArray);
+            return '';
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(`Error parsing topics: ${error.message}`);
+        } else {
+            console.error("An unknown error occurred while parsing topics.");
+        }
+        return ''; 
+    }
+  }
 
   return (
     <Grid
@@ -374,39 +431,40 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             <Tbody>
               {documents.length > 0 &&
                 documents
-                  .filter((doc) => doc.name.includes(documentQuery))
-                  .map((doc) => (
+                  .filter((doc) => doc.fileName.includes(documentQuery))
+                  .map((doc: Document) => (
                     <Tr
-                      key={doc.fullPath}
+                      key={doc.fileName}
                       _hover={{
-                        bgColor:
-                          theme.colors[colorMode].surfaceContainerHighest,
+                        bgColor: theme.colors[colorMode].surfaceContainerHighest,
                         cursor: "pointer",
                       }}
                     >
                       <Td>
                         <Checkbox
-                          isChecked={selectedDocuments.includes(doc.name)}
-                          onChange={() =>
-                            handleDocumentCheckboxChange(doc.name)
-                          }
+                          isChecked={selectedDocuments.includes(doc.fileName)}
+                          onChange={() => handleDocumentCheckboxChange(doc.fileName)}
                         />
                       </Td>
                       <Td>
                         <Button
                           variant="link"
-                          onClick={() => handleOpenDocumentInTab(doc)}
+                          onClick={() => handleOpenDocumentInTab(doc.fileName)}
                         >
-                          {doc.name}
+                          {doc.fileName}
                         </Button>
                       </Td>
-                      <Td>Henk</Td>
-                      <Td isNumeric>1995</Td>
-                      <Td>Collection1</Td>
-                      <Td>This is summarized</Td>
-                      <Td>Topic1, topic2, topic3</Td>
+                      <Td>{doc.author}</Td>
+                      <Td isNumeric>{doc.creationDate.toDate().getFullYear()}</Td>
+                      <Td>CollectionName</Td>
+                      <Td>This is a summary</Td>
+                      <Td>{parseTopics(doc.topics)}</Td>
                       <Td textAlign="center">
-                        <Icon as={FaStar} color="teal" />
+                        <Icon 
+                          as={FaStar} 
+                          color={doc.favoritedBy ? "teal" : "none"} 
+                          onClick={() => toggleFavourite(doc.fileName, !doc.favoritedBy)}
+                        />
                       </Td>
                     </Tr>
                   ))}

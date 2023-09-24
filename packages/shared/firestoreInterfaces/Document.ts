@@ -8,11 +8,11 @@ export interface Document {
   uploadDate: Timestamp;
   creationDate: Timestamp;
   summary: string;
-  topics: string[];
+  topics: string;
   tags: string[];
   fileSize: number;
   wordCount: number;
   extractedText: string;
   topicText: string;
-  favoritedBy: string[];
+  favoritedBy: Boolean;
 }

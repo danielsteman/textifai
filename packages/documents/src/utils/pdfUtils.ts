@@ -11,6 +11,7 @@ import { addDoc, collection } from "firebase/firestore";
     extractedText: string;
     topicText: string;
     wordCount: number;
+    favoritedBy: Boolean;
 }
 
 function countWords(text: string): number {
@@ -48,6 +49,7 @@ export async function extractMetadataFromPDF (
             extractedText: text, 
             topicText: getFirstNWords(text, 250),
             wordCount: countWords(text),
+            favoritedBy: false,
         };
 
     } catch (error) {
