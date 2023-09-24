@@ -86,6 +86,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: packages/chat/Dockerfile
+          # only push on main
+          # only build as PR validation
           push: true
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
@@ -97,6 +99,8 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    env:
+      TF_VAR_sha: ${{ github.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
