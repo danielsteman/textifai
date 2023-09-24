@@ -79,6 +79,13 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
+  const [yearFilter, setYearFilter] = useState(null);
+  const [collectionFilter, setCollectionFilter] = useState(null);
+  const [projectFilter, setProjectFilter] = useState(null);
+
+  const allCollections = Array.from(
+    new Set(documents.flatMap(doc => doc.tags))
+  );  
 
   const {
     isOpen: isDeleteFileOpen,
@@ -348,6 +355,17 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
           </Button>
           <Box h={4} />
           <Heading size="xs">Collections</Heading>
+            {allCollections.map((collection, index) => (
+              <Button
+                key={index}
+                variant="ghost"
+                size="xs"
+                textColor={theme.colors[colorMode].onSurface}
+                onClick={() => setCollectionFilter(collection)}
+              >
+                {collection}
+              </Button>
+            ))}
           <Box h={4} />
           <Heading size="xs">Projects</Heading>
           <Spacer />
