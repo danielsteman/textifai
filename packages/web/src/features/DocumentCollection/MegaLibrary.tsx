@@ -314,7 +314,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         >
           <Heading size="xs">Filters</Heading>
           <Button
-            bgColor={yearFilter === null ? theme.colors[colorMode].selected : "transparent"}  // Adjust this as needed
+            bgColor={(yearFilter === null && !onlyFavoritesFilter) ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
@@ -325,7 +325,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Any time
           </Button>
           <Button
-            colorScheme={yearFilter === 2023 ? "blue" : "gray"}
+            bgColor={yearFilter === 2023 ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
@@ -334,7 +334,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Since 2023
           </Button>
           <Button
-            colorScheme={yearFilter === 2022 ? "blue" : "gray"}
+            bgColor={yearFilter === 2022 ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
@@ -343,7 +343,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Since 2022
           </Button>
           <Button
-            colorScheme={yearFilter === 2021 ? "blue" : "gray"}
+            bgColor={yearFilter === 2021 ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
             size="xs"
@@ -359,11 +359,14 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Custom range
           </Button>
           <Button
-              colorScheme={onlyFavoritesFilter ? "blue" : "gray"}
+              bgColor={onlyFavoritesFilter ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
               variant="ghost"
               size="xs"
               textColor={theme.colors[colorMode].onSurface}
-              onClick={() => setOnlyFavoritesFilter(prev => !prev)}
+              onClick={() => {
+                  setOnlyFavoritesFilter(prev => !prev);
+                  setYearFilter(null);
+                }}
           >
               Only show favorites
           </Button>
