@@ -57,6 +57,7 @@ import { disableDocument, enableDocument } from "./librarySlice";
 import { collection, doc, getDocs, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { Document } from "@shared/firestoreInterfaces/Document"
 import { current } from "@reduxjs/toolkit";
+import ChatPanel from "../Workspace/panels/ChatPanel";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
@@ -336,7 +337,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               </ModalBody>
             </ModalContent>
           </Modal>
-          <Tooltip label="Coming soon!">
+          {/* <Tooltip label="Coming soon!">
             <Button
               disabled={true}
               size="sm"
@@ -348,17 +349,31 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             >
               Analyse
             </Button>
-          </Tooltip>
+          </Tooltip> */}
           <Button
-            size="sm"
-            aria-label={"ask tai"}
-            leftIcon={<ChatIcon />}
-            borderRadius={100}
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            textColor={theme.colors[colorMode].onSecondaryContainer}
+              size="sm"
+              aria-label={"ask tai"}
+              leftIcon={<ChatIcon />}
+              borderRadius={100}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
+              onClick={() => {
+                const chatTab: ITab = {
+                    name: 'Chat',
+                    panel: <ChatPanel />, 
+                    openChatSupport: false,
+                    openMiniLibrary: false,
+                    openPdfViewer: false,
+                };
+        
+                const existingTab = openTabs.find((t) => t.name === chatTab.name);
+                if (!existingTab) {
+                    setOpenTabs((prevTabs) => [...prevTabs, chatTab]);
+                }
+                setCurrentTab(chatTab);
+            }}
           >
-            {/* onClick(() => open chat window so user can chat with selected documents) */}
-            Ask TAI
+              Ask TAI
           </Button>
           <Button
             size="sm"
@@ -423,7 +438,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                 <Th>Author</Th>
                 <Th isNumeric>Year</Th>
                 <Th>Collection</Th>
-                <Th>Summary</Th>
+                {/* <Th>Summary</Th> */}
                 <Th>Topics</Th>
                 <Th>Favorite</Th>
               </Tr>
@@ -457,7 +472,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                       <Td>{doc.author}</Td>
                       <Td isNumeric>{doc.creationDate.toDate().getFullYear()}</Td>
                       <Td>CollectionName</Td>
-                      <Td>This is a summary</Td>
+                      {/* <Td>This is a summary</Td> */}
                       <Td>{parseTopics(doc.topics)}</Td>
                       <Td textAlign="center">
                         <Icon 
