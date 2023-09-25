@@ -55,32 +55,37 @@ jobs:
           username: _json_key
           password: ${{ secrets.GAR_SA_KEY }}
 
-      - id: docker-push-web-tagged
-        name: Tag textifai/web image and push to GAR
+      - name: Set Push Flag
+        id: set-push-flag
+        run: echo "PUSH_FLAG=true" >> $GITHUB_ENV
+        if: github.ref == 'refs/heads/main'
+
+      - name: Tag textifai/web image and push to GAR
+        id: docker-push-web-tagged
         uses: docker/build-push-action@v5
         with:
           file: packages/web/Dockerfile
-          push: true
+          push: ${{ env.PUSH_FLAG }}
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
 
-      - id: docker-push-documents-tagged
-        name: Tag textifai/documents image and push to GAR
+      - name: Tag textifai/documents image and push to GAR
+        id: docker-push-documents-tagged
         uses: docker/build-push-action@v5
         with:
           file: packages/documents/Dockerfile
-          push: true
+          push: ${{ env.PUSH_FLAG }}
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
 
-      - id: docker-push-chat-tagged
-        name: Tag textifai/chat image and push to GAR
+      - name: Tag textifai/chat image and push to GAR
+        id: docker-push-chat-tagged
         uses: docker/build-push-action@v5
         with:
           file: packages/chat/Dockerfile
-          push: true
+          push: ${{ env.PUSH_FLAG }}
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
