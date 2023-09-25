@@ -1,12 +1,10 @@
 import React from "react";
-import { Grid, GridItem, TabPanel } from "@chakra-ui/react";
+import { Grid, GridItem, TabPanel, Box } from "@chakra-ui/react";
 import { ITab } from "../../features/Workspace/Workspace";
 import MiniLibraryPanel from "./panels/MiniLibraryPanel";
 import ChatPanel from "./panels/ChatPanel";
 import PdfViewerPanel from "./panels/PdfViewerPanel";
 import SupportWindowGridItem from "../../common/components/SupportWindowGridItem";
-
-// allow supportchat for pdf document tabs
 
 interface PanelWrapperProps {
   tab: ITab;
@@ -32,14 +30,19 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
               : 3
           }
         >
-          {tab.panel}
+          <Box overflowY="auto" h="100%">
+            {tab.panel}
+          </Box>
         </GridItem>
+
         {tab.openMiniLibrary && (
           <SupportWindowGridItem
             onClose={() => onClose("openMiniLibrary")}
             windowName="Library"
           >
-            <MiniLibraryPanel />
+            <Box overflowY="auto" h="100%">
+              <MiniLibraryPanel />
+            </Box>
           </SupportWindowGridItem>
         )}
 
@@ -48,7 +51,9 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
             onClose={() => onClose("openChatSupport")}
             windowName="Chat"
           >
-            <ChatPanel />
+            <Box overflowY="auto" h="100%">
+              <ChatPanel />
+            </Box>
           </SupportWindowGridItem>
         )}
 
@@ -57,7 +62,9 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
             onClose={() => onClose("openPdfViewer")}
             windowName="Pdf viewer"
           >
-            <PdfViewerPanel />
+            <Box overflowY="auto" h="100%">
+              <PdfViewerPanel />
+            </Box>
           </SupportWindowGridItem>
         )}
       </Grid>

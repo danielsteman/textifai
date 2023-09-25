@@ -23,6 +23,9 @@ import {
   Menu,
   MenuList,
   MenuButton,
+  MenuDivider,
+  MenuOptionGroup,
+  MenuItemOption,
   MenuGroup,
 } from "@chakra-ui/react";
 import {
@@ -131,13 +134,31 @@ const Workspace = () => {
           <Flex justifyContent="flex-end" w="100%">
             <IconButton
               aria-label="Close Menu"
-              icon={<SmallCloseIcon />}
+              icon={<MdKeyboardDoubleArrowLeft />}
               onClick={toggleMenu}
-              mb={2}
+              size="sm"
             />
           </Flex>
-          <UserCard />
-          <Divider />
+          <Menu>
+            <MenuButton
+              textAlign="left"
+              mb={2}
+              w="100%"
+              as={Button}
+              size="sm"
+              variant="ghost"
+              rightIcon={<ChevronDownIcon />}
+            >
+              Project1
+            </MenuButton>
+            <MenuList>
+              <MenuGroup title="All projects">
+                {userProjects.map((project) => (
+                  <MenuItem key={project.name}>{project.name}</MenuItem>
+                ))}
+              </MenuGroup>
+            </MenuList>
+          </Menu>
           <Button
             w="100%"
             justifyContent="flex-start"
@@ -229,6 +250,8 @@ const Workspace = () => {
             Pdf Viewer
           </Button>
           <Spacer />
+          <Divider />
+          <UserCard />
         </VStack>
       )}
       {!isMenuOpen && (
