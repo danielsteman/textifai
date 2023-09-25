@@ -56,12 +56,12 @@ jobs:
           password: ${{ secrets.GAR_SA_KEY }}
 
       - name: Set Push Flag For Main
-        id: set-push-flag
+        id: set-push-flag-main
         run: echo "PUSH_FLAG=true" >> $GITHUB_ENV
         if: github.ref == 'refs/heads/main'
 
       - name: Set Push Flag For Feature
-        id: set-push-flag
+        id: set-push-flag-feature
         run: echo "PUSH_FLAG=false" >> $GITHUB_ENV
         if: github.ref != 'refs/heads/main'
 
