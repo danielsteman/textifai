@@ -55,10 +55,15 @@ jobs:
           username: _json_key
           password: ${{ secrets.GAR_SA_KEY }}
 
-      - name: Set Push Flag
+      - name: Set Push Flag For Main
         id: set-push-flag
         run: echo "PUSH_FLAG=true" >> $GITHUB_ENV
         if: github.ref == 'refs/heads/main'
+
+      - name: Set Push Flag For Feature
+        id: set-push-flag
+        run: echo "PUSH_FLAG=false" >> $GITHUB_ENV
+        if: github.ref != 'refs/heads/main'
 
       - name: Tag textifai/web image and push to GAR
         id: docker-push-web-tagged
