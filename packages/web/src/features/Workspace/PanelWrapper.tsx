@@ -17,7 +17,7 @@ interface PanelWrapperProps {
 
 const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
   return (
-    <TabPanel h="100%" flex="1" borderRadius={16} p={2}>
+    <TabPanel h="100%" flex="1" borderRadius={16}>
       <Grid
         h="100%"
         templateRows="repeat(2, 1fr)"
