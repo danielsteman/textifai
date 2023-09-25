@@ -23,9 +23,6 @@ import {
   Menu,
   MenuList,
   MenuButton,
-  MenuDivider,
-  MenuOptionGroup,
-  MenuItemOption,
   MenuGroup,
 } from "@chakra-ui/react";
 import {
@@ -134,31 +131,13 @@ const Workspace = () => {
           <Flex justifyContent="flex-end" w="100%">
             <IconButton
               aria-label="Close Menu"
-              icon={<MdKeyboardDoubleArrowLeft />}
+              icon={<SmallCloseIcon />}
               onClick={toggleMenu}
-              size="sm"
+              mb={2}
             />
           </Flex>
-          <Menu>
-            <MenuButton
-              textAlign="left"
-              mb={2}
-              w="100%"
-              as={Button}
-              size="sm"
-              variant="ghost"
-              rightIcon={<ChevronDownIcon />}
-            >
-              Project1
-            </MenuButton>
-            <MenuList>
-              <MenuGroup title="All projects">
-                {userProjects.map((project) => (
-                  <MenuItem key={project.name}>{project.name}</MenuItem>
-                ))}
-              </MenuGroup>
-            </MenuList>
-          </Menu>
+          <UserCard />
+          <Divider />
           <Button
             w="100%"
             justifyContent="flex-start"
@@ -250,8 +229,6 @@ const Workspace = () => {
             Pdf Viewer
           </Button>
           <Spacer />
-          <Divider />
-          <UserCard />
         </VStack>
       )}
       {!isMenuOpen && (
@@ -274,28 +251,66 @@ const Workspace = () => {
             aria-label={"Editor"}
             icon={<FaEdit />}
             onClick={() => {
-              //... onClick logic for Editor button...
+              const tab = {
+                name: "Editor",
+                panel: <EditorPanel />,
+                openChatSupport: false,
+                openMiniLibrary: false,
+                openPdfViewer: false,
+              };
+              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setCurrentTab(tab);
             }}
           />
           <IconButton
             aria-label={"Chat"}
             icon={<ChatIcon />}
             onClick={() => {
-              //... onClick logic for Chat button...
+              const tab: ITab = {
+                name: "Chat",
+                panel: <ChatPanel />,
+                openChatSupport: false,
+                openMiniLibrary: false,
+                openPdfViewer: false,
+              };
+              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setCurrentTab(tab);
             }}
           />
           <IconButton
             aria-label={"Library"}
             icon={<FaBook />}
             onClick={() => {
-              //... onClick logic for Library button...
+              const tab: ITab = {
+                name: "Library",
+                panel: (
+                  <MegaLibraryPanel
+                    openTabs={openTabs}
+                    setOpenTabs={setOpenTabs}
+                    setCurrentTab={setCurrentTab}
+                  />
+                ),
+                openChatSupport: false,
+                openMiniLibrary: false,
+                openPdfViewer: false,
+              };
+              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setCurrentTab(tab);
             }}
           />
           <IconButton
             aria-label={"Pdf Viewer"}
             icon={<FaFilePdf />}
             onClick={() => {
-              //... onClick logic for Pdf Viewer button...
+              const tab: ITab = {
+                name: "PdfViewer",
+                panel: <PdfViewerPanel />,
+                openChatSupport: false,
+                openMiniLibrary: false,
+                openPdfViewer: false,
+              };
+              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setCurrentTab(tab);
             }}
           />
           <Spacer />
