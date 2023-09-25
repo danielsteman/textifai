@@ -101,8 +101,14 @@ const Workspace = () => {
   };
 
   const defaultTab: ITab = {
-    name: "Editor",
-    panel: <EditorPanel />,
+    name: "Library",
+    panel: (
+      <MegaLibraryPanel
+        openTabs={openTabs}
+        setOpenTabs={setOpenTabs}
+        setCurrentTab={setCurrentTab}
+      />
+    ),
     openChatSupport: false,
     openMiniLibrary: false,
     openPdfViewer: false,
@@ -148,7 +154,7 @@ const Workspace = () => {
             <MenuList>
               <MenuGroup title="All projects">
                 {userProjects.map((project) => (
-                  <MenuItem>{project.name}</MenuItem>
+                  <MenuItem key={project.name}>{project.name}</MenuItem>
                 ))}
               </MenuGroup>
             </MenuList>

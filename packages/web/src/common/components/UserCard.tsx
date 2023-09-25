@@ -18,6 +18,7 @@ import ColorModeSwitcher from "./ColorModeSwitcher";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import theme from "../../app/themes/theme";
+import { shortenString } from "../utils/shortenString";
 
 const UserCard = () => {
   const currentUser = useContext(AuthContext);
@@ -40,7 +41,8 @@ const UserCard = () => {
             color={theme.colors[colorMode].onSecondaryContainer}
             whiteSpace="nowrap"
           >
-            {currentUser?.displayName}
+            {currentUser?.displayName &&
+              shortenString(currentUser?.displayName, 14)}
           </Heading>
           <Menu>
             <MenuButton
