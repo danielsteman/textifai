@@ -4,16 +4,19 @@ import { Outlet } from "react-router-dom";
 import AccountInfoDrawer from "../../features/AccountMenuDrawer/AccountMenuDrawer";
 import Navigation from "../../features/Navigation/Navigation";
 import Logo from "../../common/components/Logo";
-import PromoTiara from "../../common/components/PromoTiara";
 import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
 import { AuthContext } from "../providers/AuthProvider";
 
-const Layout = () => {
+interface LayoutProps {
+  promoComponent?: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ promoComponent }) => {
   const currentUser = useContext(AuthContext);
 
   return (
     <Flex direction="column" h="100%">
-      <PromoTiara />
+      {promoComponent}
       <Flex py={2} px={8} gap={4} direction="row" alignItems="center">
         <Logo />
         <Box w={8} />
@@ -36,9 +39,7 @@ const Layout = () => {
           </ButtonGroup>
         )}
       </Flex>
-      <Box px={16} py={8}>
-        <Outlet />
-      </Box>
+      <Outlet />
     </Flex>
   );
 };

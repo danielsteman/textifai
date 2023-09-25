@@ -1,32 +1,46 @@
-import React, { useEffect, useState } from "react";
-import { User as FirebaseUser } from "firebase/auth";
-import { auth } from "../config/firebase";
+import React, { useContext, useEffect, useState } from "react";
 import { Project } from "@shared/firestoreInterfaces/Project";
-import { Timestamp } from "firebase/firestore";
+import {
+  QueryDocumentSnapshot,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../config/firebase";
+import { AuthContext } from "./AuthProvider";
 
 interface Props {
   children: React.ReactNode;
 }
 
-export const ProjectContext = React.createContext<Project | null>(null);
+export const ProjectContext = React.createContext<Project[]>([]);
 
 export const ProjectProvider: React.FC<Props> = ({ children }) => {
-  const [project, setProject] = useState<Project | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  const currentUser = useContext(AuthContext);
 
   useEffect(() => {
-    // fetch project
-    const project: Project = {
-      name: "this is an example of a project object but should be fetched from firestore",
-      description: "alvast bedankt",
-      industry: "",
-      users: [],
-      creationDate: Timestamp.fromDate(new Date()),
+    const projectsRef = collection(db, "projects");
+    const projectsQuery = query(
+      projectsRef,
+      where("users", "array-contains", currentUser?.uid)
+    );
+
+    const getProjects = async () => {
+      const projectsSnapshot = await getDocs(projectsQuery);
+      projectsSnapshot.docs.map((project: QueryDocumentSnapshot) => {
+        const projectData = project.data() as Project;
+        setProjects([...projects, projectData]);
+      });
     };
-    setProject(project);
+
+    getProjects();
   }, []);
 
   return (
-    <ProjectContext.Provider value={project}>
+    <ProjectContext.Provider value={projects}>
       {children}
     </ProjectContext.Provider>
   );
