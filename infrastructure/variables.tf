@@ -48,6 +48,6 @@ variable "oauth_client_secret" {
   sensitive = true
 }
 
-variable "sha" {
+variable "image_tag" {
   type = string
 }
