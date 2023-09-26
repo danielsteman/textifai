@@ -11,9 +11,12 @@ import {
   useColorMode, 
   Spacer,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import theme from "../../app/themes/theme";
 import ReactMarkdown from "react-markdown";
+import { AuthContext } from "../../app/providers/AuthProvider";
+import { appendToDocument } from "./ChatFuncs";
+import { User } from "firebase/auth";
 
 interface SystemMessageProps {
   message: string;
@@ -27,7 +30,12 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
 
   const bgColor = variant === "agent" ? tertiary : primary;
 
-  const handleMenuClick = () => setMenuClicked(true);
+  const currentUser: User | null | undefined = useContext(AuthContext);
+
+  const handleMenuClick = () => {
+    appendToDocument(currentUser!.uid, message);
+    setMenuClicked(true); 
+  };
 
   return (
     <HStack mb={2}>
@@ -59,9 +67,9 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
                 <MenuItem onClick={handleMenuClick}>
                   Copy to Working Document
                 </MenuItem>
-                <MenuItem onClick={handleMenuClick}>
+                {/* <MenuItem onClick={handleMenuClick}>
                   Show in Source Document
-                </MenuItem>
+                </MenuItem> */}
               </MenuList>
             </Menu>
           )}

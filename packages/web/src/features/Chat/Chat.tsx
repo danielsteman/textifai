@@ -31,7 +31,7 @@ import {
   updateConversationDate,
   getConversation,
   fetchMessagesForConversation,
-} from "./ChatFuncs"
+} from "./ChatFuncs";
 import { db } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";

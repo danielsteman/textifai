@@ -10,6 +10,7 @@
     doc,
     orderBy,
     limit,
+    DocumentData,
   } from "firebase/firestore";
   import { db } from "../../app/config/firebase";
   import { Conversation } from "@shared/firestoreInterfaces/Conversation";
@@ -107,3 +108,29 @@ export const fetchMessagesForConversation = async (conversationId: string) => {
   });
   return messagesArray;
 };
+
+export const appendToDocument = async (currentUserUid: string, message: string) => {
+  try {
+    const workingDocsCollection = collection(db, "workingdocuments");
+    
+    const q = query(
+      workingDocsCollection, 
+      where("users", "array-contains", currentUserUid),
+      /// where("projectId", "==", projectId) // TO DO
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const docRef = doc(db, "workingdocuments", querySnapshot.docs[0].id);
+      const currentContent = querySnapshot.docs[0].data().content || "";
+      await updateDoc(docRef, {
+        content: currentContent + "\n\n" + message
+      });
+    } else {
+      console.error("No matching document found.");
+    }
+  } catch (error) {
+    console.error("Error appending message to document:", error);
+  }
+}
