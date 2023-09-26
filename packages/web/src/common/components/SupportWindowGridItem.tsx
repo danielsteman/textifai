@@ -23,6 +23,7 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
   const { colorMode } = useColorMode();
   return (
     <GridItem
+      overflowY="scroll"
       display="flex"
       flexDir="column"
       rowSpan={1}
