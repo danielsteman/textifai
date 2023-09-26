@@ -31,6 +31,7 @@ import {
   SetStateAction,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
@@ -125,8 +126,13 @@ const Workspace = () => {
     setCurrentTab(defaultTab);
   }, []);
 
+  const previousTabsLengthRef = useRef(openTabs.length);
+
   useEffect(() => {
-    setActiveTabIndex(openTabs.length - 1);
+      if (previousTabsLengthRef.current < openTabs.length) {
+          setActiveTabIndex(openTabs.length - 1);
+      }
+      previousTabsLengthRef.current = openTabs.length;
   }, [openTabs]);
 
   return (
