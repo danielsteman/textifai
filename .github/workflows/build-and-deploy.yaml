@@ -111,6 +111,11 @@ jobs:
           image_tag = "${{ github.sha }}"
           EOF
 
+      - name: Check files
+        working-directory: ./infrastructure
+        id: check
+        run: ls -alh
+
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
         id: plan-upload
