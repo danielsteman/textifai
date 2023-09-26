@@ -80,10 +80,13 @@ const Workspace = () => {
   };
 
   const setCurrentTabAndIndex = (tab: ITab) => {
-    const index = openTabs.findIndex((oTab) => oTab.name === tab.name);
     setCurrentTab(tab);
-    setActiveTabIndex(index);
-  };
+    const tabIndex = openTabs.findIndex(t => t.name === tab.name);
+    setActiveTabIndex(tabIndex);
+
+    console.log(`Tab ${tab.name} is set as the current tab.`);
+    console.log(`Active tab index is now: ${tabIndex}`);
+};
 
   const onTabClose = (tabToClose: ITab) => {
     const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
@@ -178,7 +181,6 @@ const Workspace = () => {
                 openPdfViewer: false,
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTab(tab);
               setCurrentTabAndIndex(tab);
             }}
           >
@@ -200,7 +202,6 @@ const Workspace = () => {
                 openPdfViewer: false,
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTab(tab);
               setCurrentTabAndIndex(tab);
             }}
           >
@@ -228,7 +229,6 @@ const Workspace = () => {
                 openPdfViewer: false,
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTab(tab);
               setCurrentTabAndIndex(tab);
             }}
           >
@@ -250,7 +250,6 @@ const Workspace = () => {
                 openPdfViewer: false,
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTab(tab);
               setCurrentTabAndIndex(tab);
             }}
           >
@@ -305,7 +304,6 @@ const Workspace = () => {
                 openPdfViewer: false,
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTab(tab);
               setCurrentTabAndIndex(tab);
             }}
           />
@@ -327,7 +325,6 @@ const Workspace = () => {
                 openPdfViewer: false,
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTab(tab);
               setCurrentTabAndIndex(tab);
             }}
           />
@@ -343,7 +340,6 @@ const Workspace = () => {
                 openPdfViewer: false,
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTab(tab);
               setCurrentTabAndIndex(tab);
             }}
           />
@@ -406,52 +402,52 @@ const Workspace = () => {
           <Spacer />
           {currentTab?.name === "Editor" && (
             <>
-              <Tooltip label="Open mini library">
-                <IconButton
-                  aria-label={"library-support"}
-                  icon={<FaBookOpen />}
-                  onClick={() => {
-                    const updatedOpenTabs = openTabs.map((tab) =>
-                      tab.name == currentTab?.name
-                        ? { ...tab, openMiniLibrary: true }
-                        : tab
-                    );
-                    setOpenTabs(updatedOpenTabs);
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-              <Tooltip label="Open support chat">
-                <IconButton
-                  aria-label={"chat-support"}
-                  icon={<ChatIcon />}
-                  onClick={() => {
-                    const updatedOpenTabs = openTabs.map((tab) =>
-                      tab.name == currentTab?.name
-                        ? { ...tab, openChatSupport: true }
-                        : tab
-                    );
-                    setOpenTabs(updatedOpenTabs);
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-              <Tooltip label="Open PDF Viewer">
-                <IconButton
-                  aria-label={"pdf-viewer"}
-                  icon={<FaRegFilePdf />}
-                  onClick={() => {
-                    const updatedOpenTabs = openTabs.map((tab) =>
-                      tab.name === currentTab?.name
-                        ? { ...tab, openPdfViewer: true }
-                        : tab
-                    );
-                    setOpenTabs(updatedOpenTabs);
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-            </>
+            <Tooltip label="Open mini library">
+              <IconButton
+                aria-label={"library-support"}
+                icon={<FaBookOpen />}
+                onClick={() => {
+                  const updatedOpenTabs = openTabs.map((tab) =>
+                    tab.name === "Editor"
+                      ? { ...tab, openMiniLibrary: true }
+                      : tab
+                  );
+                  setOpenTabs(updatedOpenTabs);
+                }}
+              />
+            </Tooltip>
+            <Box w={2} />
+            <Tooltip label="Open support chat">
+              <IconButton
+                aria-label={"chat-support"}
+                icon={<ChatIcon />}
+                onClick={() => {
+                  const updatedOpenTabs = openTabs.map((tab) =>
+                    tab.name === "Editor"
+                      ? { ...tab, openChatSupport: true }
+                      : tab
+                  );
+                  setOpenTabs(updatedOpenTabs);
+                }}
+              />
+            </Tooltip>
+            <Box w={2} />
+            <Tooltip label="Open PDF Viewer">
+              <IconButton
+                aria-label={"pdf-viewer"}
+                icon={<FaRegFilePdf />}
+                onClick={() => {
+                  const updatedOpenTabs = openTabs.map((tab) =>
+                    tab.name === "Editor"
+                      ? { ...tab, openPdfViewer: true }
+                      : tab
+                  );
+                  setOpenTabs(updatedOpenTabs);
+                }}
+              />
+            </Tooltip>
+            <Box w={2} />
+          </>
           )}
         </Flex>
         <TabPanels

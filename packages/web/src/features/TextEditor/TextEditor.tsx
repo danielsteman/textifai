@@ -73,7 +73,6 @@ const TextEditor = () => {
           doc(db, "workingdocuments", documentId),
           documentUpdate
         );
-        console.log("Document updated successfully");
       } catch (e) {
         console.error("Error updating document: ", e);
       }
