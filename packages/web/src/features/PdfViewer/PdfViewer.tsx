@@ -35,6 +35,20 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     setScale((prevScale) => Math.max(prevScale - 0.1, 0.5));
   };
 
+  const captureTextSelection = () => {
+    const selectedText = window.getSelection()?.toString();
+    if (selectedText) {
+      console.log("Selected Text:", selectedText);
+    }
+  };
+
+  useEffect(() => {
+    window.document.addEventListener("mouseup", captureTextSelection);
+    return () => {
+      window.document.removeEventListener("mouseup", captureTextSelection);
+    };
+  }, []);
+
   return (
     <Box position="relative" height="100%" width="100%">
       <Box
