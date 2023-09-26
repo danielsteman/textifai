@@ -124,6 +124,8 @@ const Chat = () => {
         const res = await axios.post("http://localhost:3001/api/chat/ask", {
           prompt: message,
           history: updatedConversationHistory,
+          files: selectedDocuments,
+          userId: currentUser?.uid,
           option: "GeneralQa",
         });
 

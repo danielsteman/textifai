@@ -13,12 +13,11 @@ export type Metadata = {
   text: string;
 };
 
-const userId = "test";
-const titleArray = ["test"];
-
 const getMatchesFromEmbeddings = async (
   embeddings: number[],
-  topK: number
+  topK: number, 
+  titleArray: string[], 
+  userId: string
 ): Promise<ScoredVector[]> => {
   const index = await initializeClient();
 
