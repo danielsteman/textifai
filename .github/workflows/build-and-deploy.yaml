@@ -100,7 +100,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      TF_VAR_sha: ${{ github.sha }}
+      TF_VAR_sha: "${{ github.sha }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
