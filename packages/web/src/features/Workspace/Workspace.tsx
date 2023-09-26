@@ -79,6 +79,12 @@ const Workspace = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const setCurrentTabAndIndex = (tab: ITab) => {
+    const index = openTabs.findIndex((oTab) => oTab.name === tab.name);
+    setCurrentTab(tab);
+    setActiveTabIndex(index);
+  };
+
   const onTabClose = (tabToClose: ITab) => {
     const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
     setOpenTabs(newTabs);
@@ -173,6 +179,7 @@ const Workspace = () => {
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
               setCurrentTab(tab);
+              setCurrentTabAndIndex(tab);
             }}
           >
             Editor
@@ -194,6 +201,7 @@ const Workspace = () => {
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
               setCurrentTab(tab);
+              setCurrentTabAndIndex(tab);
             }}
           >
             Chat
@@ -221,6 +229,7 @@ const Workspace = () => {
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
               setCurrentTab(tab);
+              setCurrentTabAndIndex(tab);
             }}
           >
             Library
@@ -242,6 +251,7 @@ const Workspace = () => {
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
               setCurrentTab(tab);
+              setCurrentTabAndIndex(tab);
             }}
           >
             Pdf Viewer
@@ -280,6 +290,7 @@ const Workspace = () => {
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
               setCurrentTab(tab);
+              setCurrentTabAndIndex(tab);
             }}
           />
           <IconButton
@@ -295,6 +306,7 @@ const Workspace = () => {
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
               setCurrentTab(tab);
+              setCurrentTabAndIndex(tab);
             }}
           />
           <IconButton
@@ -316,6 +328,7 @@ const Workspace = () => {
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
               setCurrentTab(tab);
+              setCurrentTabAndIndex(tab);
             }}
           />
           <IconButton
@@ -331,6 +344,7 @@ const Workspace = () => {
               };
               setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
               setCurrentTab(tab);
+              setCurrentTabAndIndex(tab);
             }}
           />
           <Spacer />
