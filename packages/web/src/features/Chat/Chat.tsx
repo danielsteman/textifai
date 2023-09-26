@@ -21,19 +21,18 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import {
   collection,
-  addDoc,
-  Timestamp,
   getDocs,
   query,
   where,
-  updateDoc,
-  doc,
-  orderBy,
-  limit,
 } from "firebase/firestore";
+import {
+  startConversation,
+  addMessageToCollection,
+  updateConversationDate,
+  getConversation,
+  fetchMessagesForConversation,
+} from "./ChatFuncs"
 import { db } from "../../app/config/firebase";
-import { Conversation } from "@shared/firestoreInterfaces/Conversation";
-import { Message } from "@shared/firestoreInterfaces/Message";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
 import { useSelector } from "react-redux";
@@ -41,99 +40,6 @@ import { RootState } from "src/app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
-
-const conversationsCollection = collection(db, "conversations");
-const messagesCollection = collection(db, "messages");
-
-const startConversation = async (
-  currentUserUid: string
-): Promise<string | void> => {
-  try {
-    const conversationDoc: Conversation = {
-      userId: currentUserUid,
-      projectId: "currentProject", // TO DO --> Make dynamic
-      creationDate: Timestamp.fromDate(new Date()),
-      updatedDate: Timestamp.fromDate(new Date()),
-    };
-    const conversationRef = await addDoc(
-      conversationsCollection,
-      conversationDoc
-    );
-    return conversationRef.id;
-  } catch (error) {
-    console.error("Error creating new conversation:", error);
-  }
-};
-
-const addMessageToCollection = async (
-  message: any,
-  variant: any,
-  conversationId: any,
-  parentMessageId: any
-) => {
-  try {
-    const messageDoc: Message = {
-      conversationId: conversationId,
-      creationDate: Timestamp.fromDate(new Date()),
-      variant: variant,
-      messageBody: message,
-      parentMessageId: parentMessageId,
-    };
-    await addDoc(messagesCollection, messageDoc);
-  } catch (error) {
-    console.error("Error adding message to collection:", error);
-  }
-};
-
-const updateConversationDate = async (conversationId: string) => {
-  try {
-    const conversationRef = doc(db, "conversations", conversationId);
-    await updateDoc(conversationRef, {
-      updatedDate: Timestamp.fromDate(new Date()),
-    });
-  } catch (error) {
-    console.error("Error updating conversation date:", error);
-  }
-};
-
-const getConversation = async (conversationId: string) => {
-  const messagesCollection = collection(db, "messages");
-  const q = query(
-    messagesCollection,
-    where("conversationId", "==", conversationId),
-    orderBy("creationDate", "desc"),
-    limit(6)
-  );
-
-  const querySnapshot = await getDocs(q);
-
-  const lastThreeConversations: string[] = [];
-  querySnapshot.docs.reverse().forEach((doc) => {
-    const data = doc.data();
-    const prefix = data.variant === "user" ? "USER: " : "AI: ";
-    lastThreeConversations.push(prefix + data.messageBody);
-  });
-
-  return lastThreeConversations.join("\n");
-};
-
-const fetchMessagesForConversation = async (conversationId: string) => {
-  const messagesArray: { variant: string; messageBody: string }[] = [];
-  const q = query(
-    messagesCollection,
-    where("conversationId", "==", conversationId),
-    orderBy("creationDate", "asc")
-  );
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    messagesArray.push({
-      variant: data.variant,
-      messageBody: data.messageBody,
-    });
-  });
-  return messagesArray;
-};
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
