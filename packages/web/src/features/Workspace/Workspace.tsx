@@ -58,6 +58,7 @@ export type ITab = {
   openChatSupport: boolean;
   openMiniLibrary: boolean;
   openPdfViewer: boolean;
+  isActive?: boolean;
 };
 
 export type OpenTabsContext = {
