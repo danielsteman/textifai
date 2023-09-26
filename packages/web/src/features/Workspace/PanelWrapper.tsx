@@ -23,6 +23,7 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
         gap={2}
       >
         <GridItem
+          overflowY="hidden"
           rowSpan={2}
           colSpan={
             tab.openChatSupport || tab.openMiniLibrary || tab.openPdfViewer

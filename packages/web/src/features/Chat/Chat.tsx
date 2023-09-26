@@ -191,10 +191,10 @@ const Chat = () => {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          setCurrentConversationId(querySnapshot.docs[0].id); // Using the value directly from querySnapshot
+          setCurrentConversationId(querySnapshot.docs[0].id); 
         } else {
           const newConversationId = await startConversation(currentUser.uid);
-          setCurrentConversationId(newConversationId || null); // Using the value directly from newConversationId
+          setCurrentConversationId(newConversationId || null); 
         }
       }
     };
@@ -210,14 +210,11 @@ const Chat = () => {
     try {
       setLoading(true);
 
-      // Ensure currentConversationId is not null before using it
       if (currentConversationId) {
-        // Fetch the conversation history
         const updatedConversationHistory = await getConversation(
           currentConversationId!
         );
         setConversationHistory(updatedConversationHistory);
-        // Now, send the updated history to the Axios server
         const res = await axios.post("http://localhost:3001/api/chat/ask", {
           prompt: message,
           history: updatedConversationHistory,
@@ -226,11 +223,9 @@ const Chat = () => {
 
         setAnswerStack([...answerStack, res.data.answer]);
 
-        // Always scroll to bottom
         scrollToBottom();
         setLoading(false);
 
-        // Add user's message to the collection
         await addMessageToCollection(
           message,
           "user",
@@ -238,7 +233,6 @@ const Chat = () => {
           null
         );
 
-        // Add AI's response to the collection
         await addMessageToCollection(
           res.data.answer,
           "agent",
@@ -246,7 +240,6 @@ const Chat = () => {
           null
         );
 
-        // Update the conversation's updatedDate
         await updateConversationDate(currentConversationId);
       } else {
         console.error("currentConversationId is null.");
@@ -257,17 +250,14 @@ const Chat = () => {
   };
 
   const handleRegenerate = async () => {
-    // Capture the last message from answerStack
     const lastSystemMessage = answerStack[answerStack.length - 1];
 
     try {
-      // Make the API call with the last system message
       const res = await axios.post("http://localhost:3001/api/chat/ask", {
-        prompt: lastSystemMessage, // Sending the last system message
-        option: "regenerate", // The option is set to "regenerate"
+        prompt: lastSystemMessage, 
+        option: "regenerate", 
       });
 
-      // Replace the last message in answerStack with the regenerated one
       setAnswerStack((prevAnswers) => {
         const updatedAnswers = [...prevAnswers];
         updatedAnswers[updatedAnswers.length - 1] = res.data.answer;

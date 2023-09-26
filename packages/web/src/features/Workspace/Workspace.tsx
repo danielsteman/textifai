@@ -23,9 +23,6 @@ import {
   Menu,
   MenuList,
   MenuButton,
-  MenuDivider,
-  MenuOptionGroup,
-  MenuItemOption,
   MenuGroup,
 } from "@chakra-ui/react";
 import {
@@ -455,7 +452,6 @@ const Workspace = () => {
             <PanelWrapper
               onClose={closeSupportingPanel}
               tab={tab}
-              key={tab.name}
             />
           ))}
         </TabPanels>
