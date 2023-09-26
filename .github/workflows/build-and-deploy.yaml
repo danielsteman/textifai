@@ -97,7 +97,7 @@ jobs:
       TF_CLOUD_ORGANIZATION: "textifai"
       TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
       TF_WORKSPACE: "textifai"
-      CONFIG_DIRECTORY: "./infrastructure"
+      CONFIG_DIRECTORY: "./infrastructure/"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
