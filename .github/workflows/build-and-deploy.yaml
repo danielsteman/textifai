@@ -6,12 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  TF_CLOUD_ORGANIZATION: "textifai"
-  TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-  TF_WORKSPACE: "textifai"
-  CONFIG_DIRECTORY: "./infrastructure"
-
 jobs:
   # build:
   #   runs-on: ubuntu-latest
@@ -99,6 +93,11 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    env:
+      TF_CLOUD_ORGANIZATION: "textifai"
+      TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+      TF_WORKSPACE: "textifai"
+      CONFIG_DIRECTORY: "./infrastructure"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
