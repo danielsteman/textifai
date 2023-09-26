@@ -120,8 +120,8 @@ jobs:
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
         id: plan-upload
         with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          directory: ${{ env.CONFIG_DIRECTORY }}
+          workspace: textifai
+          directory: ./infrastructure
           speculative: true
 
       - name: Create Plan Run
