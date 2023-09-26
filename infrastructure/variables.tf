@@ -47,3 +47,7 @@ variable "oauth_client_secret" {
   description = "OAuth client secret. In a real app, you should use a secret manager service."
   sensitive = true
 }
+
+variable "sha" {
+  type = string
+}
