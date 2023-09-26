@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TF_WORKSPACE: textifai
-      TF_DIRECTORY: infrastructure
+      TF_DIRECTORY: .
     permissions:
       contents: read
       pull-requests: write
