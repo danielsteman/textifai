@@ -37,14 +37,12 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   return (
     <Box position="relative" height="100%" width="100%">
-      {/* Zoom controls */}
       <Box
         position="sticky"
         top="0"
         p="0.5rem"
         display="flex"
         justifyContent="center"
-        boxShadow="sm"
       >
         <button onClick={zoomOut}>-</button>
         <span style={{ margin: '0 1rem' }}>{Math.round(scale * 100)}%</span>
