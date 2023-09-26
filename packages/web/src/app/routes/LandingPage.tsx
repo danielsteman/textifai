@@ -24,6 +24,32 @@ const PlaceHolder = () => {
   );
 };
 
+interface ParagraphProps {
+  title: string;
+  firstParagraph: string;
+  secondParagraph: string;
+  CTAButton?: React.ReactNode;
+}
+
+const Paragraph: React.FC<ParagraphProps> = ({
+  title,
+  firstParagraph,
+  secondParagraph,
+  CTAButton,
+}) => {
+  return (
+    <Box px={24}>
+      <Heading>{title}</Heading>
+      <Text>
+        {firstParagraph} <br />
+        <br />
+        {secondParagraph}
+      </Text>
+      {CTAButton}
+    </Box>
+  );
+};
+
 const LandingPage = () => {
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
