@@ -112,6 +112,8 @@ router.post(
     const prompt = await req.body.prompt;
     const conversationHistory = await req.body.history;
     const option = await req.body.option;
+    const files = await req.body.files
+    const userId = await req.body.userId
 
     if (option === "regenerate") {
       try {
@@ -135,7 +137,7 @@ router.post(
       const inquiry = inquiryChainResult.text;
 
       const vector = await embed.embedQuery(prompt);
-      const matches = await getMatchesFromEmbeddings(vector, 3);
+      const matches = await getMatchesFromEmbeddings(vector, 3, files, userId);
 
       interface Metadata {
         page: string;
