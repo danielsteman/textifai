@@ -34,18 +34,19 @@ variable "organisation_id" {
 }
 
 variable "GOOGLE_CREDENTIALS" {
-  default = ""
+  type      = string
+  sensitive = true
 }
 
 variable "web_app_display_name" {
-  type = string
+  type    = string
   default = "textifai"
 }
 
 variable "oauth_client_secret" {
-  type = string
+  type        = string
   description = "OAuth client secret. In a real app, you should use a secret manager service."
-  sensitive = true
+  sensitive   = true
 }
 
 variable "image_tag" {

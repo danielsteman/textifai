@@ -1,6 +1,6 @@
 # Creates a new Google Cloud project.
 resource "google_project" "default" {
-  provider   = google-beta
+  provider = google-beta
 
   project_id = "${var.project_id}-${var.unique_identifier}"
   name       = "${var.project_name}-${var.unique_identifier}"

@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TF_WORKSPACE: textifai
-      TF_DIRECTORY: .
+      TF_DIRECTORY: infrastructure
     permissions:
       contents: read
       pull-requests: write
@@ -120,7 +120,7 @@ jobs:
         run: ls -alh
 
       - name: Upload Configuration
-        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
         id: plan-upload
         with:
           workspace: ${{ env.TF_WORKSPACE }}
@@ -136,7 +136,7 @@ jobs:
           plan_only: true
 
       - name: Get Plan Output
-        uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.0
+        uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.4
         id: plan-output
         with:
           plan: ${{ fromJSON(steps.plan-run.outputs.payload).data.relationships.plan.data.id }}
