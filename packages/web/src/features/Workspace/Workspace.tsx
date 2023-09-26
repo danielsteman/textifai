@@ -450,6 +450,7 @@ const Workspace = () => {
         >
           {openTabs.map((tab) => (
             <PanelWrapper
+              key={tab.name}
               onClose={closeSupportingPanel}
               tab={tab}
             />
