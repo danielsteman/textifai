@@ -84,9 +84,6 @@ const Workspace = () => {
     setCurrentTab(tab);
     const tabIndex = openTabs.findIndex(t => t.name === tab.name);
     setActiveTabIndex(tabIndex);
-
-    console.log(`Tab ${tab.name} is set as the current tab.`);
-    console.log(`Active tab index is now: ${tabIndex}`);
 };
 
   const onTabClose = (tabToClose: ITab) => {
