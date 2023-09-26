@@ -1,32 +1,36 @@
-import React, { useState, useEffect, useContext } from "react";
-import ReactQuill from "react-quill";
+import { useState, useEffect, useContext } from "react";
 import "react-quill/dist/quill.snow.css";
 import "./textEditor.css";
 import { Timestamp, onSnapshot } from "firebase/firestore";
 import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
-import { db } from "../../app/config/firebase"; 
+import { db } from "../../app/config/firebase";
 import { WorkingDocument } from "@shared/firestoreInterfaces/WorkingDocument";
 import { AuthContext } from "../../app/providers/AuthProvider";
-import { User } from "firebase/auth";
+import StyledTextEditor from "./StyledTextEditor";
+import { useColorMode } from "@chakra-ui/react";
+import theme from "../../app/themes/theme";
 
 const TextEditor = () => {
   const [value, setValue] = useState("");
   const [documentId, setDocumentId] = useState<string | null>(null);
-  const currentUser: User | null | undefined = useContext(AuthContext);
+  const currentUser = useContext(AuthContext);
+  const { colorMode } = useColorMode();
 
-  // Fetching the document ID based on the current user
   useEffect(() => {
     if (currentUser) {
-      const unsubscribe = onSnapshot(collection(db, "workingdocuments"), (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          if (doc.data().users.includes(currentUser.uid)) {
-            setValue(doc.data().content);
-            setDocumentId(doc.id);
-          }
-        });
-      });
+      const unsubscribe = onSnapshot(
+        collection(db, "workingdocuments"),
+        (querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            if (doc.data().users.includes(currentUser.uid)) {
+              setValue(doc.data().content);
+              setDocumentId(doc.id);
+            }
+          });
+        }
+      );
 
-      return () => unsubscribe();  // Cleanup listener on component unmount
+      return () => unsubscribe();
     }
   }, [currentUser]);
 
@@ -34,7 +38,6 @@ const TextEditor = () => {
     const saveInterval = setInterval(async () => {
       if (value && currentUser) {
         if (!documentId) {
-          // Create new document if it doesn't exist
           const newDocument: WorkingDocument = {
             projectId: "your_project_id", // This needs to be provided or determined somehow
             name: "Document Name", // This might need to be adjusted
@@ -44,16 +47,18 @@ const TextEditor = () => {
             content: value,
           };
 
-          const docRef = await addDoc(collection(db, "workingdocuments"), newDocument);
+          const docRef = await addDoc(
+            collection(db, "workingdocuments"),
+            newDocument
+          );
           setDocumentId(docRef.id);
         } else {
-          // Update existing document
           await updateTextInFirestore(value);
         }
       }
     }, 10000); // save every 10 seconds
-    
-    return () => clearInterval(saveInterval);  // Cleanup on component unmount
+
+    return () => clearInterval(saveInterval);
   }, [value, documentId, currentUser]);
 
   const updateTextInFirestore = async (textContent: string) => {
@@ -64,7 +69,10 @@ const TextEditor = () => {
           modifiedDate: Timestamp.fromDate(new Date()),
         };
 
-        await updateDoc(doc(db, "workingdocuments", documentId), documentUpdate);
+        await updateDoc(
+          doc(db, "workingdocuments", documentId),
+          documentUpdate
+        );
         console.log("Document updated successfully");
       } catch (e) {
         console.error("Error updating document: ", e);
@@ -73,11 +81,11 @@ const TextEditor = () => {
   };
 
   return (
-    <ReactQuill
+    <StyledTextEditor
+      className="react-quill"
       theme="snow"
       value={value}
       onChange={setValue}
-      className="react-quill"
       modules={{
         toolbar: [
           [{ header: "1" }, { header: "2" }],
@@ -88,6 +96,7 @@ const TextEditor = () => {
           ["clean"],
         ],
       }}
+      textColor={theme.colors[colorMode].inverseSurface}
     />
   );
 };

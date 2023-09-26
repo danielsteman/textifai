@@ -6,11 +6,12 @@ const ExampleQuestions = () => {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      mb={4}
-      pb={6}
+      pb={2}
+      gap={2}
     >
-      <HStack mb={2}>
+      <HStack gap={2}>
         <Button
+          size="sm"
           onClick={() => {
             /* Your logic here */
           }}
@@ -18,6 +19,7 @@ const ExampleQuestions = () => {
           Sample Question 1
         </Button>
         <Button
+          size="sm"
           onClick={() => {
             /* Your logic here */
           }}
@@ -25,8 +27,9 @@ const ExampleQuestions = () => {
           Sample Question 2
         </Button>
       </HStack>
-      <HStack>
+      <HStack gap={2}>
         <Button
+          size="sm"
           onClick={() => {
             /* Your logic here */
           }}
@@ -34,6 +37,7 @@ const ExampleQuestions = () => {
           Sample Question 3
         </Button>
         <Button
+          size="sm"
           onClick={() => {
             /* Your logic here */
           }}

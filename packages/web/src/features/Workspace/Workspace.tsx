@@ -1,4 +1,9 @@
-import { ChatIcon, SmallCloseIcon, HamburgerIcon } from "@chakra-ui/icons";
+import {
+  ChatIcon,
+  SmallCloseIcon,
+  HamburgerIcon,
+  ChevronDownIcon,
+} from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -14,11 +19,20 @@ import {
   VStack,
   useColorMode,
   Divider,
+  MenuItem,
+  Menu,
+  MenuList,
+  MenuButton,
+  MenuDivider,
+  MenuOptionGroup,
+  MenuItemOption,
+  MenuGroup,
 } from "@chakra-ui/react";
 import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -39,6 +53,7 @@ import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import PdfViewerPanel from "./panels/PdfViewerPanel";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
+import { ProjectContext } from "../../app/providers/ProjectProvider";
 
 export type ITab = {
   name: string;
@@ -60,6 +75,8 @@ const Workspace = () => {
 
   const [currentTab, setCurrentTab] = useState<ITab>();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+
+  const userProjects = useContext(ProjectContext);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -84,8 +101,14 @@ const Workspace = () => {
   };
 
   const defaultTab: ITab = {
-    name: "Editor",
-    panel: <EditorPanel />,
+    name: "Library",
+    panel: (
+      <MegaLibraryPanel
+        openTabs={openTabs}
+        setOpenTabs={setOpenTabs}
+        setCurrentTab={setCurrentTab}
+      />
+    ),
     openChatSupport: false,
     openMiniLibrary: false,
     openPdfViewer: false,
@@ -116,6 +139,26 @@ const Workspace = () => {
               size="sm"
             />
           </Flex>
+          <Menu>
+            <MenuButton
+              textAlign="left"
+              mb={2}
+              w="100%"
+              as={Button}
+              size="sm"
+              variant="ghost"
+              rightIcon={<ChevronDownIcon />}
+            >
+              Project1
+            </MenuButton>
+            <MenuList>
+              <MenuGroup title="All projects">
+                {userProjects.map((project) => (
+                  <MenuItem key={project.name}>{project.name}</MenuItem>
+                ))}
+              </MenuGroup>
+            </MenuList>
+          </Menu>
           <Button
             w="100%"
             justifyContent="flex-start"

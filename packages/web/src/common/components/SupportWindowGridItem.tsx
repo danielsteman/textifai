@@ -23,10 +23,12 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
   const { colorMode } = useColorMode();
   return (
     <GridItem
+      display="flex"
+      flexDir="column"
       rowSpan={1}
       colSpan={1}
-      h="100%"
       bgColor={theme.colors[colorMode].surfaceContainer}
+      h="100%"
       pb={2}
       borderRadius={8}
     >
