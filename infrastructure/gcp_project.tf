@@ -2,7 +2,7 @@
 resource "google_project" "default" {
   provider = google-beta
 
-  project_id = "${var.project_id}-${var.unique_identifier}"
+  project_id = "${var.project_name}-${var.unique_identifier}"
   name       = "${var.project_name}-${var.unique_identifier}"
   # Required for any service that requires the Blaze pricing plan
   # (like Firebase Authentication with GCIP)

@@ -3,11 +3,6 @@ variable "project_name" {
   default = "textifai"
 }
 
-variable "project_id" {
-  type    = string
-  default = "textifai"
-}
-
 variable "artifact_registry_name" {
   type    = string
   default = "textifai-registry"
@@ -51,4 +46,9 @@ variable "oauth_client_secret" {
 
 variable "image_tag" {
   type = string
+}
+
+variable "image_url_prefix" {
+  type = string
+  default = "${var.location}-docker.pkg.dev/${var.project_name}-${unique_identifier}/${var.artifact_registry_name}"
 }
