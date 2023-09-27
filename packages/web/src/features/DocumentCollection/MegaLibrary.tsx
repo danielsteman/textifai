@@ -58,7 +58,6 @@ import { collection, doc, getDocs, onSnapshot, query, updateDoc, where } from 'f
 import { Document } from "@shared/firestoreInterfaces/Document"
 import { current } from "@reduxjs/toolkit";
 import ChatPanel from "../Workspace/panels/ChatPanel";
-import CollectionTags from "../../common/components/CollectionTags"
 import TagInput from "../../common/components/CollectionTags";
 
 export interface MegaLibraryProps {
@@ -98,6 +97,11 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   } = useDisclosure();
   
   const userDocumentsRef = ref(storage, `users/${currentUser?.uid}/uploads`);
+
+  const handleToggleFavoritesFilter = () => {
+    setOnlyFavoritesFilter(prev => !prev);
+    if (onlyFavoritesFilter) setYearFilter(null); 
+  };
 
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
@@ -317,6 +321,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setYearFilter(null);
+              setOnlyFavoritesFilter(false);
             }}
           >
             Any time
@@ -360,10 +365,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               variant="ghost"
               size="xs"
               textColor={theme.colors[colorMode].onSurface}
-              onClick={() => {
-                  setOnlyFavoritesFilter(prev => !prev);
-                  setYearFilter(null);
-                }}
+              onClick={handleToggleFavoritesFilter}
           >
               Only show favorites
           </Button>
