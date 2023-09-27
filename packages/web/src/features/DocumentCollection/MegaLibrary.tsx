@@ -39,9 +39,6 @@ import {
   VStack,
   useColorMode,
   useDisclosure,
-  Tag, 
-  TagCloseButton, 
-  TagLabel,
 } from "@chakra-ui/react";
 import { db, storage } from "../../app/config/firebase";
 import { StorageReference, deleteObject, listAll, ref } from "firebase/storage";
@@ -314,7 +311,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         >
           <Heading size="xs">Filters</Heading>
           <Button
-            bgColor={(yearFilter === null && !onlyFavoritesFilter) ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
+            bgColor={(yearFilter === null && !onlyFavoritesFilter) ? theme.colors[colorMode].onPrimary : undefined}
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
@@ -325,7 +322,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Any time
           </Button>
           <Button
-            bgColor={yearFilter === 2023 ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
+            bgColor={yearFilter === 2023 ? theme.colors[colorMode].onPrimary : undefined}
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
@@ -334,7 +331,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Since 2023
           </Button>
           <Button
-            bgColor={yearFilter === 2022 ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
+            bgColor={yearFilter === 2022 ? theme.colors[colorMode].onPrimary : undefined}
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
@@ -343,7 +340,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Since 2022
           </Button>
           <Button
-            bgColor={yearFilter === 2021 ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
+            bgColor={yearFilter === 2021 ? theme.colors[colorMode].onPrimary : undefined}
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
             size="xs"
@@ -359,7 +356,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Custom range
           </Button>
           <Button
-              bgColor={onlyFavoritesFilter ? (colorMode === "light" ? "blue.300" : "blue.700") : undefined}
+              bgColor={onlyFavoritesFilter ? theme.colors[colorMode].onPrimary : undefined}
               variant="ghost"
               size="xs"
               textColor={theme.colors[colorMode].onSurface}

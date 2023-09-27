@@ -1,5 +1,6 @@
-import { FC, KeyboardEvent } from 'react';
-import { Tag, TagCloseButton, TagLabel, Input, Flex } from "@chakra-ui/react";
+import React, { FC, KeyboardEvent } from 'react';
+import { Tag, TagCloseButton, TagLabel, Input, Flex, useColorMode } from "@chakra-ui/react";
+import theme from "../../app/themes/theme";
 
 type TagInputProps = {
   tags?: string[];
@@ -7,12 +8,21 @@ type TagInputProps = {
   onDeleteTag: (tag: string) => void;
 };
 
-const getColorForTag = (tag: string) => {
-  const colors = ["red.500", "blue.500", "green.500", "yellow.500", "purple.500", "pink.500"]; 
+const getColorForTag = (tag: string, colorMode: string) => {
+  const colors = [
+      theme.colors[colorMode].onPrimary, 
+      theme.colors[colorMode].onSecondary, 
+      theme.colors[colorMode].onTertiary, 
+      theme.colors[colorMode].onSurface, 
+      theme.colors[colorMode].onSurfaceVariant, 
+      theme.colors[colorMode].inverseOnSurface
+    ]; 
   return colors[tag.charCodeAt(0) % colors.length];
 };
 
 const TagInput: React.FC<TagInputProps> = ({ tags = [], onAddTag, onDeleteTag }) => {
+  const { colorMode } = useColorMode();
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && event.currentTarget.value) {
       onAddTag(event.currentTarget.value);
@@ -28,7 +38,7 @@ const TagInput: React.FC<TagInputProps> = ({ tags = [], onAddTag, onDeleteTag })
             key={index}
             borderRadius="full"
             variant="solid"
-            bgColor={getColorForTag(tag)}
+            bgColor={getColorForTag(tag, colorMode)}
           >
             <TagLabel>{tag}</TagLabel>
             <TagCloseButton onClick={() => onDeleteTag(tag)} />
@@ -38,7 +48,7 @@ const TagInput: React.FC<TagInputProps> = ({ tags = [], onAddTag, onDeleteTag })
           placeholder={tags.length === 0 ? "Add a tag..." : ""}
           size="sm"
           onKeyDown={handleKeyDown}
-          variant= {tags.length === 0 ? "flushed" : "unstyled"}
+          variant={tags.length === 0 ? "flushed" : "unstyled"}
           width="auto"
         />
     </Flex>
@@ -46,9 +56,3 @@ const TagInput: React.FC<TagInputProps> = ({ tags = [], onAddTag, onDeleteTag })
 };
 
 export default TagInput;
-
-
-
-
-
-
