@@ -128,7 +128,7 @@ jobs:
         id: plan-upload
         with:
           workspace: ${{ env.TF_WORKSPACE }}
-          directory: ${{ env.CONFIG_DIRECTORY }}
+          # directory: ${{ env.CONFIG_DIRECTORY }}
           speculative: true
 
       - name: Create Plan Run
