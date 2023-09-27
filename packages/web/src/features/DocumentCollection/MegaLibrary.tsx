@@ -161,7 +161,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 
   // Add uploaded file name in the 
   const handleOpenDocumentInTab = async (filename: string) => {
-    const storageLocation = `users/${currentUser?.uid}/uploads/${filename}.pdf`;
+    const storageLocation = `users/${currentUser?.uid}/uploads/${filename}`;
     const fileRef = ref(storage, storageLocation);
 
     const tab: ITab = {
@@ -254,7 +254,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const parseTopics = (topicsString: string): string => {
     try {
         // Convert single quotes to double quotes
-        const correctedString = topicsString.replace(/'/g, '"');
+        const correctedString = topicsString.replace(/'/g, '"').replace(/-/g, " ");
         const topicsArray = JSON.parse(correctedString);
         if (Array.isArray(topicsArray)) {
             return topicsArray.join(', ');
@@ -562,7 +562,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               <Tr>
                 <Th />
                 <Th>Title</Th>
-                <Th>Author</Th>
+                <Th>Author(s)</Th>
                 <Th isNumeric>Year</Th>
                 <Th>Collection</Th>
                 {/* <Th>Summary</Th> */}
@@ -602,9 +602,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                       <Td>
                         <Button
                           variant="link"
-                          onClick={() => handleOpenDocumentInTab(doc.fileName)}
+                          onClick={() => handleOpenDocumentInTab(doc.uploadName)}
                         >
-                          {doc.fileName}
+                          {doc.uploadName}
                         </Button>
                       </Td>
                       <Td>{doc.author}</Td>
