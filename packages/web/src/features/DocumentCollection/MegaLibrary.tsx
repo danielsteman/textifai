@@ -54,7 +54,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "src/app/store";
 import { useDispatch } from "react-redux";
 import { disableDocument, enableDocument } from "./librarySlice";
-import { collection, doc, getDocs, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { Document } from "@shared/firestoreInterfaces/Document"
 import { current } from "@reduxjs/toolkit";
 import ChatPanel from "../Workspace/panels/ChatPanel";
@@ -144,29 +144,48 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   };
 
   const handleDeleteDocument = async () => {
-    selectedDocuments.map((fullPath) => {
-      const documentRef = ref(storage, fullPath);
+    selectedDocuments.map(async (fullPath) => {
+      const documentRef = ref(storage, `users/${currentUser?.uid}/uploads/${fullPath}`);
+  
+      // Construct your Firestore query
+      const documentsCollection = collection(db, 'uploads');
+      const q = query(
+        documentsCollection,
+        where("uploadedBy", "==", currentUser!.uid),
+        where("uploadName", "==", fullPath)
+      );
+  
+      // 1. Delete from Firestore
+      try {
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(documentSnapshot => {
+          deleteDoc(doc(db, 'uploads', documentSnapshot.id));
+        });
+        console.log(`Document with id ${fullPath} deleted from Firestore.`);
+      } catch (error) {
+        console.log("Error deleting document from Firestore:", error);
+      }
+  
+      // 2. Delete from Firebase Storage
       deleteObject(documentRef)
         .then(() => {
           dispatch(disableDocument(fullPath));
           onDeleteFileClose();
-          console.log(`${fullPath} is deleted`);
+          console.log(`${fullPath} file is deleted from Firebase Storage.`);
         })
         .catch((error) => {
-          console.log("Error deleting file");
-          console.log(error);
+          console.log("Error deleting file from Firebase Storage:", error);
         });
     });
   };
 
-  // Add uploaded file name in the 
-  const handleOpenDocumentInTab = async (filename: string) => {
-    const storageLocation = `users/${currentUser?.uid}/uploads/${filename}`;
+  const handleOpenDocumentInTab = async (uploadName: string) => {
+    const storageLocation = `users/${currentUser?.uid}/uploads/${uploadName}`;
     const fileRef = ref(storage, storageLocation);
 
     const tab: ITab = {
-      name: shortenString(filename, 20),
-      panel: <PdfViewer document={fileRef} />,  // Ensure PdfViewer can handle Firebase Storage ref
+      name: shortenString(uploadName, 20),
+      panel: <PdfViewer document={fileRef} />, 
       openChatSupport: false,
       openMiniLibrary: false,
       openPdfViewer: false,
@@ -183,7 +202,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     const q = query(
         documentsCollection, 
         where("uploadedBy", "==", currentUser!.uid),  
-        where("fileName", "==", fileName)
+        where("uploadName", "==", fileName)
     );
 
     getDocs(q).then(snapshot => {
@@ -203,7 +222,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     const q = query(
         documentsCollection, 
         where("uploadedBy", "==", currentUser!.uid),  
-        where("fileName", "==", fileName)
+        where("uploadName", "==", fileName)
     );
 
     getDocs(q).then(snapshot => {
@@ -229,7 +248,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     const q = query(
         documentsCollection, 
         where("uploadedBy", "==", currentUser!.uid),  
-        where("fileName", "==", fileName)
+        where("uploadName", "==", fileName)
     );
 
     getDocs(q).then(snapshot => {
@@ -253,7 +272,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 
   const parseTopics = (topicsString: string): string => {
     try {
-        // Convert single quotes to double quotes
+        // Convert single quotes to double quotes and replace hyphens
         const correctedString = topicsString.replace(/'/g, '"').replace(/-/g, " ");
         const topicsArray = JSON.parse(correctedString);
         if (Array.isArray(topicsArray)) {
@@ -574,7 +593,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               {documents.length > 0 &&
                 documents
                 .filter((doc) => {
-                  let matchesQuery = doc.fileName.includes(documentQuery);
+                  let matchesQuery = doc.uploadName.includes(documentQuery);
                   let matchesYear = 
                     (!yearFilter && !isCustomRangeSelected) || 
                     (yearFilter && doc.creationDate.toDate().getFullYear() === yearFilter) ||
@@ -587,7 +606,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                 })
                   .map((doc: Document) => (
                     <Tr
-                      key={doc.fileName}
+                      key={doc.uploadName}
                       _hover={{
                         bgColor: theme.colors[colorMode].surfaceContainerHighest,
                         cursor: "pointer",
@@ -595,8 +614,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                     >
                       <Td>
                         <Checkbox
-                          isChecked={selectedDocuments.includes(doc.fileName)}
-                          onChange={() => handleDocumentCheckboxChange(doc.fileName)}
+                          isChecked={selectedDocuments.includes(doc.uploadName)}
+                          onChange={() => handleDocumentCheckboxChange(doc.uploadName)}
                         />
                       </Td>
                       <Td>
@@ -612,8 +631,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                       <Td>
                         <TagInput 
                           tags={doc.tags}
-                          onAddTag={(newTag) => addCollectionToDocument(doc.fileName, newTag)}
-                          onDeleteTag={(tagToDelete) => deleteCollectionFromDocument(doc.fileName, tagToDelete)}
+                          onAddTag={(newTag) => addCollectionToDocument(doc.uploadName, newTag)}
+                          onDeleteTag={(tagToDelete) => deleteCollectionFromDocument(doc.uploadName, tagToDelete)}
                         />
                       </Td>
                       {/* <Td>This is a summary</Td> */}
@@ -622,7 +641,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                         <Icon 
                           as={FaStar} 
                           color={doc.favoritedBy ? "teal" : "none"} 
-                          onClick={() => toggleFavourite(doc.fileName, !doc.favoritedBy)}
+                          onClick={() => toggleFavourite(doc.uploadName, !doc.favoritedBy)}
                         />
                       </Td>
                     </Tr>
