@@ -37,10 +37,17 @@ const Paragraph: React.FC<ParagraphProps> = ({
   children,
   CTAButton,
 }) => {
+  const { colorMode } = useColorMode();
   return (
     <Center>
-      <VStack px={24} align="start" gap={4} w="80%">
-        <Heading size="xl">{heading}</Heading>
+      <VStack px={[0, 12, 24]} align="start" gap={8} maxW="80%">
+        <Heading
+          size="2xl"
+          fontWeight={800}
+          textColor={`linear(to-l, ${theme.colors[colorMode].primary}, ${theme.colors[colorMode].tertiary})`}
+        >
+          {heading}
+        </Heading>
         {children}
         {CTAButton}
       </VStack>
@@ -51,7 +58,13 @@ const Paragraph: React.FC<ParagraphProps> = ({
 const LandingPage = () => {
   const navigate = useNavigate();
   return (
-    <Grid templateColumns="repeat(2, 1fr)" gap={6} pt={24}>
+    <Grid
+      templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)"]}
+      gap={6}
+      pt={24}
+      alignItems="center"
+      rowGap={24}
+    >
       <GridItem>
         <Paragraph
           heading={"Textifai, for the curious"}
