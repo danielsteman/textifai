@@ -1,7 +1,6 @@
 import { IconButton, Image } from "@chakra-ui/react";
-import { MdRocketLaunch } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import BoxLogo from "../../../public/box-logo.png";
+import BoxLogo from "/box-logo.png";
 
 const Logo = () => {
   const navigate = useNavigate();
