@@ -1,5 +1,5 @@
-import React, { FC, KeyboardEvent } from 'react';
-import { Tag, TagCloseButton, TagLabel, Input, Flex, useColorMode } from "@chakra-ui/react";
+import React, { KeyboardEvent } from 'react';
+import { Tag, TagCloseButton, TagLabel, Input, Flex, useColorMode, Box, } from "@chakra-ui/react";
 import theme from "../../app/themes/theme";
 
 type TagInputProps = {
@@ -8,16 +8,25 @@ type TagInputProps = {
   onDeleteTag: (tag: string) => void;
 };
 
+const stringToHash = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char; 
+    hash |= 0; 
+  }
+  return hash;
+};
+
 const getColorForTag = (tag: string, colorMode: string) => {
   const colors = [
-      theme.colors[colorMode].onPrimary, 
-      theme.colors[colorMode].onSecondary, 
-      theme.colors[colorMode].onTertiary, 
-      theme.colors[colorMode].onSurface, 
-      theme.colors[colorMode].onSurfaceVariant, 
-      theme.colors[colorMode].inverseOnSurface
-    ]; 
-  return colors[tag.charCodeAt(0) % colors.length];
+    theme.colors[colorMode].onPrimary, 
+    theme.colors[colorMode].onSecondary, 
+    theme.colors[colorMode].onTertiary,
+    theme.colors[colorMode].inverseOnSurface
+  ];
+
+  return colors[Math.abs(stringToHash(tag)) % colors.length];
 };
 
 const TagInput: React.FC<TagInputProps> = ({ tags = [], onAddTag, onDeleteTag }) => {
@@ -32,25 +41,27 @@ const TagInput: React.FC<TagInputProps> = ({ tags = [], onAddTag, onDeleteTag })
 
   return (
     <Flex direction="column" align="flex-start" justify="center" wrap="wrap">
-        {tags.map((tag, index) => (
+      {tags.map((tag, index) => (
+        <Box mb={2} key={index}>
           <Tag
             size="sm"
-            key={index}
             borderRadius="full"
             variant="solid"
             bgColor={getColorForTag(tag, colorMode)}
+            textColor={theme.colors[colorMode].onSurface}
           >
             <TagLabel>{tag}</TagLabel>
             <TagCloseButton onClick={() => onDeleteTag(tag)} />
           </Tag>
-        ))}
-        <Input
-          placeholder={tags.length === 0 ? "Add a tag..." : ""}
-          size="sm"
-          onKeyDown={handleKeyDown}
-          variant={tags.length === 0 ? "flushed" : "unstyled"}
-          width="auto"
-        />
+        </Box>
+      ))}
+      <Input
+        placeholder={tags.length === 0 ? "Add a tag..." : ""}
+        size="sm"
+        onKeyDown={handleKeyDown}
+        variant={tags.length === 0 ? "flushed" : "unstyled"}
+        width="auto"
+      />
     </Flex>
   );
 };
