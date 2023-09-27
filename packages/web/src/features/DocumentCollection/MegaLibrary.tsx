@@ -437,9 +437,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               textColor={theme.colors[colorMode].onSurface}
               onClick={() => {
                 if (collectionFilter === collection) {
-                  setCollectionFilter(null); // Toggle off if it's already selected
+                  setCollectionFilter(null);
                 } else {
-                  setCollectionFilter(collection); // Apply the collection filter without resetting others
+                  setCollectionFilter(collection);
                 }
               }}
             >
