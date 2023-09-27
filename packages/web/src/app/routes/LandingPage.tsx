@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
+import Logo from "../../common/components/Logo";
 
 const PlaceHolder = () => {
   const { colorMode } = useColorMode();
@@ -60,7 +61,6 @@ const LandingPage = () => {
   return (
     <Grid
       templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)"]}
-      gap={6}
       pt={24}
       alignItems="center"
       rowGap={24}
@@ -176,30 +176,12 @@ const LandingPage = () => {
       <GridItem>
         <PlaceHolder />
       </GridItem>
+      <GridItem colSpan={2} pb={12} px={12}>
+        <Center>
+          <Text>© 2023 Textifai</Text>
+        </Center>
+      </GridItem>
     </Grid>
-    // <Center
-    //   bgGradient={`linear(to-l, ${theme.colors[colorMode].primary}, ${theme.colors[colorMode].tertiary})`}
-    //   textAlign="center"
-    //   flex="1"
-    // >
-    //   <Box maxW={500}>
-    //     <Heading
-    //       fontWeight={900}
-    //       size="2xl"
-    //       textColor={theme.colors[colorMode].surface}
-    //     >
-    //       Interact with your documents through chat ⚡
-    //     </Heading>
-    //     <Button
-    //       mt={8}
-    //       variant="solid"
-    //       size="lg"
-    //       onClick={() => navigate("/features/onboarding")}
-    //     >
-    //       Get started
-    //     </Button>
-    //   </Box>
-    // </Center>
   );
 };
 
