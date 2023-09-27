@@ -4,6 +4,7 @@ export interface Document {
   projectId: string;
   uploadedBy: string;
   fileName: string;
+  uploadName: string;
   fileType: string;
   author: string;
   uploadDate: Timestamp;

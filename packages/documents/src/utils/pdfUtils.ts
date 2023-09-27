@@ -5,6 +5,8 @@ import { addDoc, collection } from "firebase/firestore";
 
   interface PdfMetadata {
     fileName: string;
+    uploadName: string;
+    fileType: string;
     author: string;
     creationDate: Date;
     fileSize: number;
@@ -37,13 +39,17 @@ export async function extractTextFromPDF(pdfBuffer: Buffer): Promise<string> {
 export async function extractMetadataFromPDF (
     pdfBuffer: Buffer, 
     text: string, 
+    uploadName: string, 
+    fileType: string
 ): Promise<PdfMetadata> {
     try {
         const pdfDoc = await PDFDocument.load(pdfBuffer);
         
         return {
-            fileName: pdfDoc.getTitle() || "",
-            author: pdfDoc.getAuthor() || "",
+            fileName: pdfDoc.getTitle() || "Unknown",
+            uploadName: uploadName,
+            fileType: fileType,
+            author: pdfDoc.getAuthor() || "Unknown",
             creationDate: pdfDoc.getCreationDate() || new Date(),
             fileSize: parseFloat((pdfBuffer.length / (1024 * 1024)).toFixed(2)),
             extractedText: text, 
