@@ -4,15 +4,17 @@ export interface Document {
   projectId: string;
   uploadedBy: string;
   fileName: string;
+  uploadName: string;
+  fileType: string;
   author: string;
   uploadDate: Timestamp;
   creationDate: Timestamp;
   summary: string;
-  topics: string[];
+  topics: string;
   tags: string[];
   fileSize: number;
   wordCount: number;
   extractedText: string;
   topicText: string;
-  favoritedBy: string[];
+  favoritedBy: Boolean;
 }

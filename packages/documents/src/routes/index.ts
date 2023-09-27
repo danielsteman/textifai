@@ -5,7 +5,7 @@ import { extractTextFromPDF, extractMetadataFromPDF } from "../utils/pdfUtils";
 import dotenv from "dotenv";
 import path from "path";
 
-const envPath = path.resolve(__dirname, "../../.env.local");
+const envPath = path.resolve(__dirname, "../../../.env.local");
 dotenv.config({ path: envPath });
 
 const router = express.Router();
@@ -24,10 +24,11 @@ router.post(
 
       const fileBuffer = Buffer.from(req.file.buffer);
       const text = await extractTextFromPDF(fileBuffer);
+      const fileName = req.file.originalname
+      const fileType = path.extname(fileName).slice(1);
       const user = req.body.userId;
       
-      const metadata = await extractMetadataFromPDF(fileBuffer, text)
-      const filename = metadata.fileName
+      const metadata = await extractMetadataFromPDF(fileBuffer, text, fileName, fileType)
 
       await processFile(
         text,
@@ -35,7 +36,7 @@ router.post(
         process.env.PINECONE_ENV || "",
         process.env.PINECONE_INDEX || "",
         user,
-        filename
+        fileName
       );
 
       res.json({
@@ -53,3 +54,4 @@ router.post(
 );
 
 export default router;
+

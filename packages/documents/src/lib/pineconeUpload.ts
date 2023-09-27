@@ -9,12 +9,14 @@ async function initializeClient(
   pineconeIndex: string
 ) {
   try {
-    const client = new PineconeClient();
-    await client.init({
-      apiKey,
-      environment,
+    const pinecone = new PineconeClient()
+    
+    await pinecone.init({
+      apiKey: apiKey,
+      environment: environment,
     });
-    return client.Index(pineconeIndex);
+    
+    return pinecone.Index(pineconeIndex);
   } catch (error) {
     console.error(
       "An error occurred while initializing the Pinecone client:",
@@ -49,7 +51,6 @@ export async function processFile(
     throw new Error("Failed to chunk document");
   }
 
-  // Creating metadata for each chunk
   const metadataArray = chunks.map(() => ({
     userId: userId,
     title: title,
@@ -63,12 +64,9 @@ export async function processFile(
     });
     console.log("OpenAI client initialized.");
 
-    // Embed the PDF documents
-    // Here I assume you need a way to pass the metadata alongside the chunks.
-    // If PineconeStore doesn't handle metadata, you might have to handle it separately.
     await PineconeStore.fromTexts(
       chunks, 
-      metadataArray, // passing metadata here
+      metadataArray, 
       embeddings, 
       {
         pineconeIndex: index,
