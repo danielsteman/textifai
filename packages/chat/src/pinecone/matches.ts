@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { initializeClient } from "./pinecone";
 
-const envPath = path.resolve(__dirname, "../../.env.local");
+const envPath = path.resolve(__dirname, "../../../.env.local");
 
 dotenv.config({ path: envPath });
 export type Metadata = {
