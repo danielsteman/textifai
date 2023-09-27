@@ -80,6 +80,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
   const [projectFilter, setProjectFilter] = useState<string | null>(null);
   const [onlyFavoritesFilter, setOnlyFavoritesFilter] = useState<boolean>(false);
+  const [customYearStart, setCustomYearStart] = useState<number | null>(null);
+  const [customYearEnd, setCustomYearEnd] = useState<number | null>(null);
+  const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
 
   const allCollections = Array.from(
     new Set(documents.flatMap(doc => doc.tags))
@@ -315,12 +318,13 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         >
           <Heading size="xs">Filters</Heading>
           <Button
-            bgColor={(yearFilter === null && !onlyFavoritesFilter) ? theme.colors[colorMode].onPrimary : undefined}
+            bgColor={(yearFilter === null && !onlyFavoritesFilter && !isCustomRangeSelected) ? theme.colors[colorMode].onPrimary : undefined}
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setYearFilter(null);
+              setIsCustomRangeSelected(false);
               setOnlyFavoritesFilter(false);
             }}
           >
@@ -331,7 +335,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
-            onClick={() => setYearFilter(2023)}
+            onClick={() => {
+              setIsCustomRangeSelected(false);
+              setYearFilter(2023)}}
           >
             Since 2023
           </Button>
@@ -340,7 +346,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
-            onClick={() => setYearFilter(2022)}
+            onClick={() => {
+              setIsCustomRangeSelected(false);
+              setYearFilter(2022)}}
           >
             Since 2022
           </Button>
@@ -349,17 +357,47 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
             size="xs"
-            onClick={() => setYearFilter(2021)}
+            onClick={() => {
+              setYearFilter(2021);
+              setIsCustomRangeSelected(false)}}
           >
             Since 2021
           </Button>
           <Button
+            bgColor={isCustomRangeSelected ? theme.colors[colorMode].onPrimary : undefined}
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
             size="xs"
+            onClick={() => {
+              setIsCustomRangeSelected(true);
+              setYearFilter(null); 
+          }}
           >
             Custom range
           </Button>
+          {isCustomRangeSelected && (
+              <HStack spacing={2}>
+                  <Input 
+                      placeholder="Start"
+                      size="xs"
+                      type="number"
+                      value={customYearStart || ""}
+                      onChange={(e) => setCustomYearStart(Number(e.target.value))}
+                      width="5em"
+                      height="2em"
+                  />
+                  <Text>-</Text>
+                  <Input 
+                      placeholder="End"
+                      size="xs"
+                      type="number"
+                      value={customYearEnd || ""}
+                      onChange={(e) => setCustomYearEnd(Number(e.target.value))}
+                      width="5em"
+                      height="2em"
+                  />
+              </HStack>
+          )}
           <Button
               bgColor={onlyFavoritesFilter ? theme.colors[colorMode].onPrimary : undefined}
               variant="ghost"
@@ -536,15 +574,14 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               {documents.length > 0 &&
                 documents
                 .filter((doc) => {
-                  // Search filter
                   let matchesQuery = doc.fileName.includes(documentQuery);
-                  // Year filter
-                  let matchesYear = !yearFilter || doc.creationDate.toDate().getFullYear() === yearFilter;
-                  // Collection filter
+                  let matchesYear = 
+                    (!yearFilter && !isCustomRangeSelected) || 
+                    (yearFilter && doc.creationDate.toDate().getFullYear() === yearFilter) ||
+                    (isCustomRangeSelected && customYearStart && customYearEnd && customYearStart <= doc.creationDate.toDate().getFullYear() && doc.creationDate.toDate().getFullYear() <= customYearEnd);              
                   let matchesCollection = !collectionFilter || doc.tags.includes(collectionFilter);
                   // Project filter (mocked for now, you can adjust this when you have real projects data)
                   let matchesProject = !projectFilter;
-                  // Favorites filter
                   let matchesFavorites = onlyFavoritesFilter ? !!doc.favoritedBy : true;
                   return matchesQuery && matchesYear && matchesCollection && matchesProject && matchesFavorites;
                 })
