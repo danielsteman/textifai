@@ -428,17 +428,24 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
           </Button>
           <Box h={4} />
           <Heading size="xs">Collections</Heading>
-            {allCollections.map((collection, index) => (
-              <Button
-                key={index}
-                variant="ghost"
-                size="xs"
-                textColor={theme.colors[colorMode].onSurface}
-                onClick={() => setCollectionFilter(collection)}
-              >
-                {collection}
-              </Button>
-            ))}
+          {allCollections.map((collection, index) => (
+            <Button
+              key={index}
+              bgColor={collectionFilter === collection ? theme.colors[colorMode].onPrimary : undefined}
+              variant="ghost"
+              size="xs"
+              textColor={theme.colors[colorMode].onSurface}
+              onClick={() => {
+                if (collectionFilter === collection) {
+                  setCollectionFilter(null); // Toggle off if it's already selected
+                } else {
+                  setCollectionFilter(collection); // Apply the collection filter without resetting others
+                }
+              }}
+            >
+              {collection}
+            </Button>
+          ))}
           <Box h={4} />
           <Heading size="xs">Projects</Heading>
           <Spacer />
