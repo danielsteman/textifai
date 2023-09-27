@@ -7,6 +7,8 @@ import {
   GridItem,
   Heading,
   useColorMode,
+  VStack,
+  HStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
@@ -36,31 +38,40 @@ const Paragraph: React.FC<ParagraphProps> = ({
   CTAButton,
 }) => {
   return (
-    <Box px={24}>
-      <Heading>{heading}</Heading>
-      <Text>{children}</Text>
-      {CTAButton}
-    </Box>
+    <Center>
+      <VStack px={24} align="start" gap={4} w="80%">
+        <Heading size="xl">{heading}</Heading>
+        {children}
+        {CTAButton}
+      </VStack>
+    </Center>
   );
 };
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { colorMode } = useColorMode();
   return (
     <Grid templateColumns="repeat(2, 1fr)" gap={6} pt={24}>
       <GridItem>
         <Paragraph
           heading={"Textifai, for the curious"}
           CTAButton={
-            <Button
-              mt={8}
-              variant="solid"
-              size="lg"
-              onClick={() => navigate("/features/onboarding")}
-            >
-              Get started
-            </Button>
+            <HStack gap={8}>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => navigate("/features/onboarding")}
+              >
+                Get started
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => navigate("/support")}
+              >
+                Get in touch
+              </Button>
+            </HStack>
           }
         >
           <Text>
