@@ -40,7 +40,7 @@ const Paragraph: React.FC<ParagraphProps> = ({
   const { colorMode } = useColorMode();
   return (
     <Center>
-      <VStack px={[0, 12, 24]} align="start" gap={8} maxW="80%">
+      <VStack px={[0, 12, 24]} align="start" gap={8} w={["80%", "90%"]}>
         <Heading
           size="2xl"
           fontWeight={800}
