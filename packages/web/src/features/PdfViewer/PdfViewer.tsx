@@ -11,6 +11,8 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [pdfURL, setPdfURL] = useState<string | null>(null);
   const [scale, setScale] = useState<number>(1);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const fetchDocumentUrl = async () => {
@@ -35,17 +37,40 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     setScale((prevScale) => Math.max(prevScale - 0.1, 0.5));
   };
 
-  const captureTextSelection = () => {
-    const selectedText = window.getSelection()?.toString();
-    if (selectedText) {
-      console.log("Selected Text:", selectedText);
+  const contextMenuStyles: React.CSSProperties = {
+    position: 'absolute',
+    top: `${menuPosition.y}px`,
+    left: `${menuPosition.x}px`,
+    zIndex: 1000, 
+  };
+
+  const captureTextSelection = (event: React.MouseEvent) => {
+    const selection = window.getSelection();
+    const selectedText = selection?.toString();
+    event.preventDefault();
+
+    if (selectedText && selection!.rangeCount > 0) {
+        const rect = selection!.getRangeAt(0).getBoundingClientRect();
+        
+        setMenuPosition({
+            x: rect.left + window.scrollX,
+            y: rect.bottom + window.scrollY  // position it just below the selected text
+        });
+        setMenuVisible(true);
+    } else {
+        setMenuVisible(false);
     }
   };
 
+  const handleClickOutside = () => {
+    setMenuVisible(false);
+  };
+
   useEffect(() => {
-    window.document.addEventListener("mouseup", captureTextSelection);
+    // This listener still closes the menu on a regular click anywhere
+    window.document.addEventListener("click", handleClickOutside);
     return () => {
-      window.document.removeEventListener("mouseup", captureTextSelection);
+        window.document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
@@ -62,8 +87,24 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         <span style={{ margin: '0 1rem' }}>{Math.round(scale * 100)}%</span>
         <button onClick={zoomIn}>+</button>
       </Box>
-  
-      {/* PDF content */}
+
+      {menuVisible && (
+        <Box
+          position='absolute'
+          top='${menuPosition.y}px'
+          left='${menuPosition.x}px'
+          zIndex={1000}
+          bg="white"
+          boxShadow="lg"
+          borderRadius="md"
+        >
+          <Box as="button" display="block" p="1rem">Option 1</Box>
+          <Box as="button" display="block" p="1rem">Option 2</Box>
+          <Box as="button" display="block" p="1rem">Option 3</Box>
+          <Box as="button" display="block" p="1rem">Option 4</Box>
+        </Box>
+      )}
+
       <Box
         display="flex"
         flexDirection="column"
@@ -75,6 +116,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           <Document
             file={pdfURL}
             onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+            onContextMenu={captureTextSelection}
           >
             {Array.from({ length: numPages }, (_, index) => (
               <Box
@@ -89,7 +131,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         )}
       </Box>
     </Box>
-  );  
+  );
 };
 
 export default PdfViewer;
