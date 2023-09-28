@@ -48,9 +48,9 @@ variable "image_tag" {
   type = string
 }
 
-locals {
-  image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${unique_identifier}/${var.artifact_registry_name}"
-  web_image_url = "${local.image_url_prefix}/web"
-  chat_image_url = "${local.image_url_prefix}/chat"
-  documents_image_url = "${local.image_url_prefix}/documents"
-}
+# locals {
+#   image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${unique_identifier}/${var.artifact_registry_name}"
+#   web_image_url = "${local.image_url_prefix}/web"
+#   chat_image_url = "${local.image_url_prefix}/chat"
+#   documents_image_url = "${local.image_url_prefix}/documents"
+# }
