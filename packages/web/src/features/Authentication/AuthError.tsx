@@ -11,14 +11,28 @@ const AuthError: React.FC<Props> = (props) => {
       return (
         <Alert status="warning">
           <AlertIcon />
-          We couldn't find this email address
+          We couldn't find this email address.
         </Alert>
       );
     case "auth/invalid-email":
       return (
         <Alert status="error">
           <AlertIcon />
-          The email address you used is invalid
+          The email address you used is invalid.
+        </Alert>
+      );
+    case "auth/email-already-exists":
+      return (
+        <Alert status="error">
+          <AlertIcon />
+          The provided email is already in use by an existing user.
+        </Alert>
+      );
+    case "auth/invalid-password":
+      return (
+        <Alert status="error">
+          <AlertIcon />
+          The password must be a string with at least six characters.
         </Alert>
       );
     default:

@@ -7,6 +7,7 @@ import { initializeClient } from "./pinecone";
 const envPath = path.resolve(__dirname, "../../../.env.local");
 
 dotenv.config({ path: envPath });
+
 export type Metadata = {
   userId: string;
   title: string;
@@ -38,8 +39,6 @@ const getMatchesFromEmbeddings = async (
       queryRequest
     });
     
-    console.log(queryResult)
-
     return (
       queryResult.matches?.map((match) => ({
         ...match,
