@@ -1,5 +1,5 @@
 resource "google_cloud_run_v2_service" "service" {
-  for_each = var.service_names
+  for_each = var.package_names
 
   name     = each.value
   location = var.location
@@ -13,7 +13,7 @@ resource "google_cloud_run_v2_service" "service" {
 }
 
 resource "google_cloud_run_v2_service_iam_member" "noauth" {
-  for_each = var.service_names
+  for_each = var.package_names
 
   location = google_cloud_run_v2_service.service[each.key].location
   name     = google_cloud_run_v2_service.service[each.key].name

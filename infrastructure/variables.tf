@@ -60,9 +60,5 @@ variable "image_tag" {
 
 locals {
   image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${var.unique_identifier}/${var.artifact_registry_name}"
-  image_urls = {
-    web       = "${local.image_url_prefix}/web:${var.image_tag}"
-    chat      = "${local.image_url_prefix}/chat:${var.image_tag}"
-    documents = "${local.image_url_prefix}/documents:${var.image_tag}"
-  }
+  image_urls = { for key, name in var.package_names : key => "${local.image_url_prefix}/${name}:${var.image_tag}" }
 }
