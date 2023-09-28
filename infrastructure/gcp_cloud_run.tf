@@ -5,7 +5,7 @@ resource "google_cloud_run_v2_service" "web" {
 
   template{
     containers {
-      image = local.web_image_url
+      image = "${var.location}-docker.pkg.dev/${var.project_name}-${unique_identifier}/${var.artifact_registry_name}/web"
     }
   }
 }
