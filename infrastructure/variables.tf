@@ -1,3 +1,12 @@
+variable "package_names" {
+  type    = map(string)
+  default = {
+    web       = "textifai-web"
+    chat      = "textifai-chat"
+    documents = "textifai-documents"
+  }
+}
+
 variable "project_name" {
   type    = string
   default = "textifai"
