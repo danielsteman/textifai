@@ -13,7 +13,7 @@ resource "google_identity_platform_config" "default" {
   ]
 }
 
-resource "google_identity_platform_config" "default" {
+resource "google_identity_platform_project_default_config" "default" {
   provider = google-beta
   project  = google_project.default.project_id
   sign_in {
