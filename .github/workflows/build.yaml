@@ -5,88 +5,88 @@ on:
     branches: [main]
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
 
-  #   strategy:
-  #     matrix:
-  #       node-version: [18.x]
+    strategy:
+      matrix:
+        node-version: [18.x]
 
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-  #     - name: Install dependencies in shared package
-  #       run: yarn install
-  #       working-directory: packages/shared
+      - name: Install dependencies in shared package
+        run: yarn install
+        working-directory: packages/shared
 
-  #     - name: Build shared package
-  #       run: yarn build
-  #       working-directory: packages/shared
+      - name: Build shared package
+        run: yarn build
+        working-directory: packages/shared
 
-  #     - name: Install dependencies of all packages
-  #       run: yarn install
+      - name: Install dependencies of all packages
+        run: yarn install
 
-  #     - name: Build all packages
-  #       run: yarn workspaces run build
+      - name: Build all packages
+        run: yarn workspaces run build
 
-  #     - name: Test all packages
-  #       run: yarn workspaces run test
+      - name: Test all packages
+        run: yarn workspaces run test
 
-  # build:
-  #   runs-on: ubuntu-latest
-  #   needs: test
+  build:
+    runs-on: ubuntu-latest
+    needs: test
 
-  #   strategy:
-  #     matrix:
-  #       node-version: [18.x]
+    strategy:
+      matrix:
+        node-version: [18.x]
 
-  #   steps:
-  #     - name: Login to GAR
-  #       id: auth
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: europe-west4-docker.pkg.dev
-  #         username: _json_key
-  #         password: ${{ secrets.GAR_SA_KEY }}
+    steps:
+      - name: Login to GAR
+        id: auth
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west4-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_SA_KEY }}
 
-  #     - id: docker-push-web-tagged
-  #       name: Tag textifai/web image and push to GAR
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         file: packages/web/Dockerfile
-  #         push: false
-  #         tags: |
-  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
-  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
+      - id: docker-push-web-tagged
+        name: Tag textifai/web image and push to GAR
+        uses: docker/build-push-action@v5
+        with:
+          file: packages/web/Dockerfile
+          push: false
+          tags: |
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
 
-  #     - id: docker-push-documents-tagged
-  #       name: Tag textifai/documents image and push to GAR
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         file: packages/documents/Dockerfile
-  #         push: false
-  #         tags: |
-  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
-  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
+      - id: docker-push-documents-tagged
+        name: Tag textifai/documents image and push to GAR
+        uses: docker/build-push-action@v5
+        with:
+          file: packages/documents/Dockerfile
+          push: false
+          tags: |
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
 
-  #     - id: docker-push-chat-tagged
-  #       name: Tag textifai/chat image and push to GAR
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         file: packages/chat/Dockerfile
-  #         push: false
-  #         tags: |
-  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
-  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
+      - id: docker-push-chat-tagged
+        name: Tag textifai/chat image and push to GAR
+        uses: docker/build-push-action@v5
+        with:
+          file: packages/chat/Dockerfile
+          push: false
+          tags: |
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
 
   terraform:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
-    # needs: build
+    needs: build
     permissions:
       contents: read
       pull-requests: write
