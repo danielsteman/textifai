@@ -5,7 +5,7 @@ resource "google_cloud_run_v2_service" "web" {
 
   template{
     containers {
-      image = "europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/web:${image_tag}"
+      image = "europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/web:latest"
     }
   }
 }
