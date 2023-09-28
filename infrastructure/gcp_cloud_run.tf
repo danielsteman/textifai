@@ -5,7 +5,7 @@ resource "google_cloud_run_v2_service" "web" {
 
   template{
     containers {
-      image = "${var.location}-docker.pkg.dev/${var.project_name}-${unique_identifier}/${var.artifact_registry_name}/web"
+      image = "europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/web"
     }
   }
 }
