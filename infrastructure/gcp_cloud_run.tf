@@ -1,4 +1,4 @@
-resource "google_cloud_run_v2_service" "default" {
+resource "google_cloud_run_v2_service" "web" {
   name     = "textifai-web"
   location = var.location
   client = "terraform"
@@ -11,8 +11,8 @@ resource "google_cloud_run_v2_service" "default" {
 }
 
 resource "google_cloud_run_v2_service_iam_member" "noauth" {
-  location = google_cloud_run_v2_service.default.location
-  name     = google_cloud_run_v2_service.default.name
+  location = google_cloud_run_v2_service.web.location
+  name     = google_cloud_run_v2_service.web.name
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
