@@ -45,13 +45,15 @@ variable "oauth_client_secret" {
 }
 
 variable "image_tag" {
-  type = string
+  type    = string
   default = "latest"
 }
 
-# locals {
-#   image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${unique_identifier}/${var.artifact_registry_name}"
-#   web_image_url = "${local.image_url_prefix}/web"
-#   chat_image_url = "${local.image_url_prefix}/chat"
-#   documents_image_url = "${local.image_url_prefix}/documents"
-# }
+locals {
+  image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${var.unique_identifier}/${var.artifact_registry_name}"
+  image_urls = {
+    web       = "${local.image_url_prefix}/web:${var.image_tag}"
+    chat      = "${local.image_url_prefix}/chat:${var.image_tag}"
+    documents = "${local.image_url_prefix}/documents:${var.image_tag}"
+  }
+}
