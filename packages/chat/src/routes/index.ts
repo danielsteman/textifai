@@ -105,9 +105,7 @@ initializedRegenerateChain().then((initializedRenegerateChain) => {
 router.post(
   "/ask",
   async (
-    req: Request<{ prompt: string; history: string; option: string }>,
-    res: Response,
-    next: NextFunction
+    req: Request, res: Response, next: NextFunction
   ) => {
     const prompt = await req.body.prompt;
     const conversationHistory = await req.body.history;
@@ -139,24 +137,20 @@ router.post(
       const vector = await embed.embedQuery(prompt);
       const matches = await getMatchesFromEmbeddings(vector, 3, files, userId);
 
+      console.log("Matches found: ", matches)
       interface Metadata {
-        page: string;
-        source: string;
         text: string;
+        title: string;
+        userId: string;
       }
 
-      const docs =
-        matches &&
-        Array.from(
-          matches.reduce((map, match) => {
-            const metadata = match.metadata as Metadata;
-            const { text, page } = metadata;
-            if (!map.has(page)) {
-              map.set(page, text);
-            }
-            return map;
-          }, new Map())
-        ).map(([_, text]) => text);
+      const docs = matches && matches.reduce((accumulator, match) => {
+        const metadata = match.metadata as Metadata; 
+        accumulator.push(metadata.text);
+        return accumulator;
+      }, [] as string[]);
+
+      console.log("Documents found: ", docs)
 
       const allDocs = docs.join("\n");
 

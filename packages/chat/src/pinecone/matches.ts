@@ -8,8 +8,8 @@ const envPath = path.resolve(__dirname, "../../../.env.local");
 
 dotenv.config({ path: envPath });
 export type Metadata = {
-  page: string;
-  source: string;
+  userId: string;
+  title: string;
   text: string;
 };
 
@@ -24,7 +24,10 @@ const getMatchesFromEmbeddings = async (
   const queryRequest = {
     vector: embeddings,
     filter: {
-      $and: [{ userId: { $eq: userId } }, { title: { $in: titleArray } }],
+      "$and": [
+        { "userId": { "$eq": userId } },
+        { "title": { "$in": titleArray } }
+      ]
     },
     topK,
     includeMetadata: true,
@@ -32,8 +35,10 @@ const getMatchesFromEmbeddings = async (
 
   try {
     const queryResult = await index.query({
-      queryRequest,
+      queryRequest
     });
+    
+    console.log(queryResult)
 
     return (
       queryResult.matches?.map((match) => ({

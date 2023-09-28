@@ -62,8 +62,6 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  console.log(selectedDocuments)
-
   useLayoutEffect(() => {
     const initializeMessages = async () => {
       if (currentConversationId) {
