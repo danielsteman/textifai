@@ -5,7 +5,7 @@ resource "google_cloud_run_v2_service" "default" {
 
   template{
     containers {
-      image = "${var.image_url_prefix}/web"
+      image = "${local.image_url_prefix}/web"
     }
   }
 }

@@ -48,7 +48,9 @@ variable "image_tag" {
   type = string
 }
 
-variable "image_url_prefix" {
-  type = string
-  default = "${var.location}-docker.pkg.dev/${var.project_name}-${unique_identifier}/${var.artifact_registry_name}"
+locals {
+  image_url_prefix = {
+    type    = string
+    default = "${var.location}-docker.pkg.dev/${var.project_name}-${unique_identifier}/${var.artifact_registry_name}"
+  }
 }
