@@ -3,7 +3,7 @@ import Docs from "./routes/Docs";
 import ErrorPage from "./routes/ErrorPage";
 import Login from "./routes/Login";
 import Pricing from "./routes/Pricing";
-import Root from "./routes/Root";
+import LandingPage from "./routes/LandingPage";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
 import Support from "./routes/Support";
 import Assistant from "./routes/Assistant";
@@ -46,7 +46,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Root />,
+        element: <LandingPage />,
       },
       {
         path: "features/assistant",

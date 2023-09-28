@@ -1,12 +1,13 @@
-import { IconButton } from "@chakra-ui/react";
-import { MdRocketLaunch } from "react-icons/md";
+import { IconButton, Image } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import BoxLogo from "/box-logo.png";
 
 const Logo = () => {
   const navigate = useNavigate();
   return (
     <IconButton
-      icon={<MdRocketLaunch size={40} />}
+      icon={<Image src={BoxLogo} alt="Box Logo" w={16} />}
+      h="fit-content"
       variant="unstyled"
       aria-label={"App logo"}
       onClick={() => navigate("/")}
