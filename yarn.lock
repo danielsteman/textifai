@@ -24,6 +24,20 @@
     formdata-node "^4.3.2"
     node-fetch "^2.6.7"
 
+"@anthropic-ai/sdk@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@anthropic-ai/sdk/-/sdk-0.6.2.tgz#4be415e6b1d948df6f8e03af84aedf102ec74b70"
+  integrity sha512-fB9PUj9RFT+XjkL+E9Ol864ZIJi+1P8WnbHspN3N3/GK2uSzjd0cbVIKTGgf4v3N8MwaQu+UWnU7C4BG/fap/g==
+  dependencies:
+    "@types/node" "^18.11.18"
+    "@types/node-fetch" "^2.6.4"
+    abort-controller "^3.0.0"
+    agentkeepalive "^4.2.1"
+    digest-fetch "^1.3.0"
+    form-data-encoder "1.7.2"
+    formdata-node "^4.3.2"
+    node-fetch "^2.6.7"
+
 "@babel/cli@^7.21.0":
   version "7.23.0"
   resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.23.0.tgz#1d7f37c44d4117c67df46749e0c86e11a58cc64b"
@@ -7473,33 +7487,6 @@ langchain@^0.0.118:
     zod "^3.21.4"
     zod-to-json-schema "^3.20.4"
 
-langchain@^0.0.130:
-  version "0.0.130"
-  resolved "https://registry.yarnpkg.com/langchain/-/langchain-0.0.130.tgz#d96ef0ce6ece6ed98bd91b3a94776a827532ced1"
-  integrity sha512-/7zsQdPPiR/XLHGJtbcBrOkI2njenmq7cco2MbYg3PDttWcSQar5VEO/bZtsI+PseaBFRZt0LT+6qkkWlyPfvQ==
-  dependencies:
-    "@anthropic-ai/sdk" "^0.5.7"
-    ansi-styles "^5.0.0"
-    binary-extensions "^2.2.0"
-    camelcase "6"
-    decamelize "^1.2.0"
-    expr-eval "^2.0.2"
-    flat "^5.0.2"
-    js-tiktoken "^1.0.7"
-    js-yaml "^4.1.0"
-    jsonpointer "^5.0.1"
-    langsmith "~0.0.16"
-    ml-distance "^4.0.0"
-    object-hash "^3.0.0"
-    openai "^3.3.0"
-    openapi-types "^12.1.3"
-    p-queue "^6.6.2"
-    p-retry "4"
-    uuid "^9.0.0"
-    yaml "^2.2.1"
-    zod "^3.21.4"
-    zod-to-json-schema "^3.20.4"
-
 langchain@^0.0.133:
   version "0.0.133"
   resolved "https://registry.yarnpkg.com/langchain/-/langchain-0.0.133.tgz#cb48417b4e79a2e75f811d968e7a7b974cf2316f"
@@ -7527,10 +7514,54 @@ langchain@^0.0.133:
     zod "^3.21.4"
     zod-to-json-schema "^3.20.4"
 
-langsmith@~0.0.11, langsmith@~0.0.16, langsmith@~0.0.26:
+langchain@^0.0.154:
+  version "0.0.154"
+  resolved "https://registry.yarnpkg.com/langchain/-/langchain-0.0.154.tgz#347d5f1b89c9dd93eda8f1c6ae2c79d05d532669"
+  integrity sha512-BnUvUZ9OBL/0BM4jhy53H8RF8+AmisrJq3tvNks6U/ueFC9ZKG9r4U9zqjwM2dTaWjW+oN3ig83Ioa9Y7d6ZFw==
+  dependencies:
+    "@anthropic-ai/sdk" "^0.6.2"
+    ansi-styles "^5.0.0"
+    binary-extensions "^2.2.0"
+    camelcase "6"
+    decamelize "^1.2.0"
+    expr-eval "^2.0.2"
+    flat "^5.0.2"
+    js-tiktoken "^1.0.7"
+    js-yaml "^4.1.0"
+    jsonpointer "^5.0.1"
+    langchainhub "~0.0.6"
+    langsmith "~0.0.31"
+    ml-distance "^4.0.0"
+    object-hash "^3.0.0"
+    openai "~4.4.0"
+    openapi-types "^12.1.3"
+    p-queue "^6.6.2"
+    p-retry "4"
+    uuid "^9.0.0"
+    yaml "^2.2.1"
+    zod "^3.21.4"
+    zod-to-json-schema "^3.20.4"
+
+langchainhub@~0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/langchainhub/-/langchainhub-0.0.6.tgz#9d2d06e4ce0807b4e8a31e19611f57aef990b54d"
+  integrity sha512-SW6105T+YP1cTe0yMf//7kyshCgvCTyFBMTgH2H3s9rTAR4e+78DA/BBrUL/Mt4Q5eMWui7iGuAYb3pgGsdQ9w==
+
+langsmith@~0.0.11, langsmith@~0.0.26:
   version "0.0.39"
   resolved "https://registry.yarnpkg.com/langsmith/-/langsmith-0.0.39.tgz#0d6d08486ec88fd739a98e97646d542b094855ca"
   integrity sha512-ja8n4X8W58FEi5Obk+nLW5XaYUmK1Qi4OoTzjA+1KjAvN3tniYQld116zyuGKhatl6xcYLP2BFpGOFDMAfoJVg==
+  dependencies:
+    "@types/uuid" "^9.0.1"
+    commander "^10.0.1"
+    p-queue "^6.6.2"
+    p-retry "4"
+    uuid "^9.0.0"
+
+langsmith@~0.0.31:
+  version "0.0.41"
+  resolved "https://registry.yarnpkg.com/langsmith/-/langsmith-0.0.41.tgz#3cf5dc0b320748d8dfa65bcbec4a776d745b0003"
+  integrity sha512-QRJMrCg8IzQJmva+30SbbQznaX91R/5IIfNj0yy0EFhNzgEmJP+XYnTiS0Ph5Htv6Kb4mYhxP7x198ECupW98A==
   dependencies:
     "@types/uuid" "^9.0.1"
     commander "^10.0.1"
@@ -8879,6 +8910,20 @@ openai@^3.2.1, openai@^3.3.0:
   dependencies:
     axios "^0.26.0"
     form-data "^4.0.0"
+
+openai@~4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/openai/-/openai-4.4.0.tgz#dbaab326eb044ddec479951b245850c482678031"
+  integrity sha512-JN0t628Kh95T0IrXl0HdBqnlJg+4Vq0Bnh55tio+dfCnyzHvMLiWyCM9m726MAJD2YkDU4/8RQB6rNbEq9ct2w==
+  dependencies:
+    "@types/node" "^18.11.18"
+    "@types/node-fetch" "^2.6.4"
+    abort-controller "^3.0.0"
+    agentkeepalive "^4.2.1"
+    digest-fetch "^1.3.0"
+    form-data-encoder "1.7.2"
+    formdata-node "^4.3.2"
+    node-fetch "^2.6.7"
 
 openapi-types@^12.1.3:
   version "12.1.3"
