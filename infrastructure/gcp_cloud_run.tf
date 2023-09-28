@@ -3,6 +3,7 @@ resource "google_cloud_run_v2_service" "service" {
 
   name     = each.value
   location = var.location
+  project  = google_project.default.project_id
   client   = "terraform"
 
   template {
@@ -16,6 +17,7 @@ resource "google_cloud_run_v2_service_iam_member" "noauth" {
   for_each = var.package_names
 
   location = google_cloud_run_v2_service.service[each.key].location
+  project  = google_project.default.project_id
   name     = google_cloud_run_v2_service.service[each.key].name
   role     = "roles/run.invoker"
   member   = "allUsers"
