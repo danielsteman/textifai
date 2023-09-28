@@ -50,4 +50,5 @@ variable "image_tag" {
 
 locals {
   image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${unique_identifier}/${var.artifact_registry_name}"
+  web_image_url = "${local.image_url_prefix}/web"
 }
