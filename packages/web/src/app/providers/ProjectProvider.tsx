@@ -22,21 +22,23 @@ export const ProjectProvider: React.FC<Props> = ({ children }) => {
   const currentUser = useContext(AuthContext);
 
   useEffect(() => {
-    const projectsRef = collection(db, "projects");
-    const projectsQuery = query(
-      projectsRef,
-      where("users", "array-contains", currentUser?.uid)
-    );
+    if (currentUser) {
+      const projectsRef = collection(db, "projects");
+      const projectsQuery = query(
+        projectsRef,
+        where("users", "array-contains", currentUser.uid)
+      );
 
-    const getProjects = async () => {
-      const projectsSnapshot = await getDocs(projectsQuery);
-      projectsSnapshot.docs.map((project: QueryDocumentSnapshot) => {
-        const projectData = project.data() as Project;
-        setProjects([...projects, projectData]);
-      });
-    };
+      const getProjects = async () => {
+        const projectsSnapshot = await getDocs(projectsQuery);
+        projectsSnapshot.docs.map((project: QueryDocumentSnapshot) => {
+          const projectData = project.data() as Project;
+          setProjects([...projects, projectData]);
+        });
+      };
 
-    getProjects();
+      getProjects();
+    }
   }, []);
 
   return (

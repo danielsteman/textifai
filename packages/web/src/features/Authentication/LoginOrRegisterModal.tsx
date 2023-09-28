@@ -21,6 +21,7 @@ import {
   Center,
   Divider,
   Flex,
+  useColorMode,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
@@ -34,6 +35,7 @@ import AuthError from "./AuthError";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { Timestamp, doc, setDoc } from "firebase/firestore";
 import { User } from "@shared/firestoreInterfaces/User";
+import theme from "../../app/themes/theme";
 
 export type AuthProvider = "facebook" | "google";
 
@@ -161,6 +163,8 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
     }
   };
 
+  const { colorMode } = useColorMode();
+
   return (
     <>
       <Button size="sm" onClick={onOpen} variant={buttonProps.variant}>
@@ -168,25 +172,30 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
       </Button>
       <Modal isCentered isOpen={isOpen} onClose={onClose}>
         <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
-        <ModalContent pb={4}>
+        <ModalContent pb={4} bgColor={theme.colors[colorMode].surfaceContainer}>
           {isForgotPassword ? (
             <>
               <ModalHeader>Forgot password?</ModalHeader>
-              <ModalCloseButton />
+              <ModalCloseButton
+                onClick={() => setIsForgotPassword(!isForgotPassword)}
+              />
               <ModalBody>
                 <Text mb={2}>Enter your email to reset your password</Text>{" "}
                 <FormControl mt={2}>
                   <InputGroup>
                     <InputLeftElement
                       pointerEvents="none"
-                      color="gray.300"
-                      children={<AtSignIcon color="gray.300" />}
+                      color={theme.colors[colorMode].primary}
+                      children={
+                        <AtSignIcon color={theme.colors[colorMode].primary} />
+                      }
                     />
                     <Input
                       value={email}
                       onChange={handleChangeEmail}
                       placeholder="Enter email address"
                       type="email"
+                      bgColor={theme.colors[colorMode].surfaceContainerHigh}
                     />
                   </InputGroup>
                 </FormControl>
@@ -210,13 +219,18 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                         <InputLeftElement
                           pointerEvents="none"
                           color="gray.300"
-                          children={<AtSignIcon color="gray.300" />}
+                          children={
+                            <AtSignIcon
+                              color={theme.colors[colorMode].primary}
+                            />
+                          }
                         />
                         <Input
                           value={email}
                           onChange={handleChangeEmail}
                           placeholder="Enter email address"
                           type="email"
+                          bgColor={theme.colors[colorMode].surfaceContainerHigh}
                         />
                       </InputGroup>
                       {missingEmailError && (
@@ -227,8 +241,10 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                       <InputGroup size="md">
                         <InputLeftElement
                           pointerEvents="none"
-                          color="gray.300"
-                          children={<LockIcon color="gray.300" />}
+                          color={theme.colors[colorMode].primary}
+                          children={
+                            <LockIcon color={theme.colors[colorMode].primary} />
+                          }
                         />
                         <Input
                           value={password}
@@ -236,6 +252,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                           pr="4.5rem"
                           type={showPassword ? "text" : "password"}
                           placeholder="Enter password"
+                          bgColor={theme.colors[colorMode].surfaceContainerHigh}
                         />
                         <InputRightElement width="4.5rem">
                           <Button
@@ -243,7 +260,15 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                             size="sm"
                             onClick={handleShowPassword}
                           >
-                            {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                            {showPassword ? (
+                              <ViewIcon
+                                color={theme.colors[colorMode].primary}
+                              />
+                            ) : (
+                              <ViewOffIcon
+                                color={theme.colors[colorMode].primary}
+                              />
+                            )}
                           </Button>
                         </InputRightElement>
                       </InputGroup>
@@ -267,14 +292,21 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                           <InputGroup>
                             <InputLeftElement
                               pointerEvents="none"
-                              color="gray.300"
-                              children={<LockIcon color="gray.300" />}
+                              color={theme.colors[colorMode].primary}
+                              children={
+                                <LockIcon
+                                  color={theme.colors[colorMode].primary}
+                                />
+                              }
                             />
                             <Input
                               placeholder="Repeat password"
                               type={showPassword ? "text" : "password"}
                               value={repeatedPassword}
                               onChange={handleChangeRepeatedPassword}
+                              bgColor={
+                                theme.colors[colorMode].surfaceContainerHigh
+                              }
                             />
                           </InputGroup>
                         </FormControl>
@@ -285,6 +317,9 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                               placeholder="First name"
                               value={firstname}
                               onChange={(e) => setFirstname(e.target.value)}
+                              bgColor={
+                                theme.colors[colorMode].surfaceContainerHigh
+                              }
                             />
                           </InputGroup>
                         </FormControl>
@@ -295,6 +330,9 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                               placeholder="Last name"
                               value={lastname}
                               onChange={(e) => setLastname(e.target.value)}
+                              bgColor={
+                                theme.colors[colorMode].surfaceContainerHigh
+                              }
                             />
                           </InputGroup>
                         </FormControl>
