@@ -1,9 +1,13 @@
-variable "project_name" {
-  type    = string
-  default = "textifai"
+variable "package_names" {
+  type    = map(string)
+  default = {
+    web       = "textifai-web"
+    chat      = "textifai-chat"
+    documents = "textifai-documents"
+  }
 }
 
-variable "project_id" {
+variable "project_name" {
   type    = string
   default = "textifai"
 }
@@ -34,16 +38,27 @@ variable "organisation_id" {
 }
 
 variable "GOOGLE_CREDENTIALS" {
-  default = ""
+  type      = string
+  sensitive = true
 }
 
 variable "web_app_display_name" {
-  type = string
+  type    = string
   default = "textifai"
 }
 
 variable "oauth_client_secret" {
-  type = string
+  type        = string
   description = "OAuth client secret. In a real app, you should use a secret manager service."
-  sensitive = true
+  sensitive   = true
+}
+
+variable "image_tag" {
+  type    = string
+  default = "latest"
+}
+
+locals {
+  image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${var.unique_identifier}/${var.artifact_registry_name}"
+  image_urls = { for key, name in var.package_names : key => "${local.image_url_prefix}/${name}:${var.image_tag}" }
 }

@@ -1,13 +1,11 @@
 name: Build
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -38,9 +36,9 @@ jobs:
       - name: Test all packages
         run: yarn workspaces run test
 
-  containerize:
+  build:
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
 
     strategy:
       matrix:
@@ -55,42 +53,113 @@ jobs:
           username: _json_key
           password: ${{ secrets.GAR_SA_KEY }}
 
-      - name: Set Push Flag For Main
-        id: set-push-flag-main
-        run: echo "PUSH_FLAG=true" >> $GITHUB_ENV
-        if: github.ref == 'refs/heads/main'
-
-      - name: Set Push Flag For Feature
-        id: set-push-flag-feature
-        run: echo "PUSH_FLAG=false" >> $GITHUB_ENV
-        if: github.ref != 'refs/heads/main'
-
-      - name: Tag textifai/web image and push to GAR
-        id: docker-push-web-tagged
+      - id: docker-push-web-tagged
+        name: Tag textifai/web image and push to GAR
         uses: docker/build-push-action@v5
         with:
           file: packages/web/Dockerfile
-          push: ${{ env.PUSH_FLAG }}
+          push: false
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
 
-      - name: Tag textifai/documents image and push to GAR
-        id: docker-push-documents-tagged
+      - id: docker-push-documents-tagged
+        name: Tag textifai/documents image and push to GAR
         uses: docker/build-push-action@v5
         with:
           file: packages/documents/Dockerfile
-          push: ${{ env.PUSH_FLAG }}
+          push: false
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
 
-      - name: Tag textifai/chat image and push to GAR
-        id: docker-push-chat-tagged
+      - id: docker-push-chat-tagged
+        name: Tag textifai/chat image and push to GAR
         uses: docker/build-push-action@v5
         with:
           file: packages/chat/Dockerfile
-          push: ${{ env.PUSH_FLAG }}
+          push: false
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
+
+  terraform:
+    name: "Terraform Plan"
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      TF_CLOUD_ORGANIZATION: "textifai"
+      TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+      TF_WORKSPACE: "textifai"
+      CONFIG_DIRECTORY: "./infrastructure"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform variables
+        working-directory: ${{ env.CONFIG_DIRECTORY }}
+        id: vars
+        run: |-
+          cat > pipeline.auto.tfvars <<EOF
+          image_tag = "${{ github.sha }}"
+          EOF
+
+      - name: Upload Configuration
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
+        id: plan-upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          speculative: true
+
+      - name: Create Plan Run
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.4
+        id: plan-run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.plan-upload.outputs.configuration_version_id }}
+          plan_only: true
+
+      - name: Get Plan Output
+        uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.4
+        id: plan-output
+        with:
+          plan: ${{ fromJSON(steps.plan-run.outputs.payload).data.relationships.plan.data.id }}
+
+      - name: Update PR
+        uses: actions/github-script@v6
+        id: plan-comment
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Cloud Plan Output')
+            });
+            const output = `#### Terraform Cloud Plan Output
+               \`\`\`
+               Plan: ${{ steps.plan-output.outputs.add }} to add, ${{ steps.plan-output.outputs.change }} to change, ${{ steps.plan-output.outputs.destroy }} to destroy.
+               \`\`\`
+               [Terraform Cloud Plan](${{ steps.plan-run.outputs.run_link }})
+               `;
+            // 3. Delete previous comment so PR timeline makes sense
+            if (botComment) {
+              github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+              });
+            }
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
