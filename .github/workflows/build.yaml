@@ -59,6 +59,13 @@ jobs:
         with:
           file: packages/web/Dockerfile
           push: true
+          build-args: |
+            FIREBASE_APIKEY=${{ secrets.FIREBASE_APIKEY }}
+            FIREBASE_AUTHDOMAIN=${{ secrets.FIREBASE_AUTHDOMAIN }}
+            FIREBASE_PROJECTID=${{ secrets.FIREBASE_PROJECTID }}
+            FIREBASE_STORAGEBUCKET=${{ secrets.FIREBASE_STORAGEBUCKET }}
+            FIREBASE_MESSAGINGSENDERID=${{ secrets.FIREBASE_MESSAGINGSENDERID }}
+            FIREBASE_APPID=${{ secrets.FIREBASE_APPID }}
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
@@ -69,6 +76,11 @@ jobs:
         with:
           file: packages/documents/Dockerfile
           push: true
+          build-args: |
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
+            PINECONE_ENV=${{ secrets.PINECONE_ENV }}
+            PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
@@ -79,6 +91,11 @@ jobs:
         with:
           file: packages/chat/Dockerfile
           push: true
+          build-args: |
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
+            PINECONE_ENV=${{ secrets.PINECONE_ENV }}
+            PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
