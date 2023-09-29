@@ -2,7 +2,8 @@ import ReactQuill from "react-quill";
 import styled from "styled-components";
 
 const StyledQuillEditor = styled(ReactQuill)<{
-  backgroundColor?: string;
+  editorBackgroundColor?: string;
+  toolbarBackgroundColor?: string;
   textColor?: string;
 }>`
   .react-quill {
@@ -15,11 +16,15 @@ const StyledQuillEditor = styled(ReactQuill)<{
     font-size: 15px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+    border: 0px;
+    background-color: ${(props) => props.editorBackgroundColor};
   }
 
   .ql-toolbar {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+    border: 0px;
+    background-color: ${(props) => props.toolbarBackgroundColor};
   }
 
   .ql-toolbar.ql-snow {
