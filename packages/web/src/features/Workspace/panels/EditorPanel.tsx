@@ -1,6 +1,17 @@
-import { Button, HStack, Spacer, Text, useColorMode } from "@chakra-ui/react";
+import {
+  CloseButton,
+  HStack,
+  Input,
+  Spacer,
+  Text,
+  Tooltip,
+  useColorMode,
+} from "@chakra-ui/react";
 import TextEditor from "../../TextEditor/TextEditor";
 import theme from "../../../app/themes/theme";
+import { useContext, useState } from "react";
+import { ProjectContext } from "../../../app/providers/ProjectProvider";
+import { getCurrentProjectTitle } from "../../../common/utils/getCurrentProjectTitle";
 
 export interface CustomTabPanelProps {
   openChatSupport: boolean;
@@ -9,6 +20,11 @@ export interface CustomTabPanelProps {
 
 const EditorPanel = () => {
   const { colorMode } = useColorMode();
+  const userProjects = useContext(ProjectContext);
+  const [inputMode, setInputMode] = useState<boolean>(false);
+
+  const currentProjectTitle = getCurrentProjectTitle(userProjects);
+
   return (
     <>
       <HStack
@@ -17,11 +33,24 @@ const EditorPanel = () => {
         bgColor={theme.colors[colorMode].surfaceContainerLow}
         rounded={8}
       >
-        <Text ml={4}>Project title</Text>
+        <Tooltip label={"Change title"}>
+          {inputMode ? (
+            <HStack w="100%">
+              <Input placeholder={currentProjectTitle} />
+              <Spacer />
+              <CloseButton size="sm" onClick={() => setInputMode(!inputMode)} />
+            </HStack>
+          ) : (
+            <Text
+              ml={4}
+              cursor="pointer"
+              onClick={() => setInputMode(!inputMode)}
+            >
+              {currentProjectTitle}
+            </Text>
+          )}
+        </Tooltip>
         <Spacer />
-        <Button size="sm">Templates</Button>
-        <Button size="sm">Refine</Button>
-        <Button size="sm">Settings</Button>
       </HStack>
       <TextEditor />
     </>

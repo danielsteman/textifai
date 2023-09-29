@@ -54,6 +54,7 @@ import theme from "../../app/themes/theme";
 import PdfViewerPanel from "./panels/PdfViewerPanel";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
+import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
 
 export type ITab = {
   name: string;
@@ -149,7 +150,7 @@ const Workspace = () => {
               variant="ghost"
               rightIcon={<ChevronDownIcon />}
             >
-              Project1
+              {getCurrentProjectTitle(userProjects)}
             </MenuButton>
             <MenuList>
               <MenuGroup title="All projects">

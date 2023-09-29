@@ -49,6 +49,7 @@ const CreateProject = () => {
         ...formData,
         users: [currentUser?.uid],
         creationDate: Timestamp.fromDate(new Date()),
+        active: true,
       };
       try {
         const docRef = await addDoc(projectsCollection, projectData);
