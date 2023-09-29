@@ -22,6 +22,6 @@ RUN yarn workspace @textifai/chat add typescript tsc ts-node
 
 RUN yarn workspace @textifai/chat build
 
-EXPOSE 3001
+EXPOSE $PORT
 
 CMD yarn workspace @textifai/chat start

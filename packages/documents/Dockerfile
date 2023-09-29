@@ -28,6 +28,6 @@ RUN yarn workspace @textifai/documents add typescript tsc ts-node
 
 RUN yarn workspace @textifai/documents build
 
-EXPOSE 3000
+EXPOSE $PORT
 
 CMD yarn workspace @textifai/documents start
