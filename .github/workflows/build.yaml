@@ -58,7 +58,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: packages/web/Dockerfile
-          push: false
+          push: true
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
@@ -68,7 +68,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: packages/documents/Dockerfile
-          push: false
+          push: true
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
@@ -78,7 +78,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: packages/chat/Dockerfile
-          push: false
+          push: true
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest

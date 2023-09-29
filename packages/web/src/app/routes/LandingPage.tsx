@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
-import Logo from "../../common/components/Logo";
 
 const PlaceHolder = () => {
   const { colorMode } = useColorMode();
@@ -64,6 +63,9 @@ const LandingPage = () => {
       pt={24}
       alignItems="center"
       rowGap={24}
+      maxW={1280}
+      justifyContent="center"
+      mx="auto"
     >
       <GridItem>
         <Paragraph
