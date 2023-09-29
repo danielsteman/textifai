@@ -1,8 +1,6 @@
 import {
-  Button,
   CloseButton,
   HStack,
-  IconButton,
   Input,
   Spacer,
   Text,
@@ -13,6 +11,7 @@ import TextEditor from "../../TextEditor/TextEditor";
 import theme from "../../../app/themes/theme";
 import { useContext, useState } from "react";
 import { ProjectContext } from "../../../app/providers/ProjectProvider";
+import { getCurrentProjectTitle } from "../../../common/utils/getCurrentProjectTitle";
 
 export interface CustomTabPanelProps {
   openChatSupport: boolean;
@@ -24,18 +23,7 @@ const EditorPanel = () => {
   const userProjects = useContext(ProjectContext);
   const [inputMode, setInputMode] = useState<boolean>(false);
 
-  const getCurrentProjectTitle = () => {
-    const projectTitle = userProjects.filter(
-      (project) => project.active === true
-    );
-    if (projectTitle && projectTitle.length > 0) {
-      return projectTitle[0].name;
-    } else {
-      return "Project title not found";
-    }
-  };
-
-  const currentProjectTitle = getCurrentProjectTitle();
+  const currentProjectTitle = getCurrentProjectTitle(userProjects);
 
   return (
     <>
