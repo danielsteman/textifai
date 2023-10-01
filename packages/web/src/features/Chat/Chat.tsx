@@ -40,6 +40,8 @@ import { RootState } from "src/app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
+import { ProjectContext } from "../../app/providers/ProjectProvider";
+import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -53,6 +55,7 @@ const Chat = () => {
   const [conversationHistory, setConversationHistory] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
+  const userProjects = useContext(ProjectContext);
 
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments

@@ -68,6 +68,8 @@ import { Document } from "@shared/firestoreInterfaces/Document";
 import { current } from "@reduxjs/toolkit";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
+import { ProjectContext } from "../../app/providers/ProjectProvider";
+import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
@@ -93,6 +95,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const [customYearStart, setCustomYearStart] = useState<number | null>(null);
   const [customYearEnd, setCustomYearEnd] = useState<number | null>(null);
   const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
+
+  const userProjects = useContext(ProjectContext);
 
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
@@ -125,7 +129,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     const documentsCollection = collection(db, "uploads");
     const q = query(
       documentsCollection,
-      where("uploadedBy", "==", currentUser!.uid)
+      where("uploadedBy", "==", currentUser!.uid),
+      where("projectId", "==", getCurrentProjectTitle(userProjects))
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -167,7 +172,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       const q = query(
         documentsCollection,
         where("uploadedBy", "==", currentUser!.uid),
-        where("uploadName", "==", fullPath)
+        where("uploadName", "==", fullPath),
+        where("projectId", "==", getCurrentProjectTitle(userProjects))
       );
 
       // 1. Delete from Firestore
@@ -217,7 +223,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     const q = query(
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
-      where("uploadName", "==", fileName)
+      where("uploadName", "==", fileName),
+      where("projectId", "==", getCurrentProjectTitle(userProjects))
     );
 
     getDocs(q)
@@ -241,7 +248,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     const q = query(
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
-      where("uploadName", "==", fileName)
+      where("uploadName", "==", fileName),
+      where("projectId", "==", getCurrentProjectTitle(userProjects))
     );
 
     getDocs(q)
@@ -274,7 +282,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     const q = query(
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
-      where("uploadName", "==", fileName)
+      where("uploadName", "==", fileName),
+      where("projectId", "==", getCurrentProjectTitle(userProjects))
     );
 
     getDocs(q)
