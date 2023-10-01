@@ -54,8 +54,17 @@ import { useSelector } from "react-redux";
 import { RootState } from "src/app/store";
 import { useDispatch } from "react-redux";
 import { disableDocument, enableDocument } from "./librarySlice";
-import { collection, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
-import { Document } from "@shared/firestoreInterfaces/Document"
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  onSnapshot,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { Document } from "@shared/firestoreInterfaces/Document";
 import { current } from "@reduxjs/toolkit";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
@@ -79,14 +88,15 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
   const [projectFilter, setProjectFilter] = useState<string | null>(null);
-  const [onlyFavoritesFilter, setOnlyFavoritesFilter] = useState<boolean>(false);
+  const [onlyFavoritesFilter, setOnlyFavoritesFilter] =
+    useState<boolean>(false);
   const [customYearStart, setCustomYearStart] = useState<number | null>(null);
   const [customYearEnd, setCustomYearEnd] = useState<number | null>(null);
   const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
 
   const allCollections = Array.from(
-    new Set(documents.flatMap(doc => doc.tags))
-  );  
+    new Set(documents.flatMap((doc) => doc.tags))
+  );
 
   const {
     isOpen: isDeleteFileOpen,
@@ -98,12 +108,12 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     onOpen: onUploadFileOpen,
     onClose: onUploadFileClose,
   } = useDisclosure();
-  
+
   const userDocumentsRef = ref(storage, `users/${currentUser?.uid}/uploads`);
 
   const handleToggleFavoritesFilter = () => {
-    setOnlyFavoritesFilter(prev => !prev);
-    if (onlyFavoritesFilter) setYearFilter(null); 
+    setOnlyFavoritesFilter((prev) => !prev);
+    if (onlyFavoritesFilter) setYearFilter(null);
   };
 
   const selectedDocuments = useSelector(
@@ -112,20 +122,22 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const documentsCollection = collection(db, 'uploads');
-    const q = query(documentsCollection, where("uploadedBy", "==", currentUser!.uid));
-    
-    const unsubscribe = onSnapshot(q, snapshot => {
-        const fetchedDocuments: Document[] = [];
-        snapshot.forEach(doc => {
-            fetchedDocuments.push(doc.data() as Document);  
-        });
-        setDocuments(fetchedDocuments);
+    const documentsCollection = collection(db, "uploads");
+    const q = query(
+      documentsCollection,
+      where("uploadedBy", "==", currentUser!.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedDocuments: Document[] = [];
+      snapshot.forEach((doc) => {
+        fetchedDocuments.push(doc.data() as Document);
+      });
+      setDocuments(fetchedDocuments);
     });
 
     return () => unsubscribe();
-
-}, [selectedDocuments]);
+  }, [selectedDocuments]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     selectedDocuments.includes(documentName)
@@ -140,32 +152,35 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   };
 
   const handleUploadComplete = () => {
-    console.log('Upload complete!');
+    console.log("Upload complete!");
   };
 
   const handleDeleteDocument = async () => {
     selectedDocuments.map(async (fullPath) => {
-      const documentRef = ref(storage, `users/${currentUser?.uid}/uploads/${fullPath}`);
-  
+      const documentRef = ref(
+        storage,
+        `users/${currentUser?.uid}/uploads/${fullPath}`
+      );
+
       // Construct your Firestore query
-      const documentsCollection = collection(db, 'uploads');
+      const documentsCollection = collection(db, "uploads");
       const q = query(
         documentsCollection,
         where("uploadedBy", "==", currentUser!.uid),
         where("uploadName", "==", fullPath)
       );
-  
+
       // 1. Delete from Firestore
       try {
         const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(documentSnapshot => {
-          deleteDoc(doc(db, 'uploads', documentSnapshot.id));
+        querySnapshot.forEach((documentSnapshot) => {
+          deleteDoc(doc(db, "uploads", documentSnapshot.id));
         });
         console.log(`Document with id ${fullPath} deleted from Firestore.`);
       } catch (error) {
         console.log("Error deleting document from Firestore:", error);
       }
-  
+
       // 2. Delete from Firebase Storage
       deleteObject(documentRef)
         .then(() => {
@@ -185,7 +200,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 
     const tab: ITab = {
       name: shortenString(uploadName, 20),
-      panel: <PdfViewer document={fileRef} />, 
+      panel: <PdfViewer document={fileRef} />,
       openChatSupport: false,
       openMiniLibrary: false,
       openPdfViewer: false,
@@ -198,98 +213,117 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   };
 
   const toggleFavourite = (fileName: string, isFavourite: boolean) => {
-    const documentsCollection = collection(db, 'uploads');
+    const documentsCollection = collection(db, "uploads");
     const q = query(
-        documentsCollection, 
-        where("uploadedBy", "==", currentUser!.uid),  
-        where("uploadName", "==", fileName)
+      documentsCollection,
+      where("uploadedBy", "==", currentUser!.uid),
+      where("uploadName", "==", fileName)
     );
 
-    getDocs(q).then(snapshot => {
+    getDocs(q)
+      .then((snapshot) => {
         if (!snapshot.empty) {
-            const docRef = doc(db, 'uploads', snapshot.docs[0].id);  
-            updateDoc(docRef, { favoritedBy: isFavourite })
+          const docRef = doc(db, "uploads", snapshot.docs[0].id);
+          updateDoc(docRef, { favoritedBy: isFavourite });
         } else {
-            console.error("Document with the specified fileName not found or user mismatch!");
+          console.error(
+            "Document with the specified fileName not found or user mismatch!"
+          );
         }
-    }).catch(error => {
+      })
+      .catch((error) => {
         console.error("Error fetching documents:", error);
-    });
+      });
   };
 
   const addCollectionToDocument = (fileName: string, newCollection: string) => {
-    const documentsCollection = collection(db, 'uploads');
+    const documentsCollection = collection(db, "uploads");
     const q = query(
-        documentsCollection, 
-        where("uploadedBy", "==", currentUser!.uid),  
-        where("uploadName", "==", fileName)
+      documentsCollection,
+      where("uploadedBy", "==", currentUser!.uid),
+      where("uploadName", "==", fileName)
     );
 
-    getDocs(q).then(snapshot => {
+    getDocs(q)
+      .then((snapshot) => {
         if (!snapshot.empty) {
-            const docRef = doc(db, 'uploads', snapshot.docs[0].id);  
-            const currentCollections = snapshot.docs[0].data().tags || [];
+          const docRef = doc(db, "uploads", snapshot.docs[0].id);
+          const currentCollections = snapshot.docs[0].data().tags || [];
 
-            if (!currentCollections.includes(newCollection)) {
-                updateDoc(docRef, { tags: [...currentCollections, newCollection] });
-            } else {
-                console.log("Collection already exists for this document!");
-            }
+          if (!currentCollections.includes(newCollection)) {
+            updateDoc(docRef, { tags: [...currentCollections, newCollection] });
+          } else {
+            console.log("Collection already exists for this document!");
+          }
         } else {
-            console.error("Document with the specified fileName not found or user mismatch!");
+          console.error(
+            "Document with the specified fileName not found or user mismatch!"
+          );
         }
-    }).catch(error => {
+      })
+      .catch((error) => {
         console.error("Error fetching documents:", error);
-    });
+      });
   };
 
-  const deleteCollectionFromDocument = (fileName: string, collectionToDelete: string) => {
-    const documentsCollection = collection(db, 'uploads');
+  const deleteCollectionFromDocument = (
+    fileName: string,
+    collectionToDelete: string
+  ) => {
+    const documentsCollection = collection(db, "uploads");
     const q = query(
-        documentsCollection, 
-        where("uploadedBy", "==", currentUser!.uid),  
-        where("uploadName", "==", fileName)
+      documentsCollection,
+      where("uploadedBy", "==", currentUser!.uid),
+      where("uploadName", "==", fileName)
     );
 
-    getDocs(q).then(snapshot => {
+    getDocs(q)
+      .then((snapshot) => {
         if (!snapshot.empty) {
-            const docRef = doc(db, 'uploads', snapshot.docs[0].id);  
-            const currentCollections = snapshot.docs[0].data().tags || [];
+          const docRef = doc(db, "uploads", snapshot.docs[0].id);
+          const currentCollections = snapshot.docs[0].data().tags || [];
 
-            if (currentCollections.includes(collectionToDelete)) {
-                const updatedCollections = currentCollections.filter((tag: string) => tag !== collectionToDelete);
-                updateDoc(docRef, { tags: updatedCollections });
-            } else {
-                console.log("Collection not found for this document!");
-            }
+          if (currentCollections.includes(collectionToDelete)) {
+            const updatedCollections = currentCollections.filter(
+              (tag: string) => tag !== collectionToDelete
+            );
+            updateDoc(docRef, { tags: updatedCollections });
+          } else {
+            console.log("Collection not found for this document!");
+          }
         } else {
-            console.error("Document with the specified fileName not found or user mismatch!");
+          console.error(
+            "Document with the specified fileName not found or user mismatch!"
+          );
         }
-    }).catch(error => {
+      })
+      .catch((error) => {
         console.error("Error fetching documents:", error);
-    });
+      });
   };
 
   const parseTopics = (topicsString: string): string => {
     try {
-        // Convert single quotes to double quotes and replace hyphens
-        const correctedString = topicsString.replace(/'/g, '"').replace(/-/g, " ");
-        const topicsArray = JSON.parse(correctedString);
-        if (Array.isArray(topicsArray)) {
-            return topicsArray.join(', ');
-        } else {
-            console.error('Parsed value is not an array:', topicsArray);
-            return '';
-        }
+      // Convert single quotes to double quotes and replace hyphens
+      const correctedString = topicsString
+        .replace(/'/g, '"')
+        .replace(/-/g, " ");
+      const topicsArray = JSON.parse(correctedString);
+      if (Array.isArray(topicsArray)) {
+        return topicsArray.join(", ");
+      } else {
+        console.error("Parsed value is not an array:", topicsArray);
+        return "";
+      }
     } catch (error) {
-        if (error instanceof Error) {
-            console.error(`Error parsing topics: ${error.message}`);
-        } else {
-            console.error("An unknown error occurred while parsing topics.");
-        }
-        return ''; 
+      if (error instanceof Error) {
+        console.error(`Error parsing topics: ${error.message}`);
+      } else {
+        console.error("An unknown error occurred while parsing topics.");
+      }
+      return "";
     }
-  }
+  };
 
   return (
     <Grid
@@ -337,7 +371,13 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         >
           <Heading size="xs">Filters</Heading>
           <Button
-            bgColor={(yearFilter === null && !onlyFavoritesFilter && !isCustomRangeSelected) ? theme.colors[colorMode].onPrimary : undefined}
+            bgColor={
+              yearFilter === null &&
+              !onlyFavoritesFilter &&
+              !isCustomRangeSelected
+                ? theme.colors[colorMode].onPrimary
+                : undefined
+            }
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
@@ -350,88 +390,115 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             Any time
           </Button>
           <Button
-            bgColor={yearFilter === 2023 ? theme.colors[colorMode].onPrimary : undefined}
+            bgColor={
+              yearFilter === 2023
+                ? theme.colors[colorMode].onPrimary
+                : undefined
+            }
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setIsCustomRangeSelected(false);
-              setYearFilter(2023)}}
+              setYearFilter(2023);
+            }}
           >
             Since 2023
           </Button>
           <Button
-            bgColor={yearFilter === 2022 ? theme.colors[colorMode].onPrimary : undefined}
+            bgColor={
+              yearFilter === 2022
+                ? theme.colors[colorMode].onPrimary
+                : undefined
+            }
             variant="ghost"
             size="xs"
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setIsCustomRangeSelected(false);
-              setYearFilter(2022)}}
+              setYearFilter(2022);
+            }}
           >
             Since 2022
           </Button>
           <Button
-            bgColor={yearFilter === 2021 ? theme.colors[colorMode].onPrimary : undefined}
+            bgColor={
+              yearFilter === 2021
+                ? theme.colors[colorMode].onPrimary
+                : undefined
+            }
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
             size="xs"
             onClick={() => {
               setYearFilter(2021);
-              setIsCustomRangeSelected(false)}}
+              setIsCustomRangeSelected(false);
+            }}
           >
             Since 2021
           </Button>
           <Button
-            bgColor={isCustomRangeSelected ? theme.colors[colorMode].onPrimary : undefined}
+            bgColor={
+              isCustomRangeSelected
+                ? theme.colors[colorMode].onPrimary
+                : undefined
+            }
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
             size="xs"
             onClick={() => {
               setIsCustomRangeSelected(true);
-              setYearFilter(null); 
-          }}
+              setYearFilter(null);
+            }}
           >
             Custom range
           </Button>
           {isCustomRangeSelected && (
-              <HStack spacing={2}>
-                  <Input 
-                      placeholder="Start"
-                      size="xs"
-                      type="number"
-                      value={customYearStart || ""}
-                      onChange={(e) => setCustomYearStart(Number(e.target.value))}
-                      width="5em"
-                      height="2em"
-                  />
-                  <Text>-</Text>
-                  <Input 
-                      placeholder="End"
-                      size="xs"
-                      type="number"
-                      value={customYearEnd || ""}
-                      onChange={(e) => setCustomYearEnd(Number(e.target.value))}
-                      width="5em"
-                      height="2em"
-                  />
-              </HStack>
+            <HStack spacing={2}>
+              <Input
+                placeholder="Start"
+                size="xs"
+                type="number"
+                value={customYearStart || ""}
+                onChange={(e) => setCustomYearStart(Number(e.target.value))}
+                width="5em"
+                height="2em"
+              />
+              <Text>-</Text>
+              <Input
+                placeholder="End"
+                size="xs"
+                type="number"
+                value={customYearEnd || ""}
+                onChange={(e) => setCustomYearEnd(Number(e.target.value))}
+                width="5em"
+                height="2em"
+              />
+            </HStack>
           )}
           <Button
-              bgColor={onlyFavoritesFilter ? theme.colors[colorMode].onPrimary : undefined}
-              variant="ghost"
-              size="xs"
-              textColor={theme.colors[colorMode].onSurface}
-              onClick={handleToggleFavoritesFilter}
+            bgColor={
+              onlyFavoritesFilter
+                ? theme.colors[colorMode].onPrimary
+                : undefined
+            }
+            variant="ghost"
+            size="xs"
+            textColor={theme.colors[colorMode].onSurface}
+            onClick={handleToggleFavoritesFilter}
           >
-              Only show favorites
+            Only show favorites
           </Button>
           <Box h={4} />
           <Heading size="xs">Collections</Heading>
           {allCollections.map((collection, index) => (
             <Button
               key={index}
-              bgColor={collectionFilter === collection ? theme.colors[colorMode].onPrimary : undefined}
+              bgColor={
+                collectionFilter === collection
+                  ? theme.colors[colorMode].onPrimary
+                  : undefined
+              }
               variant="ghost"
               size="xs"
               textColor={theme.colors[colorMode].onSurface}
@@ -504,29 +571,29 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             </Button>
           </Tooltip> */}
           <Button
-              size="sm"
-              aria-label={"ask tai"}
-              leftIcon={<ChatIcon />}
-              borderRadius={100}
-              bgColor={theme.colors[colorMode].secondaryContainer}
-              textColor={theme.colors[colorMode].onSecondaryContainer}
-              onClick={() => {
-                const chatTab: ITab = {
-                    name: 'Chat',
-                    panel: <ChatPanel />, 
-                    openChatSupport: false,
-                    openMiniLibrary: false,
-                    openPdfViewer: false,
-                };
-        
-                const existingTab = openTabs.find((t) => t.name === chatTab.name);
-                if (!existingTab) {
-                    setOpenTabs((prevTabs) => [...prevTabs, chatTab]);
-                }
-                setCurrentTab(chatTab);
+            size="sm"
+            aria-label={"ask tai"}
+            leftIcon={<ChatIcon />}
+            borderRadius={100}
+            bgColor={theme.colors[colorMode].secondaryContainer}
+            textColor={theme.colors[colorMode].onSecondaryContainer}
+            onClick={() => {
+              const chatTab: ITab = {
+                name: "Chat",
+                panel: <ChatPanel />,
+                openChatSupport: false,
+                openMiniLibrary: false,
+                openPdfViewer: false,
+              };
+
+              const existingTab = openTabs.find((t) => t.name === chatTab.name);
+              if (!existingTab) {
+                setOpenTabs((prevTabs) => [...prevTabs, chatTab]);
+              }
+              setCurrentTab(chatTab);
             }}
           >
-              Ask TAI
+            Ask TAI
           </Button>
           <Button
             size="sm"
@@ -599,56 +666,89 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
             <Tbody>
               {documents.length > 0 &&
                 documents
-                .filter((doc) => {
-                  let matchesQuery = doc.uploadName.includes(documentQuery);
-                  let matchesYear = 
-                    (!yearFilter && !isCustomRangeSelected) || 
-                    (yearFilter && doc.creationDate.toDate().getFullYear() === yearFilter) ||
-                    (isCustomRangeSelected && customYearStart && customYearEnd && customYearStart <= doc.creationDate.toDate().getFullYear() && doc.creationDate.toDate().getFullYear() <= customYearEnd);              
-                  let matchesCollection = !collectionFilter || doc.tags.includes(collectionFilter);
-                  // Project filter (mocked for now, you can adjust this when you have real projects data)
-                  let matchesProject = !projectFilter;
-                  let matchesFavorites = onlyFavoritesFilter ? !!doc.favoritedBy : true;
-                  return matchesQuery && matchesYear && matchesCollection && matchesProject && matchesFavorites;
-                })
+                  .filter((doc) => {
+                    let matchesQuery = doc.uploadName.includes(documentQuery);
+                    let matchesYear =
+                      (!yearFilter && !isCustomRangeSelected) ||
+                      (yearFilter &&
+                        doc.creationDate.toDate().getFullYear() ===
+                          yearFilter) ||
+                      (isCustomRangeSelected &&
+                        customYearStart &&
+                        customYearEnd &&
+                        customYearStart <=
+                          doc.creationDate.toDate().getFullYear() &&
+                        doc.creationDate.toDate().getFullYear() <=
+                          customYearEnd);
+                    let matchesCollection =
+                      !collectionFilter || doc.tags.includes(collectionFilter);
+                    // Project filter (mocked for now, you can adjust this when you have real projects data)
+                    let matchesProject = !projectFilter;
+                    let matchesFavorites = onlyFavoritesFilter
+                      ? !!doc.favoritedBy
+                      : true;
+                    return (
+                      matchesQuery &&
+                      matchesYear &&
+                      matchesCollection &&
+                      matchesProject &&
+                      matchesFavorites
+                    );
+                  })
                   .map((doc: Document) => (
                     <Tr
                       key={doc.uploadName}
                       _hover={{
-                        bgColor: theme.colors[colorMode].surfaceContainerHighest,
+                        bgColor:
+                          theme.colors[colorMode].surfaceContainerHighest,
                         cursor: "pointer",
                       }}
                     >
                       <Td>
                         <Checkbox
                           isChecked={selectedDocuments.includes(doc.uploadName)}
-                          onChange={() => handleDocumentCheckboxChange(doc.uploadName)}
+                          onChange={() =>
+                            handleDocumentCheckboxChange(doc.uploadName)
+                          }
                         />
                       </Td>
                       <Td>
                         <Button
                           variant="link"
-                          onClick={() => handleOpenDocumentInTab(doc.uploadName)}
+                          onClick={() =>
+                            handleOpenDocumentInTab(doc.uploadName)
+                          }
                         >
                           {doc.uploadName}
                         </Button>
                       </Td>
                       <Td>{doc.author}</Td>
-                      <Td isNumeric>{doc.creationDate.toDate().getFullYear()}</Td>
+                      <Td isNumeric>
+                        {doc.creationDate.toDate().getFullYear()}
+                      </Td>
                       <Td>
-                        <TagInput 
+                        <TagInput
                           tags={doc.tags}
-                          onAddTag={(newTag) => addCollectionToDocument(doc.uploadName, newTag)}
-                          onDeleteTag={(tagToDelete) => deleteCollectionFromDocument(doc.uploadName, tagToDelete)}
+                          onAddTag={(newTag) =>
+                            addCollectionToDocument(doc.uploadName, newTag)
+                          }
+                          onDeleteTag={(tagToDelete) =>
+                            deleteCollectionFromDocument(
+                              doc.uploadName,
+                              tagToDelete
+                            )
+                          }
                         />
                       </Td>
                       {/* <Td>This is a summary</Td> */}
                       <Td>{parseTopics(doc.topics)}</Td>
                       <Td textAlign="center">
-                        <Icon 
-                          as={FaStar} 
-                          color={doc.favoritedBy ? "teal" : "none"} 
-                          onClick={() => toggleFavourite(doc.uploadName, !doc.favoritedBy)}
+                        <Icon
+                          as={FaStar}
+                          color={doc.favoritedBy ? "teal" : "none"}
+                          onClick={() =>
+                            toggleFavourite(doc.uploadName, !doc.favoritedBy)
+                          }
                         />
                       </Td>
                     </Tr>

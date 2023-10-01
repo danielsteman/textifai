@@ -7,7 +7,8 @@ import {
   useEffect,
   useRef,
   useState,
-} from "react";import { Document, Page } from "react-pdf";
+} from "react";
+import { Document, Page } from "react-pdf";
 import { getDownloadURL, StorageReference } from "firebase/storage";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import PanelWrapper from "../Workspace/PanelWrapper";
@@ -24,14 +25,12 @@ export type ITab = {
   openPdfViewer: boolean;
 };
 
-
 export type OpenTabsContext = {
   openTabs: ITab[];
   setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
 };
 
 const PdfViewer: React.FC<Props> = ({ document }) => {
-  
   const [tabs, setTabs] = useState<ITab[]>([]);
   const [numPages, setNumPages] = useState<number>(0);
   const [pdfURL, setPdfURL] = useState<string | null>(null);
@@ -58,7 +57,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   useEffect(() => {
     console.log("Tabs state changed:", tabs);
   }, [tabs]);
-  
+
   const handleOpenChatPanel = () => {
     console.log("handleOpenChatPanel called");
     const chatSupportTab: ITab = {
@@ -66,7 +65,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
       panel: <ChatPanel />,
       openChatSupport: true,
       openMiniLibrary: false,
-      openPdfViewer: false
+      openPdfViewer: false,
     };
 
     setTabs((prevTabs) => [...prevTabs, chatSupportTab]);
@@ -74,24 +73,24 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   };
 
   const handleCloseTab = (tabName: string) => {
-    setTabs((prevTabs) => prevTabs.filter(tab => tab.name !== tabName));
+    setTabs((prevTabs) => prevTabs.filter((tab) => tab.name !== tabName));
   };
 
   const showContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
-  
+
     const selection = window.getSelection();
-  
+
     if (selection && selection.toString().trim() !== "") {
       setMenuPosition({
         x: (event.clientX + window.scrollX) / scale,
-        y: (event.clientY + window.scrollY) / scale
+        y: (event.clientY + window.scrollY) / scale,
       });
       setMenuVisible(true);
     } else {
       setMenuVisible(false);
     }
-  }; 
+  };
 
   const handleCloseChatPanel = () => {
     handleCloseTab("ChatSupport");
@@ -103,9 +102,8 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     console.log("handleContextMenuOption called");
     handleOpenChatPanel();
   };
-  
-  
-  const menuRef = useRef<HTMLDivElement>(null); 
+
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -115,7 +113,8 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     }
 
     window.document.addEventListener("mousedown", handleClickOutside);
-    return () => window.document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      window.document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -128,15 +127,19 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           display="flex"
           justifyContent="center"
         >
-          <button onClick={() => setScale((prev) => Math.max(prev - 0.1, 0.5))}>-</button>
-          <span style={{ margin: '0 1rem' }}>{Math.round(scale * 100)}%</span>
-          <button onClick={() => setScale((prev) => Math.min(prev + 0.1, 3))}>+</button>
+          <button onClick={() => setScale((prev) => Math.max(prev - 0.1, 0.5))}>
+            -
+          </button>
+          <span style={{ margin: "0 1rem" }}>{Math.round(scale * 100)}%</span>
+          <button onClick={() => setScale((prev) => Math.min(prev + 0.1, 3))}>
+            +
+          </button>
         </Box>
 
         {menuVisible && (
           <Box
             ref={menuRef}
-            position='absolute'
+            position="absolute"
             top={`${menuPosition.y}px`}
             left={`${menuPosition.x}px`}
             zIndex={1000}
@@ -144,17 +147,21 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
             boxShadow="lg"
             borderRadius="md"
           >
-            <Box 
-              as="button"  
-              display="block" 
-              p="1rem" 
+            <Box
+              as="button"
+              display="block"
+              p="1rem"
               color="black"
               onClick={handleContextMenuOption}
             >
               Summarise
             </Box>
-            <Box as="button" display="block" p="1rem" color="black">Show key points</Box>
-            <Box as="button" display="block" p="1rem" color="black">Explain</Box>
+            <Box as="button" display="block" p="1rem" color="black">
+              Show key points
+            </Box>
+            <Box as="button" display="block" p="1rem" color="black">
+              Explain
+            </Box>
           </Box>
         )}
 
@@ -180,11 +187,11 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
                   <Page pageNumber={index + 1} scale={scale} />
                 </Box>
               ))}
-          </Document>
+            </Document>
           )}
         </Box>
       </Box>
-      
+
       {/* <TabPanels
         flex="1"
         display="flex"
@@ -194,12 +201,12 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         maxH="calc(100% - 58px)"
       > */}
       {showChatPanel && (
-          <Box flex="1" borderLeft="1px solid gray">
-              <PanelWrapper 
-                  tab={tabs.find(tab => tab.name === "ChatSupport")!} 
-                  onClose={handleCloseChatPanel} 
-              />
-          </Box>
+        <Box flex="1" borderLeft="1px solid gray">
+          <PanelWrapper
+            tab={tabs.find((tab) => tab.name === "ChatSupport")!}
+            onClose={handleCloseChatPanel}
+          />
+        </Box>
       )}
       {/* </TabPanels> */}
     </Flex>
