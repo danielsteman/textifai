@@ -96,6 +96,8 @@ const TextEditor = () => {
         ],
       }}
       textColor={theme.colors[colorMode].inverseSurface}
+      editorBackgroundColor={theme.colors[colorMode].surfaceContainerLowest}
+      toolbarBackgroundColor={theme.colors[colorMode].surfaceContainerLow}
     />
   );
 };

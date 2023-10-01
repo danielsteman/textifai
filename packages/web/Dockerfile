@@ -36,5 +36,5 @@ COPY --from=builder /usr/src/app/packages/web/dist /usr/share/nginx/html
 RUN touch /var/run/nginx.pid
 RUN chown -R nginx:nginx /var/run/nginx.pid /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
 USER nginx
-EXPOSE 8080
+EXPOSE $PORT
 CMD ["nginx", "-g", "daemon off;"]

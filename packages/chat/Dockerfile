@@ -1,8 +1,14 @@
 FROM node:18
 
 ARG OPENAI_API_KEY
+ARG PINECONE_API_KEY
+ARG PINECONE_ENV
+ARG PINECONE_INDEX
 
 ENV OPENAI_API_KEY $OPENAI_API_KEY
+ENV PINECONE_API_KEY $PINECONE_API_KEY
+ENV PINECONE_ENV $PINECONE_ENV
+ENV PINECONE_INDEX $PINECONE_INDEX
 
 ENV NODE_ENV production
 
@@ -22,6 +28,6 @@ RUN yarn workspace @textifai/chat add typescript tsc ts-node
 
 RUN yarn workspace @textifai/chat build
 
-EXPOSE 3001
+EXPOSE $PORT
 
 CMD yarn workspace @textifai/chat start

@@ -60,9 +60,21 @@ Explore:
 - Firebase hosting
 - In combination with cloud run
 
+## CI
+
+On opening a pull request:
+
+- Build and test packages
+- Build docker images
+- Run speculative Terraform plan
+
+On pushing to main:
+
+- Run apply Terraform plan
+
 ## Payments
 
-Use Stripe and explore [stripe Terraform providers](https://github.com/franckverrot/terraform-provider-stripe) to track pricing changes with git. 
+Use Stripe and explore [stripe Terraform providers](https://github.com/franckverrot/terraform-provider-stripe) to track pricing changes with git.
 
 ## Notes
 
@@ -80,5 +92,3 @@ Workflow TODO: add pre-commit hooks - Protect main branch
 Deployment TODO: create Dockerfiles
 
 Workflow TODO: build and push docker images to GCR in pipeline
-
-

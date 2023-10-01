@@ -38,8 +38,8 @@ resource "google_identity_platform_project_default_config" "default" {
 resource "google_firebase_web_app" "default" {
   provider = google-beta
 
-  project      = google_firebase_project.default.project
-  display_name = var.web_app_display_name
+  project         = google_firebase_project.default.project
+  display_name    = var.web_app_display_name
   deletion_policy = "DELETE"
 }
 
@@ -53,6 +53,6 @@ resource "google_identity_platform_default_supported_idp_config" "google_sign_in
   client_secret = var.oauth_client_secret
 
   depends_on = [
-     google_identity_platform_config.default
+    google_identity_platform_config.default
   ]
 }
