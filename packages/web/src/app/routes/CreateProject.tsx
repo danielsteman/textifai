@@ -53,7 +53,7 @@ const CreateProject = () => {
       };
       try {
         const docRef = await addDoc(projectsCollection, projectData);
-        console.log("Document written with ID: ", docRef.id);
+        console.log("Project created with ID: ", docRef.id);
         navigate("/features/workspace");
       } catch (error) {
         console.error("Error adding document: ", error);
