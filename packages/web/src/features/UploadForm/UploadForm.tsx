@@ -33,6 +33,7 @@ import {
 } from "firebase/firestore";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
+import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import axios from "axios";
 
 interface PdfMetadata {
@@ -74,14 +75,23 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
   const [loading, setLoading] = useState(false);
   const [fileExists, setFileExists] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [activeProject, setActiveProject] = useState<string | null>(null);
 
   const userProjects = useContext(ProjectContext);
+  const currentUser = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchActiveProject = async () => {
+      const projectId = await fetchProjectId(currentUser!.uid);
+      setActiveProject(projectId);
+    }
+  
+    fetchActiveProject();
+  }, [currentUser]);
 
   const onDrop = useCallback((acceptedFiles: any) => {
     setFiles(acceptedFiles);
   }, []);
-
-  const currentUser = useContext(AuthContext);
 
   const acceptedFormats = { "application/pdf": [".pdf"] };
 
@@ -133,7 +143,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
       await uploadMetadataToFirestore(
           metadata,
           currentUser!.uid, 
-          getCurrentProjectTitle(userProjects),
+          activeProject!,
           uploadsCollection
         );
   

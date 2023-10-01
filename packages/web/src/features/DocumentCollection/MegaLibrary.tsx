@@ -68,8 +68,7 @@ import { Document } from "@shared/firestoreInterfaces/Document";
 import { current } from "@reduxjs/toolkit";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
-import { ProjectContext } from "../../app/providers/ProjectProvider";
-import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 
 export interface MegaLibraryProps {
   openTabs: ITab[];
@@ -89,14 +88,21 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const [yearFilter, setYearFilter] = useState<number | null>(null);
 
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
-  const [projectFilter, setProjectFilter] = useState<string | null>(null);
-  const [onlyFavoritesFilter, setOnlyFavoritesFilter] =
-    useState<boolean>(false);
+  const [onlyFavoritesFilter, setOnlyFavoritesFilter] =useState<boolean>(false);
   const [customYearStart, setCustomYearStart] = useState<number | null>(null);
   const [customYearEnd, setCustomYearEnd] = useState<number | null>(null);
   const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
+  
+  const [activeProject, setActiveProject] = useState<string | null>(null);
 
-  const userProjects = useContext(ProjectContext);
+  useEffect(() => {
+    const fetchActiveProject = async () => {
+      const projectId = await fetchProjectId(currentUser!.uid);
+      setActiveProject(projectId);
+    }
+  
+    fetchActiveProject();
+  }, [currentUser]);
 
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
@@ -130,7 +136,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     const q = query(
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
-      where("projectId", "==", getCurrentProjectTitle(userProjects))
+      where("projectId", "==", activeProject)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -142,7 +148,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     });
 
     return () => unsubscribe();
-  }, [selectedDocuments]);
+  }, [selectedDocuments, activeProject]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     selectedDocuments.includes(documentName)
@@ -173,7 +179,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
         documentsCollection,
         where("uploadedBy", "==", currentUser!.uid),
         where("uploadName", "==", fullPath),
-        where("projectId", "==", getCurrentProjectTitle(userProjects))
+        where("projectId", "==", activeProject)
       );
 
       // 1. Delete from Firestore
@@ -224,7 +230,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", getCurrentProjectTitle(userProjects))
+      where("projectId", "==", activeProject)
     );
 
     getDocs(q)
@@ -249,7 +255,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", getCurrentProjectTitle(userProjects))
+      where("projectId", "==", activeProject)
     );
 
     getDocs(q)
@@ -283,7 +289,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", getCurrentProjectTitle(userProjects))
+      where("projectId", "==", activeProject)
     );
 
     getDocs(q)
@@ -689,10 +695,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                           doc.creationDate.toDate().getFullYear() &&
                         doc.creationDate.toDate().getFullYear() <=
                           customYearEnd);
-                    let matchesCollection =
-                      !collectionFilter || doc.tags.includes(collectionFilter);
-                    // Project filter (mocked for now, you can adjust this when you have real projects data)
-                    let matchesProject = !projectFilter;
+                    let matchesCollection = !collectionFilter || (doc.tags && doc.tags.includes(collectionFilter));
+                    let matchesProject = activeProject;
                     let matchesFavorites = onlyFavoritesFilter
                       ? !!doc.favoritedBy
                       : true;

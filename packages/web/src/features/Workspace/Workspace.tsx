@@ -88,14 +88,17 @@ const Workspace = () => {
     setActiveTabIndex(tabIndex);
 };
 
-  const onTabClose = (tabToClose: ITab) => {
-    const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
-    setOpenTabs(newTabs);
+const onTabClose = (tabToClose: ITab) => {
+  const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
+  setOpenTabs(newTabs);
 
-    if (tabToClose.name === currentTab?.name) {
-      setCurrentTab(newTabs[newTabs.length - 1] || defaultTab);
-    }
-  };
+  if (tabToClose.name === currentTab?.name) {
+    const newActiveIndex = activeTabIndex >= newTabs.length ? newTabs.length - 1 : activeTabIndex;
+    setActiveTabIndex(newActiveIndex);
+    setCurrentTab(newTabs[newActiveIndex] || defaultTab);
+  }
+};
+
 
   const closeSupportingPanel = (
     panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
