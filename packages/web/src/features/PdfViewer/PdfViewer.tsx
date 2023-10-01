@@ -1,4 +1,4 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, TabPanels } from "@chakra-ui/react";
 import {
   Dispatch,
   ReactNode,
@@ -10,6 +10,7 @@ import {
 } from "react";import { Document, Page } from "react-pdf";
 import { getDownloadURL, StorageReference } from "firebase/storage";
 import ChatPanel from "../Workspace/panels/ChatPanel";
+import PanelWrapper from "../Workspace/PanelWrapper";
 
 interface Props {
   document: StorageReference;
@@ -21,8 +22,8 @@ export type ITab = {
   openChatSupport: boolean;
   openMiniLibrary: boolean;
   openPdfViewer: boolean;
-  isActive?: boolean;
 };
+
 
 export type OpenTabsContext = {
   openTabs: ITab[];
@@ -30,8 +31,8 @@ export type OpenTabsContext = {
 };
 
 const PdfViewer: React.FC<Props> = ({ document }) => {
-  const [openTabs, setOpenTabs] = useState<ITab[]>([]);
-
+  
+  const [tabs, setTabs] = useState<ITab[]>([]);
   const [numPages, setNumPages] = useState<number>(0);
   const [pdfURL, setPdfURL] = useState<string | null>(null);
   const [scale, setScale] = useState<number>(1);
@@ -54,20 +55,26 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     }
   }, [document]);
 
-  const handleChatSupport = () => {
-    const updatedOpenTabs = openTabs.map((tab) =>
-      tab.name === "PdfViewer" ? { ...tab, openChatSupport: true } : tab
-    );
-    setOpenTabs(updatedOpenTabs);
+  useEffect(() => {
+    console.log("Tabs state changed:", tabs);
+  }, [tabs]);
+  
+  const handleOpenChatPanel = () => {
+    console.log("handleOpenChatPanel called");
+    const chatSupportTab: ITab = {
+      name: "ChatSupport",
+      panel: <ChatPanel />,
+      openChatSupport: true,
+      openMiniLibrary: false,
+      openPdfViewer: false
+    };
+
+    setTabs((prevTabs) => [...prevTabs, chatSupportTab]);
     setShowChatPanel(true);
   };
 
-  const zoomIn = () => {
-    setScale((prevScale) => Math.min(prevScale + 0.1, 3));
-  };
-
-  const zoomOut = () => {
-    setScale((prevScale) => Math.max(prevScale - 0.1, 0.5));
+  const handleCloseTab = (tabName: string) => {
+    setTabs((prevTabs) => prevTabs.filter(tab => tab.name !== tabName));
   };
 
   const showContextMenu = (event: React.MouseEvent) => {
@@ -84,8 +91,20 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     } else {
       setMenuVisible(false);
     }
-  };  
+  }; 
 
+  const handleCloseChatPanel = () => {
+    handleCloseTab("ChatSupport");
+    setShowChatPanel(false);
+  };
+
+  const handleContextMenuOption = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    console.log("handleContextMenuOption called");
+    handleOpenChatPanel();
+  };
+  
+  
   const menuRef = useRef<HTMLDivElement>(null); 
 
   useEffect(() => {
@@ -130,9 +149,9 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
               display="block" 
               p="1rem" 
               color="black"
-              onClick={() => setShowChatPanel(true)}
+              onClick={handleContextMenuOption}
             >
-                Summarise
+              Summarise
             </Box>
             <Box as="button" display="block" p="1rem" color="black">Show key points</Box>
             <Box as="button" display="block" p="1rem" color="black">Explain</Box>
@@ -161,16 +180,28 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
                   <Page pageNumber={index + 1} scale={scale} />
                 </Box>
               ))}
-            </Document>
+          </Document>
           )}
         </Box>
       </Box>
       
+      {/* <TabPanels
+        flex="1"
+        display="flex"
+        flexDirection="column"
+        px={2}
+        pb={2}
+        maxH="calc(100% - 58px)"
+      > */}
       {showChatPanel && (
-        <Box flex="1" borderLeft="1px solid gray">
-          <ChatPanel />
-        </Box>
+          <Box flex="1" borderLeft="1px solid gray">
+              <PanelWrapper 
+                  tab={tabs.find(tab => tab.name === "ChatSupport")!} 
+                  onClose={handleCloseChatPanel} 
+              />
+          </Box>
       )}
+      {/* </TabPanels> */}
     </Flex>
   );
 };
