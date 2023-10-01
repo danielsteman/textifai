@@ -28,6 +28,13 @@ const AuthError: React.FC<Props> = (props) => {
           The provided email is already in use by an existing user.
         </Alert>
       );
+    case "auth/email-already-in-use":
+      return (
+        <Alert status="error">
+          <AlertIcon />
+          The provided email is already in use by an existing user.
+        </Alert>
+      );
     case "auth/invalid-password":
       return (
         <Alert status="error">
