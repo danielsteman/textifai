@@ -1,7 +1,7 @@
-import PdfViewer from "../../features/PdfViewer/PdfViewerWithSelector";
+import PdfViewerWithSelector from "../../features/PdfViewer/PdfViewerWithSelector";
 
 const Assistant = () => {
-  return <PdfViewer />;
+  return <PdfViewerWithSelector />;
 };
 
 export default Assistant;

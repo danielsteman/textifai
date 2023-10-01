@@ -1,4 +1,4 @@
-import { StyleConfig, StyleFunctionProps, extendTheme } from "@chakra-ui/react";
+import { StyleFunctionProps, extendTheme } from "@chakra-ui/react";
 
 const colors = {
   dark: {
