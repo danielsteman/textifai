@@ -11,12 +11,13 @@ import {
   useColorMode, 
   Spacer,
 } from "@chakra-ui/react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import theme from "../../app/themes/theme";
 import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
+import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 
 interface SystemMessageProps {
   message: string;
@@ -32,8 +33,19 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
+  const [activeProject, setActiveProject] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchActiveProject = async () => {
+      const projectId = await fetchProjectId(currentUser!.uid);
+      setActiveProject(projectId);
+    }
+  
+    fetchActiveProject();
+  }, [currentUser]);
+
   const handleMenuClick = () => {
-    appendToDocument(currentUser!.uid, message);
+    appendToDocument(currentUser!.uid, message, activeProject!);
     setMenuClicked(true); 
   };
 

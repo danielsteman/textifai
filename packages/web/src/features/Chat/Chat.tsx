@@ -40,8 +40,7 @@ import { RootState } from "src/app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
-import { ProjectContext } from "../../app/providers/ProjectProvider";
-import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -55,7 +54,17 @@ const Chat = () => {
   const [conversationHistory, setConversationHistory] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
-  const userProjects = useContext(ProjectContext);
+
+  const [activeProject, setActiveProject] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchActiveProject = async () => {
+      const projectId = await fetchProjectId(currentUser!.uid);
+      setActiveProject(projectId);
+    }
+  
+    fetchActiveProject();
+  }, [currentUser]);
 
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
@@ -102,7 +111,7 @@ const Chat = () => {
         if (!querySnapshot.empty) {
           setCurrentConversationId(querySnapshot.docs[0].id); 
         } else {
-          const newConversationId = await startConversation(currentUser.uid);
+          const newConversationId = await startConversation(currentUser.uid, activeProject!);
           setCurrentConversationId(newConversationId || null); 
         }
       }

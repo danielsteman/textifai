@@ -20,12 +20,13 @@ export const conversationsCollection = collection(db, "conversations");
 export const messagesCollection = collection(db, "messages");
 
 export const startConversation = async (
-  currentUserUid: string
+  currentUserUid: string, 
+  currentProjectUid: string
 ): Promise<string | void> => {
   try {
     const conversationDoc: Conversation = {
       userId: currentUserUid,
-      projectId: "currentProject", // TO DO --> Make dynamic
+      projectId: currentProjectUid,
       creationDate: Timestamp.fromDate(new Date()),
       updatedDate: Timestamp.fromDate(new Date()),
     };
@@ -109,28 +110,44 @@ export const fetchMessagesForConversation = async (conversationId: string) => {
   return messagesArray;
 };
 
-export const appendToDocument = async (currentUserUid: string, message: string) => {
+export const appendToDocument = async (
+  currentUserUid: string, 
+  currentProjectUid: string,
+  message: string
+) => {
   try {
     const workingDocsCollection = collection(db, "workingdocuments");
     
     const q = query(
       workingDocsCollection, 
       where("users", "array-contains", currentUserUid),
-      /// where("projectId", "==", projectId) // TO DO
+      where("projectId", "==", currentProjectUid)
     );
 
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
+      // Existing document found
       const docRef = doc(db, "workingdocuments", querySnapshot.docs[0].id);
       const currentContent = querySnapshot.docs[0].data().content || "";
       await updateDoc(docRef, {
         content: currentContent + "\n\n" + message
       });
     } else {
-      console.error("No matching document found.");
+      // No document found, create a new one
+      const newDocument = {
+        projectId: currentProjectUid,
+        name: "Document Name",  
+        creationDate: Timestamp.fromDate(new Date()),
+        users: [currentUserUid],
+        modifiedDate: Timestamp.fromDate(new Date()),
+        content: message 
+      };
+      
+      await addDoc(workingDocsCollection, newDocument);
     }
   } catch (error) {
     console.error("Error appending message to document:", error);
   }
-}
+};
+
