@@ -45,7 +45,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   }, [currentUser]);
 
   const handleMenuClick = () => {
-    appendToDocument(currentUser!.uid, message, activeProject!);
+    appendToDocument(currentUser!.uid, activeProject!, message);
     setMenuClicked(true); 
   };
 
@@ -54,7 +54,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       {variant === "user"  && <Spacer />}
       <Box 
         bgColor={bgColor}
-        pr={variant === "agent" ? 0 : 0}
+        pr={variant === "agent" ? 0 : 6}
         pl={variant === "agent" ? 6 : 4}
         py={0.5}
         rounded={8}

@@ -35,17 +35,19 @@ import {
 import { db } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
+import { pushMessage } from './messageStackSlice';
+import { pushAnswer, replaceLastAnswer } from './answerStackSlice';
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
-  const [messageStack, setMessageStack] = useState<string[]>([]);
-  const [answerStack, setAnswerStack] = useState<string[]>([]);
+  // const [messageStack, setMessageStack] = useState<string[]>([]);
+  // const [answerStack, setAnswerStack] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const [currentConversationId, setCurrentConversationId] = useState<
@@ -69,32 +71,41 @@ const Chat = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
+  
+  const messageStack = useSelector(
+    (state: RootState) => state.messages
+  );
+  
+  const answerStack = useSelector(
+    (state: RootState) => state.answers
+  );
+  
+  const dispatch = useDispatch();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
+  
   useLayoutEffect(() => {
-    const initializeMessages = async () => {
-      if (currentConversationId) {
-        const messages = await fetchMessagesForConversation(
-          currentConversationId
-        );
-        const userMessages = messages
-          .filter((msg) => msg.variant === "user")
-          .map((msg) => msg.messageBody);
-        const agentMessages = messages
-          .filter((msg) => msg.variant === "agent")
-          .map((msg) => msg.messageBody);
-
-        setMessageStack(userMessages);
-        setAnswerStack(agentMessages);
-
-        scrollToBottom();
-      }
-    };
-    initializeMessages();
-  }, [currentConversationId]);
+      const initializeMessages = async () => {
+  
+        if (currentConversationId) {
+          const messages = await fetchMessagesForConversation(currentConversationId);
+  
+          messages.forEach(msg => {
+            if (msg.variant === "user" && !messageStack.includes(msg.messageBody)) {
+              dispatch(pushMessage(msg.messageBody));
+            } else if (msg.variant === "agent" && !answerStack.includes(msg.messageBody)) {
+              dispatch(pushAnswer(msg.messageBody));
+            }
+          });
+  
+          scrollToBottom();
+        }
+      };
+      initializeMessages();
+  }, [currentConversationId, dispatch, messageStack, answerStack]); 
+  
 
   useLayoutEffect(scrollToBottom, [messageStack, answerStack]);
 
@@ -122,7 +133,7 @@ const Chat = () => {
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    setMessageStack([...messageStack, message]);
+    dispatch(pushMessage(message));
     setMessage("");
 
     try {
@@ -141,8 +152,7 @@ const Chat = () => {
           option: "GeneralQa",
         });
 
-        setAnswerStack([...answerStack, res.data.answer]);
-
+        dispatch(pushAnswer(res.data.answer));
         scrollToBottom();
         setLoading(false);
 
@@ -169,26 +179,23 @@ const Chat = () => {
     }
   };
 
-  const handleRegenerate = async () => {
-    const lastSystemMessage = answerStack[answerStack.length - 1];
-
-    try {
-      const res = await axios.post("http://localhost:3001/api/chat/ask", {
-        prompt: lastSystemMessage, 
-        option: "regenerate", 
-      });
-
-      setAnswerStack((prevAnswers) => {
-        const updatedAnswers = [...prevAnswers];
-        updatedAnswers[updatedAnswers.length - 1] = res.data.answer;
-        return updatedAnswers;
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
+    const handleRegenerate = async () => {
+      const lastSystemMessage = answerStack[answerStack.length - 1];
+    
+      try {
+        const res = await axios.post("http://localhost:3001/api/chat/ask", {
+          prompt: lastSystemMessage,
+          option: "regenerate",
+        });
+        
+        dispatch(replaceLastAnswer(res.data.answer));
+    
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
     setMessage(event.target.value);
   }
 

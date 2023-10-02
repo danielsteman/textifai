@@ -69,7 +69,7 @@ const TextEditor = () => {
           await updateTextInFirestore(value);
         }
       }
-    }, 3000); // save every 3 seconds
+    }, 1000); // save every 1 seconds
 
     return () => clearInterval(saveInterval);
   }, [value, documentId, currentUser]);
