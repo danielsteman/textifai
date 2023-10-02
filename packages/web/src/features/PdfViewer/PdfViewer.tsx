@@ -28,7 +28,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         console.error("Error fetching PDF URL", error);
       }
     };
-
     if (document) {
       fetchDocumentUrl();
     }
@@ -37,6 +36,17 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   useEffect(() => {
     console.log("Tabs state changed:", tabs);
   }, [tabs]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuVisible(false);
+      }
+    }
+    window.document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      window.document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleOpenChatPanel = () => {
     console.log("handleOpenChatPanel called");
@@ -47,7 +57,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-
     setTabs((prevTabs) => [...prevTabs, chatSupportTab]);
     setShowChatPanel(true);
   };
@@ -58,10 +67,15 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   const showContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
-
     const selection = window.getSelection();
 
     if (selection && selection.toString().trim() !== "") {
+      console.log(
+        JSON.stringify({
+          x: (event.clientX + window.scrollX) / scale,
+          y: (event.clientY + window.scrollY) / scale,
+        })
+      );
       setMenuPosition({
         x: (event.clientX + window.scrollX) / scale,
         y: (event.clientY + window.scrollY) / scale,
@@ -85,18 +99,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuVisible(false);
-      }
-    }
-
-    window.document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      window.document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <Flex width="100%" height="100%">
       <Box flex="2" position="relative">
@@ -119,8 +121,8 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           <Box
             ref={menuRef}
             position="absolute"
-            top={`${menuPosition.y}px`}
-            left={`${menuPosition.x}px`}
+            top={menuPosition.y}
+            left={menuPosition.x}
             zIndex={1000}
             bg="white"
             boxShadow="lg"
