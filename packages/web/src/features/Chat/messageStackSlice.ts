@@ -12,11 +12,12 @@ const messageStackSlice = createSlice({
     popMessage: (state) => {
       state.pop();
     },
-    clearMessages: (state) => {
+    clearMessages: () => {
       return initialState;
     },
   },
 });
 
-export const { pushMessage, popMessage, clearMessages } = messageStackSlice.actions;
+export const { pushMessage, popMessage, clearMessages } =
+  messageStackSlice.actions;
 export default messageStackSlice.reducer;

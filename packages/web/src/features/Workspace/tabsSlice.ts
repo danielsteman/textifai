@@ -24,3 +24,7 @@ export const tabsSlice = createSlice({
     },
   },
 });
+
+export const { openTab, closeTab } = tabsSlice.actions;
+
+export default tabsSlice.reducer;
