@@ -50,10 +50,9 @@ import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "../Workspace/Workspace";
 import PdfViewer from "../PdfViewer/PdfViewer";
 import { shortenString } from "../../common/utils/shortenString";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "src/app/store";
-import { useDispatch } from "react-redux";
-import { disableDocument, enableDocument } from "./librarySlice";
+import { disableDocument, enableDocument, initializeSelectedDocuments } from "./librarySlice";
 import {
   collection,
   deleteDoc,
@@ -132,6 +131,14 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (documents.length > 0 && selectedDocuments.length === 0) {
+      const allUploadNames = documents.map(doc => doc.uploadName);
+      dispatch(initializeSelectedDocuments(allUploadNames));
+    }
+  }, [documents, dispatch, selectedDocuments]);
+  
+
+  useEffect(() => {
     const documentsCollection = collection(db, "uploads");
     const q = query(
       documentsCollection,
@@ -151,10 +158,12 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   }, [selectedDocuments, activeProject]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
-    selectedDocuments.includes(documentName)
-      ? dispatch(disableDocument(documentName))
-      : dispatch(enableDocument(documentName));
-  };
+    if (selectedDocuments.includes(documentName)) {
+      dispatch(disableDocument(documentName));
+    } else {
+      dispatch(enableDocument(documentName));
+    }
+  };  
 
   const handleChangeDocumentQuery = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -720,9 +729,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                       <Td>
                         <Checkbox
                           isChecked={selectedDocuments.includes(doc.uploadName)}
-                          onChange={() =>
-                            handleDocumentCheckboxChange(doc.uploadName)
-                          }
+                          onChange={() => handleDocumentCheckboxChange(doc.uploadName)}
                         />
                       </Td>
                       <Td>

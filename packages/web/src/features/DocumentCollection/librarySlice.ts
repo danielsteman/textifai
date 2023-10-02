@@ -21,9 +21,12 @@ export const librarySlice = createSlice({
         (doc) => doc !== action.payload
       );
     },
+    initializeSelectedDocuments: (state, action: PayloadAction<string[]>) => {
+      state.selectedDocuments = action.payload;
+    },
   },
 });
 
-export const { enableDocument, disableDocument } = librarySlice.actions;
+export const { enableDocument, disableDocument, initializeSelectedDocuments } = librarySlice.actions;
 
 export default librarySlice.reducer;
