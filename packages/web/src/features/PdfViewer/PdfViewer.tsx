@@ -76,6 +76,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           y: (event.clientY + window.scrollY) / scale,
         })
       );
+      console.log(`x: ${event.clientX}, y: ${event.clientY}`);
       setMenuPosition({
         x: (event.clientX + window.scrollX) / scale,
         y: (event.clientY + window.scrollY) / scale,
@@ -120,7 +121,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         {menuVisible && (
           <Box
             ref={menuRef}
-            position="absolute"
+            position="fixed"
             top={menuPosition.y}
             left={menuPosition.x}
             zIndex={1000}
