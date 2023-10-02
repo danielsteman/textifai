@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { AuthContext } from "./AuthProvider";
+import { Spinner } from "@chakra-ui/react";
 
 interface Props {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export const ProjectContext = React.createContext<Project[]>([]);
 
 export const ProjectProvider: React.FC<Props> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const currentUser = useContext(AuthContext);
 
@@ -39,7 +41,12 @@ export const ProjectProvider: React.FC<Props> = ({ children }) => {
 
       getProjects();
     }
+    setLoading(false);
   }, []);
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <ProjectContext.Provider value={projects}>

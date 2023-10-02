@@ -1,34 +1,14 @@
-import { Box, Flex, TabPanels } from "@chakra-ui/react";
-import {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Box, Flex } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import { getDownloadURL, StorageReference } from "firebase/storage";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import PanelWrapper from "../Workspace/PanelWrapper";
+import { ITab } from "../Workspace/Workspace";
 
 interface Props {
   document: StorageReference;
 }
-
-export type ITab = {
-  name: string;
-  panel: ReactNode;
-  openChatSupport: boolean;
-  openMiniLibrary: boolean;
-  openPdfViewer: boolean;
-};
-
-export type OpenTabsContext = {
-  openTabs: ITab[];
-  setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
-};
 
 const PdfViewer: React.FC<Props> = ({ document }) => {
   const [tabs, setTabs] = useState<ITab[]>([]);
@@ -48,7 +28,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         console.error("Error fetching PDF URL", error);
       }
     };
-
     if (document) {
       fetchDocumentUrl();
     }
@@ -57,6 +36,17 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   useEffect(() => {
     console.log("Tabs state changed:", tabs);
   }, [tabs]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuVisible(false);
+      }
+    }
+    window.document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      window.document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleOpenChatPanel = () => {
     console.log("handleOpenChatPanel called");
@@ -67,7 +57,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-
     setTabs((prevTabs) => [...prevTabs, chatSupportTab]);
     setShowChatPanel(true);
   };
@@ -78,10 +67,16 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   const showContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
-
     const selection = window.getSelection();
 
     if (selection && selection.toString().trim() !== "") {
+      console.log(
+        JSON.stringify({
+          x: (event.clientX + window.scrollX) / scale,
+          y: (event.clientY + window.scrollY) / scale,
+        })
+      );
+      console.log(`x: ${event.clientX}, y: ${event.clientY}`);
       setMenuPosition({
         x: (event.clientX + window.scrollX) / scale,
         y: (event.clientY + window.scrollY) / scale,
@@ -105,18 +100,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuVisible(false);
-      }
-    }
-
-    window.document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      window.document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <Flex width="100%" height="100%">
       <Box flex="2" position="relative">
@@ -135,13 +118,12 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
             +
           </button>
         </Box>
-
         {menuVisible && (
           <Box
             ref={menuRef}
-            position="absolute"
-            top={`${menuPosition.y}px`}
-            left={`${menuPosition.x}px`}
+            position="fixed"
+            top={menuPosition.y}
+            left={menuPosition.x}
             zIndex={1000}
             bg="white"
             boxShadow="lg"
@@ -191,15 +173,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           )}
         </Box>
       </Box>
-
-      {/* <TabPanels
-        flex="1"
-        display="flex"
-        flexDirection="column"
-        px={2}
-        pb={2}
-        maxH="calc(100% - 58px)"
-      > */}
       {showChatPanel && (
         <Box flex="1" borderLeft="1px solid gray">
           <PanelWrapper
@@ -208,7 +181,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           />
         </Box>
       )}
-      {/* </TabPanels> */}
     </Flex>
   );
 };
