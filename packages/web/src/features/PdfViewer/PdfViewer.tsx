@@ -1,34 +1,14 @@
-import { Box, Flex, TabPanels } from "@chakra-ui/react";
-import {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Box, Flex } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import { getDownloadURL, StorageReference } from "firebase/storage";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import PanelWrapper from "../Workspace/PanelWrapper";
+import { ITab } from "../Workspace/Workspace";
 
 interface Props {
   document: StorageReference;
 }
-
-export type ITab = {
-  name: string;
-  panel: ReactNode;
-  openChatSupport: boolean;
-  openMiniLibrary: boolean;
-  openPdfViewer: boolean;
-};
-
-export type OpenTabsContext = {
-  openTabs: ITab[];
-  setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
-};
 
 const PdfViewer: React.FC<Props> = ({ document }) => {
   const [tabs, setTabs] = useState<ITab[]>([]);
@@ -135,7 +115,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
             +
           </button>
         </Box>
-
         {menuVisible && (
           <Box
             ref={menuRef}
@@ -191,15 +170,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           )}
         </Box>
       </Box>
-
-      {/* <TabPanels
-        flex="1"
-        display="flex"
-        flexDirection="column"
-        px={2}
-        pb={2}
-        maxH="calc(100% - 58px)"
-      > */}
       {showChatPanel && (
         <Box flex="1" borderLeft="1px solid gray">
           <PanelWrapper
@@ -208,7 +178,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           />
         </Box>
       )}
-      {/* </TabPanels> */}
     </Flex>
   );
 };
