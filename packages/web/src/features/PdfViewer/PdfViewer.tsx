@@ -91,10 +91,10 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const handleContextMenuOption = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     const selection = window.getSelection();
-    if (selection) {
-      const summarizedText = `Summarise the following piece of text: ${selection.toString()}`;
-      dispatch(setSelectedText(summarizedText));
-    }
+    // if (selection) {
+    //   const summarizedText = `Summarise the following piece of text: ${selection.toString()}`;
+    //   dispatch(setSelectedText(summarizedText));
+    // }
     handleOpenChatPanel();
   };
 
