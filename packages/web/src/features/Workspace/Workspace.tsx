@@ -67,7 +67,7 @@ const Workspace = () => {
 
   const userProjects = useContext(ProjectContext);
 
-  const openTabs2 = useSelector((state: RootState) => state.tabs.openTabs);
+  // const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
