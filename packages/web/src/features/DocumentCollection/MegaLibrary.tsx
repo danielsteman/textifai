@@ -52,7 +52,11 @@ import PdfViewer from "../PdfViewer/PdfViewer";
 import { shortenString } from "../../common/utils/shortenString";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "src/app/store";
-import { disableDocument, enableDocument, initializeSelectedDocuments } from "./librarySlice";
+import {
+  disableDocument,
+  enableDocument,
+  initializeSelectedDocuments,
+} from "./librarySlice";
 import {
   collection,
   deleteDoc,
@@ -87,19 +91,20 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const [yearFilter, setYearFilter] = useState<number | null>(null);
 
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
-  const [onlyFavoritesFilter, setOnlyFavoritesFilter] =useState<boolean>(false);
+  const [onlyFavoritesFilter, setOnlyFavoritesFilter] =
+    useState<boolean>(false);
   const [customYearStart, setCustomYearStart] = useState<number | null>(null);
   const [customYearEnd, setCustomYearEnd] = useState<number | null>(null);
   const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
-  
+
   const [activeProject, setActiveProject] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
       setActiveProject(projectId);
-    }
-  
+    };
+
     fetchActiveProject();
   }, [currentUser]);
 
@@ -118,8 +123,6 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     onClose: onUploadFileClose,
   } = useDisclosure();
 
-  const userDocumentsRef = ref(storage, `users/${currentUser?.uid}/uploads`);
-
   const handleToggleFavoritesFilter = () => {
     setOnlyFavoritesFilter((prev) => !prev);
     if (onlyFavoritesFilter) setYearFilter(null);
@@ -132,11 +135,10 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 
   useEffect(() => {
     if (documents.length > 0 && selectedDocuments.length === 0) {
-      const allUploadNames = documents.map(doc => doc.uploadName);
+      const allUploadNames = documents.map((doc) => doc.uploadName);
       dispatch(initializeSelectedDocuments(allUploadNames));
     }
   }, [documents, dispatch, selectedDocuments]);
-  
 
   useEffect(() => {
     const documentsCollection = collection(db, "uploads");
@@ -163,7 +165,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     } else {
       dispatch(enableDocument(documentName));
     }
-  };  
+  };
 
   const handleChangeDocumentQuery = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -705,7 +707,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                           doc.creationDate.toDate().getFullYear() &&
                         doc.creationDate.toDate().getFullYear() <=
                           customYearEnd);
-                    let matchesCollection = !collectionFilter || (doc.tags && doc.tags.includes(collectionFilter));
+                    let matchesCollection =
+                      !collectionFilter ||
+                      (doc.tags && doc.tags.includes(collectionFilter));
                     let matchesProject = activeProject;
                     let matchesFavorites = onlyFavoritesFilter
                       ? !!doc.favoritedBy
@@ -730,7 +734,9 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
                       <Td>
                         <Checkbox
                           isChecked={selectedDocuments.includes(doc.uploadName)}
-                          onChange={() => handleDocumentCheckboxChange(doc.uploadName)}
+                          onChange={() =>
+                            handleDocumentCheckboxChange(doc.uploadName)
+                          }
                         />
                       </Td>
                       <Td>

@@ -3,6 +3,7 @@ import libraryReducer from "../features/DocumentCollection/librarySlice";
 import messagesReducer from "../features/Chat/messageStackSlice";
 import answersReducer from "../features/Chat/answerStackSlice";
 import pdfReducer from "../features/PdfViewer/pdfSlice";
+import tabsSlice from "../features/Workspace/tabsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     messages: messagesReducer,
     answers: answersReducer,
     pdf: pdfReducer,
+    tabs: tabsSlice,
   },
 });
 

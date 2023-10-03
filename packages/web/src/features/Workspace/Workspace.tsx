@@ -25,15 +25,7 @@ import {
   MenuButton,
   MenuGroup,
 } from "@chakra-ui/react";
-import {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
 import EditorPanel from "../../features/Workspace/panels/EditorPanel";
@@ -53,6 +45,8 @@ import PdfViewerPanel from "./panels/PdfViewerPanel";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import { useSelector } from "react-redux";
+import { RootState } from "src/app/store";
 
 export type ITab = {
   name: string;
@@ -61,11 +55,6 @@ export type ITab = {
   openMiniLibrary: boolean;
   openPdfViewer: boolean;
   isActive?: boolean;
-};
-
-export type OpenTabsContext = {
-  openTabs: ITab[];
-  setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
 };
 
 const Workspace = () => {
@@ -78,27 +67,29 @@ const Workspace = () => {
 
   const userProjects = useContext(ProjectContext);
 
+  // const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const setCurrentTabAndIndex = (tab: ITab) => {
     setCurrentTab(tab);
-    const tabIndex = openTabs.findIndex(t => t.name === tab.name);
+    const tabIndex = openTabs.findIndex((t) => t.name === tab.name);
     setActiveTabIndex(tabIndex);
-};
+  };
 
-const onTabClose = (tabToClose: ITab) => {
-  const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
-  setOpenTabs(newTabs);
+  const onTabClose = (tabToClose: ITab) => {
+    const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
+    setOpenTabs(newTabs);
 
-  if (tabToClose.name === currentTab?.name) {
-    const newActiveIndex = activeTabIndex >= newTabs.length ? newTabs.length - 1 : activeTabIndex;
-    setActiveTabIndex(newActiveIndex);
-    setCurrentTab(newTabs[newActiveIndex] || defaultTab);
-  }
-};
-
+    if (tabToClose.name === currentTab?.name) {
+      const newActiveIndex =
+        activeTabIndex >= newTabs.length ? newTabs.length - 1 : activeTabIndex;
+      setActiveTabIndex(newActiveIndex);
+      setCurrentTab(newTabs[newActiveIndex] || defaultTab);
+    }
+  };
 
   const closeSupportingPanel = (
     panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
@@ -131,10 +122,10 @@ const onTabClose = (tabToClose: ITab) => {
   const previousTabsLengthRef = useRef(openTabs.length);
 
   useEffect(() => {
-      if (previousTabsLengthRef.current < openTabs.length) {
-          setActiveTabIndex(openTabs.length - 1);
-      }
-      previousTabsLengthRef.current = openTabs.length;
+    if (previousTabsLengthRef.current < openTabs.length) {
+      setActiveTabIndex(openTabs.length - 1);
+    }
+    previousTabsLengthRef.current = openTabs.length;
   }, [openTabs]);
 
   return (
@@ -410,52 +401,52 @@ const onTabClose = (tabToClose: ITab) => {
           <Spacer />
           {currentTab?.name === "Editor" && (
             <>
-            <Tooltip label="Open mini library">
-              <IconButton
-                aria-label={"library-support"}
-                icon={<FaBookOpen />}
-                onClick={() => {
-                  const updatedOpenTabs = openTabs.map((tab) =>
-                    tab.name === "Editor"
-                      ? { ...tab, openMiniLibrary: true }
-                      : tab
-                  );
-                  setOpenTabs(updatedOpenTabs);
-                }}
-              />
-            </Tooltip>
-            <Box w={2} />
-            <Tooltip label="Open support chat">
-              <IconButton
-                aria-label={"chat-support"}
-                icon={<ChatIcon />}
-                onClick={() => {
-                  const updatedOpenTabs = openTabs.map((tab) =>
-                    tab.name === "Editor"
-                      ? { ...tab, openChatSupport: true }
-                      : tab
-                  );
-                  setOpenTabs(updatedOpenTabs);
-                }}
-              />
-            </Tooltip>
-            <Box w={2} />
-            <Tooltip label="Open PDF Viewer">
-              <IconButton
-                aria-label={"pdf-viewer"}
-                icon={<FaRegFilePdf />}
-                onClick={() => {
-                  const updatedOpenTabs = openTabs.map((tab) =>
-                    tab.name === "Editor"
-                      ? { ...tab, openPdfViewer: true }
-                      : tab
-                  );
-                  setOpenTabs(updatedOpenTabs);
-                }}
-              />
-            </Tooltip>
-            <Box w={2} />
-          </>
+              <Tooltip label="Open mini library">
+                <IconButton
+                  aria-label={"library-support"}
+                  icon={<FaBookOpen />}
+                  onClick={() => {
+                    const updatedOpenTabs = openTabs.map((tab) =>
+                      tab.name === "Editor"
+                        ? { ...tab, openMiniLibrary: true }
+                        : tab
+                    );
+                    setOpenTabs(updatedOpenTabs);
+                  }}
+                />
+              </Tooltip>
+              <Box w={2} />
+              <Tooltip label="Open support chat">
+                <IconButton
+                  aria-label={"chat-support"}
+                  icon={<ChatIcon />}
+                  onClick={() => {
+                    const updatedOpenTabs = openTabs.map((tab) =>
+                      tab.name === "Editor"
+                        ? { ...tab, openChatSupport: true }
+                        : tab
+                    );
+                    setOpenTabs(updatedOpenTabs);
+                  }}
+                />
+              </Tooltip>
+              <Box w={2} />
+              <Tooltip label="Open PDF Viewer">
+                <IconButton
+                  aria-label={"pdf-viewer"}
+                  icon={<FaRegFilePdf />}
+                  onClick={() => {
+                    const updatedOpenTabs = openTabs.map((tab) =>
+                      tab.name === "Editor"
+                        ? { ...tab, openPdfViewer: true }
+                        : tab
+                    );
+                    setOpenTabs(updatedOpenTabs);
+                  }}
+                />
+              </Tooltip>
+              <Box w={2} />
+            </>
           )}
         </Flex>
         <TabPanels
