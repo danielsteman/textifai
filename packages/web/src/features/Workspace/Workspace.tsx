@@ -67,7 +67,7 @@ const Workspace = () => {
 
   const userProjects = useContext(ProjectContext);
 
-  // const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+  const openTabs2 = useSelector((state: RootState) => state.tabs.openTabs);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -102,13 +102,7 @@ const Workspace = () => {
 
   const defaultTab: ITab = {
     name: "Library",
-    panel: (
-      <MegaLibraryPanel
-        openTabs={openTabs}
-        setOpenTabs={setOpenTabs}
-        setCurrentTab={setCurrentTab}
-      />
-    ),
+    panel: <MegaLibraryPanel setCurrentTab={setCurrentTab} />,
     openChatSupport: false,
     openMiniLibrary: false,
     openPdfViewer: false,
@@ -216,13 +210,7 @@ const Workspace = () => {
             onClick={() => {
               const tab: ITab = {
                 name: "Library",
-                panel: (
-                  <MegaLibraryPanel
-                    openTabs={openTabs}
-                    setOpenTabs={setOpenTabs}
-                    setCurrentTab={setCurrentTab}
-                  />
-                ),
+                panel: <MegaLibraryPanel setCurrentTab={setCurrentTab} />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
@@ -312,13 +300,7 @@ const Workspace = () => {
             onClick={() => {
               const tab: ITab = {
                 name: "Library",
-                panel: (
-                  <MegaLibraryPanel
-                    openTabs={openTabs}
-                    setOpenTabs={setOpenTabs}
-                    setCurrentTab={setCurrentTab}
-                  />
-                ),
+                panel: <MegaLibraryPanel setCurrentTab={setCurrentTab} />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,

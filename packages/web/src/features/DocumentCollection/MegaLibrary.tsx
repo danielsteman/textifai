@@ -41,9 +41,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { db, storage } from "../../app/config/firebase";
-import { StorageReference, deleteObject, listAll, ref } from "firebase/storage";
+import { deleteObject, ref } from "firebase/storage";
 import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
-import { MdAnalytics, MdUpload } from "react-icons/md";
+import { MdUpload } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
 import theme from "../../app/themes/theme";
 import UploadForm from "../UploadForm/UploadForm";
@@ -68,22 +68,16 @@ import {
   where,
 } from "firebase/firestore";
 import { Document } from "@shared/firestoreInterfaces/Document";
-import { current } from "@reduxjs/toolkit";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
+import { openTab } from "../Workspace/tabsSlice";
 
 export interface MegaLibraryProps {
-  openTabs: ITab[];
-  setOpenTabs: Dispatch<SetStateAction<ITab[]>>;
   setCurrentTab: Dispatch<SetStateAction<ITab | undefined>>;
 }
 
-const MegaLibrary: React.FC<MegaLibraryProps> = ({
-  openTabs,
-  setOpenTabs,
-  setCurrentTab,
-}) => {
+const MegaLibrary: React.FC<MegaLibraryProps> = ({ setCurrentTab }) => {
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -98,6 +92,8 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
   const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
 
   const [activeProject, setActiveProject] = useState<string | null>(null);
+
+  const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
 
   useEffect(() => {
     const fetchActiveProject = async () => {
@@ -230,10 +226,10 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
     };
     const existingTab = openTabs.find((t) => t.name === tab.name);
     if (!existingTab) {
-      setOpenTabs((prevTabs) => [...prevTabs, tab]);
+      dispatch(openTab(tab));
     }
     setCurrentTab(tab);
-    dispatch(initializeSelectedDocuments([tab.name])); 
+    dispatch(initializeSelectedDocuments([tab.name]));
   };
 
   const toggleFavourite = (fileName: string, isFavourite: boolean) => {
@@ -584,19 +580,6 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
               </ModalBody>
             </ModalContent>
           </Modal>
-          {/* <Tooltip label="Coming soon!">
-            <Button
-              disabled={true}
-              size="sm"
-              aria-label={"analyse"}
-              leftIcon={<MdAnalytics />}
-              borderRadius={100}
-              bgColor={theme.colors[colorMode].secondaryContainer}
-              textColor={theme.colors[colorMode].onSecondaryContainer}
-            >
-              Analyse
-            </Button>
-          </Tooltip> */}
           <Button
             size="sm"
             aria-label={"ask tai"}
@@ -615,7 +598,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
 
               const existingTab = openTabs.find((t) => t.name === chatTab.name);
               if (!existingTab) {
-                setOpenTabs((prevTabs) => [...prevTabs, chatTab]);
+                dispatch(openTab(chatTab));
               }
               setCurrentTab(chatTab);
             }}
