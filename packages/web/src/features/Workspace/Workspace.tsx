@@ -36,7 +36,6 @@ import {
   FaFilePdf,
   FaRegFilePdf,
 } from "react-icons/fa";
-import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
