@@ -6,8 +6,9 @@ import ChatPanel from "../Workspace/panels/ChatPanel";
 import PanelWrapper from "../Workspace/PanelWrapper";
 import { ITab } from "../Workspace/Workspace";
 import { useSelector } from 'react-redux';
-import { initializeSelectedDocuments } from '../DocumentCollection/librarySlice'; 
-import { RootState } from "src/app/store";
+import { useDispatch } from 'react-redux';
+import { setSelectedText } from './pdfSlice';
+
 
 interface Props {
   document: StorageReference;
@@ -22,7 +23,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const showChatPanel = tabs.some(tab => tab.name === "ChatSupport");
 
-  const selectedDocuments = useSelector((state: RootState) => state.library.selectedDocuments);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchDocumentUrl = async () => {
@@ -61,7 +62,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-  
     setTabs(prevTabs => [...prevTabs, chatSupportTab]);
   };
 
@@ -74,13 +74,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     const selection = window.getSelection();
 
     if (selection && selection.toString().trim() !== "") {
-      console.log(
-        JSON.stringify({
-          x: (event.clientX + window.scrollX) / scale,
-          y: (event.clientY + window.scrollY) / scale,
-        })
-      );
-      console.log(`x: ${event.clientX}, y: ${event.clientY}`);
       setMenuPosition({
         x: (event.clientX + window.scrollX) / scale,
         y: (event.clientY + window.scrollY) / scale,
@@ -97,7 +90,11 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   const handleContextMenuOption = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    console.log("handleContextMenuOption called");
+    const selection = window.getSelection();
+    if (selection) {
+      const summarizedText = `Summarise the following piece of text: ${selection.toString()}`;
+      dispatch(setSelectedText(summarizedText));
+    }
     handleOpenChatPanel();
   };
 

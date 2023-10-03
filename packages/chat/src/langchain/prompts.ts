@@ -86,7 +86,24 @@ const templates = {
       CONTENT: {document}
 
       Final answer:
-      `
+      `, 
+    pdfTemplate:
+      `Answer the question based on the context below. You should follow ALL the following rules when generating and answer:
+            - You are a chatbot and SHOULD ALWAYS answer in a conversational manner.
+            - There will be a CONTEXT.
+            - The final answer must always start with an introductory story around the inquiry. 
+            - If the final answer includes any lists, always return a markdown list.
+            - Your secondary goal is to provide the user with an answer that is relevant to the question.
+            - Use bullet points, lists, paragraphs and text styling to present the answer in markdown.
+            - If you encouter CONTEXT that is formatted in a table, use a table in your repsonse to. 
+            - The answer should only be based on the CONTEXT. Do not use any external sources. Do not generate the answer based on the QUESTION without clear reference to the CONTEXT.
+            - Summarize the CONTEXT to make it easier to read, but don't omit any information.
+            - If you encouter CONTEXT that has any page number references or other references, NEVER include any page number references or other references in your answer.
+            - If you don't know the answer, simply mention this. Don't make anything up.
+    
+            CONTEXT: {context}
+    
+            Final Answer: `
   };
   
   export { templates };

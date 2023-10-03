@@ -102,6 +102,31 @@ initializedRegenerateChain().then((initializedRenegerateChain) => {
   regenerateChain = initializedRenegerateChain;
 });
 
+// PDF QA chain
+const initializedPdfChain = async () => {
+  const pdfChain = new ChatOpenAI({
+    verbose: false,
+    modelName: "gpt-3.5-turbo",
+  });
+
+  const chain = new LLMChain({
+    prompt: new PromptTemplate({
+      template: templates.pdfTemplate,
+      inputVariables: ["context"],
+    }),
+    llm: pdfChain,
+    verbose: false,
+  });
+
+  return chain;
+};
+
+// Pdf Chain
+let pdfChain: LLMChain;
+initializedPdfChain().then((initializedPdfChain) => {
+  pdfChain = initializedPdfChain;
+});
+
 router.post(
   "/ask",
   async (
@@ -118,6 +143,19 @@ router.post(
         console.log("Regenerating answer...");
         const answer = await regenerateChain.call({
           document: prompt,
+        });
+
+        console.log(answer.text);
+        res.json({ answer: answer.text });
+      } catch (error) {
+        next(error);
+      }
+    }
+    else if (option === "pdfQa") {
+      try {
+        console.log("Answering PdfViewer questions...");
+        const answer = await pdfChain.call({
+          context: prompt,
         });
 
         console.log(answer.text);
