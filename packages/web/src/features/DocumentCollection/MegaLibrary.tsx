@@ -1,10 +1,4 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import {
   Box,
@@ -73,11 +67,7 @@ import TagInput from "../../common/components/CollectionTags";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { openTab } from "../Workspace/tabsSlice";
 
-export interface MegaLibraryProps {
-  setCurrentTab: Dispatch<SetStateAction<ITab | undefined>>;
-}
-
-const MegaLibrary: React.FC<MegaLibraryProps> = ({ setCurrentTab }) => {
+const MegaLibrary = () => {
   const { colorMode } = useColorMode();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -228,7 +218,6 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({ setCurrentTab }) => {
     if (!existingTab) {
       dispatch(openTab(tab));
     }
-    setCurrentTab(tab);
     dispatch(initializeSelectedDocuments([tab.name]));
   };
 
@@ -600,7 +589,6 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({ setCurrentTab }) => {
               if (!existingTab) {
                 dispatch(openTab(chatTab));
               }
-              setCurrentTab(chatTab);
             }}
           >
             Ask TAI
