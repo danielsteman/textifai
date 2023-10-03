@@ -1,10 +1,13 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, TabPanels } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import { getDownloadURL, StorageReference } from "firebase/storage";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import PanelWrapper from "../Workspace/PanelWrapper";
 import { ITab } from "../Workspace/Workspace";
+import { useSelector } from 'react-redux';
+import { initializeSelectedDocuments } from '../DocumentCollection/librarySlice'; 
+import { RootState } from "src/app/store";
 
 interface Props {
   document: StorageReference;
@@ -17,7 +20,9 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const [scale, setScale] = useState<number>(1);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  const [showChatPanel, setShowChatPanel] = useState(false);
+  const showChatPanel = tabs.some(tab => tab.name === "ChatSupport");
+
+  const selectedDocuments = useSelector((state: RootState) => state.library.selectedDocuments);
 
   useEffect(() => {
     const fetchDocumentUrl = async () => {
@@ -34,7 +39,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   }, [document]);
 
   useEffect(() => {
-    console.log("Tabs state changed:", tabs);
   }, [tabs]);
 
   useEffect(() => {
@@ -49,16 +53,16 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   }, []);
 
   const handleOpenChatPanel = () => {
-    console.log("handleOpenChatPanel called");
+  
     const chatSupportTab: ITab = {
       name: "ChatSupport",
-      panel: <ChatPanel />,
+      panel: null,
       openChatSupport: true,
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-    setTabs((prevTabs) => [...prevTabs, chatSupportTab]);
-    setShowChatPanel(true);
+  
+    setTabs(prevTabs => [...prevTabs, chatSupportTab]);
   };
 
   const handleCloseTab = (tabName: string) => {
@@ -89,7 +93,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   const handleCloseChatPanel = () => {
     handleCloseTab("ChatSupport");
-    setShowChatPanel(false);
   };
 
   const handleContextMenuOption = (e: React.MouseEvent<HTMLDivElement>) => {

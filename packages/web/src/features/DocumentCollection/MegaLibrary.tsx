@@ -231,6 +231,7 @@ const MegaLibrary: React.FC<MegaLibraryProps> = ({
       setOpenTabs((prevTabs) => [...prevTabs, tab]);
     }
     setCurrentTab(tab);
+    dispatch(initializeSelectedDocuments([tab.name])); 
   };
 
   const toggleFavourite = (fileName: string, isFavourite: boolean) => {
