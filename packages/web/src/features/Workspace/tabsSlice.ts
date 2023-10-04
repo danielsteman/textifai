@@ -17,8 +17,15 @@ export const tabsSlice = createSlice({
   initialState,
   reducers: {
     openTab: (state, action: PayloadAction<ITab>) => {
-      state.openTabs = [...state.openTabs, action.payload];
-      state.activeTabIndex = state.openTabs.length - 1;
+      const index = state.openTabs.findIndex(
+        (tab) => tab.name === action.payload.name
+      );
+      if (index === -1) {
+        state.openTabs = [...state.openTabs, action.payload];
+        state.activeTabIndex = state.openTabs.length - 1;
+      } else {
+        state.activeTabIndex = index;
+      }
     },
     closeTab: (state, action: PayloadAction<ITab>) => {
       state.openTabs = state.openTabs.filter(

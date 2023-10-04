@@ -76,10 +76,6 @@ const Workspace = () => {
     (state: RootState) => state.tabs.activeTabIndex
   );
 
-  // useEffect(() => {
-  //   console.log(openTabs);
-  // }, [openTabs]);
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -93,7 +89,6 @@ const Workspace = () => {
       openPdfViewer: false,
     };
     dispatch(openTab(defaultTab));
-    console.log("default tab added");
   }, []);
 
   return (

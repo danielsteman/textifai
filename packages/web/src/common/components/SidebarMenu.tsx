@@ -14,7 +14,7 @@ import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
 import EditorPanel from "../../features/Workspace/panels/EditorPanel";
 import { FaBook, FaEdit, FaFilePdf } from "react-icons/fa";
-import { addItemIfNotExist } from "../../common/utils/arrayManager";
+import { addItemIfNotExists } from "../../common/utils/arrayManager";
 import ChatPanel from "../../features/Workspace/panels/ChatPanel";
 import MegaLibraryPanel from "../../features/Workspace/panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
@@ -72,7 +72,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setOpenTabs(addItemIfNotExists(openTabs, tab, "name"));
               setCurrentTab(tab);
             }}
           >
@@ -93,7 +93,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setOpenTabs(addItemIfNotExists(openTabs, tab, "name"));
               setCurrentTab(tab);
             }}
           >
@@ -114,7 +114,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setOpenTabs(addItemIfNotExists(openTabs, tab, "name"));
               setCurrentTab(tab);
             }}
           >
@@ -135,7 +135,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setOpenTabs(addItemIfNotExists(openTabs, tab, "name"));
               setCurrentTab(tab);
             }}
           >
@@ -171,7 +171,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setOpenTabs(addItemIfNotExists(openTabs, tab, "name"));
               setCurrentTab(tab);
             }}
           />
@@ -186,7 +186,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setOpenTabs(addItemIfNotExists(openTabs, tab, "name"));
               setCurrentTab(tab);
             }}
           />
@@ -201,7 +201,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setOpenTabs(addItemIfNotExists(openTabs, tab, "name"));
               setCurrentTab(tab);
             }}
           />
@@ -216,7 +216,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
+              setOpenTabs(addItemIfNotExists(openTabs, tab, "name"));
               setCurrentTab(tab);
             }}
           />
