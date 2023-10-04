@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { ITab } from "./Workspace";
-import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 
 export interface LibraryState {
   openTabs: ITab[];

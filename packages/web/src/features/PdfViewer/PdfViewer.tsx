@@ -5,10 +5,9 @@ import { getDownloadURL, StorageReference } from "firebase/storage";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import PanelWrapper from "../Workspace/PanelWrapper";
 import { ITab } from "../Workspace/Workspace";
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { setSelectedText } from './pdfSlice';
-
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setSelectedText } from "./pdfSlice";
 
 interface Props {
   document: StorageReference;
@@ -21,7 +20,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const [scale, setScale] = useState<number>(1);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  const showChatPanel = tabs.some(tab => tab.name === "ChatSupport");
+  const showChatPanel = tabs.some((tab) => tab.name === "ChatSupport");
 
   const dispatch = useDispatch();
 
@@ -39,8 +38,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     }
   }, [document]);
 
-  useEffect(() => {
-  }, [tabs]);
+  useEffect(() => {}, [tabs]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -54,7 +52,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   }, []);
 
   const handleOpenChatPanel = () => {
-  
     const chatSupportTab: ITab = {
       name: "ChatSupport",
       panel: null,
@@ -62,7 +59,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-    setTabs(prevTabs => [...prevTabs, chatSupportTab]);
+    setTabs((prevTabs) => [...prevTabs, chatSupportTab]);
   };
 
   const handleCloseTab = (tabName: string) => {
@@ -175,10 +172,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
       </Box>
       {showChatPanel && (
         <Box flex="1" borderLeft="1px solid gray">
-          <PanelWrapper
-            tab={tabs.find((tab) => tab.name === "ChatSupport")!}
-            onClose={handleCloseChatPanel}
-          />
+          <PanelWrapper tab={tabs.find((tab) => tab.name === "ChatSupport")!} />
         </Box>
       )}
     </Flex>

@@ -109,13 +109,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             onClick={() => {
               const tab: ITab = {
                 name: "Library",
-                panel: (
-                  <MegaLibraryPanel
-                    openTabs={openTabs}
-                    setOpenTabs={setOpenTabs}
-                    setCurrentTab={setCurrentTab}
-                  />
-                ),
+                panel: <MegaLibraryPanel />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
@@ -202,13 +196,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             onClick={() => {
               const tab: ITab = {
                 name: "Library",
-                panel: (
-                  <MegaLibraryPanel
-                    openTabs={openTabs}
-                    setOpenTabs={setOpenTabs}
-                    setCurrentTab={setCurrentTab}
-                  />
-                ),
+                panel: <MegaLibraryPanel />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
