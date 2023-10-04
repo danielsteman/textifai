@@ -5,21 +5,12 @@ import MiniLibraryPanel from "./panels/MiniLibraryPanel";
 import ChatPanel from "./panels/ChatPanel";
 import PdfViewerPanel from "./panels/PdfViewerPanel";
 import SupportWindowGridItem from "../../common/components/SupportWindowGridItem";
-import { useSelector } from "react-redux";
-import { RootState } from "src/app/store";
-import { sumBooleanAttributes } from "../../common/utils/sumBooleanAttributes";
 
 interface PanelWrapperProps {
   tab: ITab;
 }
 
 const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab }) => {
-  const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
-  const openSupportWindows =
-    sumBooleanAttributes(openTabs as any, "openChatSupport") +
-    sumBooleanAttributes(openTabs as any, "openMiniLibrary") +
-    sumBooleanAttributes(openTabs as any, "openPdfViewer");
-  console.log(openSupportWindows);
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} px={0} py={0}>
       <Grid
