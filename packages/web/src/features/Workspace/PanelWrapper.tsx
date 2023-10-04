@@ -5,13 +5,9 @@ import MiniLibraryPanel from "./panels/MiniLibraryPanel";
 import ChatPanel from "./panels/ChatPanel";
 import PdfViewerPanel from "./panels/PdfViewerPanel";
 import SupportWindowGridItem from "../../common/components/SupportWindowGridItem";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  closeChatSupport,
-  closeMiniLibrary,
-  closePdfViewer,
-} from "./tabsSlice";
+import { useSelector } from "react-redux";
 import { RootState } from "src/app/store";
+import { sumBooleanAttributes } from "../../common/utils/sumBooleanAttributes";
 
 interface PanelWrapperProps {
   tab: ITab;
@@ -19,7 +15,11 @@ interface PanelWrapperProps {
 
 const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab }) => {
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
-  // const openSupportWindows =
+  const openSupportWindows =
+    sumBooleanAttributes(openTabs as any, "openChatSupport") +
+    sumBooleanAttributes(openTabs as any, "openMiniLibrary") +
+    sumBooleanAttributes(openTabs as any, "openPdfViewer");
+  console.log(openSupportWindows);
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} px={0} py={0}>
       <Grid
@@ -43,19 +43,19 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab }) => {
         </GridItem>
 
         {tab.openMiniLibrary && (
-          <SupportWindowGridItem windowName="Library">
+          <SupportWindowGridItem windowName="Library" tabName={tab.name}>
             <MiniLibraryPanel />
           </SupportWindowGridItem>
         )}
 
         {tab.openChatSupport && (
-          <SupportWindowGridItem windowName="Chat">
+          <SupportWindowGridItem windowName="Chat" tabName={tab.name}>
             <ChatPanel />
           </SupportWindowGridItem>
         )}
 
         {tab.openPdfViewer && (
-          <SupportWindowGridItem windowName="Pdf viewer">
+          <SupportWindowGridItem windowName="Pdf viewer" tabName={tab.name}>
             <PdfViewerPanel />
           </SupportWindowGridItem>
         )}

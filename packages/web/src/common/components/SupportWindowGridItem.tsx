@@ -9,27 +9,36 @@ import {
   Box,
 } from "@chakra-ui/react";
 import theme from "../../app/themes/theme";
+import { useDispatch } from "react-redux";
+import {
+  closeChatSupport,
+  closeMiniLibrary,
+  closePdfViewer,
+} from "../../features/Workspace/tabsSlice";
 
 interface SupportWindowGridItemProps {
   children: React.ReactNode;
   windowName: string;
+  tabName: string;
 }
 
 const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
   children,
   windowName,
+  tabName,
 }) => {
   const { colorMode } = useColorMode();
+  const dispatch = useDispatch();
   const onClose = () => {
     switch (windowName) {
       case "Library": {
-        dispatch(closeMiniLibrary("Library"));
+        dispatch(closeMiniLibrary(tabName));
       }
       case "Chat": {
-        dispatch(closeChatSupport("Chat"));
+        dispatch(closeChatSupport(tabName));
       }
       case "Pdf viewer": {
-        dispatch(closePdfViewer("Pdf viewer"));
+        dispatch(closePdfViewer(tabName));
       }
       default: {
         console.warn("Found unrecognized window name");
@@ -74,18 +83,3 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
 };
 
 export default SupportWindowGridItem;
-function dispatch(arg0: any) {
-  throw new Error("Function not implemented.");
-}
-
-function closeMiniLibrary(arg0: string): any {
-  throw new Error("Function not implemented.");
-}
-
-function closeChatSupport(arg0: string): any {
-  throw new Error("Function not implemented.");
-}
-
-function closePdfViewer(arg0: string): any {
-  throw new Error("Function not implemented.");
-}
