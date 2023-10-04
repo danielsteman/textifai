@@ -13,15 +13,29 @@ import theme from "../../app/themes/theme";
 interface SupportWindowGridItemProps {
   children: React.ReactNode;
   windowName: string;
-  onClose: () => void;
 }
 
 const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
   children,
   windowName,
-  onClose,
 }) => {
   const { colorMode } = useColorMode();
+  const onClose = () => {
+    switch (windowName) {
+      case "Library": {
+        dispatch(closeMiniLibrary("Library"));
+      }
+      case "Chat": {
+        dispatch(closeChatSupport("Chat"));
+      }
+      case "Pdf viewer": {
+        dispatch(closePdfViewer("Pdf viewer"));
+      }
+      default: {
+        console.warn("Found unrecognized window name");
+      }
+    }
+  };
   return (
     <GridItem
       overflowY="scroll"
@@ -60,3 +74,18 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
 };
 
 export default SupportWindowGridItem;
+function dispatch(arg0: any) {
+  throw new Error("Function not implemented.");
+}
+
+function closeMiniLibrary(arg0: string): any {
+  throw new Error("Function not implemented.");
+}
+
+function closeChatSupport(arg0: string): any {
+  throw new Error("Function not implemented.");
+}
+
+function closePdfViewer(arg0: string): any {
+  throw new Error("Function not implemented.");
+}

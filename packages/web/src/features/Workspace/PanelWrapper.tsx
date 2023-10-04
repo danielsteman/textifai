@@ -41,28 +41,19 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab }) => {
         </GridItem>
 
         {tab.openMiniLibrary && (
-          <SupportWindowGridItem
-            onClose={() => dispatch(closeMiniLibrary("Library"))}
-            windowName="Library"
-          >
+          <SupportWindowGridItem windowName="Library">
             <MiniLibraryPanel />
           </SupportWindowGridItem>
         )}
 
         {tab.openChatSupport && (
-          <SupportWindowGridItem
-            onClose={() => dispatch(closeChatSupport("Chat"))}
-            windowName="Chat"
-          >
+          <SupportWindowGridItem windowName="Chat">
             <ChatPanel />
           </SupportWindowGridItem>
         )}
 
         {tab.openPdfViewer && (
-          <SupportWindowGridItem
-            onClose={() => dispatch(closePdfViewer("Pdf viewer"))}
-            windowName="Pdf viewer"
-          >
+          <SupportWindowGridItem windowName="Pdf viewer">
             <PdfViewerPanel />
           </SupportWindowGridItem>
         )}
