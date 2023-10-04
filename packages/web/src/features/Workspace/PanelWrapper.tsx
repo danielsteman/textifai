@@ -5,19 +5,21 @@ import MiniLibraryPanel from "./panels/MiniLibraryPanel";
 import ChatPanel from "./panels/ChatPanel";
 import PdfViewerPanel from "./panels/PdfViewerPanel";
 import SupportWindowGridItem from "../../common/components/SupportWindowGridItem";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   closeChatSupport,
   closeMiniLibrary,
   closePdfViewer,
 } from "./tabsSlice";
+import { RootState } from "src/app/store";
 
 interface PanelWrapperProps {
   tab: ITab;
 }
 
 const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab }) => {
-  const dispatch = useDispatch();
+  const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+  // const openSupportWindows =
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} px={0} py={0}>
       <Grid
