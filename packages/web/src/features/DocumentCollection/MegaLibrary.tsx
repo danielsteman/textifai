@@ -208,16 +208,13 @@ const MegaLibrary = () => {
     const fileRef = ref(storage, storageLocation);
 
     const tab: ITab = {
-      name: shortenString(uploadName, 20),
+      name: uploadName,
       panel: <PdfViewer document={fileRef} />,
       openChatSupport: false,
       openMiniLibrary: false,
       openPdfViewer: false,
     };
-    const existingTab = openTabs.find((t) => t.name === tab.name);
-    if (!existingTab) {
-      dispatch(openTab(tab));
-    }
+    dispatch(openTab(tab));
     dispatch(initializeSelectedDocuments([tab.name]));
   };
 
@@ -656,7 +653,6 @@ const MegaLibrary = () => {
                 <Th>Author(s)</Th>
                 <Th isNumeric>Year</Th>
                 <Th>Collection</Th>
-                {/* <Th>Summary</Th> */}
                 <Th>Topics</Th>
                 <Th>Favorite</Th>
               </Tr>
