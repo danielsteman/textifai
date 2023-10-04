@@ -6,6 +6,7 @@ import {
   Heading,
   Spacer,
   IconButton,
+  Box,
 } from "@chakra-ui/react";
 import theme from "../../app/themes/theme";
 
@@ -51,7 +52,9 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
           onClick={onClose}
         />
       </HStack>
-      {children}
+      <Box overflowY="auto" h="100%">
+        {children}
+      </Box>
     </GridItem>
   );
 };

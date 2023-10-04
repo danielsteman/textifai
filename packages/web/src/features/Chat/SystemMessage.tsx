@@ -8,7 +8,7 @@ import {
   HStack,
   VStack,
   Box,
-  useColorMode, 
+  useColorMode,
   Spacer,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
@@ -30,6 +30,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   const { primary, tertiary, onPrimary, onTertiary } = theme.colors[colorMode];
 
   const bgColor = variant === "agent" ? tertiary : primary;
+  const textColor = variant === "agent" ? onTertiary : onPrimary;
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
@@ -39,20 +40,21 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
       setActiveProject(projectId);
-    }
-  
+    };
+
     fetchActiveProject();
   }, [currentUser]);
 
   const handleMenuClick = () => {
     appendToDocument(currentUser!.uid, activeProject!, message);
-    setMenuClicked(true); 
+    setMenuClicked(true);
   };
 
   return (
     <HStack mb={2}>
-      {variant === "user"  && <Spacer />}
-      <Box 
+      {variant === "user" && <Spacer />}
+      <Box
+        textColor={textColor}
         bgColor={bgColor}
         pr={variant === "agent" ? 0 : 6}
         pl={variant === "agent" ? 6 : 4}
@@ -79,9 +81,6 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
                 <MenuItem onClick={handleMenuClick}>
                   Copy to Working Document
                 </MenuItem>
-                {/* <MenuItem onClick={handleMenuClick}>
-                  Show in Source Document
-                </MenuItem> */}
               </MenuList>
             </Menu>
           )}

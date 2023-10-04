@@ -45,9 +45,7 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab }) => {
             onClose={() => dispatch(closeMiniLibrary("Library"))}
             windowName="Library"
           >
-            <Box overflowY="auto" h="100%">
-              <MiniLibraryPanel />
-            </Box>
+            <MiniLibraryPanel />
           </SupportWindowGridItem>
         )}
 
@@ -56,9 +54,7 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab }) => {
             onClose={() => dispatch(closeChatSupport("Chat"))}
             windowName="Chat"
           >
-            <Box overflowY="auto" h="100%">
-              <ChatPanel />
-            </Box>
+            <ChatPanel />
           </SupportWindowGridItem>
         )}
 
@@ -67,9 +63,7 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab }) => {
             onClose={() => dispatch(closePdfViewer("Pdf viewer"))}
             windowName="Pdf viewer"
           >
-            <Box overflowY="auto" h="100%">
-              <PdfViewerPanel />
-            </Box>
+            <PdfViewerPanel />
           </SupportWindowGridItem>
         )}
       </Grid>
