@@ -9,15 +9,12 @@ const messageStackSlice = createSlice({
     pushMessage: (state, action: PayloadAction<string>) => {
       state.push(action.payload);
     },
-    popMessage: (state) => {
-      state.pop();
-    },
-    clearMessages: () => {
-      return initialState;
+    setMessages: (state, action: PayloadAction<string[]>) => {
+      return action.payload;
     },
   },
 });
 
-export const { pushMessage, popMessage, clearMessages } =
+export const { pushMessage, setMessages } =
   messageStackSlice.actions;
 export default messageStackSlice.reducer;

@@ -10,11 +10,14 @@
     doc,
     orderBy,
     limit,
-    DocumentData,
   } from "firebase/firestore";
   import { db } from "../../app/config/firebase";
   import { Conversation } from "@shared/firestoreInterfaces/Conversation";
   import { Message } from "@shared/firestoreInterfaces/Message";
+  import { useDispatch } from 'react-redux';
+  import axios from 'axios';
+  import { pushAnswer } from './answerStackSlice'; 
+  import { pushMessage } from './messageStackSlice'; 
 
 export const conversationsCollection = collection(db, "conversations");
 export const messagesCollection = collection(db, "messages");
@@ -151,3 +154,27 @@ export const appendToDocument = async (
   }
 };
 
+export const handleSendPdfText = async (pdfText: string, currentConversationId: string | null, setLoading: (loading: boolean) => void, dispatch: any) => {
+  try {
+      setLoading(true);
+
+      dispatch(pushMessage(pdfText));
+
+      // Constructing the payload
+      const requestPayload = {
+          prompt: pdfText,
+          option: 'pdfqa',
+      };
+
+      const res = await axios.post("http://localhost:3001/api/chat/ask", requestPayload);
+
+      dispatch(pushAnswer(res.data.answer));
+      await addMessageToCollection(pdfText, "user", currentConversationId, null);
+      await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
+      await updateConversationDate(currentConversationId!);
+
+      setLoading(false);
+  } catch (error) {
+      console.log(error);
+  }
+};

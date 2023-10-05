@@ -9,11 +9,8 @@ const answerStackSlice = createSlice({
     pushAnswer: (state, action: PayloadAction<string>) => {
       state.push(action.payload);
     },
-    popAnswer: (state) => {
-      state.pop();
-    },
-    clearAnswers: (state) => {
-      return initialState;
+    setAnswers: (state, action: PayloadAction<string[]>) => {
+      return action.payload;
     },
     replaceLastAnswer: (state, action: PayloadAction<string>) => {
       if (state.length) {
@@ -23,5 +20,5 @@ const answerStackSlice = createSlice({
   },
 });
 
-export const { pushAnswer, popAnswer, clearAnswers, replaceLastAnswer } = answerStackSlice.actions;
+export const { pushAnswer, setAnswers, replaceLastAnswer } = answerStackSlice.actions;
 export default answerStackSlice.reducer;

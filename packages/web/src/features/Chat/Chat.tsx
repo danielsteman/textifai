@@ -6,6 +6,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Textarea
 } from "@chakra-ui/react";
 import { RepeatIcon } from "@chakra-ui/icons";
 import {
@@ -37,12 +38,12 @@ import {
   startConversation, 
   getConversation, 
   addMessageToCollection, 
-  updateConversationDate 
+  updateConversationDate, 
 } from "./ChatFuncs";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { useSelector, useDispatch } from 'react-redux';
-import { pushMessage } from './messageStackSlice'; 
-import { pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
+import { setMessages, pushMessage } from './messageStackSlice'; 
+import { setAnswers, pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
 
 
 const Chat = () => {
@@ -53,6 +54,7 @@ const Chat = () => {
     string | null
   >(null);
   const [conversationHistory, setConversationHistory] = useState<string>("");
+  const [processedText, setProcessedText] = useState("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
@@ -60,8 +62,17 @@ const Chat = () => {
 
   const messageStack = useSelector((state: RootState) => state.messages);
   const answerStack = useSelector((state: RootState) => state.answers);
+  const selectedText = useSelector((state: RootState) => state.pdf.selectedText);
 
   const dispatch = useDispatch();
+
+//   useEffect(() => {
+//     if (selectedText && selectedText !== processedText) {
+//         setProcessedText(selectedText);
+//         handleSubmit({ preventDefault: () => {} });
+//     }
+// }, [selectedText]);
+
 
   useEffect(() => {
     const fetchActiveProject = async () => {
@@ -77,116 +88,126 @@ const Chat = () => {
   );
 
   const scrollToBottom = () => {
-    if (messagesEndRef.current && messagesEndRef.current.parentElement) {
-        const parentElement = messagesEndRef.current.parentElement;
-        parentElement.scrollTop = parentElement.scrollHeight;
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+useLayoutEffect(() => {
+  const initializeMessages = async () => {
+    if (currentConversationId) {
+      const messages = await fetchMessagesForConversation(
+        currentConversationId
+      );
+      const userMessages = messages
+        .filter((msg) => msg.variant === "user")
+        .map((msg) => msg.messageBody);
+      const agentMessages = messages
+        .filter((msg) => msg.variant === "agent")
+        .map((msg) => msg.messageBody);
+
+      dispatch(setMessages(userMessages));
+      dispatch(setAnswers(agentMessages));
+
+      scrollToBottom();
     }
+  };
+  initializeMessages();
+}, [currentConversationId]);
+
+useLayoutEffect(scrollToBottom, [messageStack, answerStack]);
+
+useEffect(() => {
+  const fetchConversationId = async () => {
+    if (currentUser) {
+      const conversationsCollection = collection(db, "conversations");
+      const q = query(
+        conversationsCollection,
+        where("userId", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setCurrentConversationId(querySnapshot.docs[0].id);
+      } else {
+        const newConversationId = await startConversation(currentUser.uid, activeProject!);
+        setCurrentConversationId(newConversationId || null); 
+      }
+    }
+  };
+
+  fetchConversationId();
+}, [currentUser]);
+
+const handleSubmit = async (e: { preventDefault: () => void }) => {
+  e.preventDefault();
+  dispatch(pushMessage(message))
+  setMessage("");
+
+  try {
+    setLoading(true);
+
+    // Ensure currentConversationId is not null before using it
+    if (currentConversationId) {
+      // Fetch the conversation history
+      const updatedConversationHistory = await getConversation(
+        currentConversationId!
+      );
+      setConversationHistory(updatedConversationHistory);
+      // Now, send the updated history to the Axios server
+      const res = await axios.post("http://localhost:3001/api/chat/ask", {
+        prompt: message,
+        history: conversationHistory,
+        option: "GeneralQa",
+        files: selectedDocuments,
+        userId: currentUser!.uid
+      });
+
+      dispatch(pushAnswer(res.data.answer))
+
+      // Always scroll to bottom
+      scrollToBottom();
+      setLoading(false);
+
+      // Add user's message to the collection
+      await addMessageToCollection(
+        message,
+        "user",
+        currentConversationId,
+        null
+      );
+
+      // Add AI's response to the collection
+      await addMessageToCollection(
+        res.data.answer,
+        "agent",
+        currentConversationId,
+        null
+      );
+
+      await updateConversationDate(currentConversationId);
+    } else {
+      console.error("currentConversationId is null.");
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-  useLayoutEffect(() => {
-    const initializeMessages = async () => {
-      if (currentConversationId) {
-        const messages = await fetchMessagesForConversation(
-          currentConversationId
-        );
-        const userMessages = messages
-          .filter((msg) => msg.variant === "user")
-          .map((msg) => msg.messageBody);
-        const agentMessages = messages
-          .filter((msg) => msg.variant === "agent")
-          .map((msg) => msg.messageBody);
-  
-        userMessages.forEach(message => {
-          dispatch(pushMessage(message));
-        });
-  
-        agentMessages.forEach(answer => {
-          dispatch(pushAnswer(answer));
-        });
-  
-        scrollToBottom();
-      }
-    };
-    initializeMessages();
-  }, [currentConversationId, dispatch]); 
+  const handleRegenerate = async () => {
+    // Capture the last message from answerStack
+    const lastSystemMessage = answerStack[answerStack.length - 1];
 
-  useLayoutEffect(scrollToBottom, [messageStack, answerStack]);
-
-  useEffect(() => {
-    const fetchConversationId = async () => {
-      if (currentUser) {
-        const conversationsCollection = collection(db, "conversations");
-        const q = query(
-          conversationsCollection,
-          where("userId", "==", currentUser.uid)
-        );
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          setCurrentConversationId(querySnapshot.docs[0].id); 
-        } else {
-          const newConversationId = await startConversation(currentUser.uid, activeProject!);
-          setCurrentConversationId(newConversationId || null); 
-        }
-      }
-    };
-
-    fetchConversationId();
-  }, [currentUser]);
-
-  const handleChatAction = async (regenerate = false) => {
     try {
-        setLoading(true);
+      // Make the API call with the last system message
+      const res = await axios.post("http://localhost:3001/api/chat/ask", {
+        prompt: lastSystemMessage, 
+        option: "regenerate", 
+      });
 
-        if (!regenerate) {
-            dispatch(pushMessage(message));
-            setMessage("");
-        }
-
-        let requestPayload;
-        if (regenerate) {
-            const lastSystemMessage = answerStack[answerStack.length - 1];
-            requestPayload = {
-                prompt: lastSystemMessage,
-                option: "regenerate"
-            };
-        } else {
-            const updatedConversationHistory = await getConversation(currentConversationId!);
-            setConversationHistory(updatedConversationHistory);
-            requestPayload = {
-                prompt: message,
-                history: updatedConversationHistory,
-                option: "GeneralQa",
-                files: selectedDocuments,
-                userId: currentUser!.uid
-            };
-        }
-
-        const res = await axios.post("http://localhost:3001/api/chat/ask", requestPayload);
-
-        if (regenerate) {
-            dispatch(replaceLastAnswer(res.data.answer));
-        } else {
-            dispatch(pushAnswer(res.data.answer));
-            scrollToBottom();
-            await addMessageToCollection(message, "user", currentConversationId, null);
-            await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
-            await updateConversationDate(currentConversationId!);
-        }
-
-        setLoading(false);
+      // Replace the last message in answerStack with the regenerated one
+      dispatch(replaceLastAnswer(res.data.answer))
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
-  };
-
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    handleChatAction();
-  };
-
-  const handleRegenerate = () => {
-      handleChatAction(true);
   };
 
   function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -245,6 +266,6 @@ const Chat = () => {
       </form>
     </Flex>
   );
-};
+  };
 
-export default Chat;
+  export default Chat;
