@@ -291,7 +291,7 @@ const Workspace = () => {
       {openTabs && openTabs.length > 0 && (
         <Tabs
           index={activeTabIndex}
-          onChange={(index) => dispatch(activateTab(openTabs[index - 1]))}
+          onChange={(index) => dispatch(activateTab(openTabs[index]))}
           w="100%"
           h="100%"
           maxH="100%"
