@@ -8,12 +8,9 @@ import SupportWindowGridItem from "../../common/components/SupportWindowGridItem
 
 interface PanelWrapperProps {
   tab: ITab;
-  onClose: (
-    panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
-  ) => void;
 }
 
-const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
+const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab }) => {
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} px={0} py={0}>
       <Grid
@@ -37,35 +34,20 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, onClose }) => {
         </GridItem>
 
         {tab.openMiniLibrary && (
-          <SupportWindowGridItem
-            onClose={() => onClose("openMiniLibrary")}
-            windowName="Library"
-          >
-            <Box overflowY="auto" h="100%">
-              <MiniLibraryPanel />
-            </Box>
+          <SupportWindowGridItem windowName="Library" tabName={tab.name}>
+            <MiniLibraryPanel />
           </SupportWindowGridItem>
         )}
 
         {tab.openChatSupport && (
-          <SupportWindowGridItem
-            onClose={() => onClose("openChatSupport")}
-            windowName="Chat"
-          >
-            <Box overflowY="auto" h="100%">
-              <ChatPanel />
-            </Box>
+          <SupportWindowGridItem windowName="Chat" tabName={tab.name}>
+            <ChatPanel />
           </SupportWindowGridItem>
         )}
 
         {tab.openPdfViewer && (
-          <SupportWindowGridItem
-            onClose={() => onClose("openPdfViewer")}
-            windowName="Pdf viewer"
-          >
-            <Box overflowY="auto" h="100%">
-              <PdfViewerPanel />
-            </Box>
+          <SupportWindowGridItem windowName="Pdf viewer" tabName={tab.name}>
+            <PdfViewerPanel />
           </SupportWindowGridItem>
         )}
       </Grid>

@@ -6,27 +6,58 @@ import {
   Heading,
   Spacer,
   IconButton,
+  Box,
 } from "@chakra-ui/react";
 import theme from "../../app/themes/theme";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  closeChatSupport,
+  closeMiniLibrary,
+  closePdfViewer,
+} from "../../features/Workspace/tabsSlice";
+import { RootState } from "src/app/store";
+import { sumBooleanAttributes } from "../utils/sumBooleanAttributes";
 
 interface SupportWindowGridItemProps {
   children: React.ReactNode;
   windowName: string;
-  onClose: () => void;
+  tabName: string;
 }
 
 const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
   children,
   windowName,
-  onClose,
+  tabName,
 }) => {
   const { colorMode } = useColorMode();
+  const dispatch = useDispatch();
+  const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+  const openSupportWindows =
+    sumBooleanAttributes(openTabs as any, "openChatSupport") +
+    sumBooleanAttributes(openTabs as any, "openMiniLibrary") +
+    sumBooleanAttributes(openTabs as any, "openPdfViewer");
+  const onClose = () => {
+    switch (windowName) {
+      case "Library": {
+        dispatch(closeMiniLibrary(tabName));
+      }
+      case "Chat": {
+        dispatch(closeChatSupport(tabName));
+      }
+      case "Pdf viewer": {
+        dispatch(closePdfViewer(tabName));
+      }
+      default: {
+        console.warn("Found unrecognized window name");
+      }
+    }
+  };
   return (
     <GridItem
       overflowY="scroll"
       display="flex"
       flexDir="column"
-      rowSpan={1}
+      rowSpan={3 - openSupportWindows}
       colSpan={1}
       bgColor={theme.colors[colorMode].surfaceContainer}
       h="100%"
@@ -51,7 +82,9 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
           onClick={onClose}
         />
       </HStack>
-      {children}
+      <Box overflowY="auto" h="100%">
+        {children}
+      </Box>
     </GridItem>
   );
 };

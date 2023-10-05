@@ -45,7 +45,7 @@ yarn run ...
 
 ## Database
 
-Documents (just PDF for now) uploaded by users are stored in Firebase cloud storage. Document metadata, project data, additional user data, and such, are stored in a Firestore in several collections. The read/write rules of collections are tracked in `firebase.rules`.
+Documents (just PDF for now, later support for more file types) uploaded by users are stored in Firebase cloud storage. Document metadata, project data, additional user data, and such, are stored in a Firestore in several collections. The read/write rules of collections are tracked in `firebase.rules`.
 
 ## Deployment
 

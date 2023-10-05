@@ -1,19 +1,7 @@
-import MegaLibrary, {
-  MegaLibraryProps,
-} from "../../DocumentCollection/MegaLibrary";
+import MegaLibrary from "../../DocumentCollection/MegaLibrary";
 
-const MegaLibraryPanel: React.FC<MegaLibraryProps> = ({
-  openTabs,
-  setOpenTabs,
-  setCurrentTab,
-}) => {
-  return (
-    <MegaLibrary
-      openTabs={openTabs}
-      setOpenTabs={setOpenTabs}
-      setCurrentTab={setCurrentTab}
-    />
-  );
+const MegaLibraryPanel = () => {
+  return <MegaLibrary />;
 };
 
 export default MegaLibraryPanel;
