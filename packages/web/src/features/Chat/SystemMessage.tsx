@@ -10,6 +10,7 @@ import {
   Box,
   useColorMode,
   Spacer,
+  Text,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import theme from "../../app/themes/theme";
@@ -56,17 +57,18 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       <Box
         textColor={textColor}
         bgColor={bgColor}
-        pr={variant === "agent" ? 0 : 6}
-        pl={variant === "agent" ? 6 : 4}
+        pr={variant === "agent" ? 0 : 4}
+        pl={4}
         py={0.5}
         rounded={8}
         gap={0}
         w="fit-content"
         minH={8}
+        alignItems="center"
       >
-        <HStack spacing={2} align="start">
-          <VStack align="start" spacing={0} flex="1">
-            <ReactMarkdown>{message}</ReactMarkdown>
+        <HStack spacing={2}>
+          <VStack spacing={0} flex="1">
+            <Text>{message}</Text>
           </VStack>
           {!menuClicked && variant === "agent" && (
             <Menu>
