@@ -5,7 +5,7 @@ resource "google_firebase_hosting_site" "default" {
   app_id = google_firebase_web_app.default.app_id
 }
 
-resource "google_firebase_hosting_version" "documents" {
+resource "google_firebase_hosting_version" "default" {
   provider = google-beta
   site_id  = google_firebase_hosting_site.default.site_id
   config {
@@ -16,20 +16,7 @@ resource "google_firebase_hosting_version" "documents" {
         region = google_cloud_run_v2_service.service["documents"].location
       }
     }
-  }
-}
 
-resource "google_firebase_hosting_release" "documents" {
-  provider     = google-beta
-  site_id      = google_firebase_hosting_site.default.site_id
-  version_name = google_firebase_hosting_version.documents.name
-  message      = "Cloud Run Integration with Documents service"
-}
-
-resource "google_firebase_hosting_version" "chat" {
-  provider = google-beta
-  site_id  = google_firebase_hosting_site.default.site_id
-  config {
     rewrites {
       glob = "/api/chat/**"
       run {
@@ -37,20 +24,7 @@ resource "google_firebase_hosting_version" "chat" {
         region = google_cloud_run_v2_service.service["chat"].location
       }
     }
-  }
-}
 
-resource "google_firebase_hosting_release" "chat" {
-  provider     = google-beta
-  site_id      = google_firebase_hosting_site.default.site_id
-  version_name = google_firebase_hosting_version.chat.name
-  message      = "Cloud Run Integration with Chat service"
-}
-
-resource "google_firebase_hosting_version" "web" {
-  provider = google-beta
-  site_id  = google_firebase_hosting_site.default.site_id
-  config {
     rewrites {
       glob = "/**"
       run {
@@ -61,9 +35,9 @@ resource "google_firebase_hosting_version" "web" {
   }
 }
 
-resource "google_firebase_hosting_release" "web" {
+resource "google_firebase_hosting_release" "default" {
   provider     = google-beta
   site_id      = google_firebase_hosting_site.default.site_id
-  version_name = google_firebase_hosting_version.web.name
-  message      = "Cloud Run Integration with Web frontend"
+  version_name = google_firebase_hosting_version.default.name
+  message      = "Cloud Run Integration"
 }
