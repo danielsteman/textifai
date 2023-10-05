@@ -40,6 +40,7 @@ import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
+import { useNavigate } from "react-router";
 import PdfViewerPanel from "./panels/PdfViewerPanel";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
@@ -54,6 +55,7 @@ import {
 } from "./tabsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
+import { AuthContext } from "../../app/providers/AuthProvider";
 
 export type ITab = {
   name: string;
@@ -65,8 +67,11 @@ export type ITab = {
 };
 
 const Workspace = () => {
+  const [currentProjectTitle, setCurrentProjectTitle] = useState("");
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const currentUser = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const userProjects = useContext(ProjectContext);
 
@@ -90,6 +95,14 @@ const Workspace = () => {
     };
     dispatch(openTab(defaultTab));
   }, []);
+
+  useEffect(() => {
+    const newProjectTitle = getCurrentProjectTitle(userProjects);
+    setCurrentProjectTitle(newProjectTitle);
+    if (newProjectTitle === "⚠️ Project title not found") {
+        navigate("/features/onboarding");
+    }
+  }, [userProjects]);
 
   return (
     <HStack h="100%">
@@ -117,7 +130,7 @@ const Workspace = () => {
               variant="ghost"
               rightIcon={<ChevronDownIcon />}
             >
-              {getCurrentProjectTitle(userProjects)}
+              {currentProjectTitle}
             </MenuButton>
             <MenuList>
               <MenuGroup title="All projects">
