@@ -19,9 +19,51 @@ resource "google_firebase_hosting_version" "documents" {
   }
 }
 
-resource "google_firebase_hosting_release" "default" {
+resource "google_firebase_hosting_release" "documents" {
   provider     = google-beta
   site_id      = google_firebase_hosting_site.default.site_id
   version_name = google_firebase_hosting_version.documents.name
   message      = "Cloud Run Integration with Documents service"
+}
+
+resource "google_firebase_hosting_version" "chat" {
+  provider = google-beta
+  site_id  = google_firebase_hosting_site.default.site_id
+  config {
+    rewrites {
+      glob = "/api/chat/**"
+      run {
+        service_id = google_cloud_run_v2_service.service["chat"].name
+        region = google_cloud_run_v2_service.service["chat"].location
+      }
+    }
+  }
+}
+
+resource "google_firebase_hosting_release" "chat" {
+  provider     = google-beta
+  site_id      = google_firebase_hosting_site.default.site_id
+  version_name = google_firebase_hosting_version.chat.name
+  message      = "Cloud Run Integration with Chat service"
+}
+
+resource "google_firebase_hosting_version" "web" {
+  provider = google-beta
+  site_id  = google_firebase_hosting_site.default.site_id
+  config {
+    rewrites {
+      glob = "/**"
+      run {
+        service_id = google_cloud_run_v2_service.service["web"].name
+        region = google_cloud_run_v2_service.service["web"].location
+      }
+    }
+  }
+}
+
+resource "google_firebase_hosting_release" "web" {
+  provider     = google-beta
+  site_id      = google_firebase_hosting_site.default.site_id
+  version_name = google_firebase_hosting_version.web.name
+  message      = "Cloud Run Integration with Web frontend"
 }
