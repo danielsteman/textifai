@@ -98,6 +98,24 @@ const config = {
   fonts: {
     body: "Roboto",
   },
+  components: {
+    Menu: {
+      parts: ["list", "item"],
+      baseStyle: (props: StyleFunctionProps) => ({
+        list: {
+          bgColor: colors[props.colorMode].surfaceContainer,
+          border: 0,
+        },
+        item: {
+          bgColor: colors[props.colorMode].surfaceContainer,
+          border: 0,
+          _hover: {
+            bgColor: colors[props.colorMode].surfaceContainerHigh,
+          },
+        },
+      }),
+    },
+  },
 };
 
 const theme = extendTheme(config);
