@@ -154,27 +154,24 @@ export const appendToDocument = async (
   }
 };
 
-export const handleSendPdfText = async (pdfText: string, currentConversationId: string | null, setLoading: (loading: boolean) => void, dispatch: any) => {
-  try {
-      setLoading(true);
+export const fetchConversationId = async (
+  currentUser: any,
+  activeProject: string | null
+): Promise<string | null> => {
+  if (currentUser) {
+    const q = query(
+      conversationsCollection,
+      where("userId", "==", currentUser.uid)
+    );
+    const querySnapshot = await getDocs(q);
 
-      dispatch(pushMessage(pdfText));
-
-      // Constructing the payload
-      const requestPayload = {
-          prompt: pdfText,
-          option: 'pdfqa',
-      };
-
-      const res = await axios.post("http://localhost:3001/api/chat/ask", requestPayload);
-
-      dispatch(pushAnswer(res.data.answer));
-      await addMessageToCollection(pdfText, "user", currentConversationId, null);
-      await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
-      await updateConversationDate(currentConversationId!);
-
-      setLoading(false);
-  } catch (error) {
-      console.log(error);
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].id;
+    } else {
+      const newConversationId = await startConversation(currentUser.uid, activeProject!);
+      return newConversationId || null;
+    }
   }
+  return null;
 };
+

@@ -27,10 +27,11 @@ interface SystemMessageProps {
 const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   const [menuClicked, setMenuClicked] = useState(false);
   const { colorMode } = useColorMode();
-  const { primary, tertiary, onPrimary, onTertiary } = theme.colors[colorMode];
+  const { primary, tertiary, onPrimary, onTertiary, onText } = theme.colors[colorMode];
 
   const bgColor = variant === "agent" ? tertiary : primary;
   const textColor = variant === "agent" ? onTertiary : onPrimary;
+  const textbocColor = onText;
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
@@ -78,7 +79,10 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
                 size="sm"
               />
               <MenuList>
-                <MenuItem onClick={handleMenuClick}>
+                <MenuItem 
+                  onClick={handleMenuClick}
+                  color={textbocColor}
+                  >
                   Copy to Working Document
                 </MenuItem>
               </MenuList>
