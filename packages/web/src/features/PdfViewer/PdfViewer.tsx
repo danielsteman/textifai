@@ -59,19 +59,34 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     }
   };
 
-  const handleContextMenuOption = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleContextMenuOption = (option: string, e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     const selection = window.getSelection();
-    if (selection) {
-      const summarizedText = `Summarise the following piece of text: ${selection.toString()}`;
-      dispatch(setSelectedText(summarizedText));
+    if (!selection) return;
+  
+    let message = '';
+    const text = selection.toString();
+  
+    switch (option) {
+      case 'Summarise':
+        message = `Summarise the following piece of text: ${text}`;
+        break;
+      case 'Show key points':
+        message = `Show the key points of the following piece of text: ${text}`;
+        break;
+      case 'Explain':
+        message = `Explain the following piece of text: ${text}`;
+        break;
+      default:
+        console.error('Invalid option');
+        return;
     }
+  
+    dispatch(setSelectedText(message));
     dispatch(openChatSupport(document.name));
     setMenuVisible(false);
-    // todo: clear chat history?
-    // todo: ask for summary in chat or something?
   };
-
+  
   const menuRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -108,14 +123,26 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
               display="block"
               p="1rem"
               color="black"
-              onClick={handleContextMenuOption}
+              onClick={(e: any) => handleContextMenuOption('Summarise', e)}
             >
               Summarise
             </Box>
-            <Box as="button" display="block" p="1rem" color="black">
+            <Box
+              as="button"
+              display="block"
+              p="1rem"
+              color="black"
+              onClick={(e: any) => handleContextMenuOption('Show key points', e)}
+            >
               Show key points
             </Box>
-            <Box as="button" display="block" p="1rem" color="black">
+            <Box
+              as="button"
+              display="block"
+              p="1rem"
+              color="black"
+              onClick={(e: any) => handleContextMenuOption('Explain', e)}
+            >
               Explain
             </Box>
           </Box>

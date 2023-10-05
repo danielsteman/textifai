@@ -94,6 +94,9 @@ const templates = {
             - There will be a CONTEXT.
             - NEVER mention the word CONTEXT in your final answer. 
             - Make the final answer concise, without loosing its original CONTEXT.
+            - If you are asked to SUMMARISE, never use more than 5 sentences.
+            - If you are asked to SHOW KEY THE KEY POINTS, return your FINAL ANSWER USING BULLET POINTS. USE 3 TO 5 BULLETS.
+            - If you are asked to EXPLAIN, NEVER use jargon and use EASY TO UNDERSTANDS words.
             - The final answer should maintain the original intent and meaning of the CONTEXT.
             - If the final answer includes any lists, always return a markdown list.
             - Use bullet points, lists, paragraphs and text styling to present the answer in markdown.
