@@ -1,27 +1,21 @@
-import { Box, Flex, TabPanels } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import { getDownloadURL, StorageReference } from "firebase/storage";
-import ChatPanel from "../Workspace/panels/ChatPanel";
-import PanelWrapper from "../Workspace/PanelWrapper";
-import { ITab } from "../Workspace/Workspace";
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { setSelectedText } from './pdfSlice';
-
+import { useDispatch } from "react-redux";
+import { setSelectedText } from "./pdfSlice";
+import { openChatSupport } from "../Workspace/tabsSlice";
 
 interface Props {
   document: StorageReference;
 }
 
 const PdfViewer: React.FC<Props> = ({ document }) => {
-  const [tabs, setTabs] = useState<ITab[]>([]);
   const [numPages, setNumPages] = useState<number>(0);
   const [pdfURL, setPdfURL] = useState<string | null>(null);
   const [scale, setScale] = useState<number>(1);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  const showChatPanel = tabs.some(tab => tab.name === "ChatSupport");
 
   const dispatch = useDispatch();
 
@@ -40,9 +34,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   }, [document]);
 
   useEffect(() => {
-  }, [tabs]);
-
-  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuVisible(false);
@@ -52,22 +43,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     return () =>
       window.document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleOpenChatPanel = () => {
-  
-    const chatSupportTab: ITab = {
-      name: "ChatSupport",
-      panel: null,
-      openChatSupport: true,
-      openMiniLibrary: false,
-      openPdfViewer: false,
-    };
-    setTabs(prevTabs => [...prevTabs, chatSupportTab]);
-  };
-
-  const handleCloseTab = (tabName: string) => {
-    setTabs((prevTabs) => prevTabs.filter((tab) => tab.name !== tabName));
-  };
 
   const showContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -84,10 +59,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     }
   };
 
-  const handleCloseChatPanel = () => {
-    handleCloseTab("ChatSupport");
-  };
-
   const handleContextMenuOption = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     const selection = window.getSelection();
@@ -95,7 +66,10 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
       const summarizedText = `Summarise the following piece of text: ${selection.toString()}`;
       dispatch(setSelectedText(summarizedText));
     }
-    handleOpenChatPanel();
+    dispatch(openChatSupport(document.name));
+    setMenuVisible(false);
+    // todo: clear chat history?
+    // todo: ask for summary in chat or something?
   };
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -173,14 +147,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           )}
         </Box>
       </Box>
-      {showChatPanel && (
-        <Box flex="1" borderLeft="1px solid gray">
-          <PanelWrapper
-            tab={tabs.find((tab) => tab.name === "ChatSupport")!}
-            onClose={handleCloseChatPanel}
-          />
-        </Box>
-      )}
     </Flex>
   );
 };

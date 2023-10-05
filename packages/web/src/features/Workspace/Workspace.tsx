@@ -36,7 +36,6 @@ import {
   FaFilePdf,
   FaRegFilePdf,
 } from "react-icons/fa";
-import { addItemIfNotExist } from "../../common/utils/arrayManager";
 import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
@@ -45,8 +44,16 @@ import PdfViewerPanel from "./panels/PdfViewerPanel";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
-import { useSelector } from "react-redux";
-import { RootState } from "src/app/store";
+import {
+  activateTab,
+  closeTab,
+  openChatSupport,
+  openMiniLibrary,
+  openPdfViewer,
+  openTab,
+} from "./tabsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 
 export type ITab = {
   name: string;
@@ -59,74 +66,30 @@ export type ITab = {
 
 const Workspace = () => {
   const { colorMode } = useColorMode();
-  const [openTabs, setOpenTabs] = useState<ITab[]>([]);
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
-
-  const [currentTab, setCurrentTab] = useState<ITab>();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
   const userProjects = useContext(ProjectContext);
 
-  // const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+  const dispatch = useDispatch();
+  const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+  const activeTabIndex = useSelector(
+    (state: RootState) => state.tabs.activeTabIndex
+  );
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const setCurrentTabAndIndex = (tab: ITab) => {
-    setCurrentTab(tab);
-    const tabIndex = openTabs.findIndex((t) => t.name === tab.name);
-    setActiveTabIndex(tabIndex);
-  };
-
-  const onTabClose = (tabToClose: ITab) => {
-    const newTabs = openTabs.filter((tab) => tab.name !== tabToClose.name);
-    setOpenTabs(newTabs);
-
-    if (tabToClose.name === currentTab?.name) {
-      const newActiveIndex =
-        activeTabIndex >= newTabs.length ? newTabs.length - 1 : activeTabIndex;
-      setActiveTabIndex(newActiveIndex);
-      setCurrentTab(newTabs[newActiveIndex] || defaultTab);
-    }
-  };
-
-  const closeSupportingPanel = (
-    panelType: "openChatSupport" | "openMiniLibrary" | "openPdfViewer"
-  ) => {
-    const updatedOpenTabs = openTabs.map((tab) =>
-      tab.name === currentTab?.name ? { ...tab, [panelType]: false } : tab
-    );
-    setOpenTabs(updatedOpenTabs);
-  };
-
-  const defaultTab: ITab = {
-    name: "Library",
-    panel: (
-      <MegaLibraryPanel
-        openTabs={openTabs}
-        setOpenTabs={setOpenTabs}
-        setCurrentTab={setCurrentTab}
-      />
-    ),
-    openChatSupport: false,
-    openMiniLibrary: false,
-    openPdfViewer: false,
-  };
-
   useEffect(() => {
-    setOpenTabs(addItemIfNotExist(openTabs, defaultTab, "name"));
-    setCurrentTab(defaultTab);
+    const defaultTab: ITab = {
+      name: "Library",
+      panel: <MegaLibraryPanel />,
+      openChatSupport: false,
+      openMiniLibrary: false,
+      openPdfViewer: false,
+    };
+    dispatch(openTab(defaultTab));
   }, []);
-
-  const previousTabsLengthRef = useRef(openTabs.length);
-
-  useEffect(() => {
-    if (previousTabsLengthRef.current < openTabs.length) {
-      setActiveTabIndex(openTabs.length - 1);
-    }
-    previousTabsLengthRef.current = openTabs.length;
-  }, [openTabs]);
 
   return (
     <HStack h="100%">
@@ -179,8 +142,7 @@ const Workspace = () => {
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTabAndIndex(tab);
+              dispatch(openTab(tab));
             }}
           >
             Editor
@@ -200,8 +162,7 @@ const Workspace = () => {
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTabAndIndex(tab);
+              dispatch(openTab(tab));
             }}
           >
             Chat
@@ -216,19 +177,12 @@ const Workspace = () => {
             onClick={() => {
               const tab: ITab = {
                 name: "Library",
-                panel: (
-                  <MegaLibraryPanel
-                    openTabs={openTabs}
-                    setOpenTabs={setOpenTabs}
-                    setCurrentTab={setCurrentTab}
-                  />
-                ),
+                panel: <MegaLibraryPanel />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTabAndIndex(tab);
+              dispatch(openTab(tab));
             }}
           >
             Library
@@ -248,8 +202,7 @@ const Workspace = () => {
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTabAndIndex(tab);
+              dispatch(openTab(tab));
             }}
           >
             Pdf Viewer
@@ -286,9 +239,7 @@ const Workspace = () => {
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTab(tab);
-              setCurrentTabAndIndex(tab);
+              dispatch(openTab(tab));
             }}
           />
           <IconButton
@@ -302,8 +253,7 @@ const Workspace = () => {
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTabAndIndex(tab);
+              dispatch(openTab(tab));
             }}
           />
           <IconButton
@@ -312,19 +262,12 @@ const Workspace = () => {
             onClick={() => {
               const tab: ITab = {
                 name: "Library",
-                panel: (
-                  <MegaLibraryPanel
-                    openTabs={openTabs}
-                    setOpenTabs={setOpenTabs}
-                    setCurrentTab={setCurrentTab}
-                  />
-                ),
+                panel: <MegaLibraryPanel />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTabAndIndex(tab);
+              dispatch(openTab(tab));
             }}
           />
           <IconButton
@@ -338,134 +281,116 @@ const Workspace = () => {
                 openMiniLibrary: false,
                 openPdfViewer: false,
               };
-              setOpenTabs(addItemIfNotExist(openTabs, tab, "name"));
-              setCurrentTabAndIndex(tab);
+              dispatch(openTab(tab));
             }}
           />
           <Spacer />
           <ColorModeSwitcher />
         </VStack>
       )}
-      <Tabs
-        index={activeTabIndex}
-        onChange={setActiveTabIndex}
-        w="100%"
-        h="100%"
-        maxH="100%"
-        variant="unstyled"
-        size="md"
-        display="flex"
-        flexDirection="column"
-      >
-        <Flex direction="row" p={2}>
-          <TabList>
-            {openTabs.map((tab) => {
-              const activeProps =
-                tab.name === currentTab?.name
-                  ? {
-                      borderBottom: "2px",
-                      borderColor: theme.colors[colorMode].primary,
-                    }
-                  : {};
-              return (
-                <Box
-                  key={tab.name}
-                  flex={1}
-                  position={"relative"}
-                  {...activeProps}
-                >
-                  <Tab
-                    px={12}
-                    onClick={() => setCurrentTab(tab)}
-                    whiteSpace="nowrap"
-                  >
-                    {tab.name}
-                  </Tab>
-                  <IconButton
-                    position={"absolute"}
-                    right={0.5}
-                    variant="ghost"
-                    borderRadius={16}
-                    top={1.5}
-                    size="xs"
-                    aria-label={"close"}
-                    icon={<SmallCloseIcon />}
-                    onClick={() => {
-                      onTabClose(tab);
-                    }}
-                  />
-                </Box>
-              );
-            })}
-          </TabList>
-          <Spacer />
-          {currentTab?.name === "Editor" && (
-            <>
-              <Tooltip label="Open mini library">
-                <IconButton
-                  aria-label={"library-support"}
-                  icon={<FaBookOpen />}
-                  onClick={() => {
-                    const updatedOpenTabs = openTabs.map((tab) =>
-                      tab.name === "Editor"
-                        ? { ...tab, openMiniLibrary: true }
-                        : tab
-                    );
-                    setOpenTabs(updatedOpenTabs);
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-              <Tooltip label="Open support chat">
-                <IconButton
-                  aria-label={"chat-support"}
-                  icon={<ChatIcon />}
-                  onClick={() => {
-                    const updatedOpenTabs = openTabs.map((tab) =>
-                      tab.name === "Editor"
-                        ? { ...tab, openChatSupport: true }
-                        : tab
-                    );
-                    setOpenTabs(updatedOpenTabs);
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-              <Tooltip label="Open PDF Viewer">
-                <IconButton
-                  aria-label={"pdf-viewer"}
-                  icon={<FaRegFilePdf />}
-                  onClick={() => {
-                    const updatedOpenTabs = openTabs.map((tab) =>
-                      tab.name === "Editor"
-                        ? { ...tab, openPdfViewer: true }
-                        : tab
-                    );
-                    setOpenTabs(updatedOpenTabs);
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-            </>
-          )}
-        </Flex>
-        <TabPanels
-          flex="1"
+      {openTabs && openTabs.length > 0 && (
+        <Tabs
+          index={activeTabIndex}
+          onChange={(index) => dispatch(activateTab(openTabs[index]))}
+          w="100%"
+          h="100%"
+          maxH="100%"
+          variant="unstyled"
+          size="md"
           display="flex"
           flexDirection="column"
-          px={2}
-          pb={2}
-          maxH="calc(100% - 58px)"
         >
-          {openTabs.map((tab) => (
-            <PanelWrapper
-              key={tab.name}
-              onClose={closeSupportingPanel}
-              tab={tab}
-            />
-          ))}
-        </TabPanels>
-      </Tabs>
+          <Flex direction="row" p={2}>
+            <TabList>
+              {openTabs.map((tab) => {
+                const activeProps =
+                  tab.name === openTabs[activeTabIndex].name
+                    ? {
+                        borderBottom: "2px",
+                        borderColor: theme.colors[colorMode].primary,
+                      }
+                    : {};
+                return (
+                  <Box
+                    key={tab.name}
+                    flex={1}
+                    position={"relative"}
+                    {...activeProps}
+                  >
+                    <Tab
+                      px={12}
+                      onClick={() => dispatch(activateTab(tab))}
+                      whiteSpace="nowrap"
+                    >
+                      {tab.name}
+                    </Tab>
+                    <IconButton
+                      position={"absolute"}
+                      right={0.5}
+                      variant="ghost"
+                      borderRadius={16}
+                      top={1.5}
+                      size="xs"
+                      aria-label={"close"}
+                      icon={<SmallCloseIcon />}
+                      onClick={() => {
+                        dispatch(closeTab(tab));
+                      }}
+                    />
+                  </Box>
+                );
+              })}
+            </TabList>
+            <Spacer />
+            {openTabs[activeTabIndex].name === "Editor" && (
+              <>
+                <Tooltip label="Open mini library">
+                  <IconButton
+                    aria-label={"library-support"}
+                    icon={<FaBookOpen />}
+                    onClick={() => {
+                      dispatch(openMiniLibrary("Editor"));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
+                <Tooltip label="Open support chat">
+                  <IconButton
+                    aria-label={"chat-support"}
+                    icon={<ChatIcon />}
+                    onClick={() => {
+                      dispatch(openChatSupport("Editor"));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
+                <Tooltip label="Open PDF Viewer">
+                  <IconButton
+                    aria-label={"pdf-viewer"}
+                    icon={<FaRegFilePdf />}
+                    onClick={() => {
+                      dispatch(openPdfViewer("Editor"));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
+              </>
+            )}
+          </Flex>
+          <TabPanels
+            flex="1"
+            display="flex"
+            flexDirection="column"
+            px={2}
+            pb={2}
+            maxH="calc(100% - 58px)"
+          >
+            {openTabs.map((tab) => (
+              <PanelWrapper key={tab.name} tab={tab} />
+            ))}
+          </TabPanels>
+        </Tabs>
+      )}
     </HStack>
   );
 };

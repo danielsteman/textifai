@@ -7,7 +7,7 @@ function doesObjectExistByKey<T>(
   return index !== -1;
 }
 
-export function addItemIfNotExist<T>(
+export function addItemIfNotExists<T>(
   array: T[],
   item: T,
   primaryKey?: keyof T
