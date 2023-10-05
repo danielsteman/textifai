@@ -5,6 +5,7 @@ import Login from "./routes/Login";
 import Pricing from "./routes/Pricing";
 import LandingPage from "./routes/LandingPage";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
+import ProjectRoute from "./routes/routeUtils/ProjectRoute";
 import Support from "./routes/Support";
 import Assistant from "./routes/Assistant";
 import Layout from "./layouts/Layout";
@@ -20,7 +21,9 @@ export const router = createBrowserRouter([
     path: "/features/workspace",
     element: (
       <PrivateRoute>
-        <WorkspacePage />
+        <ProjectRoute>
+          <WorkspacePage />
+        </ProjectRoute>
       </PrivateRoute>
     ),
   },

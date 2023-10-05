@@ -31,7 +31,6 @@ export const ProjectProvider: React.FC<Props> = ({ children }) => {
         where("users", "array-contains", currentUser.uid)
       );
 
-      // Use Firestore's real-time listener to listen for changes in the query results
       const unsubscribe = onSnapshot(projectsQuery, (snapshot) => {
         const fetchedProjects: Project[] = [];
         snapshot.forEach((doc: QueryDocumentSnapshot) => {
@@ -41,7 +40,6 @@ export const ProjectProvider: React.FC<Props> = ({ children }) => {
         setLoading(false);
       });
 
-      // Detach the listener when the component unmounts
       return () => unsubscribe();
 
     } else {
