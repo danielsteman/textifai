@@ -53,11 +53,11 @@ variable "oauth_client_secret" {
   sensitive   = true
 }
 
-variable "image_tag" {
-  type    = string
+variable "TFC_CONFIGURATION_VERSION_GIT_COMMIT_SHA" {
+  type = string
 }
 
 locals {
   image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${var.unique_identifier}/${var.artifact_registry_name}"
-  image_urls       = { for key, name in var.package_names : key => "${local.image_url_prefix}/${name}:${var.image_tag}" }
+  image_urls       = { for key, name in var.package_names : key => "${local.image_url_prefix}/${name}:${var.TFC_CONFIGURATION_VERSION_GIT_COMMIT_SHA}" }
 }
