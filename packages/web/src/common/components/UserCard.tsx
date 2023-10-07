@@ -11,14 +11,16 @@ import {
   MenuItem,
   MenuList,
   Heading,
+  Text,
 } from "@chakra-ui/react";
-import { UpDownIcon } from "@chakra-ui/icons";
+import { SettingsIcon, UpDownIcon } from "@chakra-ui/icons";
 import { auth } from "../../app/config/firebase";
 import ColorModeSwitcher from "./ColorModeSwitcher";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import theme from "../../app/themes/theme";
 import { shortenString } from "../utils/shortenString";
+import { MdLogout } from "react-icons/md";
 
 const UserCard = () => {
   const currentUser = useContext(AuthContext);
@@ -51,21 +53,33 @@ const UserCard = () => {
               size="sm"
               variant="ghost"
             />
-            <MenuList>
+            <MenuList minW="0" w="fit-content">
               <MenuItem
+                w="fit-content"
+                pr={6}
+                rounded={8}
                 onClick={() => {
                   navigate("/settings");
                 }}
               >
-                Settings
+                <HStack gap={4}>
+                  <SettingsIcon />
+                  <Text>Settings</Text>
+                </HStack>
               </MenuItem>
               <MenuItem
+                w="fit-content"
+                pr={6}
+                rounded={8}
                 onClick={() => {
                   auth.signOut();
                   navigate("/");
                 }}
               >
-                Sign out
+                <HStack gap={4}>
+                  <MdLogout />
+                  <Text>Sign out</Text>
+                </HStack>
               </MenuItem>
               <ColorModeSwitcher />
             </MenuList>

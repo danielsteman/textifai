@@ -119,10 +119,7 @@ jobs:
       - name: Setup Terraform variables
         working-directory: ${{ env.CONFIG_DIRECTORY }}
         id: vars
-        run: |-
-          cat > pipeline.auto.tfvars <<EOF
-          image_tag = "${{ github.sha }}"
-          EOF
+        run: export TF_VAR_image_tag="${{ github.sha }}"
 
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4

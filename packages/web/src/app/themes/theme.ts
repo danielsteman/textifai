@@ -103,14 +103,14 @@ const config = {
       parts: ["list", "item"],
       baseStyle: (props: StyleFunctionProps) => ({
         list: {
-          bgColor: colors[props.colorMode].surfaceContainer,
+          bgColor: colors[props.colorMode].surfaceContainerHigh,
           border: 0,
         },
         item: {
-          bgColor: colors[props.colorMode].surfaceContainer,
+          bgColor: colors[props.colorMode].surfaceContainerHigh,
           border: 0,
           _hover: {
-            bgColor: colors[props.colorMode].surfaceContainerHigh,
+            bgColor: colors[props.colorMode].surfaceContainerHighest,
           },
         },
       }),
