@@ -118,7 +118,8 @@ jobs:
 
       - name: Setup Terraform variables
         id: set_vars
-        run: echo "TF_VAR_image_tag=$(echo $GITHUB_SHA)" >> $GITHUB_ENV
+        # run: echo "TF_VAR_image_tag=$(echo $GITHUB_SHA)" >> $GITHUB_ENV
+        run: echo "TF_VAR_image_tag=1c86ef9eaee5785e1d5cb1ec46352d8110c92e54" >> $GITHUB_ENV
 
       - name: Setup Terraform variables
         working-directory: ${{ env.CONFIG_DIRECTORY }}
