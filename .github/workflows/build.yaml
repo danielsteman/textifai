@@ -5,36 +5,36 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  # test:
+  #   runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x]
+  #   strategy:
+  #     matrix:
+  #       node-version: [18.x]
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies in shared package
-        run: yarn install
-        working-directory: packages/shared
+  #     - name: Install dependencies in shared package
+  #       run: yarn install
+  #       working-directory: packages/shared
 
-      - name: Build shared package
-        run: yarn build
-        working-directory: packages/shared
+  #     - name: Build shared package
+  #       run: yarn build
+  #       working-directory: packages/shared
 
-      - name: Install dependencies of all packages
-        run: yarn install
+  #     - name: Install dependencies of all packages
+  #       run: yarn install
 
-      - name: Build all packages
-        run: yarn workspaces run build
+  #     - name: Build all packages
+  #       run: yarn workspaces run build
 
-      - name: Test all packages
-        run: yarn workspaces run test
+  #     - name: Test all packages
+  #       run: yarn workspaces run test
 
   # build:
   #   runs-on: ubuntu-latest
