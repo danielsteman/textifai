@@ -117,9 +117,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup Terraform variables
-        working-directory: ${{ env.CONFIG_DIRECTORY }}
-        id: vars
-        run: export TF_VAR_image_tag="${{ github.sha }}"
+        id: set_vars
+        run: echo "TF_VAR_image_tag=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
 
       - name: Setup Terraform variables
         working-directory: ${{ env.CONFIG_DIRECTORY }}
