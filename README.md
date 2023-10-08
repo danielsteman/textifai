@@ -30,7 +30,7 @@ These can be found in `project settings > general > your apps` in the code snipp
 
 `npm install -g typescript` to globally install Typescript.
 
-`npm i -g gitmoji-cli` to install and `gitmoji install` in the cloned repository to be prompted for commit message emojis at every commit (works like a pre-commit-hook). Categorizes commits in a silly way.
+`npm i -g gitmoji-cli` to install and `gitmoji init` in the cloned repository to be prompted for commit message emojis at every commit (works like a pre-commit-hook). Categorizes commits in a silly way.
 
 ### Start
 
