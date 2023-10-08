@@ -81,7 +81,6 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         console.error('Invalid option');
         return;
     }
-    console.log(message)
     dispatch(setSelectedText(message));
     dispatch(openChatSupport(document.name));
     setMenuVisible(false);
@@ -90,23 +89,14 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   return (
-    <Flex width="100%" height="100%">
-      <Box flex="2" position="relative">
-        <Box
-          position="sticky"
-          top="0"
-          p="0.5rem"
-          display="flex"
-          justifyContent="center"
-        >
-          <button onClick={() => setScale((prev) => Math.max(prev - 0.1, 0.5))}>
-            -
-          </button>
+    <Flex width="100%" height="100%" direction="column">
+      <Box position="sticky" top="0" zIndex={1} p="0.5rem" display="flex" justifyContent="center">
+          <button onClick={() => setScale((prev) => Math.max(prev - 0.1, 0.5))}>-</button>
           <span style={{ margin: "0 1rem" }}>{Math.round(scale * 100)}%</span>
-          <button onClick={() => setScale((prev) => Math.min(prev + 0.1, 3))}>
-            +
-          </button>
-        </Box>
+          <button onClick={() => setScale((prev) => Math.min(prev + 0.1, 3))}>+</button>
+      </Box>
+
+      <Box flex="1" position="relative" overflowY="auto">
         {menuVisible && (
           <Box
             ref={menuRef}

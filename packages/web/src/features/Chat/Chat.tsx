@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
-import { AppDispatch, RootState } from "../../app/store";
+import { RootState } from "../../app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
@@ -58,9 +58,9 @@ const Chat = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("selectedText value updated: ", selectedText);
+    // console.log("selectedText value updated: ", selectedText);
     
-    console.log("isProcessing state value: ", isProcessing);
+    // console.log("isProcessing state value: ", isProcessing);
     if (isProcessing) return;
     
     if (selectedText && selectedText !== lastProcessedTextRef.current) {
@@ -137,6 +137,7 @@ const handleChatAction = async (regenerate = false, pdfText?: string) => {
       if (pdfText) {
           console.log("Handling PdfQa Chain...");
           dispatch(pushMessage(pdfText));
+          setMessage("");
           requestPayload = {
               prompt: pdfText,
               option: 'pdfqa',
