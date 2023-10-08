@@ -514,27 +514,29 @@ const MegaLibrary = () => {
           </Button>
           <Box h={4} />
           <Heading size="xs">Collections</Heading>
-          {allCollections.map((collection, index) => (
-            <Button
+          {allCollections
+          .filter(collection => collection && collection.trim() !== "")
+          .map((collection, index) => (
+          <Button
               key={index}
               bgColor={
-                collectionFilter === collection
-                  ? theme.colors[colorMode].onPrimary
-                  : undefined
+                  collectionFilter === collection
+                      ? theme.colors[colorMode].onPrimary
+                      : undefined
               }
               variant="ghost"
               size="xs"
               textColor={theme.colors[colorMode].onSurface}
               onClick={() => {
-                if (collectionFilter === collection) {
-                  setCollectionFilter(null);
-                } else {
-                  setCollectionFilter(collection);
-                }
+                  if (collectionFilter === collection) {
+                      setCollectionFilter(null);
+                  } else {
+                      setCollectionFilter(collection);
+                  }
               }}
-            >
+          >
               {collection}
-            </Button>
+          </Button>
           ))}
           <Box h={4} />
           <Heading size="xs">Projects</Heading>
@@ -667,13 +669,12 @@ const MegaLibrary = () => {
                     isChecked={selectedDocuments.length === documents.length}
                     onChange={toggleAllDocuments}
                   />
-                  {/* {selectedDocuments.length === documents.length ? "Unselect all" : "Select all"} */}
                 </Th>
                 <Th>Title</Th>
-                <Th>Author(s)</Th>
+                <Th whiteSpace="normal">Author(s)</Th>
                 <Th isNumeric>Year</Th>
                 <Th>Collection</Th>
-                <Th>Topics</Th>
+                <Th whiteSpace="normal">Topics</Th>
                 <Th>Favorite</Th>
               </Tr>
             </Thead>
