@@ -187,7 +187,7 @@ const Workspace = () => {
           >
             Library
           </Button>
-          <Button
+          {/* <Button
             w="100%"
             justifyContent="flex-start"
             aria-label={"documents"}
@@ -206,7 +206,7 @@ const Workspace = () => {
             }}
           >
             Pdf Viewer
-          </Button>
+          </Button> */}
           <Spacer />
           <Divider />
           <UserCard />
@@ -270,7 +270,7 @@ const Workspace = () => {
               dispatch(openTab(tab));
             }}
           />
-          <IconButton
+          {/* <IconButton
             aria-label={"Pdf Viewer"}
             icon={<FaFilePdf />}
             onClick={() => {
@@ -283,7 +283,7 @@ const Workspace = () => {
               };
               dispatch(openTab(tab));
             }}
-          />
+          /> */}
           <Spacer />
           <ColorModeSwitcher />
         </VStack>
