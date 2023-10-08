@@ -81,7 +81,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         console.error('Invalid option');
         return;
     }
-  
+    console.log(message)
     dispatch(setSelectedText(message));
     dispatch(openChatSupport(document.name));
     setMenuVisible(false);

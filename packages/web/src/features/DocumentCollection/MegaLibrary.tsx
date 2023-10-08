@@ -66,6 +66,8 @@ import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { openTab } from "../Workspace/tabsSlice";
+import { fetchConversationId } from "../Chat/ChatFuncs";
+import { setCurrentConversationId } from "../Chat/chatSlice";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -144,6 +146,18 @@ const MegaLibrary = () => {
 
     return () => unsubscribe();
   }, [selectedDocuments, activeProject]);
+
+  useEffect(() => {
+    const updateConversationId = async () => {
+      const fetchedId = await fetchConversationId(currentUser, activeProject);
+      console.log("Fetched conversation id: ", fetchedId)
+      if (fetchedId) {
+        dispatch(setCurrentConversationId(fetchedId));
+      }
+    };
+  
+    updateConversationId();
+  }, [currentUser, dispatch]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     if (selectedDocuments.includes(documentName)) {

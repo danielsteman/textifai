@@ -7,15 +7,17 @@ const answerStackSlice = createSlice({
   initialState,
   reducers: {
     pushAnswer: (state, action: PayloadAction<string>) => {
-      state.push(action.payload);
+      return [...state, action.payload];
     },
     setAnswers: (state, action: PayloadAction<string[]>) => {
-      return action.payload;
+      return [...action.payload];
     },
     replaceLastAnswer: (state, action: PayloadAction<string>) => {
-      if (state.length) {
-        state[state.length - 1] = action.payload;
-      }
+      if (!state.length) return state;
+      
+      const newState = [...state];
+      newState[newState.length - 1] = action.payload;
+      return newState;
     },
   },
 });

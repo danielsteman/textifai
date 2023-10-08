@@ -6,7 +6,6 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Textarea
 } from "@chakra-ui/react";
 import { RepeatIcon } from "@chakra-ui/icons";
 import {
@@ -20,22 +19,14 @@ import {
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
-import { RootState } from "../../app/store";
+import { AppDispatch, RootState } from "../../app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
 import { 
   fetchMessagesForConversation, 
-  startConversation, 
   getConversation, 
   addMessageToCollection, 
   updateConversationDate, 
@@ -52,7 +43,8 @@ const Chat = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const [conversationHistory, setConversationHistory] = useState<string>("");
-  const [processedText, setProcessedText] = useState("");
+  const lastProcessedTextRef = useRef<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
@@ -66,12 +58,19 @@ const Chat = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (selectedText && selectedText !== processedText) {
+    console.log("selectedText value updated: ", selectedText);
+    
+    console.log("isProcessing state value: ", isProcessing);
+    if (isProcessing) return;
+    
+    if (selectedText && selectedText !== lastProcessedTextRef.current) {
+        setIsProcessing(true);
         handleSubmit({ preventDefault: () => {} });
     }
-  }, [selectedText]);
+  }, [selectedText, isProcessing]);
 
   useEffect(() => {
+    // console.log('Effect for currentUser triggered');
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
       setActiveProject(projectId);
@@ -89,6 +88,7 @@ const Chat = () => {
   };
 
   useLayoutEffect(() => {
+    // console.log('LayoutEffect for currentConversationId triggered');
     const initializeMessages = async () => {
       if (currentConversationId) {
         const messages = await fetchMessagesForConversation(
@@ -110,18 +110,26 @@ const Chat = () => {
     initializeMessages();
   }, [currentConversationId]);
 
-  useLayoutEffect(scrollToBottom, [messageStack, answerStack]);
+  useLayoutEffect(() => {
+    // console.log('LayoutEffect for messageStack and answerStack triggered');
+    scrollToBottom();
+  }, [messageStack, answerStack]);
 
   useEffect(() => {
     const updateConversationId = async () => {
-      const conversationId = await fetchConversationId(currentUser, activeProject);
-      dispatch(setCurrentConversationId(conversationId));
+        const fetchedId = await fetchConversationId(currentUser, activeProject);
+
+        if (fetchedId && fetchedId !== currentConversationId) {
+            dispatch(setCurrentConversationId(fetchedId));
+        }
     };
 
     updateConversationId();
   }, [currentUser]);
 
 const handleChatAction = async (regenerate = false, pdfText?: string) => {
+  // console.log('handleChatAction called with', { regenerate, pdfText });
+
   try {
       setLoading(true);
 
@@ -182,21 +190,22 @@ const handleChatAction = async (regenerate = false, pdfText?: string) => {
 
   } catch (error) {
       console.error("Error in handleChatAction:", error); 
-  }
-};
-
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    console.log("handleSubmit executed");
-    if (selectedText && selectedText !== processedText) {
-        console.log("handleChatAction for selectedText");
-        handleChatAction(false, selectedText);
-        setProcessedText(selectedText);
-    } else {
-        console.log("handleChatAction without selectedText");
-        handleChatAction();
     }
   };
+
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    console.log('handleSubmit called');
+    e.preventDefault();
+    
+    if (selectedText && selectedText !== lastProcessedTextRef.current) {
+        await handleChatAction(false, selectedText);
+        lastProcessedTextRef.current = selectedText;
+    } else {
+        await handleChatAction(); 
+    }
+    
+    setIsProcessing(false);
+};
 
   const handleRegenerate = () => {
       handleChatAction(true);
