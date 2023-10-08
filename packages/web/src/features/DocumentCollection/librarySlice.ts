@@ -1,5 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface LibraryState {
   selectedDocuments: string[];
@@ -24,9 +23,21 @@ export const librarySlice = createSlice({
     initializeSelectedDocuments: (state, action: PayloadAction<string[]>) => {
       state.selectedDocuments = action.payload;
     },
+    selectAllDocuments: (state, action: PayloadAction<string[]>) => {
+      state.selectedDocuments = action.payload;
+    },
+    clearAllSelections: (state) => {
+      state.selectedDocuments = [];
+    },
   },
 });
 
-export const { enableDocument, disableDocument, initializeSelectedDocuments } = librarySlice.actions;
+export const {
+  enableDocument,
+  disableDocument,
+  initializeSelectedDocuments,
+  selectAllDocuments,  
+  clearAllSelections,
+} = librarySlice.actions;
 
 export default librarySlice.reducer;
