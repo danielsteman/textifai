@@ -62,10 +62,6 @@ variable "oauth_client_secret" {
   sensitive   = true
 }
 
-variable "TFC_CONFIGURATION_VERSION_GIT_COMMIT_SHA" {
-  type = string
-}
-
 variable "image_tag" {
   type = string
 }
