@@ -1,9 +1,18 @@
 variable "package_names" {
   type = map(string)
   default = {
-    web       = "textifai-web"
-    chat      = "textifai-chat"
-    documents = "textifai-documents"
+    web = {
+      name = "textifai-web"
+      port = 54321
+    }
+    chat = {
+      name = "textifai-chat"
+      port = 54322
+    }
+    documents = {
+      name = "textifai-documents"
+      port = 54323
+    }
   }
 }
 

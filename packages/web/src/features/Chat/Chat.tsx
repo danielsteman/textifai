@@ -41,6 +41,7 @@ import { RootState } from "src/app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
+import { baseUrl } from "src/app/config";
 
 const conversationsCollection = collection(db, "conversations");
 const messagesCollection = collection(db, "messages");
@@ -218,7 +219,7 @@ const Chat = () => {
         );
         setConversationHistory(updatedConversationHistory);
         // Now, send the updated history to the Axios server
-        const res = await axios.post("http://localhost:3001/api/chat/ask", {
+        const res = await axios.post(`http://${baseUrl}:3001/api/chat/ask`, {
           prompt: message,
           history: updatedConversationHistory,
           option: "GeneralQa",
@@ -262,7 +263,7 @@ const Chat = () => {
 
     try {
       // Make the API call with the last system message
-      const res = await axios.post("http://localhost:3001/api/chat/ask", {
+      const res = await axios.post(`http://${baseUrl}:3001/api/chat/ask`, {
         prompt: lastSystemMessage, // Sending the last system message
         option: "regenerate", // The option is set to "regenerate"
       });
