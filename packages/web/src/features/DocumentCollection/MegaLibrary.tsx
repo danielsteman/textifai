@@ -660,10 +660,10 @@ const MegaLibrary = () => {
         </HStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1} overflow="auto">
-        <TableContainer>
+        <TableContainer width="100%">
           <Table size="sm">
           <Thead>
-            <Tr>
+              <Tr>
                 <Th>
                   <Checkbox 
                     isChecked={selectedDocuments.length === documents.length}
@@ -671,10 +671,10 @@ const MegaLibrary = () => {
                   />
                 </Th>
                 <Th>Title</Th>
-                <Th whiteSpace="normal">Author(s)</Th>
+                <Th>Author(s)</Th>
                 <Th isNumeric>Year</Th>
                 <Th>Collection</Th>
-                <Th whiteSpace="normal">Topics</Th>
+                <Th>Topics</Th>
                 <Th>Favorite</Th>
               </Tr>
             </Thead>

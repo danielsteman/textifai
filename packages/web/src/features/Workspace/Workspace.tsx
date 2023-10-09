@@ -24,6 +24,8 @@ import {
   MenuList,
   MenuButton,
   MenuGroup,
+  Heading,
+  Text,
 } from "@chakra-ui/react";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
@@ -33,17 +35,17 @@ import {
   FaBook,
   FaBookOpen,
   FaEdit,
-  FaFilePdf,
   FaRegFilePdf,
 } from "react-icons/fa";
 import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
-import PdfViewerPanel from "./panels/PdfViewerPanel";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import { isEmailVerified } from "../../common/utils/fetchVerificationStatus";
+import { resendVerificationEmail } from "../../common/utils/resendVerificationMail";
 import {
   activateTab,
   closeTab,
@@ -54,6 +56,7 @@ import {
 } from "./tabsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
+import { AuthContext } from "../../app/providers/AuthProvider";
 
 export type ITab = {
   name: string;
@@ -67,7 +70,10 @@ export type ITab = {
 const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [emailVerified, setEmailVerified] = useState<boolean>(false);
+  const [mailResent, setMailResent] = useState(false);
 
+  const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
 
   const dispatch = useDispatch();
@@ -91,8 +97,66 @@ const Workspace = () => {
     dispatch(openTab(defaultTab));
   }, []);
 
+  useEffect(() => {
+    async function fetchVerificationStatus() {
+      const status = await isEmailVerified();
+      setEmailVerified(status as boolean);
+    }
+  
+    fetchVerificationStatus();
+  }, []);
+
+  const handleResendClick = () => {
+    if (currentUser) {
+        resendVerificationEmail(currentUser);
+        setMailResent(true);
+    }
+  };
+
   return (
+
     <HStack h="100%">
+    {!emailVerified && (
+      <Flex 
+        position="fixed" 
+        top="0"
+        left="0" 
+        right="0" 
+        bottom="0" 
+        justifyContent="center" 
+        alignItems="center" 
+        bgColor={theme.colors[colorMode].shadow}
+        opacity={0.7}
+        zIndex="1000"
+      >
+        <Box 
+          bgColor={theme.colors[colorMode].secondaryContainer}
+          padding="20px" 
+          borderRadius="md"
+          textColor={theme.colors[colorMode].onSecondaryContainer}  
+        >
+          <Heading size="lg" marginBottom="4">Verify your email</Heading>
+          <Text mb={4}>
+            We have sent an email to <span style={{ fontWeight: 'bold' }}>{currentUser!.email}</span>. 
+            <br/>
+            <br/>
+            If you have not received the verification mail, please check your "Spam" folder. 
+            <br/>
+            You can also click the resend button below to have another email sent to you.
+          </Text>
+          <Button 
+            colorScheme={theme.colors[colorMode].onSecondaryContainer}  
+            textColor={theme.colors[colorMode].onSecondaryContainer}
+            onClick={handleResendClick}
+            p={0}
+            isDisabled={mailResent}
+
+          >
+            {mailResent ? "Just resent another verification mail" : "Resend verification mail"}
+          </Button>
+        </Box>
+      </Flex>
+    )}
       {isMenuOpen && (
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}
@@ -187,26 +251,6 @@ const Workspace = () => {
           >
             Library
           </Button>
-          {/* <Button
-            w="100%"
-            justifyContent="flex-start"
-            aria-label={"documents"}
-            leftIcon={<FaFilePdf />}
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              const tab: ITab = {
-                name: "PdfViewer",
-                panel: <PdfViewerPanel />,
-                openChatSupport: false,
-                openMiniLibrary: false,
-                openPdfViewer: false,
-              };
-              dispatch(openTab(tab));
-            }}
-          >
-            Pdf Viewer
-          </Button> */}
           <Spacer />
           <Divider />
           <UserCard />
@@ -270,20 +314,6 @@ const Workspace = () => {
               dispatch(openTab(tab));
             }}
           />
-          {/* <IconButton
-            aria-label={"Pdf Viewer"}
-            icon={<FaFilePdf />}
-            onClick={() => {
-              const tab: ITab = {
-                name: "PdfViewer",
-                panel: <PdfViewerPanel />,
-                openChatSupport: false,
-                openMiniLibrary: false,
-                openPdfViewer: false,
-              };
-              dispatch(openTab(tab));
-            }}
-          /> */}
           <Spacer />
           <ColorModeSwitcher />
         </VStack>

@@ -27,13 +27,15 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  sendEmailVerification,
+  signOut
 } from "firebase/auth";
 import { useCallback, useState } from "react";
 import { auth, db } from "../../app/config/firebase";
 import Socials from "./Socials";
 import AuthError from "./AuthError";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { Timestamp, doc, setDoc } from "firebase/firestore";
+import { Timestamp, doc, setDoc, updateDoc } from "firebase/firestore";
 import { User } from "@shared/firestoreInterfaces/User";
 import theme from "../../app/themes/theme";
 
@@ -81,40 +83,49 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
       try {
         switch (props.loginOrRegister) {
           case "signUp":
-            const userData: User = {
-              firstName: firstname,
-              lastName: lastname,
-              admin: [],
-              avatarUrl: "",
-              createdDate: Timestamp.fromDate(new Date()),
-              updatedDate: Timestamp.fromDate(new Date()),
-              language: "english",
-              isActive: false,
-              projects: [],
-            };
+
             const userCredential = await createUserWithEmailAndPassword(
               auth,
               email,
               password
             );
 
+            if (userCredential.user) {
+              sendEmailVerification(userCredential.user);
+              console.log('Verification email sent.');
+            }
+
+            const userData: User = {
+              userId: userCredential.user.uid,
+              firstName: firstname,
+              lastName: lastname,
+              email: email,
+              admin: [],
+              avatarUrl: "",
+              createdDate: Timestamp.fromDate(new Date()),
+              updatedDate: Timestamp.fromDate(new Date()),
+              language: "english",
+              isActive: true,
+              projects: [],
+            };
+
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
             });
-
             break;
-          case "signIn":
-            await signInWithEmailAndPassword(auth, email, password);
+
+            case "signIn":
+              await signInWithEmailAndPassword(auth, email, password);
+          }
+          onClose();
+        } catch (error: any) {
+          setError(error.code);
         }
-        onClose();
-      } catch (error: any) {
-        setError(error.code);
-      }
-      setLoading(false);
-    },
-    [email, password, firstname, lastname]
-  );
+        setLoading(false);
+      },
+      [email, password, firstname, lastname]
+    );
 
   const missingEmailError = email === "" && attempts >= 1;
   const missingPasswordError = password === "" && attempts >= 1;
