@@ -67,8 +67,7 @@ variable "TFC_CONFIGURATION_VERSION_GIT_COMMIT_SHA" {
 }
 
 variable "image_tag" {
-  type    = string
-  default = "3c6348f44a55b88c98bd5518fbb1525b14dc4f1f"
+  type = string
 }
 
 locals {

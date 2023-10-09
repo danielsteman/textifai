@@ -33,6 +33,7 @@ import {
 } from "firebase/firestore";
 import axios from "axios";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
+import { config } from "src/app/config";
 
 interface PdfMetadata {
   fileName: string;
@@ -50,22 +51,27 @@ interface UploadFormProps {
 
 const uploadsCollection = collection(db, "uploads");
 
-const uploadMetadataToFirestore = async (metadata: PdfMetadata, userId: string, projectId: string, uploadsCollection: CollectionReference) => {
+const uploadMetadataToFirestore = async (
+  metadata: PdfMetadata,
+  userId: string,
+  projectId: string,
+  uploadsCollection: CollectionReference
+) => {
   try {
     const firestoreDocument: Partial<Document> = {
       ...metadata,
       uploadedBy: userId,
       uploadDate: Timestamp.now(),
       projectId: projectId,
-      creationDate: Timestamp.fromDate(new Date(metadata.creationDate))
+      creationDate: Timestamp.fromDate(new Date(metadata.creationDate)),
     };
 
     await addDoc(uploadsCollection, firestoreDocument);
   } catch (error) {
-    console.error("Failed to write metadata to Firestore:", error); 
+    console.error("Failed to write metadata to Firestore:", error);
     throw new Error("Failed to write metadata to Firestore");
   }
-}
+};
 
 const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
   const [files, setFiles] = useState<File[] | undefined>();
@@ -80,16 +86,16 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
   }, []);
 
   const currentUser = useContext(AuthContext);
-  
+
   useEffect(() => {
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
       setActiveProject(projectId);
-    }
-  
+    };
+
     fetchActiveProject();
   }, [currentUser]);
-  
+
   const acceptedFormats = { "application/pdf": [".pdf"] };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -107,70 +113,73 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
       storage,
       `users/${currentUser?.uid}/uploads/${file.name}`
     );
-  
+
     // Check if the file already exists
-    const exists = await getDownloadURL(fileRef).then(() => true).catch(() => false);
-  
+    const exists = await getDownloadURL(fileRef)
+      .then(() => true)
+      .catch(() => false);
+
     if (exists) {
       console.log("File already exists:", file.name);
       setFileExists(true);
       return; // Exit this function
     }
-  
+
     try {
       // Upload file to Firebase storage
       await uploadBytes(fileRef, file);
       console.log("Uploaded a blob or file:", file.name);
-  
+
       // Post the file to your server
       const data = new FormData();
       data.append("file", file);
       data.append("userId", currentUser!.uid);
-  
-      
-      const res = await axios.post("http://localhost:3000/api/documents/upload", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-  
+
+      const res = await axios.post(
+        `http://${config.documents.url}/api/documents/upload`,
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
       console.log("File uploaded successfully:", file.name);
       setUploadSuccessful(true);
-  
+
       // Upload metadata to Firestore
       const metadata: PdfMetadata = res.data.metadata;
       await uploadMetadataToFirestore(
-          metadata,
-          currentUser!.uid, 
-          activeProject!,
-          uploadsCollection
-        );
-  
+        metadata,
+        currentUser!.uid,
+        activeProject!,
+        uploadsCollection
+      );
     } catch (error) {
       console.error(`An error occurred while processing ${file.name}:`, error);
     }
   };
-  
+
   const handleSubmit = async () => {
     if (!currentUser) {
       console.warn("User not authenticated. Please login to upload.");
       return;
     }
-  
+
     setLoading(true);
-  
+
     if (!files || files.length === 0) {
       console.warn("No files were uploaded");
       setLoading(false);
       return;
     }
-  
+
     // Map each file to a promise and wait for all of them
-    await Promise.all(files.map(file => handleFileUpload(file)));
-  
+    await Promise.all(files.map((file) => handleFileUpload(file)));
+
     resetForm();
     setLoading(false);
     onUploadComplete();
   };
-  
 
   useEffect(() => {
     const shouldOpen = localStorage.getItem("showNewsLetterOffer");
@@ -266,14 +275,14 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
         </Button>
       </Center>
       <Center height="100%" width="100%">
-      {fileExists && !uploadSuccessful ? (
-        <Text>File already exists!📄 Upload a new one!</Text>
-      ) : uploadSuccessful && fileExists ? (
-        <Text>Done!✅ Want to upload more?</Text>
-      ) : (
-        <></>
-      )}
-    </Center>
+        {fileExists && !uploadSuccessful ? (
+          <Text>File already exists!📄 Upload a new one!</Text>
+        ) : uploadSuccessful && fileExists ? (
+          <Text>Done!✅ Want to upload more?</Text>
+        ) : (
+          <></>
+        )}
+      </Center>
     </Box>
   );
 };
