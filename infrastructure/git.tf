@@ -6,4 +6,5 @@ data "external" "git" {
     "-1",
     "HEAD"
   ]
+  working_dir = "../"
 }
