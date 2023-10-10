@@ -14,8 +14,6 @@ ENV VITE_FIREBASE_STORAGEBUCKET $FIREBASE_STORAGEBUCKET
 ENV VITE_FIREBASE_MESSAGINGSENDERID $FIREBASE_MESSAGINGSENDERID
 ENV VITE_FIREBASE_APPID $FIREBASE_APPID
 
-ENV NODE_ENV=production
-
 WORKDIR /usr/src/app
 
 COPY package.json ./
@@ -29,6 +27,8 @@ COPY packages/web/tsconfig.json ./packages/web/
 RUN yarn install
 
 COPY packages/web ./packages/web
+
+ENV NODE_ENV=production
 
 RUN yarn workspace @textifai/web build
 
