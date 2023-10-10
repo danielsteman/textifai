@@ -41,7 +41,7 @@ import { RootState } from "src/app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
-import { config } from "src/app/config";
+import { config } from "../../app/config";
 
 const conversationsCollection = collection(db, "conversations");
 const messagesCollection = collection(db, "messages");
