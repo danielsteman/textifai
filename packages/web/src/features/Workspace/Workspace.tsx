@@ -24,8 +24,13 @@ import {
   MenuList,
   MenuButton,
   MenuGroup,
-  Heading,
   Text,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
 } from "@chakra-ui/react";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
@@ -117,46 +122,36 @@ const Workspace = () => {
 
     <HStack h="100%">
     {!emailVerified && (
-      <Flex 
-        position="fixed" 
-        top="0"
-        left="0" 
-        right="0" 
-        bottom="0" 
-        justifyContent="center" 
-        alignItems="center" 
-        bgColor={theme.colors[colorMode].shadow}
-        opacity={0.7}
-        zIndex="1000"
-      >
-        <Box 
-          bgColor={theme.colors[colorMode].secondaryContainer}
-          padding="20px" 
-          borderRadius="md"
-          textColor={theme.colors[colorMode].onSecondaryContainer}  
-        >
-          <Heading size="lg" marginBottom="4">Verify your email</Heading>
-          <Text mb={4}>
-            We have sent an email to <span style={{ fontWeight: 'bold' }}>{currentUser!.email}</span>. 
-            <br/>
-            <br/>
-            If you have not received the verification mail, please check your "Spam" folder. 
-            <br/>
-            You can also click the resend button below to have another email sent to you.
-          </Text>
-          <Button 
-            colorScheme={theme.colors[colorMode].onSecondaryContainer}  
-            textColor={theme.colors[colorMode].onSecondaryContainer}
-            onClick={handleResendClick}
-            p={0}
-            isDisabled={mailResent}
-
-          >
-            {mailResent ? "Just resent another verification mail" : "Resend verification mail"}
-          </Button>
-        </Box>
-      </Flex>
-    )}
+      <Modal isOpen={!emailVerified} onClose={() => {}} isCentered size="md">
+        <ModalOverlay />
+        <ModalContent bgColor={theme.colors[colorMode].secondaryContainer} borderRadius="md">
+          <ModalHeader textColor={theme.colors[colorMode].onSecondaryContainer}>
+            Verify your email
+          </ModalHeader>
+          <ModalBody>
+            <Text mb={4}>
+              We have sent an email to <span style={{ fontWeight: 'bold' }}>{currentUser!.email}</span>. 
+              <br/>
+              <br/>
+              If you have not received the verification mail, please check your "Spam" folder. 
+              <br/>
+              You can also click the resend button below to have another email sent to you.
+            </Text>
+          </ModalBody>
+          <ModalFooter justifyContent="flex-start">
+            <Button 
+              colorScheme={theme.colors[colorMode].onSecondaryContainer}  
+              textColor={theme.colors[colorMode].onSecondaryContainer}
+              onClick={handleResendClick}
+              p={0}
+              isDisabled={mailResent}
+            >
+              {mailResent ? "Just resent another verification mail" : "Resend verification mail"}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      )}
       {isMenuOpen && (
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}
