@@ -33,7 +33,7 @@ import {
 } from "firebase/firestore";
 import axios from "axios";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
-import { config } from "src/app/config";
+import { config } from "../../app/config";
 
 interface PdfMetadata {
   fileName: string;
