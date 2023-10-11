@@ -117,7 +117,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set variables
-        run: export TF_VAR_image_tag="${{ github.sha }}"
+        run: export TF_VAR_image_tag="5741acbd106f9c54dcd7205bf7bd74296fd65fdb"
 
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
