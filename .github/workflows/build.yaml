@@ -116,6 +116,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Print variables
+        run: echo $GITHUB_SHA
+
       - name: Set variables
         run: echo "TF_VAR_image_tag=$(echo $GITHUB_SHA)" >> $GITHUB_ENV
 
