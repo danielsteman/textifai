@@ -134,8 +134,6 @@ jobs:
           workspace: ${{ env.TF_WORKSPACE }}
           configuration_version: ${{ steps.plan-upload.outputs.configuration_version_id }}
           plan_only: true
-        # env:
-        #   TF_VAR_image_tag: "c2f3d69e132997bafdf4dd7fabe8c3cdcf2d23e0"
 
       - name: Get Plan Output
         uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.4
