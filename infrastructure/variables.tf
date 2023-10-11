@@ -66,7 +66,7 @@ variable "image_tag" {
   default = "54f2c07516febca14eaf247099693360a81290c1"
 }
 
-# locals {
-#   image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${var.unique_identifier}/${var.artifact_registry_name}"
-#   image_urls       = { for key, value in var.package_names : key => "${local.image_url_prefix}/${value.name}:${tostring(var.image_tag)}" }
-# }
+locals {
+  image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${var.unique_identifier}/${var.artifact_registry_name}"
+  image_urls       = { for key, value in var.package_names : key => "${local.image_url_prefix}/${value.name}:${tostring(var.image_tag)}" }
+}
