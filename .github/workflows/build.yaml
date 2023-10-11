@@ -116,10 +116,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set outputs
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
         id: plan-upload
@@ -136,7 +132,7 @@ jobs:
           configuration_version: ${{ steps.plan-upload.outputs.configuration_version_id }}
           plan_only: true
         env:
-          TF_VAR_image_tag: ${{ steps.vars.outputs.sha_short }}
+          TF_VAR_image_tag: "c2f3d69e132997bafdf4dd7fabe8c3cdcf2d23e0"
 
       - name: Get Plan Output
         uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.4
