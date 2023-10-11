@@ -62,7 +62,6 @@ variable "oauth_client_secret" {
 }
 
 variable "image_tag" {
-  type = string
 }
 
 locals {
