@@ -62,7 +62,8 @@ variable "oauth_client_secret" {
 }
 
 variable "image_tag" {
-  type = string
+  type    = string
+  default = "6ff0e36c7a38cd543893161ca458697483fd0dd8"
 }
 
 locals {
