@@ -1,5 +1,4 @@
 variable "package_names" {
-  type = map(string)
   default = {
     web = {
       name = "textifai-web"
