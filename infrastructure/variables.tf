@@ -62,11 +62,10 @@ variable "oauth_client_secret" {
 }
 
 variable "image_tag" {
-  type    = string
-  default = "6ff0e36c7a38cd543893161ca458697483fd0dd8"
+  type = string
 }
 
 locals {
   image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${var.unique_identifier}/${var.artifact_registry_name}"
-  image_urls       = { for key, name in var.package_names : key => "${local.image_url_prefix}/${name}:${var.image_tag}" }
+  image_urls       = { for key, name in var.package_names : key => "${local.image_url_prefix}/${name}:${tostring(var.image_tag)}" }
 }
