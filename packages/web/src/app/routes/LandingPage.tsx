@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
+import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
+import { useState } from "react";
 
 const PlaceHolder = () => {
   const { colorMode } = useColorMode();
@@ -57,6 +59,10 @@ const Paragraph: React.FC<ParagraphProps> = ({
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+
   return (
     <Grid
       templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)"]}
@@ -75,7 +81,7 @@ const LandingPage = () => {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => navigate("/features/onboarding")}
+                onClick={() => setIsSignInModalOpen(true)}
               >
                 Get started
               </Button>
@@ -183,6 +189,22 @@ const LandingPage = () => {
           <Text>© 2023 Textifai</Text>
         </Center>
       </GridItem>
+      <LoginOrRegisterModal
+        loginOrRegister="signIn"
+        authProviders={["google"]}
+        isOpen={isSignInModalOpen}
+        onClose={() => setIsSignInModalOpen(false)}
+        onSignUpClick={() => {
+          setIsSignInModalOpen(false);
+          setIsSignUpModalOpen(true);
+        }}
+      />
+      <LoginOrRegisterModal
+        loginOrRegister="signUp"
+        authProviders={["google"]}
+        isOpen={isSignUpModalOpen}
+        onClose={() => setIsSignUpModalOpen(false)}
+      />
     </Grid>
   );
 };
