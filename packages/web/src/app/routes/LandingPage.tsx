@@ -13,7 +13,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
 import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../providers/AuthProvider";
 
 const PlaceHolder = () => {
   const { colorMode } = useColorMode();
@@ -59,7 +60,8 @@ const Paragraph: React.FC<ParagraphProps> = ({
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const currentUser = useContext(AuthContext);
+
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
@@ -81,7 +83,13 @@ const LandingPage = () => {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => setIsSignInModalOpen(true)}
+                onClick={() => {
+                  if (currentUser) {
+                      navigate("features/workspace");
+                  } else {
+                      setIsSignInModalOpen(true);
+                  }
+                }}
               >
                 Get started
               </Button>
