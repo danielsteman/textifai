@@ -107,12 +107,12 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
             });
-
+            props.onClose();
             break;
           case "signIn":
             await signInWithEmailAndPassword(auth, email, password);
+            props.onClose();
         }
-        onClose();
       } catch (error: any) {
         setError(error.code);
       }
