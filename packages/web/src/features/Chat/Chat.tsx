@@ -37,10 +37,11 @@ import { Message } from "@shared/firestoreInterfaces/Message";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
 import { useSelector } from "react-redux";
-import { RootState } from "src/app/store";
+import { RootState } from "../../app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
+import { config } from "../../app/config";
 
 const conversationsCollection = collection(db, "conversations");
 const messagesCollection = collection(db, "messages");
@@ -218,11 +219,14 @@ const Chat = () => {
         );
         setConversationHistory(updatedConversationHistory);
         // Now, send the updated history to the Axios server
-        const res = await axios.post("http://localhost:3001/api/chat/ask", {
-          prompt: message,
-          history: updatedConversationHistory,
-          option: "GeneralQa",
-        });
+        const res = await axios.post(
+          `http://${config.chat.url}:3001/api/chat/ask`,
+          {
+            prompt: message,
+            history: updatedConversationHistory,
+            option: "GeneralQa",
+          }
+        );
 
         setAnswerStack([...answerStack, res.data.answer]);
 
@@ -262,10 +266,13 @@ const Chat = () => {
 
     try {
       // Make the API call with the last system message
-      const res = await axios.post("http://localhost:3001/api/chat/ask", {
-        prompt: lastSystemMessage, // Sending the last system message
-        option: "regenerate", // The option is set to "regenerate"
-      });
+      const res = await axios.post(
+        `http://${config.chat.url}:3001/api/chat/ask`,
+        {
+          prompt: lastSystemMessage, // Sending the last system message
+          option: "regenerate", // The option is set to "regenerate"
+        }
+      );
 
       // Replace the last message in answerStack with the regenerated one
       setAnswerStack((prevAnswers) => {

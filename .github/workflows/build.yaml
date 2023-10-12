@@ -116,8 +116,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Print SHA
-        run: echo "${{ env.TFC_CONFIGURATION_VERSION_GIT_COMMIT_SHA }}"
+      - name: Set variables
+        run: echo "TF_VAR_image_tag=\"$(echo $GITHUB_SHA)\"" >> $GITHUB_ENV
+
+      - name: Print variables
+        run: echo $TF_VAR_image_tag
 
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4

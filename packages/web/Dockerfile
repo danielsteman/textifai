@@ -28,6 +28,8 @@ RUN yarn install
 
 COPY packages/web ./packages/web
 
+ENV NODE_ENV=production
+
 RUN yarn workspace @textifai/web build
 
 FROM nginx:1.23.2-alpine

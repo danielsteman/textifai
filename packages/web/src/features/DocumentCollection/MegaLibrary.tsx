@@ -44,7 +44,7 @@ import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "../Workspace/Workspace";
 import PdfViewer from "../PdfViewer/PdfViewer";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "src/app/store";
+import { RootState } from "../../app/store";
 import {
   disableDocument,
   enableDocument,
