@@ -21,6 +21,13 @@ const AuthError: React.FC<Props> = (props) => {
           The email address you used is invalid.
         </Alert>
       );
+    case "auth/wrong-password":
+      return (
+        <Alert status="error">
+          <AlertIcon />
+          Incorrect password. Please try again.
+        </Alert>
+      );      
     case "auth/email-already-exists":
       return (
         <Alert status="error">
