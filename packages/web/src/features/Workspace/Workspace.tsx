@@ -62,6 +62,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { AuthContext } from "../../app/providers/AuthProvider";
+import { onAuthStateChanged } from "firebase/auth";
 
 export type ITab = {
   name: string;
@@ -103,13 +104,16 @@ const Workspace = () => {
   }, []);
 
   useEffect(() => {
-    async function fetchVerificationStatus() {
-      const status = await isEmailVerified();
-      setEmailVerified(status as boolean);
+    if (currentUser) {
+      isEmailVerified().then(verified => {
+        setEmailVerified(true);
+      });
+    } else {
+      setEmailVerified(false);
     }
+  }, [currentUser]);
   
-    fetchVerificationStatus();
-  }, []);
+  
 
   const handleResendClick = () => {
     if (currentUser) {
@@ -134,7 +138,6 @@ const Workspace = () => {
               <br/>
               <br/>
               If you have not received the verification mail, please check your "Spam" folder. 
-              <br/>
               You can also click the resend button below to have another email sent to you.
             </Text>
           </ModalBody>
