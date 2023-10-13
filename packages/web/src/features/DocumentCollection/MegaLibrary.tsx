@@ -340,7 +340,7 @@ const MegaLibrary = () => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.error(`Error parsing topics: ${error.message}`);
+        console.warn(`Error parsing topics: ${error.message}`);
       } else {
         console.error("An unknown error occurred while parsing topics.");
       }
