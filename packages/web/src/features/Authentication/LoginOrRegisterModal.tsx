@@ -28,14 +28,13 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
-  signOut
 } from "firebase/auth";
 import { useCallback, useState } from "react";
 import { auth, db } from "../../app/config/firebase";
 import Socials from "./Socials";
 import AuthError from "./AuthError";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { Timestamp, doc, setDoc, updateDoc } from "firebase/firestore";
+import { Timestamp, doc, setDoc } from "firebase/firestore";
 import { User } from "@shared/firestoreInterfaces/User";
 import theme from "../../app/themes/theme";
 
@@ -73,7 +72,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
   ) => {
     setRepeatedPassword(e.target.value);
   };
-
+  
   const handleSubmit = useCallback(
     async (e: any) => {
       setAttempts(attempts + 1);
