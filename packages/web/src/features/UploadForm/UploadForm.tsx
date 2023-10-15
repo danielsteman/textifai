@@ -136,7 +136,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
       data.append("userId", currentUser!.uid);
 
       const res = await axios.post(
-        `http://${config.documents.url}/api/documents/upload`,
+        `${config.documents.url}/api/documents/upload`,
         data,
         {
           headers: { "Content-Type": "multipart/form-data" },
