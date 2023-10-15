@@ -88,6 +88,7 @@ const colors = {
 
 const config = {
   colors: colors,
+  initialColorMode: "dark",
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
