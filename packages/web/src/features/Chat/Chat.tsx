@@ -219,14 +219,11 @@ const Chat = () => {
         );
         setConversationHistory(updatedConversationHistory);
         // Now, send the updated history to the Axios server
-        const res = await axios.post(
-          `http://${config.chat.url}:3001/api/chat/ask`,
-          {
-            prompt: message,
-            history: updatedConversationHistory,
-            option: "GeneralQa",
-          }
-        );
+        const res = await axios.post(`http://${config.chat.url}/api/chat/ask`, {
+          prompt: message,
+          history: updatedConversationHistory,
+          option: "GeneralQa",
+        });
 
         setAnswerStack([...answerStack, res.data.answer]);
 
@@ -266,13 +263,10 @@ const Chat = () => {
 
     try {
       // Make the API call with the last system message
-      const res = await axios.post(
-        `http://${config.chat.url}:3001/api/chat/ask`,
-        {
-          prompt: lastSystemMessage, // Sending the last system message
-          option: "regenerate", // The option is set to "regenerate"
-        }
-      );
+      const res = await axios.post(`http://${config.chat.url}/api/chat/ask`, {
+        prompt: lastSystemMessage, // Sending the last system message
+        option: "regenerate", // The option is set to "regenerate"
+      });
 
       // Replace the last message in answerStack with the regenerated one
       setAnswerStack((prevAnswers) => {
