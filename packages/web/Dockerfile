@@ -33,7 +33,6 @@ ENV NODE_ENV=production
 RUN yarn workspace @textifai/web build
 
 FROM nginx:1.23.2-alpine
-ENV NODE_ENV=production
 COPY packages/web/.nginx/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /usr/src/app/packages/web/dist /usr/share/nginx/html
 RUN touch /var/run/nginx.pid
