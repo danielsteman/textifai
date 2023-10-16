@@ -3,6 +3,7 @@ import {
   Center,
   FormControl,
   FormLabel,
+  // Heading,
   Input,
   VStack,
   useColorMode,
@@ -85,7 +86,10 @@ const CreateProject = () => {
         Cancel
       </Button>
       <form>
-        <FormControl isRequired mb={gap}>
+        {/* <Heading mb={8} size="lg">
+          Let's create a new project first 🙌
+        </Heading> */}
+        <FormControl isRequired mb={gap} w={"fit-content"}>
           <FormLabel>Project name</FormLabel>
           <Input
             type="text"
@@ -93,7 +97,7 @@ const CreateProject = () => {
             onChange={(e) => onChange("name", e)}
           />
         </FormControl>
-        <FormControl mb={gap}>
+        <FormControl mb={gap} w={"fit-content"}>
           <FormLabel>Project description</FormLabel>
           <Input
             type="text"
@@ -101,7 +105,7 @@ const CreateProject = () => {
             onChange={(e) => onChange("description", e)}
           />
         </FormControl>
-        <FormControl mb={gap}>
+        <FormControl mb={gap} w={"fit-content"}>
           <FormLabel>Industry</FormLabel>
           <Input
             type="text"

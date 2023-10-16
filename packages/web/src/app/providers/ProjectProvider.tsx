@@ -3,7 +3,7 @@ import { Project } from "@shared/firestoreInterfaces/Project";
 import {
   QueryDocumentSnapshot,
   collection,
-  getDocs,
+  onSnapshot,
   query,
   where,
 } from "firebase/firestore";
@@ -31,18 +31,21 @@ export const ProjectProvider: React.FC<Props> = ({ children }) => {
         where("users", "array-contains", currentUser.uid)
       );
 
-      const getProjects = async () => {
-        const projectsSnapshot = await getDocs(projectsQuery);
-        projectsSnapshot.docs.map((project: QueryDocumentSnapshot) => {
-          const projectData = project.data() as Project;
-          setProjects([...projects, projectData]);
+      const unsubscribe = onSnapshot(projectsQuery, (snapshot) => {
+        const fetchedProjects: Project[] = [];
+        snapshot.forEach((doc: QueryDocumentSnapshot) => {
+          fetchedProjects.push(doc.data() as Project);
         });
-      };
+        setProjects(fetchedProjects);
+        setLoading(false);
+      });
 
-      getProjects();
+      return () => unsubscribe();
+
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
-  }, []);
+  }, [currentUser]);
 
   if (loading) {
     return <Spinner />;

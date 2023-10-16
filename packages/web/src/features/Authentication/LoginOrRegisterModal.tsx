@@ -22,6 +22,7 @@ import {
   Divider,
   Flex,
   useColorMode,
+  Link,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
@@ -41,7 +42,11 @@ export type AuthProvider = "facebook" | "google";
 
 export interface LoginOrRegisterModalProps {
   loginOrRegister: "signIn" | "signUp";
-  authProviders: AuthProvider[];
+  authProviders: AuthProvider[];  
+  isOpen: boolean;
+  onClose: () => void;
+  onSignInClick?: () => void;
+  onSignUpClick?: () => void;
 }
 
 const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
@@ -102,12 +107,12 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
             });
-
+            props.onClose();
             break;
           case "signIn":
             await signInWithEmailAndPassword(auth, email, password);
+            props.onClose();
         }
-        onClose();
       } catch (error: any) {
         setError(error.code);
       }
@@ -167,10 +172,19 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
   return (
     <>
-      <Button size="sm" onClick={onOpen} variant={buttonProps.variant}>
+      <Button size="sm" 
+        onClick={() => {
+          if (props.loginOrRegister === "signIn" && props.onSignInClick) {
+            props.onSignInClick();
+          } else if (props.loginOrRegister === "signUp" && props.onSignUpClick) {
+            props.onSignUpClick();
+          }
+        }}
+        variant={buttonProps.variant}
+      >
         {buttonProps.text}
       </Button>
-      <Modal isCentered isOpen={isOpen} onClose={onClose}>
+      <Modal isCentered isOpen={props.isOpen} onClose={props.onClose}>
         <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
         <ModalContent pb={4} bgColor={theme.colors[colorMode].surfaceContainer}>
           {isForgotPassword ? (
@@ -340,20 +354,31 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                     )}
                   </VStack>
                 </ModalBody>
-                <ModalFooter>
-                  {loading ? (
-                    <Spinner size="md" />
-                  ) : (
-                    <Button
-                      w="100%"
-                      type="submit"
-                      onClick={handleSubmit}
-                      isDisabled={disableSubmitButton()}
-                    >
-                      {buttonProps.text}
-                    </Button>
-                  )}
-                </ModalFooter>
+                  <ModalFooter>
+                    <VStack width="100%">
+                      {loading ? (
+                          <Spinner size="md" />
+                      ) : (
+                          <Button
+                              w="100%"
+                              type="submit"
+                              onClick={handleSubmit}
+                              isDisabled={disableSubmitButton()}
+                          >
+                              {buttonProps.text}
+                          </Button>
+                      )}
+
+                      {props.loginOrRegister === "signIn" && (
+                          <Text mt={4} textAlign="center">
+                              Don't have an account yet?&nbsp; 
+                              <Link color="blue.500"  onClick={() => { props.onSignUpClick && props.onSignUpClick();}}>
+                                Click here
+                              </Link>
+                          </Text>
+                      )}
+                    </VStack>
+                  </ModalFooter>
               </form>
             </>
           )}
