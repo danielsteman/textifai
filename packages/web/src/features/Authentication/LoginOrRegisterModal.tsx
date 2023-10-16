@@ -22,6 +22,7 @@ import {
   Divider,
   Flex,
   useColorMode,
+  Link,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
@@ -43,6 +44,10 @@ export type AuthProvider = "facebook" | "google";
 export interface LoginOrRegisterModalProps {
   loginOrRegister: "signIn" | "signUp";
   authProviders: AuthProvider[];
+  isOpen: boolean;
+  onClose: () => void;
+  onSignInClick?: () => void;
+  onSignUpClick?: () => void;
 }
 
 const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
@@ -72,7 +77,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
   ) => {
     setRepeatedPassword(e.target.value);
   };
-  
+
   const handleSubmit = useCallback(
     async (e: any) => {
       setAttempts(attempts + 1);
@@ -82,7 +87,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
       try {
         switch (props.loginOrRegister) {
           case "signUp":
-
             const userCredential = await createUserWithEmailAndPassword(
               auth,
               email,
@@ -91,7 +95,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
             if (userCredential.user) {
               sendEmailVerification(userCredential.user);
-              console.log('Verification email sent.');
+              console.log("Verification email sent.");
             }
 
             const userData: User = {
@@ -114,17 +118,17 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
             });
             break;
 
-            case "signIn":
-              await signInWithEmailAndPassword(auth, email, password);
-          }
-          onClose();
-        } catch (error: any) {
-          setError(error.code);
+          case "signIn":
+            await signInWithEmailAndPassword(auth, email, password);
         }
-        setLoading(false);
-      },
-      [email, password, firstname, lastname]
-    );
+        onClose();
+      } catch (error: any) {
+        setError(error.code);
+      }
+      setLoading(false);
+    },
+    [email, password, firstname, lastname]
+  );
 
   const missingEmailError = email === "" && attempts >= 1;
   const missingPasswordError = password === "" && attempts >= 1;
@@ -177,10 +181,23 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
   return (
     <>
-      <Button size="sm" onClick={onOpen} variant={buttonProps.variant}>
+      <Button
+        size="sm"
+        onClick={() => {
+          if (props.loginOrRegister === "signIn" && props.onSignInClick) {
+            props.onSignInClick();
+          } else if (
+            props.loginOrRegister === "signUp" &&
+            props.onSignUpClick
+          ) {
+            props.onSignUpClick();
+          }
+        }}
+        variant={buttonProps.variant}
+      >
         {buttonProps.text}
       </Button>
-      <Modal isCentered isOpen={isOpen} onClose={onClose}>
+      <Modal isCentered isOpen={props.isOpen} onClose={props.onClose}>
         <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
         <ModalContent pb={4} bgColor={theme.colors[colorMode].surfaceContainer}>
           {isForgotPassword ? (
@@ -351,18 +368,34 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                   </VStack>
                 </ModalBody>
                 <ModalFooter>
-                  {loading ? (
-                    <Spinner size="md" />
-                  ) : (
-                    <Button
-                      w="100%"
-                      type="submit"
-                      onClick={handleSubmit}
-                      isDisabled={disableSubmitButton()}
-                    >
-                      {buttonProps.text}
-                    </Button>
-                  )}
+                  <VStack width="100%">
+                    {loading ? (
+                      <Spinner size="md" />
+                    ) : (
+                      <Button
+                        w="100%"
+                        type="submit"
+                        onClick={handleSubmit}
+                        isDisabled={disableSubmitButton()}
+                      >
+                        {buttonProps.text}
+                      </Button>
+                    )}
+
+                    {props.loginOrRegister === "signIn" && (
+                      <Text mt={4} textAlign="center">
+                        Don't have an account yet?&nbsp;
+                        <Link
+                          color="blue.500"
+                          onClick={() => {
+                            props.onSignUpClick && props.onSignUpClick();
+                          }}
+                        >
+                          Click here
+                        </Link>
+                      </Text>
+                    )}
+                  </VStack>
                 </ModalFooter>
               </form>
             </>

@@ -1,4 +1,8 @@
-import { StyleFunctionProps, extendTheme } from "@chakra-ui/react";
+import {
+  StyleFunctionProps,
+  type ThemeConfig,
+  extendTheme,
+} from "@chakra-ui/react";
 
 const colors = {
   dark: {
@@ -88,6 +92,8 @@ const colors = {
 
 const config = {
   colors: colors,
+  initialColorMode: "dark",
+  useSystemColorMode: false,
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {

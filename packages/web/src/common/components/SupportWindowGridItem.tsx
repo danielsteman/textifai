@@ -15,7 +15,7 @@ import {
   closeMiniLibrary,
   closePdfViewer,
 } from "../../features/Workspace/tabsSlice";
-import { RootState } from "src/app/store";
+import { RootState } from "../../app/store";
 import { sumBooleanAttributes } from "../utils/sumBooleanAttributes";
 
 interface SupportWindowGridItemProps {
