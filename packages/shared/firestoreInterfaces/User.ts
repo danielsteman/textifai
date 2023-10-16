@@ -1,8 +1,10 @@
 import { Timestamp } from "firebase/firestore";
 
 export interface User {
+  userId: string;
   firstName: string;
   lastName: string;
+  email: string;
   admin: string[];
   avatarUrl: string;
   createdDate: Timestamp;

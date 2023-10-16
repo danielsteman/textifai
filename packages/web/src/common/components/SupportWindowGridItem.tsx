@@ -36,22 +36,26 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
     sumBooleanAttributes(openTabs as any, "openChatSupport") +
     sumBooleanAttributes(openTabs as any, "openMiniLibrary") +
     sumBooleanAttributes(openTabs as any, "openPdfViewer");
-  const onClose = () => {
-    switch (windowName) {
-      case "Library": {
-        dispatch(closeMiniLibrary(tabName));
+    const onClose = () => {
+      switch (windowName) {
+        case "Library": {
+          dispatch(closeMiniLibrary(tabName));
+          break;
+        }
+        case "Chat": {
+          dispatch(closeChatSupport(tabName));
+          break;
+        }
+        case "Pdf viewer": {
+          dispatch(closePdfViewer(tabName));
+          break;
+        }
+        default: {
+          console.warn("Found unrecognized window name");
+          break;
+        }
       }
-      case "Chat": {
-        dispatch(closeChatSupport(tabName));
-      }
-      case "Pdf viewer": {
-        dispatch(closePdfViewer(tabName));
-      }
-      default: {
-        console.warn("Found unrecognized window name");
-      }
-    }
-  };
+    };    
   return (
     <GridItem
       overflowY="scroll"

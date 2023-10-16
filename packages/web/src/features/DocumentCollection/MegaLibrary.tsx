@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import {
   Box,
@@ -49,6 +49,8 @@ import {
   disableDocument,
   enableDocument,
   initializeSelectedDocuments,
+  selectAllDocuments, 
+  clearAllSelections
 } from "./librarySlice";
 import {
   collection,
@@ -84,6 +86,8 @@ const MegaLibrary = () => {
 
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
 
+  const didRunOnce = useRef(false);
+
   useEffect(() => {
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
@@ -96,6 +100,16 @@ const MegaLibrary = () => {
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
   );
+
+  const toggleAllDocuments = () => {
+  
+    if (selectedDocuments.length === documents.length) {
+      dispatch(clearAllSelections());
+    } else {
+      const allDocumentNames = documents.map(doc => doc.uploadName);
+      dispatch(selectAllDocuments(allDocumentNames));
+    }
+  };
 
   const {
     isOpen: isDeleteFileOpen,
@@ -119,11 +133,12 @@ const MegaLibrary = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (documents.length > 0 && selectedDocuments.length === 0) {
+    if (!didRunOnce.current && documents.length > 0) {
       const allUploadNames = documents.map((doc) => doc.uploadName);
       dispatch(initializeSelectedDocuments(allUploadNames));
+      didRunOnce.current = true;
     }
-  }, [documents, dispatch, selectedDocuments]);
+  }, [documents, dispatch]);
 
   useEffect(() => {
     const documentsCollection = collection(db, "uploads");
@@ -151,7 +166,7 @@ const MegaLibrary = () => {
       dispatch(enableDocument(documentName));
     }
   };
-
+  
   const handleChangeDocumentQuery = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -325,7 +340,7 @@ const MegaLibrary = () => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.error(`Error parsing topics: ${error.message}`);
+        console.warn(`Error parsing topics: ${error.message}`);
       } else {
         console.error("An unknown error occurred while parsing topics.");
       }
@@ -499,27 +514,29 @@ const MegaLibrary = () => {
           </Button>
           <Box h={4} />
           <Heading size="xs">Collections</Heading>
-          {allCollections.map((collection, index) => (
-            <Button
+          {allCollections
+          .filter(collection => collection && collection.trim() !== "")
+          .map((collection, index) => (
+          <Button
               key={index}
               bgColor={
-                collectionFilter === collection
-                  ? theme.colors[colorMode].onPrimary
-                  : undefined
+                  collectionFilter === collection
+                      ? theme.colors[colorMode].onPrimary
+                      : undefined
               }
               variant="ghost"
               size="xs"
               textColor={theme.colors[colorMode].onSurface}
               onClick={() => {
-                if (collectionFilter === collection) {
-                  setCollectionFilter(null);
-                } else {
-                  setCollectionFilter(collection);
-                }
+                  if (collectionFilter === collection) {
+                      setCollectionFilter(null);
+                  } else {
+                      setCollectionFilter(collection);
+                  }
               }}
-            >
+          >
               {collection}
-            </Button>
+          </Button>
           ))}
           <Box h={4} />
           <Heading size="xs">Projects</Heading>
@@ -643,11 +660,16 @@ const MegaLibrary = () => {
         </HStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1} overflow="auto">
-        <TableContainer>
+        <TableContainer width="100%">
           <Table size="sm">
-            <Thead>
+          <Thead>
               <Tr>
-                <Th />
+                <Th>
+                  <Checkbox 
+                    isChecked={selectedDocuments.length === documents.length}
+                    onChange={toggleAllDocuments}
+                  />
+                </Th>
                 <Th>Title</Th>
                 <Th>Author(s)</Th>
                 <Th isNumeric>Year</Th>

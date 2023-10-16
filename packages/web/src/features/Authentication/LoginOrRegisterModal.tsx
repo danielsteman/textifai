@@ -28,6 +28,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  sendEmailVerification,
 } from "firebase/auth";
 import { useCallback, useState } from "react";
 import { auth, db } from "../../app/config/firebase";
@@ -42,7 +43,7 @@ export type AuthProvider = "facebook" | "google";
 
 export interface LoginOrRegisterModalProps {
   loginOrRegister: "signIn" | "signUp";
-  authProviders: AuthProvider[];  
+  authProviders: AuthProvider[];
   isOpen: boolean;
   onClose: () => void;
   onSignInClick?: () => void;
@@ -86,33 +87,41 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
       try {
         switch (props.loginOrRegister) {
           case "signUp":
-            const userData: User = {
-              firstName: firstname,
-              lastName: lastname,
-              admin: [],
-              avatarUrl: "",
-              createdDate: Timestamp.fromDate(new Date()),
-              updatedDate: Timestamp.fromDate(new Date()),
-              language: "english",
-              isActive: false,
-              projects: [],
-            };
             const userCredential = await createUserWithEmailAndPassword(
               auth,
               email,
               password
             );
 
+            if (userCredential.user) {
+              sendEmailVerification(userCredential.user);
+              console.log("Verification email sent.");
+            }
+
+            const userData: User = {
+              userId: userCredential.user.uid,
+              firstName: firstname,
+              lastName: lastname,
+              email: email,
+              admin: [],
+              avatarUrl: "",
+              createdDate: Timestamp.fromDate(new Date()),
+              updatedDate: Timestamp.fromDate(new Date()),
+              language: "english",
+              isActive: true,
+              projects: [],
+            };
+
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
             });
-            props.onClose();
             break;
+
           case "signIn":
             await signInWithEmailAndPassword(auth, email, password);
-            props.onClose();
         }
+        onClose();
       } catch (error: any) {
         setError(error.code);
       }
@@ -172,11 +181,15 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
   return (
     <>
-      <Button size="sm" 
+      <Button
+        size="sm"
         onClick={() => {
           if (props.loginOrRegister === "signIn" && props.onSignInClick) {
             props.onSignInClick();
-          } else if (props.loginOrRegister === "signUp" && props.onSignUpClick) {
+          } else if (
+            props.loginOrRegister === "signUp" &&
+            props.onSignUpClick
+          ) {
             props.onSignUpClick();
           }
         }}
@@ -354,31 +367,36 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                     )}
                   </VStack>
                 </ModalBody>
-                  <ModalFooter>
-                    <VStack width="100%">
-                      {loading ? (
-                          <Spinner size="md" />
-                      ) : (
-                          <Button
-                              w="100%"
-                              type="submit"
-                              onClick={handleSubmit}
-                              isDisabled={disableSubmitButton()}
-                          >
-                              {buttonProps.text}
-                          </Button>
-                      )}
+                <ModalFooter>
+                  <VStack width="100%">
+                    {loading ? (
+                      <Spinner size="md" />
+                    ) : (
+                      <Button
+                        w="100%"
+                        type="submit"
+                        onClick={handleSubmit}
+                        isDisabled={disableSubmitButton()}
+                      >
+                        {buttonProps.text}
+                      </Button>
+                    )}
 
-                      {props.loginOrRegister === "signIn" && (
-                          <Text mt={4} textAlign="center">
-                              Don't have an account yet?&nbsp; 
-                              <Link color="blue.500"  onClick={() => { props.onSignUpClick && props.onSignUpClick();}}>
-                                Click here
-                              </Link>
-                          </Text>
-                      )}
-                    </VStack>
-                  </ModalFooter>
+                    {props.loginOrRegister === "signIn" && (
+                      <Text mt={4} textAlign="center">
+                        Don't have an account yet?&nbsp;
+                        <Link
+                          color="blue.500"
+                          onClick={() => {
+                            props.onSignUpClick && props.onSignUpClick();
+                          }}
+                        >
+                          Click here
+                        </Link>
+                      </Text>
+                    )}
+                  </VStack>
+                </ModalFooter>
               </form>
             </>
           )}
