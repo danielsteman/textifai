@@ -1,9 +1,17 @@
 variable "package_names" {
-  type = map(string)
   default = {
-    web       = "textifai-web"
-    chat      = "textifai-chat"
-    documents = "textifai-documents"
+    web = {
+      name = "textifai-web"
+      port = 54321
+    }
+    chat = {
+      name = "textifai-chat"
+      port = 54322
+    }
+    documents = {
+      name = "textifai-documents"
+      port = 54323
+    }
   }
 }
 
@@ -60,5 +68,5 @@ variable "image_tag" {
 
 locals {
   image_url_prefix = "${var.location}-docker.pkg.dev/${var.project_name}-${var.unique_identifier}/${var.artifact_registry_name}"
-  image_urls       = { for key, name in var.package_names : key => "${local.image_url_prefix}/${name}:${var.image_tag}" }
+  image_urls       = { for key, value in var.package_names : key => "${local.image_url_prefix}/${value.name}:${var.image_tag}" }
 }

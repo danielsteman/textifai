@@ -43,9 +43,8 @@ import theme from "../../app/themes/theme";
 import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "../Workspace/Workspace";
 import PdfViewer from "../PdfViewer/PdfViewer";
-import { shortenString } from "../../common/utils/shortenString";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "src/app/store";
+import { RootState } from "../../app/store";
 import {
   disableDocument,
   enableDocument,
@@ -734,7 +733,6 @@ const MegaLibrary = () => {
                           }
                         />
                       </Td>
-                      {/* <Td>This is a summary</Td> */}
                       <Td>{parseTopics(doc.topics)}</Td>
                       <Td textAlign="center">
                         <Icon
