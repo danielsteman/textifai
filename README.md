@@ -92,3 +92,5 @@ Workflow TODO: add pre-commit hooks - Protect main branch
 Deployment TODO: create Dockerfiles
 
 Workflow TODO: build and push docker images to GCR in pipeline
+
+Add Terraform job in build pipeline to taint the cloud run services
