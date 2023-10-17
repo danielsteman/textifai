@@ -583,7 +583,10 @@ const MegaLibrary = () => {
               <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <UploadForm onUploadComplete={handleUploadComplete} />
+                <UploadForm
+                  onUploadComplete={handleUploadComplete}
+                  dropZoneText="Uploaded files will appear in your personal library"
+                />
               </ModalBody>
             </ModalContent>
           </Modal>

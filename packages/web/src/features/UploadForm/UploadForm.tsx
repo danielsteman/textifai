@@ -37,6 +37,7 @@ interface PdfMetadata {
 
 interface UploadFormProps {
   onUploadComplete: () => void;
+  dropZoneText?: string;
 }
 
 const uploadsCollection = collection(db, "uploads");
@@ -63,7 +64,10 @@ const uploadMetadataToFirestore = async (
   }
 };
 
-const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
+const UploadForm: React.FC<UploadFormProps> = ({
+  onUploadComplete,
+  dropZoneText = "",
+}) => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadSuccessful, setUploadSuccessful] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -199,7 +203,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
         ) : files && files.length > 0 ? (
           files.map((file, index) => <Text key={index}>{file.name}</Text>)
         ) : (
-          <Text>Drag 'n' drop some files here, or click to select files</Text>
+          <Text>{dropZoneText}</Text>
         )}
       </Box>
       <Center p={4}>
@@ -222,6 +226,10 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
       </Center>
     </Box>
   );
+};
+
+UploadForm.defaultProps = {
+  dropZoneText: "Drag 'n' drop some files here, or click to select files",
 };
 
 export default UploadForm;
