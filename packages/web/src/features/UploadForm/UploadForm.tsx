@@ -211,8 +211,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
           onClick={handleSubmit}
           isDisabled={files === undefined ? true : false}
         >
-          {loading && <Spinner />}
-          Upload
+          {loading ? <Spinner /> : <Text>Upload</Text>}
         </Button>
       </Center>
       <Center height="100%" width="100%">
