@@ -39,7 +39,29 @@ const StyledQuillEditor = styled(ReactQuill)<{
   .ql-editor {
     max-height: 100%;
     overflow: auto;
-    color: ${(props) => props.textColor};
+    color: ${(props) => props.toolbarButtonIconColor};
+  }
+
+  button:hover .ql-stroke,
+  .ql-picker-label:hover .ql-stroke {
+    fill: none;
+    stroke: #3cdccf !important;
+  }
+
+  .ql-active .ql-stroke {
+    fill: none;
+    stroke: #3cdccf !important;
+  }
+
+  button:hover .ql-fill,
+  .ql-picker-label:hover .ql-fill {
+    fill: #3cdccf !important;
+    stroke: none;
+  }
+
+  .ql-active .ql-fill {
+    fill: #3cdccf !important;
+    stroke: none;
   }
 `;
 
