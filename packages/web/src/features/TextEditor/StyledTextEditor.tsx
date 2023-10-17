@@ -5,8 +5,6 @@ const StyledQuillEditor = styled(ReactQuill)<{
   editorBackgroundColor?: string;
   toolbarBackgroundColor?: string;
   textColor?: string;
-  toolbarButtonIconColor?: string;
-  toolbarButtonIconColorOnHover?: string;
 }>`
   .react-quill {
     height: calc(100% - 42px);
