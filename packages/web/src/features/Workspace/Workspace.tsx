@@ -196,7 +196,7 @@ const Workspace = () => {
             aria-label={"editor"}
             leftIcon={<FaEdit />}
             variant="ghost"
-            size="sm"
+            size="md"
             onClick={() => {
               const tab = {
                 name: "Editor",
@@ -216,7 +216,7 @@ const Workspace = () => {
             aria-label={"chat"}
             leftIcon={<ChatIcon />}
             variant="ghost"
-            size="sm"
+            size="md"
             onClick={() => {
               const tab: ITab = {
                 name: "Chat",
@@ -236,7 +236,7 @@ const Workspace = () => {
             aria-label={"documents"}
             leftIcon={<FaBook />}
             variant="ghost"
-            size="sm"
+            size="md"
             onClick={() => {
               const tab: ITab = {
                 name: "Library",
