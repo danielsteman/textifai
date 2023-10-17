@@ -5,6 +5,8 @@ const StyledQuillEditor = styled(ReactQuill)<{
   editorBackgroundColor?: string;
   toolbarBackgroundColor?: string;
   textColor?: string;
+  toolbarButtonIconColor?: string;
+  toolbarButtonIconColorOnHover?: string;
 }>`
   .react-quill {
     height: calc(100% - 42px);
@@ -40,6 +42,20 @@ const StyledQuillEditor = styled(ReactQuill)<{
     max-height: 100%;
     overflow: auto;
     color: ${(props) => props.toolbarButtonIconColor};
+  }
+
+  .ql-toolbar .ql-stroke {
+    fill: none;
+    stroke: #c4c7c6;
+  }
+
+  .ql-toolbar .ql-fill {
+    fill: #c4c7c6;
+    stroke: none;
+  }
+
+  .ql-toolbar .ql-picker {
+    color: #c4c7c6;
   }
 
   button:hover .ql-stroke,
