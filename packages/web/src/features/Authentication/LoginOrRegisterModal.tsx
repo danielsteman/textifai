@@ -38,6 +38,7 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { Timestamp, doc, setDoc } from "firebase/firestore";
 import { User } from "@shared/firestoreInterfaces/User";
 import theme from "../../app/themes/theme";
+import { useNavigate } from "react-router-dom";
 
 export type AuthProvider = "facebook" | "google";
 
@@ -63,6 +64,8 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
   const [error, setError] = useState<string>();
   const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -116,6 +119,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
             });
+            navigate("/features/onboarding");
             break;
 
           case "signIn":
