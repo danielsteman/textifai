@@ -31,6 +31,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  MenuDivider,
 } from "@chakra-ui/react";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
@@ -184,6 +185,7 @@ const Workspace = () => {
             </MenuButton>
             <MenuList>
               <MenuGroup title="All projects">
+                <MenuDivider />
                 {userProjects.map((project) => (
                   <MenuItem key={project.name}>{project.name}</MenuItem>
                 ))}
