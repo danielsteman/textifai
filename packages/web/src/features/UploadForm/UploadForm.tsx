@@ -1,4 +1,11 @@
-import { Box, Button, Center, Spinner, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Spinner,
+  Text,
+  useColorMode,
+} from "@chakra-ui/react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
@@ -16,6 +23,7 @@ import {
 import axios from "axios";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { config } from "../../app/config";
+import theme from "../../app/themes/theme";
 
 interface PdfMetadata {
   fileName: string;
@@ -162,6 +170,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
     setLoading(false);
     onUploadComplete();
   };
+  const { colorMode } = useColorMode();
 
   return (
     <Box>
@@ -172,11 +181,15 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
         borderStyle="dashed"
         borderRadius="md"
         textAlign="center"
-        borderColor={isDragActive ? "green.400" : "gray.200"}
+        borderColor={
+          isDragActive
+            ? theme.colors[colorMode].secondary
+            : theme.colors[colorMode].primary
+        }
         bg={
           isDragActive
-            ? useColorModeValue("green.50", "green.800")
-            : useColorModeValue("white", "gray.800")
+            ? theme.colors[colorMode].surfaceContainer
+            : theme.colors[colorMode].surfaceContainerLow
         }
         cursor="pointer"
       >
