@@ -120,10 +120,6 @@ const UploadForm: React.FC<UploadFormProps> = ({
     }
 
     try {
-      // Upload file to Firebase storage
-      await uploadBytes(fileRef, file);
-      console.log("Uploaded a blob or file:", file.name);
-
       // Post the file to your server
       const data = new FormData();
       data.append("file", file);
@@ -136,6 +132,10 @@ const UploadForm: React.FC<UploadFormProps> = ({
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+
+      // Upload file to Firebase storage
+      await uploadBytes(fileRef, file);
+      console.log("Uploaded a blob or file:", file.name);
 
       console.log("File uploaded successfully:", file.name);
       setUploadSuccessful(true);

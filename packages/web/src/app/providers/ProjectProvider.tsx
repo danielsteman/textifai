@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { AuthContext } from "./AuthProvider";
-import { Spinner } from "@chakra-ui/react";
+import LoadingScreen from "../../common/components/LoadingScreen";
 
 interface Props {
   children: React.ReactNode;
@@ -41,14 +41,13 @@ export const ProjectProvider: React.FC<Props> = ({ children }) => {
       });
 
       return () => unsubscribe();
-
     } else {
       setLoading(false);
     }
   }, [currentUser]);
 
   if (loading) {
-    return <Spinner />;
+    return <LoadingScreen />;
   }
 
   return (
