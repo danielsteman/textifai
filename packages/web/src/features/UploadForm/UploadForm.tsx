@@ -1,22 +1,4 @@
-import {
-  Box,
-  Button,
-  Center,
-  Checkbox,
-  HStack,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Spinner,
-  Text,
-  VStack,
-  keyframes,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Box, Button, Center, Spinner, Text } from "@chakra-ui/react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useColorModeValue } from "@chakra-ui/react";
@@ -78,7 +60,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
   const [uploadSuccessful, setUploadSuccessful] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fileExists, setFileExists] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [activeProject, setActiveProject] = useState<string | null>(null);
 
   const onDrop = useCallback((acceptedFiles: any) => {
@@ -181,66 +163,8 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
     onUploadComplete();
   };
 
-  useEffect(() => {
-    const shouldOpen = localStorage.getItem("showNewsLetterOffer");
-    if (!shouldOpen || JSON.parse(shouldOpen) === true) {
-      onOpen();
-    }
-  }, []);
-
-  const animation = keyframes`
-    to {
-       background-position: 200%;
-     }
-  `;
-
   return (
     <Box>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Welcome!</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>
-              Upload PDF documents. Textifai is a text analytics platform so we
-              only accept text based documents, for now... Sign up to our
-              newsletter to receive updates about new features!
-            </Text>
-          </ModalBody>
-          <ModalFooter justifyContent="center">
-            <VStack gap={4} p={0}>
-              <HStack p={0}>
-                <Button colorScheme="blue" mr={3} onClick={onClose}>
-                  Close
-                </Button>
-                <Button
-                  bgGradient="linear(to-l, #7928CA,#FF0080)"
-                  fontSize="md"
-                  backgroundSize="200% auto"
-                  animation={`${animation} 2s ease-in-out infinite alternate`}
-                  colorScheme="blue"
-                  textColor="white"
-                >
-                  Sign up for newsletter
-                </Button>
-              </HStack>
-              <Checkbox
-                value="dontShowAgain"
-                onChange={(e) => {
-                  localStorage.setItem(
-                    "showNewsLetterOffer",
-                    JSON.stringify(!e.target.checked)
-                  );
-                  console.log(e.target.checked);
-                }}
-              >
-                Don't show again
-              </Checkbox>
-            </VStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
       <Box
         {...getRootProps()}
         p={4}

@@ -32,16 +32,11 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
 import EditorPanel from "../../features/Workspace/panels/EditorPanel";
-import {
-  FaBook,
-  FaBookOpen,
-  FaEdit,
-  FaRegFilePdf,
-} from "react-icons/fa";
+import { FaBook, FaBookOpen, FaEdit, FaRegFilePdf } from "react-icons/fa";
 import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
@@ -62,7 +57,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { AuthContext } from "../../app/providers/AuthProvider";
-import { onAuthStateChanged } from "firebase/auth";
 
 export type ITab = {
   name: string;
@@ -105,55 +99,62 @@ const Workspace = () => {
 
   useEffect(() => {
     if (currentUser) {
-      isEmailVerified().then(verified => {
+      isEmailVerified().then((verified) => {
         setEmailVerified(true);
       });
     } else {
       setEmailVerified(false);
     }
   }, [currentUser]);
-  
-  
 
   const handleResendClick = () => {
     if (currentUser) {
-        resendVerificationEmail(currentUser);
-        setMailResent(true);
+      resendVerificationEmail(currentUser);
+      setMailResent(true);
     }
   };
 
   return (
-
     <HStack h="100%">
-    {!emailVerified && (
-      <Modal isOpen={!emailVerified} onClose={() => {}} isCentered size="md">
-        <ModalOverlay />
-        <ModalContent bgColor={theme.colors[colorMode].secondaryContainer} borderRadius="md">
-          <ModalHeader textColor={theme.colors[colorMode].onSecondaryContainer}>
-            Verify your email
-          </ModalHeader>
-          <ModalBody>
-            <Text mb={4}>
-              We have sent an email to <span style={{ fontWeight: 'bold' }}>{currentUser!.email}</span>. 
-              <br/>
-              <br/>
-              If you have not received the verification mail, please check your "Spam" folder. 
-              You can also click the resend button below to have another email sent to you.
-            </Text>
-          </ModalBody>
-          <ModalFooter justifyContent="flex-start">
-            <Button 
-              colorScheme={theme.colors[colorMode].onSecondaryContainer}  
+      {!emailVerified && (
+        <Modal isOpen={!emailVerified} onClose={() => {}} isCentered size="md">
+          <ModalOverlay />
+          <ModalContent
+            bgColor={theme.colors[colorMode].secondaryContainer}
+            borderRadius="md"
+          >
+            <ModalHeader
               textColor={theme.colors[colorMode].onSecondaryContainer}
-              onClick={handleResendClick}
-              p={0}
-              isDisabled={mailResent}
             >
-              {mailResent ? "Just resent another verification mail" : "Resend verification mail"}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+              Verify your email
+            </ModalHeader>
+            <ModalBody>
+              <Text mb={4}>
+                We have sent an email to{" "}
+                <span style={{ fontWeight: "bold" }}>{currentUser!.email}</span>
+                .
+                <br />
+                <br />
+                If you have not received the verification mail, please check
+                your "Spam" folder. You can also click the resend button below
+                to have another email sent to you.
+              </Text>
+            </ModalBody>
+            <ModalFooter justifyContent="flex-start">
+              <Button
+                colorScheme={theme.colors[colorMode].onSecondaryContainer}
+                textColor={theme.colors[colorMode].onSecondaryContainer}
+                onClick={handleResendClick}
+                p={0}
+                isDisabled={mailResent}
+              >
+                {mailResent
+                  ? "Just resent another verification mail"
+                  : "Resend verification mail"}
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       )}
       {isMenuOpen && (
         <VStack
