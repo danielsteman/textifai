@@ -544,7 +544,6 @@ const MegaLibrary = () => {
               </Button>
             ))}
           <Box h={4} />
-          <Heading size="xs">Projects</Heading>
           <Spacer />
           <Button
             textColor={theme.colors[colorMode].onTertiaryContainer}
