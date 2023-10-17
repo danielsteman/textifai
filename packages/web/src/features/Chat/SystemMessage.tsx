@@ -1,4 +1,3 @@
-import { PlusSquareIcon } from "@chakra-ui/icons";
 import {
   Menu,
   MenuButton,
@@ -19,6 +18,7 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
+import { FaPlus } from "react-icons/fa";
 
 interface SystemMessageProps {
   message: string;
@@ -68,20 +68,23 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       >
         <HStack spacing={2}>
           <VStack spacing={0} flex="1">
-            <Text>{message}</Text>
+            <ReactMarkdown>{message}</ReactMarkdown>
           </VStack>
           {!menuClicked && variant === "agent" && (
             <Menu>
               <MenuButton
                 as={IconButton}
                 aria-label="Options"
-                icon={<PlusSquareIcon />}
+                icon={<FaPlus />}
                 variant="ghost"
                 size="sm"
+                color={theme.colors[colorMode].onSecondary}
               />
               <MenuList>
                 <MenuItem onClick={handleMenuClick}>
-                  Copy to Working Document
+                  <Text color={theme.colors[colorMode].secondary}>
+                    Copy to Working Document
+                  </Text>
                 </MenuItem>
               </MenuList>
             </Menu>

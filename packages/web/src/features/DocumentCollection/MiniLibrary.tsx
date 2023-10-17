@@ -4,8 +4,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Text,
-  VStack,  
+  VStack,
   Table,
   Thead,
   Tbody,
@@ -13,9 +12,9 @@ import {
   Th,
   Td,
   Checkbox,
-  Button
+  Box,
 } from "@chakra-ui/react";
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 import { storage } from "../../app/config/firebase";
 import { StorageReference, listAll, ref } from "firebase/storage";
 import { SearchIcon } from "@chakra-ui/icons";
@@ -31,7 +30,7 @@ const MiniLibrary = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-  
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -51,7 +50,7 @@ const MiniLibrary = () => {
     } else {
       dispatch(enableDocument(documentName));
     }
-  };  
+  };
 
   const handleChangeDocumentQuery = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -61,18 +60,19 @@ const MiniLibrary = () => {
 
   return (
     <VStack h="100%">
-      <InputGroup>
-        <InputLeftElement pointerEvents="none">
-          <SearchIcon />
-        </InputLeftElement>
-        <Input
-          placeholder="Search"
-          onChange={handleChangeDocumentQuery}
-          rounded="full"
-          bgColor={"grey"}
-        />
-      </InputGroup>
-
+      <Box w="100%" px={2}>
+        <InputGroup>
+          <InputLeftElement pointerEvents="none">
+            <SearchIcon />
+          </InputLeftElement>
+          <Input
+            placeholder="Search"
+            onChange={handleChangeDocumentQuery}
+            rounded="full"
+            bgColor={"grey"}
+          />
+        </InputGroup>
+      </Box>
       <Table size="sm">
         <Thead>
           <Tr>
@@ -82,7 +82,9 @@ const MiniLibrary = () => {
         </Thead>
         <Tbody>
           {documents
-            .filter((doc) => doc.name.toLowerCase().includes(documentQuery.toLowerCase()))
+            .filter((doc) =>
+              doc.name.toLowerCase().includes(documentQuery.toLowerCase())
+            )
             .map((doc) => (
               <Tr key={doc.fullPath}>
                 <Td>
