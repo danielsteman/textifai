@@ -13,7 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
 import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 
 const PlaceHolder = () => {
@@ -65,6 +65,12 @@ const LandingPage = () => {
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/features/workspace");
+    }
+  }, []);
+
   return (
     <Grid
       templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)"]}
@@ -85,9 +91,9 @@ const LandingPage = () => {
                 size="lg"
                 onClick={() => {
                   if (currentUser) {
-                      navigate("features/workspace");
+                    navigate("features/workspace");
                   } else {
-                      setIsSignInModalOpen(true);
+                    setIsSignInModalOpen(true);
                   }
                 }}
               >
