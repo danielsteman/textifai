@@ -8,7 +8,6 @@ import { WorkingDocument } from "@shared/firestoreInterfaces/WorkingDocument";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import StyledTextEditor from "./StyledTextEditor";
 import { useColorMode } from "@chakra-ui/react";
-import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import theme from "../../app/themes/theme";
 
@@ -24,8 +23,8 @@ const TextEditor = () => {
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
       setActiveProject(projectId);
-    }
-  
+    };
+
     fetchActiveProject();
   }, [currentUser]);
 
@@ -52,7 +51,7 @@ const TextEditor = () => {
       if (value && currentUser) {
         if (!documentId) {
           const newDocument: WorkingDocument = {
-            projectId: activeProject!, 
+            projectId: activeProject!,
             name: "Document Name", // This might need to be adjusted
             creationDate: Timestamp.fromDate(new Date()),
             users: [currentUser.uid],

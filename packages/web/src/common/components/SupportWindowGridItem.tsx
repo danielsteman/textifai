@@ -36,26 +36,26 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
     sumBooleanAttributes(openTabs as any, "openChatSupport") +
     sumBooleanAttributes(openTabs as any, "openMiniLibrary") +
     sumBooleanAttributes(openTabs as any, "openPdfViewer");
-    const onClose = () => {
-      switch (windowName) {
-        case "Library": {
-          dispatch(closeMiniLibrary(tabName));
-          break;
-        }
-        case "Chat": {
-          dispatch(closeChatSupport(tabName));
-          break;
-        }
-        case "Pdf viewer": {
-          dispatch(closePdfViewer(tabName));
-          break;
-        }
-        default: {
-          console.warn("Found unrecognized window name");
-          break;
-        }
+  const onClose = () => {
+    switch (windowName) {
+      case "Library": {
+        dispatch(closeMiniLibrary(tabName));
+        break;
       }
-    };    
+      case "Chat": {
+        dispatch(closeChatSupport(tabName));
+        break;
+      }
+      case "Pdf viewer": {
+        dispatch(closePdfViewer(tabName));
+        break;
+      }
+      default: {
+        console.warn("Found unrecognized window name");
+        break;
+      }
+    }
+  };
   return (
     <GridItem
       overflowY="scroll"
@@ -71,16 +71,20 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
       <HStack
         mb={2}
         pl={2}
-        bgColor={theme.colors[colorMode].primaryContainer}
+        bgColor={theme.colors[colorMode].tertiaryContainer}
         borderTopRadius={8}
       >
-        <Heading size="xs" color={theme.colors[colorMode].onPrimaryContainer}>
+        <Heading
+          size="sm"
+          py={1}
+          color={theme.colors[colorMode].onTertiaryContainer}
+        >
           {windowName}
         </Heading>
         <Spacer />
         <IconButton
           variant="ghost"
-          size="xs"
+          size="sm"
           aria-label={"close"}
           icon={<SmallCloseIcon />}
           onClick={onClose}

@@ -2,20 +2,9 @@ import {
   Box,
   Button,
   Center,
-  Checkbox,
-  HStack,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Spinner,
   Text,
-  VStack,
-  keyframes,
-  useDisclosure,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -34,6 +23,7 @@ import {
 import axios from "axios";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { config } from "../../app/config";
+import theme from "../../app/themes/theme";
 
 interface PdfMetadata {
   fileName: string;
@@ -47,6 +37,7 @@ interface PdfMetadata {
 
 interface UploadFormProps {
   onUploadComplete: () => void;
+  dropZoneText?: string;
 }
 
 const uploadsCollection = collection(db, "uploads");
@@ -73,12 +64,15 @@ const uploadMetadataToFirestore = async (
   }
 };
 
-const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
+const UploadForm: React.FC<UploadFormProps> = ({
+  onUploadComplete,
+  dropZoneText = "",
+}) => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadSuccessful, setUploadSuccessful] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fileExists, setFileExists] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [activeProject, setActiveProject] = useState<string | null>(null);
 
   const onDrop = useCallback((acceptedFiles: any) => {
@@ -126,10 +120,6 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
     }
 
     try {
-      // Upload file to Firebase storage
-      await uploadBytes(fileRef, file);
-      console.log("Uploaded a blob or file:", file.name);
-
       // Post the file to your server
       const data = new FormData();
       data.append("file", file);
@@ -142,6 +132,10 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+
+      // Upload file to Firebase storage
+      await uploadBytes(fileRef, file);
+      console.log("Uploaded a blob or file:", file.name);
 
       console.log("File uploaded successfully:", file.name);
       setUploadSuccessful(true);
@@ -180,67 +174,10 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
     setLoading(false);
     onUploadComplete();
   };
-
-  useEffect(() => {
-    const shouldOpen = localStorage.getItem("showNewsLetterOffer");
-    if (!shouldOpen || JSON.parse(shouldOpen) === true) {
-      onOpen();
-    }
-  }, []);
-
-  const animation = keyframes`
-    to {
-       background-position: 200%;
-     }
-  `;
+  const { colorMode } = useColorMode();
 
   return (
     <Box>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Welcome!</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>
-              Upload PDF documents. Textifai is a text analytics platform so we
-              only accept text based documents, for now... Sign up to our
-              newsletter to receive updates about new features!
-            </Text>
-          </ModalBody>
-          <ModalFooter justifyContent="center">
-            <VStack gap={4} p={0}>
-              <HStack p={0}>
-                <Button colorScheme="blue" mr={3} onClick={onClose}>
-                  Close
-                </Button>
-                <Button
-                  bgGradient="linear(to-l, #7928CA,#FF0080)"
-                  fontSize="md"
-                  backgroundSize="200% auto"
-                  animation={`${animation} 2s ease-in-out infinite alternate`}
-                  colorScheme="blue"
-                  textColor="white"
-                >
-                  Sign up for newsletter
-                </Button>
-              </HStack>
-              <Checkbox
-                value="dontShowAgain"
-                onChange={(e) => {
-                  localStorage.setItem(
-                    "showNewsLetterOffer",
-                    JSON.stringify(!e.target.checked)
-                  );
-                  console.log(e.target.checked);
-                }}
-              >
-                Don't show again
-              </Checkbox>
-            </VStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
       <Box
         {...getRootProps()}
         p={4}
@@ -248,11 +185,15 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
         borderStyle="dashed"
         borderRadius="md"
         textAlign="center"
-        borderColor={isDragActive ? "green.400" : "gray.200"}
+        borderColor={
+          isDragActive
+            ? theme.colors[colorMode].secondary
+            : theme.colors[colorMode].primary
+        }
         bg={
           isDragActive
-            ? useColorModeValue("green.50", "green.800")
-            : useColorModeValue("white", "gray.800")
+            ? theme.colors[colorMode].surfaceContainer
+            : theme.colors[colorMode].surfaceContainerLow
         }
         cursor="pointer"
       >
@@ -262,7 +203,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
         ) : files && files.length > 0 ? (
           files.map((file, index) => <Text key={index}>{file.name}</Text>)
         ) : (
-          <Text>Drag 'n' drop some files here, or click to select files</Text>
+          <Text>{dropZoneText}</Text>
         )}
       </Box>
       <Center p={4}>
@@ -270,8 +211,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
           onClick={handleSubmit}
           isDisabled={files === undefined ? true : false}
         >
-          {loading && <Spinner />}
-          Upload
+          {loading ? <Spinner /> : <Text>Upload</Text>}
         </Button>
       </Center>
       <Center height="100%" width="100%">
@@ -285,6 +225,10 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
       </Center>
     </Box>
   );
+};
+
+UploadForm.defaultProps = {
+  dropZoneText: "Drag 'n' drop some files here, or click to select files",
 };
 
 export default UploadForm;

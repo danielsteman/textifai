@@ -12,8 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
-import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
-import { useContext, useState } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 
 const PlaceHolder = () => {
@@ -62,8 +61,11 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
 
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/features/workspace");
+    }
+  }, []);
 
   return (
     <Grid
@@ -83,13 +85,7 @@ const LandingPage = () => {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => {
-                  if (currentUser) {
-                      navigate("features/workspace");
-                  } else {
-                      setIsSignInModalOpen(true);
-                  }
-                }}
+                // TODO: onclick => open signup modal
               >
                 Get started
               </Button>
@@ -197,22 +193,6 @@ const LandingPage = () => {
           <Text>© 2023 Textifai</Text>
         </Center>
       </GridItem>
-      <LoginOrRegisterModal
-        loginOrRegister="signIn"
-        authProviders={["google"]}
-        isOpen={isSignInModalOpen}
-        onClose={() => setIsSignInModalOpen(false)}
-        onSignUpClick={() => {
-          setIsSignInModalOpen(false);
-          setIsSignUpModalOpen(true);
-        }}
-      />
-      <LoginOrRegisterModal
-        loginOrRegister="signUp"
-        authProviders={["google"]}
-        isOpen={isSignUpModalOpen}
-        onClose={() => setIsSignUpModalOpen(false)}
-      />
     </Grid>
   );
 };

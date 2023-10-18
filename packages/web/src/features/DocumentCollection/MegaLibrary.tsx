@@ -49,8 +49,8 @@ import {
   disableDocument,
   enableDocument,
   initializeSelectedDocuments,
-  selectAllDocuments, 
-  clearAllSelections
+  selectAllDocuments,
+  clearAllSelections,
 } from "./librarySlice";
 import {
   collection,
@@ -89,6 +89,12 @@ const MegaLibrary = () => {
   const didRunOnce = useRef(false);
 
   useEffect(() => {
+    if (documents.length === 0) {
+      onUploadFileOpen();
+    }
+  }, [documents]);
+
+  useEffect(() => {
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
       setActiveProject(projectId);
@@ -102,11 +108,10 @@ const MegaLibrary = () => {
   );
 
   const toggleAllDocuments = () => {
-  
     if (selectedDocuments.length === documents.length) {
       dispatch(clearAllSelections());
     } else {
-      const allDocumentNames = documents.map(doc => doc.uploadName);
+      const allDocumentNames = documents.map((doc) => doc.uploadName);
       dispatch(selectAllDocuments(allDocumentNames));
     }
   };
@@ -166,7 +171,7 @@ const MegaLibrary = () => {
       dispatch(enableDocument(documentName));
     }
   };
-  
+
   const handleChangeDocumentQuery = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -515,31 +520,30 @@ const MegaLibrary = () => {
           <Box h={4} />
           <Heading size="xs">Collections</Heading>
           {allCollections
-          .filter(collection => collection && collection.trim() !== "")
-          .map((collection, index) => (
-          <Button
-              key={index}
-              bgColor={
+            .filter((collection) => collection && collection.trim() !== "")
+            .map((collection, index) => (
+              <Button
+                key={index}
+                bgColor={
                   collectionFilter === collection
-                      ? theme.colors[colorMode].onPrimary
-                      : undefined
-              }
-              variant="ghost"
-              size="xs"
-              textColor={theme.colors[colorMode].onSurface}
-              onClick={() => {
+                    ? theme.colors[colorMode].onPrimary
+                    : undefined
+                }
+                variant="ghost"
+                size="xs"
+                textColor={theme.colors[colorMode].onSurface}
+                onClick={() => {
                   if (collectionFilter === collection) {
-                      setCollectionFilter(null);
+                    setCollectionFilter(null);
                   } else {
-                      setCollectionFilter(collection);
+                    setCollectionFilter(collection);
                   }
-              }}
-          >
-              {collection}
-          </Button>
-          ))}
+                }}
+              >
+                {collection}
+              </Button>
+            ))}
           <Box h={4} />
-          <Heading size="xs">Projects</Heading>
           <Spacer />
           <Button
             textColor={theme.colors[colorMode].onTertiaryContainer}
@@ -574,11 +578,14 @@ const MegaLibrary = () => {
           </Button>
           <Modal isOpen={isUploadFileOpen} onClose={onUploadFileClose}>
             <ModalOverlay />
-            <ModalContent>
+            <ModalContent position="fixed" top="20%">
               <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <UploadForm onUploadComplete={handleUploadComplete} />
+                <UploadForm
+                  onUploadComplete={handleUploadComplete}
+                  dropZoneText="Uploaded files will appear in your personal library"
+                />
               </ModalBody>
             </ModalContent>
           </Modal>
@@ -662,10 +669,10 @@ const MegaLibrary = () => {
       <GridItem rowSpan={1} colSpan={1} overflow="auto">
         <TableContainer width="100%">
           <Table size="sm">
-          <Thead>
+            <Thead>
               <Tr>
                 <Th>
-                  <Checkbox 
+                  <Checkbox
                     isChecked={selectedDocuments.length === documents.length}
                     onChange={toggleAllDocuments}
                   />
