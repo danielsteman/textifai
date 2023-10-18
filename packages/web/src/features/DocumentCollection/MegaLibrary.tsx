@@ -67,9 +67,11 @@ import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { openTab } from "../Workspace/tabsSlice";
+import { useNavigate } from 'react-router-dom';
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
+  const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
@@ -551,6 +553,7 @@ const MegaLibrary = () => {
             size="sm"
             leftIcon={<FaRocket />}
             borderRadius={100}
+            onClick={() => navigate("/features/onboarding")}
           >
             New project
           </Button>
