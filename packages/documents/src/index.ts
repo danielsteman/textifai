@@ -2,7 +2,7 @@ import express, { Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
-import router from "./routes";
+import router from "./routes/upload";
 import YAML from "yaml";
 import fs from "fs";
 import bodyParser from "body-parser";
