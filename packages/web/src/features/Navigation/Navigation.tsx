@@ -8,14 +8,9 @@ export interface NavigationButtonData {
 }
 
 const Navigation = () => {
-  const features: NavigationButtonData = {
-    collectionTitle: "See all",
-    collectionRoute: "features",
-    children: ["Assistant", "Upload", "Editor", "Workspace"],
-  };
+
   return (
     <ButtonGroup>
-      <NavigationButton title="Features" menudata={features}></NavigationButton>
       <NavigationButton title="Docs"></NavigationButton>
       <NavigationButton title="Pricing"></NavigationButton>
       <NavigationButton title="Support"></NavigationButton>
