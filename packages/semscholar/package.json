@@ -1,0 +1,6 @@
+{
+  "name": "semscholar",
+  "version": "1.0.0",
+  "main": "app.ts",
+  "license": "MIT"
+}
