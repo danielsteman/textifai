@@ -94,12 +94,6 @@ const MegaLibrary = () => {
   const activeProject = useSelector((state: RootState) => state.activeProject.projectId);
 
   useEffect(() => {
-    if (documents.length === 0) {
-      onUploadFileOpen();
-    }
-  }, [documents]);
-
-  useEffect(() => {
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
       dispatch(setProjectId(projectId!));
@@ -156,15 +150,19 @@ const MegaLibrary = () => {
       where("uploadedBy", "==", currentUser!.uid),
       where("projectId", "==", activeProject)
     );
-
+  
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedDocuments: Document[] = [];
       snapshot.forEach((doc) => {
         fetchedDocuments.push(doc.data() as Document);
       });
       setDocuments(fetchedDocuments);
+  
+      if (documents.length === 0 && fetchedDocuments.length === 0) {
+        onUploadFileOpen();
+      }
     });
-
+  
     return () => unsubscribe();
   }, [selectedDocuments, activeProject]);
 
