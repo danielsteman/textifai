@@ -12,7 +12,7 @@ import theme from "../themes/theme";
 import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Project } from "@shared/firestoreInterfaces/Project";
-import { Timestamp, addDoc, collection } from "firebase/firestore";
+import { Timestamp, addDoc, collection, getDocs, query, where, writeBatch } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { AuthContext } from "../providers/AuthProvider";
 
@@ -45,13 +45,22 @@ const CreateProject = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const projectsCollection = collection(db, "projects");
+
     if (currentUser) {
+      const userProjectsSnapshot = await getDocs(query(projectsCollection, where("users", "array-contains", currentUser?.uid)));
+      const batch = writeBatch(db);
+
+      userProjectsSnapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, { active: false });
+      });
+
       const projectData: Project = {
         ...formData,
         users: [currentUser?.uid],
         creationDate: Timestamp.fromDate(new Date()),
         active: true,
       };
+
       try {
         const docRef = await addDoc(projectsCollection, projectData);
         console.log("Project created with ID: ", docRef.id);
@@ -59,10 +68,14 @@ const CreateProject = () => {
       } catch (error) {
         console.error("Error adding document: ", error);
       }
+
+      await batch.commit();
+
     } else {
       console.error("Current user not found");
     }
   };
+
 
   const gap: number = 4;
 

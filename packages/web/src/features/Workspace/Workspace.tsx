@@ -62,6 +62,7 @@ import { RootState } from "../../app/store";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/firestoreInterfaces/Project";
+import { useNavigate } from "react-router-dom"; 
 
 export type ITab = {
   name: string;
@@ -82,6 +83,8 @@ const Workspace = () => {
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
 
+  const navigate = useNavigate()
+
   const dispatch = useDispatch();
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
   const activeTabIndex = useSelector(
@@ -90,6 +93,10 @@ const Workspace = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleAddNewProject = () => {
+    navigate("/features/onboarding");
   };
 
   useEffect(() => {
@@ -217,6 +224,8 @@ const Workspace = () => {
                     {project.name}
                   </MenuItem>
                 ))}
+                <MenuDivider />
+                <MenuItem onClick={handleAddNewProject}>+ New project</MenuItem>
               </MenuGroup>
             </MenuList>
           </Menu>
