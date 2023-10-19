@@ -25,7 +25,7 @@ resource "google_cloud_run_v2_service" "service" {
   }
 
   lifecycle {
-    replace_triggered_by = [resource.random_integer.always_trigger]
+    replace_triggered_by = [resource.random_integer.always_trigger.result]
   }
 }
 
