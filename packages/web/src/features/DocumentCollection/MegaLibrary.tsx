@@ -68,6 +68,7 @@ import TagInput from "../../common/components/CollectionTags";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { openTab } from "../Workspace/tabsSlice";
 import { useNavigate } from 'react-router-dom';
+import { setProjectId, setProjectName } from "../Workspace/projectSlice";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -84,11 +85,11 @@ const MegaLibrary = () => {
   const [customYearEnd, setCustomYearEnd] = useState<number | null>(null);
   const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
 
-  const [activeProject, setActiveProject] = useState<string | null>(null);
-
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
 
   const didRunOnce = useRef(false);
+
+  const activeProject = useSelector((state: RootState) => state.activeProject.projectId);
 
   useEffect(() => {
     if (documents.length === 0) {
@@ -99,7 +100,7 @@ const MegaLibrary = () => {
   useEffect(() => {
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
-      setActiveProject(projectId);
+      setProjectId(projectId!);
     };
 
     fetchActiveProject();
@@ -185,7 +186,7 @@ const MegaLibrary = () => {
   };
 
   const handleDeleteDocument = async () => {
-    selectedDocuments.map(async (fullPath) => {
+    selectedDocuments.map(async (fullPath?) => {
       const documentRef = ref(
         storage,
         `users/${currentUser?.uid}/uploads/${fullPath}`
@@ -708,7 +709,7 @@ const MegaLibrary = () => {
                     let matchesCollection =
                       !collectionFilter ||
                       (doc.tags && doc.tags.includes(collectionFilter));
-                    let matchesProject = activeProject;
+                    //let matchesProject = activeProject;
                     let matchesFavorites = onlyFavoritesFilter
                       ? !!doc.favoritedBy
                       : true;
@@ -716,7 +717,7 @@ const MegaLibrary = () => {
                       matchesQuery &&
                       matchesYear &&
                       matchesCollection &&
-                      matchesProject &&
+                      //matchesProject &&
                       matchesFavorites
                     );
                   })

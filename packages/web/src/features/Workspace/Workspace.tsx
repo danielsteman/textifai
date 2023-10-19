@@ -45,6 +45,8 @@ import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
+import { updateProjectActiveState } from "../../common/utils/updateActiveProject";
 import { isEmailVerified } from "../../common/utils/fetchVerificationStatus";
 import { resendVerificationEmail } from "../../common/utils/resendVerificationMail";
 import {
@@ -58,6 +60,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { AuthContext } from "../../app/providers/AuthProvider";
+import { setProjectId, setProjectName } from "./projectSlice";
+import { Project } from "@shared/firestoreInterfaces/Project";
 
 export type ITab = {
   name: string;
@@ -113,6 +117,27 @@ const Workspace = () => {
       resendVerificationEmail(currentUser);
       setMailResent(true);
     }
+  };
+
+  const handleProjectClick = async (project: Project) => {
+
+    const currentProjectName = await getCurrentProjectTitle(userProjects)
+
+    if (project) {
+      await updateProjectActiveState(
+        currentProjectName,  
+        currentUser!.uid,
+        false);
+    }
+  
+    await updateProjectActiveState(
+      project.name,  
+      currentUser!.uid,
+      true);
+
+    const selectedProjectId = await fetchProjectId(currentUser!.uid)
+    dispatch(setProjectId(selectedProjectId!));
+    dispatch(setProjectName(project!.name));
   };
 
   return (
@@ -187,7 +212,14 @@ const Workspace = () => {
               <MenuGroup title="All projects">
                 <MenuDivider />
                 {userProjects.map((project) => (
-                  <MenuItem key={project.name}>{project.name}</MenuItem>
+                  <MenuItem 
+                    key={project.name} 
+                    onClick={() => {
+                      handleProjectClick(project);
+                    }}
+                  >
+                    {project.name}
+                  </MenuItem>
                 ))}
               </MenuGroup>
             </MenuList>
