@@ -68,7 +68,7 @@ import TagInput from "../../common/components/CollectionTags";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { openTab } from "../Workspace/tabsSlice";
 import { useNavigate } from 'react-router-dom';
-import { setProjectId, setProjectName } from "../Workspace/projectSlice";
+import { setProjectId } from "../Workspace/projectSlice";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
