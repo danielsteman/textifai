@@ -1,6 +1,8 @@
-resource "random_integer" "always_trigger" {
-  min = 1
-  max = 50000
+resource "random_id" "rng" {
+  keepers = {
+    first = "${timestamp()}"
+  }
+  byte_length = 8
 }
 
 resource "google_cloud_run_v2_service" "service" {
@@ -25,7 +27,7 @@ resource "google_cloud_run_v2_service" "service" {
   }
 
   lifecycle {
-    replace_triggered_by = [resource.random_integer.always_trigger.result]
+    replace_triggered_by = [random_id.rng.hex]
   }
 }
 
