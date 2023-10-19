@@ -85,6 +85,8 @@ const MegaLibrary = () => {
   const [customYearEnd, setCustomYearEnd] = useState<number | null>(null);
   const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
 
+  const dispatch = useDispatch();
+
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
 
   const didRunOnce = useRef(false);
@@ -100,11 +102,11 @@ const MegaLibrary = () => {
   useEffect(() => {
     const fetchActiveProject = async () => {
       const projectId = await fetchProjectId(currentUser!.uid);
-      setProjectId(projectId!);
+      dispatch(setProjectId(projectId!));
     };
 
     fetchActiveProject();
-  }, [currentUser]);
+  }, [currentUser, activeProject]);
 
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
@@ -138,7 +140,6 @@ const MegaLibrary = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!didRunOnce.current && documents.length > 0) {
