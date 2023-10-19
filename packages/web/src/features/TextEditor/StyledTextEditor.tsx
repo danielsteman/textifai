@@ -40,7 +40,7 @@ const StyledQuillEditor = styled(ReactQuill)<{
   .ql-editor {
     max-height: 100%;
     overflow: auto;
-    color: ${(props) => props.toolbarBackgroundColor};
+    color: ${(props) => props.textColor} !important;
   }
 
   .ql-toolbar .ql-stroke {
