@@ -98,7 +98,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
             if (userCredential.user) {
               sendEmailVerification(userCredential.user);
-              console.log("Verification email sent.");
+              //console.log("Verification email sent.");
             }
 
             const userData: User = {
@@ -124,6 +124,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
           case "signIn":
             await signInWithEmailAndPassword(auth, email, password);
+            navigate("/features/workspace");
         }
         onClose();
       } catch (error: any) {
