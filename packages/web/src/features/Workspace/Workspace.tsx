@@ -77,6 +77,7 @@ const Workspace = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [emailVerified, setEmailVerified] = useState<boolean>(false);
   const [mailResent, setMailResent] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
@@ -120,22 +121,17 @@ const Workspace = () => {
   };
 
   const handleProjectClick = async (project: Project) => {
-
-    const currentProjectName = await getCurrentProjectTitle(userProjects)
-
-    if (project) {
-      await updateProjectActiveState(
-        currentProjectName,  
-        currentUser!.uid,
-        false);
-    }
+    const currentProjectName = await getCurrentProjectTitle(userProjects);
   
-    await updateProjectActiveState(
-      project.name,  
-      currentUser!.uid,
-      true);
+    if (project) {
+        await updateProjectActiveState(currentProjectName, currentUser!.uid, false);
+    }
 
-    const selectedProjectId = await fetchProjectId(currentUser!.uid)
+    setSelectedProject(project.name);
+
+    await updateProjectActiveState(project.name, currentUser!.uid, true);
+
+    const selectedProjectId = await fetchProjectId(currentUser!.uid);
     dispatch(setProjectId(selectedProjectId!));
     dispatch(setProjectName(project!.name));
   };
@@ -206,7 +202,7 @@ const Workspace = () => {
               variant="ghost"
               rightIcon={<ChevronDownIcon />}
             >
-              {getCurrentProjectTitle(userProjects)}
+                {selectedProject || getCurrentProjectTitle(userProjects)}
             </MenuButton>
             <MenuList>
               <MenuGroup title="All projects">
