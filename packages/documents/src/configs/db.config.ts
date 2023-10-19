@@ -1,8 +1,12 @@
+import dotenv from "dotenv";
+
 interface IPineconeConfig {
   apiKey: string;
   environment: string;
   pineconeIndex: string;
 }
+
+dotenv.config();
 
 export const getPineconeConfig = (): IPineconeConfig => {
   if (!process.env.PINECONE_API_KEY) {

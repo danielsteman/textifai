@@ -1,6 +1,11 @@
+import dotenv from "dotenv";
+
 interface IOpenAiConfig {
   apiKey: string;
+  textEmbeddingModel: string;
 }
+
+dotenv.config();
 
 export const getOpenApiConfig = (): IOpenAiConfig => {
   if (!process.env.OPENAI_API_KEY) {
@@ -8,5 +13,6 @@ export const getOpenApiConfig = (): IOpenAiConfig => {
   }
   return {
     apiKey: process.env.OPENAI_API_KEY,
+    textEmbeddingModel: "text-embedding-ada-002",
   };
 };

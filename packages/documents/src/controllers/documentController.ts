@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { processFile } from "../lib/pineconeUpload";
+import processText from "../lib/processText";
 import { extractTextFromPDF, extractMetadataFromPDF } from "../utils/pdfUtils";
 import path from "path";
+import { initializeIndex } from "../lib/initializeIndex";
 
 export const documentController = async (
   req: Request,
@@ -26,14 +27,8 @@ export const documentController = async (
       fileType
     );
 
-    await processFile(
-      text,
-      process.env.PINECONE_API_KEY || "",
-      process.env.PINECONE_ENV || "",
-      process.env.PINECONE_INDEX || "",
-      user,
-      fileName
-    );
+    const index = initializeIndex();
+    await processText(index, text, user, fileName);
 
     res.json({
       success: true,
