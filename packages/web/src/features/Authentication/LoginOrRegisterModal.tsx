@@ -399,7 +399,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                     {props.loginOrRegister === "signIn" && (
                       <VStack gap={2}>
                         <Text mt={4} textAlign="center">
-                          Don't have an account yet?&nbsp;
+                          Don't have an account yet?
                         </Text>
                         <Button
                           variant="solid"
