@@ -186,7 +186,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
   return (
     <>
       <Button
-        size="sm"
+        size="md"
         onClick={() => {
           if (props.loginOrRegister === "signIn" && props.onSignInClick) {
             props.onSignInClick();
