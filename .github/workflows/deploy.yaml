@@ -73,6 +73,7 @@ jobs:
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
 
   terraform:
+    needs: build
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     permissions:
