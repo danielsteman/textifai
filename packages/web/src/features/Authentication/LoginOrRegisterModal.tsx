@@ -23,6 +23,8 @@ import {
   Flex,
   useColorMode,
   Link,
+  HStack,
+  Box,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
@@ -395,17 +397,21 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                     )}
 
                     {props.loginOrRegister === "signIn" && (
-                      <Text mt={4} textAlign="center">
-                        Don't have an account yet?&nbsp;
-                        <Link
-                          color="blue.500"
+                      <VStack gap={2}>
+                        <Text mt={4} textAlign="center">
+                          Don't have an account yet?&nbsp;
+                        </Text>
+                        <Button
+                          variant="solid"
+                          size="sm"
                           onClick={() => {
-                            console.log("This should open the sign up modal");
+                            dispatch(closeSignInModal());
+                            dispatch(openSignUpModal());
                           }}
                         >
-                          Click here
-                        </Link>
-                      </Text>
+                          Create account
+                        </Button>
+                      </VStack>
                     )}
                   </VStack>
                 </ModalFooter>
