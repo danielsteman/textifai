@@ -45,8 +45,7 @@ import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
-import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
-import { updateProjectActiveState } from "../../common/utils/updateActiveProject";
+import { setActiveProjectForUser } from "../../common/utils/updateActiveProject";
 import { isEmailVerified } from "../../common/utils/fetchVerificationStatus";
 import { resendVerificationEmail } from "../../common/utils/resendVerificationMail";
 import {
@@ -60,7 +59,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { AuthContext } from "../../app/providers/AuthProvider";
-import { setProjectId, setProjectName } from "./projectSlice";
+import { setProjectName } from "./projectSlice";
 import { Project } from "@shared/firestoreInterfaces/Project";
 import { useNavigate } from "react-router-dom"; 
 
@@ -78,7 +77,7 @@ const Workspace = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [emailVerified, setEmailVerified] = useState<boolean>(false);
   const [mailResent, setMailResent] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  //const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
@@ -90,6 +89,8 @@ const Workspace = () => {
   const activeTabIndex = useSelector(
     (state: RootState) => state.tabs.activeTabIndex
   );
+  const activeProjectName = useSelector(
+    (state: RootState) => state.activeProject.projectName);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -98,6 +99,15 @@ const Workspace = () => {
   const handleAddNewProject = () => {
     navigate("/features/onboarding");
   };
+
+  useEffect(() => {
+    const fetchProjectTitle = async () => {
+      const projectTitle = await getCurrentProjectTitle(currentUser!.uid);
+      dispatch(setProjectName(projectTitle));
+    };
+
+    fetchProjectTitle();
+  }, [currentUser, dispatch]);
 
   useEffect(() => {
     const defaultTab: ITab = {
@@ -112,13 +122,14 @@ const Workspace = () => {
 
   useEffect(() => {
     if (currentUser) {
-      isEmailVerified().then((verified) => {
-        setEmailVerified(true);
+      isEmailVerified().then((verified: boolean) => { 
+        setEmailVerified(verified);
       });
     } else {
       setEmailVerified(false);
     }
   }, [currentUser]);
+  
 
   const handleResendClick = () => {
     if (currentUser) {
@@ -128,18 +139,8 @@ const Workspace = () => {
   };
 
   const handleProjectClick = async (project: Project) => {
-    const currentProjectName = await getCurrentProjectTitle(userProjects);
-  
-    if (project) {
-        await updateProjectActiveState(currentProjectName, currentUser!.uid, false);
-    }
+    await setActiveProjectForUser(project.name, currentUser!.uid);
 
-    setSelectedProject(project.name);
-
-    await updateProjectActiveState(project.name, currentUser!.uid, true);
-
-    const selectedProjectId = await fetchProjectId(currentUser!.uid);
-    dispatch(setProjectId(selectedProjectId!));
     dispatch(setProjectName(project!.name));
   };
 
@@ -209,7 +210,7 @@ const Workspace = () => {
               variant="ghost"
               rightIcon={<ChevronDownIcon />}
             >
-                {selectedProject || getCurrentProjectTitle(userProjects)}
+                {activeProjectName}
             </MenuButton>
             <MenuList>
               <MenuGroup title="All projects">

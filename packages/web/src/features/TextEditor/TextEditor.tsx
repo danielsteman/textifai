@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import "react-quill/dist/quill.snow.css";
 import "./textEditor.css";
-import { CollectionReference, DocumentData, Timestamp, onSnapshot } from "firebase/firestore";
+import { Timestamp, onSnapshot } from "firebase/firestore";
 import { doc, updateDoc, addDoc, collection, query, where } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { WorkingDocument } from "@shared/firestoreInterfaces/WorkingDocument";
@@ -30,14 +30,13 @@ const TextEditor = () => {
 
   useEffect(() => {
     const fetchActiveProject = async () => {
-      const projectId = await fetchProjectId(currentUser!.uid);
-      const projectName = await getCurrentProjectTitle(userProjects)
-      dispatch(setProjectId(projectId!));
+      const projectName = await getCurrentProjectTitle(currentUser!.uid)
+
       dispatch(setProjectName(projectName!));
     };
 
     fetchActiveProject();
-  }, [currentUser, activeProjectId]);
+  }, [currentUser, dispatch]);
 
   useEffect(() => {
     if (currentUser && activeProjectId) { 

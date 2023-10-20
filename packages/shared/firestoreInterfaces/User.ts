@@ -12,5 +12,5 @@ export interface User {
   language: string;
   isActive: boolean;
   projects: string[];
-  activeProject: string;
-}
+  activeProject?: string;
+};

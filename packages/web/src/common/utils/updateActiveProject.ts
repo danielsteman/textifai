@@ -8,11 +8,9 @@ import {
 } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 
-
-export const updateProjectActiveState = async (
+export const setActiveProjectForUser = async (
   projectName: string,
-  userId: string,
-  isActive: boolean
+  userId: string
 ) => {
   const projectsRef = collection(db, "projects");
   const q = query(
@@ -24,10 +22,9 @@ export const updateProjectActiveState = async (
   const querySnapshot = await getDocs(q);
   
   if (!querySnapshot.empty) {
-    const projectDoc = querySnapshot.docs[0];
-    const projectRef = doc(db, "projects", projectDoc.id);
-    await updateDoc(projectRef, {
-      active: isActive
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, {
+      activeProject: projectName
     });
   } else {
     console.warn(`No project found with the name ${projectName} for the user with ID ${userId}`);
