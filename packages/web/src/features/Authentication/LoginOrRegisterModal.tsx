@@ -39,16 +39,20 @@ import { Timestamp, doc, setDoc } from "firebase/firestore";
 import { User } from "@shared/interfaces/firebase/User";
 import theme from "../../app/themes/theme";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "src/app/store";
+import {
+  closeSignInModal,
+  closeSignUpModal,
+  openSignInModal,
+  openSignUpModal,
+} from "./loginOrRegisterModalSlice";
 
 export type AuthProvider = "facebook" | "google";
 
 export interface LoginOrRegisterModalProps {
   loginOrRegister: "signIn" | "signUp";
   authProviders: AuthProvider[];
-  isOpen: boolean;
-  onClose: () => void;
-  onSignInClick?: () => void;
-  onSignUpClick?: () => void;
 }
 
 const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
@@ -59,13 +63,30 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
   const [repeatedPassword, setRepeatedPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [attempts, setAttempts] = useState<number>(0);
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const onOpen =
+    props.loginOrRegister === "signIn"
+      ? () => dispatch(openSignInModal())
+      : () => dispatch(openSignUpModal());
+  const onClose =
+    props.loginOrRegister === "signIn"
+      ? () => dispatch(closeSignInModal())
+      : () => dispatch(closeSignUpModal());
+  const openState =
+    props.loginOrRegister === "signIn"
+      ? useSelector(
+          (state: RootState) => state.loginOrRegisterModal.openSignInModal
+        )
+      : useSelector(
+          (state: RootState) => state.loginOrRegisterModal.openSignUpModal
+        );
 
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -185,23 +206,10 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
   return (
     <>
-      <Button
-        size="md"
-        onClick={() => {
-          if (props.loginOrRegister === "signIn" && props.onSignInClick) {
-            props.onSignInClick();
-          } else if (
-            props.loginOrRegister === "signUp" &&
-            props.onSignUpClick
-          ) {
-            props.onSignUpClick();
-          }
-        }}
-        variant={buttonProps.variant}
-      >
+      <Button size="md" onClick={() => onOpen()} variant={buttonProps.variant}>
         {buttonProps.text}
       </Button>
-      <Modal isCentered isOpen={props.isOpen} onClose={props.onClose}>
+      <Modal isCentered isOpen={openState} onClose={() => onClose()}>
         <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(10px)" />
         <ModalContent pb={4} bgColor={theme.colors[colorMode].surfaceContainer}>
           {isForgotPassword ? (
@@ -392,7 +400,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
                         <Link
                           color="blue.500"
                           onClick={() => {
-                            props.onSignUpClick && props.onSignUpClick();
+                            console.log("This should open the sign up modal");
                           }}
                         >
                           Click here

@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../providers/AuthProvider";
+import { useDispatch } from "react-redux";
+import { openSignUpModal } from "../../features/Authentication/loginOrRegisterModalSlice";
 
 const PlaceHolder = () => {
   const { colorMode } = useColorMode();
@@ -60,6 +62,7 @@ const Paragraph: React.FC<ParagraphProps> = ({
 const LandingPage = () => {
   const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (currentUser) {
@@ -87,7 +90,7 @@ const LandingPage = () => {
               <Button
                 variant="outline"
                 size="lg"
-                // TODO: onclick => open signup modal
+                onClick={() => dispatch(openSignUpModal())}
               >
                 Get started
               </Button>

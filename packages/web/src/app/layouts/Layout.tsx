@@ -49,23 +49,10 @@ const Layout: React.FC<LayoutProps> = ({ promoComponent }) => {
             <LoginOrRegisterModal
               loginOrRegister="signIn"
               authProviders={["google"]}
-              isOpen={isSignInModalOpen}
-              onClose={() => setIsSignInModalOpen(false)}
-              onSignInClick={() => setIsSignInModalOpen(true)}
-              onSignUpClick={() => {
-                setIsSignInModalOpen(false);
-                setIsSignUpModalOpen(true);
-              }}
             />
             <LoginOrRegisterModal
               loginOrRegister="signUp"
               authProviders={["google"]}
-              isOpen={isSignUpModalOpen}
-              onClose={() => setIsSignUpModalOpen(false)}
-              onSignUpClick={() => {
-                setIsSignInModalOpen(false);
-                setIsSignUpModalOpen(true);
-              }}
             />
           </ButtonGroup>
         )}
