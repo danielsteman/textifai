@@ -11,7 +11,7 @@ import {
 import theme from "../themes/theme";
 import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Project } from "@shared/firestoreInterfaces/Project";
+import { Project } from "@shared/interfaces/firebase/Project";
 import { Timestamp, addDoc, collection } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { AuthContext } from "../providers/AuthProvider";
