@@ -3,7 +3,6 @@ import {
   Center,
   FormControl,
   FormLabel,
-  // Heading,
   Input,
   VStack,
   useColorMode,
@@ -75,20 +74,7 @@ const CreateProject = () => {
       bgColor={theme.colors[colorMode].surface}
       justifyContent="center"
     >
-      <Button
-        variant="ghost"
-        size="sm"
-        position="absolute"
-        top={"2em"}
-        right={"2em"}
-        onClick={() => navigate("/")}
-      >
-        Cancel
-      </Button>
       <form>
-        {/* <Heading mb={8} size="lg">
-          Let's create a new project first 🙌
-        </Heading> */}
         <FormControl isRequired mb={gap} w={"fit-content"}>
           <FormLabel>Project name</FormLabel>
           <Input
