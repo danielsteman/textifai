@@ -1,0 +1,32 @@
+{
+  "restoreTerminals.terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "web",
+          "commands": [
+            "yarn install",
+            "yarn workspace @textifai/web build",
+            "yarn workspace @textifai/web dev"
+          ]
+        },
+        {
+          "name": "chat",
+          "commands": [
+            "yarn install",
+            "yarn workspace @textifai/chat build",
+            "yarn workspace @textifai/chat dev"
+          ]
+        },
+        {
+          "name": "documents",
+          "commands": [
+            "yarn install",
+            "yarn workspace @textifai/web documents",
+            "yarn workspace @textifai/documents dev"
+          ]
+        }
+      ]
+    }
+  ]
+}

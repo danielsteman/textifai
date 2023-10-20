@@ -766,7 +766,11 @@ const MegaLibrary = () => {
                       <Td textAlign="center">
                         <Icon
                           as={FaStar}
-                          color={doc.favoritedBy ? "teal" : "none"}
+                          color={
+                            doc.favoritedBy
+                              ? theme.colors[colorMode].primary
+                              : "none"
+                          }
                           onClick={() =>
                             toggleFavourite(doc.uploadName, !doc.favoritedBy)
                           }

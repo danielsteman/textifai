@@ -2,12 +2,12 @@ import express, { Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
-import router from "./routes";
+import router from "./routes/scholar";
 import YAML from "yaml";
 import fs from "fs";
 import bodyParser from "body-parser";
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3002;
 
 const app: Express = express();
 app.use(cors());
@@ -30,7 +30,7 @@ app.use(
   })
 );
 
-app.use("/api/documents", router);
+app.use("/api/scholar", router);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
