@@ -75,15 +75,11 @@ const TextEditor = () => {
   }, [currentUser, activeProjectId]);
 
   useEffect(() => {
-      if (value && documentId) {
-          const saveInterval = setInterval(() => {
-              updateTextInFirestore(value);
-          }, 1000);
-
-          return () => clearInterval(saveInterval);
-      }
+    if (value && documentId) {
+      updateTextInFirestore(value);
+    }
   }, [value, documentId]);
-
+  
   const updateTextInFirestore = async (textContent: string) => {
     if (documentId) {
       try {
@@ -91,7 +87,7 @@ const TextEditor = () => {
           content: textContent,
           modifiedDate: Timestamp.fromDate(new Date()),
         };
-
+  
         await updateDoc(
           doc(db, "workingdocuments", documentId),
           documentUpdate
