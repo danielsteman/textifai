@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Project } from "@shared/firestoreInterfaces/Project";
+import { Project } from "@shared/interfaces/firebase/Project";
 import {
   QueryDocumentSnapshot,
   collection,

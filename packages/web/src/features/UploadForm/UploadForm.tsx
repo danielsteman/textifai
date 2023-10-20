@@ -11,7 +11,7 @@ import { useDropzone } from "react-dropzone";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
-import { Document } from "@shared/firestoreInterfaces/Document";
+import { Document } from "@shared/interfaces/firebase/Document";
 import { db } from "../../app/config/firebase";
 import {
   collection,

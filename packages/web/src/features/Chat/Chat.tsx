@@ -32,8 +32,8 @@ import {
   limit,
 } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
-import { Conversation } from "@shared/firestoreInterfaces/Conversation";
-import { Message } from "@shared/firestoreInterfaces/Message";
+import { Conversation } from "@shared/interfaces/firebase/Conversation";
+import { Message } from "@shared/interfaces/firebase/Message";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
 import { useSelector } from "react-redux";

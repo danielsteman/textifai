@@ -36,7 +36,7 @@ import Socials from "./Socials";
 import AuthError from "./AuthError";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { Timestamp, doc, setDoc } from "firebase/firestore";
-import { User } from "@shared/firestoreInterfaces/User";
+import { User } from "@shared/interfaces/firebase/User";
 import theme from "../../app/themes/theme";
 import { useNavigate } from "react-router-dom";
 

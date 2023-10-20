@@ -5,7 +5,6 @@ import { PromptTemplate } from "langchain/prompts";
 import Bottleneck from "bottleneck";
 
 const llm = new ChatOpenAI({
-  //concurrency: 10,
   temperature: 0,
   modelName: "gpt-3.5-turbo",
 });
@@ -29,13 +28,15 @@ const chunkSubstr = (str: string, size: number) => {
   return chunks;
 };
 
-const summarize = async (
-  { document, inquiry, onSummaryDone }: {
-    document: string;
-    inquiry?: string;
-    onSummaryDone?: Function;
-  },
-) => {
+const summarize = async ({
+  document,
+  inquiry,
+  onSummaryDone,
+}: {
+  document: string;
+  inquiry?: string;
+  onSummaryDone?: Function;
+}) => {
   console.log("summarizing ", document.length);
 
   const promptTemplate = new PromptTemplate({
@@ -66,13 +67,15 @@ const summarize = async (
 
 const rateLimitedSummarize = limiter.wrap(summarize);
 
-const summarizeLongDocument = async (
-  { document, inquiry, onSummaryDone }: {
-    document: string;
-    inquiry?: string;
-    onSummaryDone?: Function;
-  },
-): Promise<string> => {
+const summarizeLongDocument = async ({
+  document,
+  inquiry,
+  onSummaryDone,
+}: {
+  document: string;
+  inquiry?: string;
+  onSummaryDone?: Function;
+}): Promise<string> => {
   // Chunk document into 4000 character chunks
   const templateLength = inquiry
     ? summarizerTemplate.length
@@ -81,7 +84,7 @@ const summarizeLongDocument = async (
   console.log("====== summarizing");
 
   try {
-    if ((document.length + templateLength) > 4000) {
+    if (document.length + templateLength > 4000) {
       console.log("document is long and has to be shortened", document.length);
 
       const chunks = chunkSubstr(document, 4000 - templateLength - 1);
@@ -106,14 +109,14 @@ const summarizeLongDocument = async (
           }
 
           return result;
-        }),
+        })
       );
 
       const result = summarizedChunks.join("\n");
 
       console.log(result.length);
 
-      if ((result.length + templateLength) > 4000) {
+      if (result.length + templateLength > 4000) {
         console.log("document is STILL long and has to be shortened further");
 
         return await summarizeLongDocument({

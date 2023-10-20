@@ -1,26 +1,25 @@
-
-  import {
-    collection,
-    addDoc,
-    Timestamp,
-    getDocs,
-    query,
-    where,
-    updateDoc,
-    doc,
-    orderBy,
-    limit,
-    DocumentData,
-  } from "firebase/firestore";
-  import { db } from "../../app/config/firebase";
-  import { Conversation } from "@shared/firestoreInterfaces/Conversation";
-  import { Message } from "@shared/firestoreInterfaces/Message";
+import {
+  collection,
+  addDoc,
+  Timestamp,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc,
+  orderBy,
+  limit,
+  DocumentData,
+} from "firebase/firestore";
+import { db } from "../../app/config/firebase";
+import { Conversation } from "@shared/interfaces/firebase/Conversation";
+import { Message } from "@shared/interfaces/firebase/Message";
 
 export const conversationsCollection = collection(db, "conversations");
 export const messagesCollection = collection(db, "messages");
 
 export const startConversation = async (
-  currentUserUid: string, 
+  currentUserUid: string,
   currentProjectUid: string
 ): Promise<string | void> => {
   try {
@@ -111,15 +110,15 @@ export const fetchMessagesForConversation = async (conversationId: string) => {
 };
 
 export const appendToDocument = async (
-  currentUserUid: string, 
+  currentUserUid: string,
   currentProjectUid: string,
   message: string
 ) => {
   try {
     const workingDocsCollection = collection(db, "workingdocuments");
-    
+
     const q = query(
-      workingDocsCollection, 
+      workingDocsCollection,
       where("users", "array-contains", currentUserUid),
       where("projectId", "==", currentProjectUid)
     );
@@ -131,23 +130,22 @@ export const appendToDocument = async (
       const docRef = doc(db, "workingdocuments", querySnapshot.docs[0].id);
       const currentContent = querySnapshot.docs[0].data().content || "";
       await updateDoc(docRef, {
-        content: currentContent + "\n\n" + message
+        content: currentContent + "\n\n" + message,
       });
     } else {
       // No document found, create a new one
       const newDocument = {
         projectId: currentProjectUid,
-        name: "Document Name",  
+        name: "Document Name",
         creationDate: Timestamp.fromDate(new Date()),
         users: [currentUserUid],
         modifiedDate: Timestamp.fromDate(new Date()),
-        content: message 
+        content: message,
       };
-      
+
       await addDoc(workingDocsCollection, newDocument);
     }
   } catch (error) {
     console.error("Error appending message to document:", error);
   }
 };
-
