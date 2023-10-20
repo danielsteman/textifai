@@ -1,26 +1,39 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface loginOrRegisterModalState {
-  openModal: boolean;
+  openSignInModal: boolean;
+  openSignUpModal: boolean;
 }
 
 const initialState: loginOrRegisterModalState = {
-  openModal: false,
+  openSignInModal: false,
+  openSignUpModal: false,
 };
 
 export const loginOrRegisterModalSlice = createSlice({
   name: "loginOrRegisterModal",
   initialState,
   reducers: {
-    openModal: (state) => {
-      state.openModal = true;
+    openSignInModal: (state) => {
+      state.openSignInModal = true;
     },
-    closeModal: (state) => {
-      state.openModal = false;
+    closeSignInModal: (state) => {
+      state.openSignInModal = false;
+    },
+    openSignUpModal: (state) => {
+      state.openSignUpModal = true;
+    },
+    closeSignUpModal: (state) => {
+      state.openSignUpModal = false;
     },
   },
 });
 
-export const { openModal, closeModal } = loginOrRegisterModalSlice.actions;
+export const {
+  openSignInModal,
+  closeSignInModal,
+  openSignUpModal,
+  closeSignUpModal,
+} = loginOrRegisterModalSlice.actions;
 
 export default loginOrRegisterModalSlice.reducer;
