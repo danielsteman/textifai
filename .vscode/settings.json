@@ -7,7 +7,7 @@
           "commands": [
             "yarn install",
             "yarn workspace @textifai/web build",
-            "yarn workspace @textifai/web dev"
+            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/web dev"
           ]
         },
         {
@@ -15,7 +15,7 @@
           "commands": [
             "yarn install",
             "yarn workspace @textifai/chat build",
-            "yarn workspace @textifai/chat dev"
+            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/chat dev"
           ]
         },
         {
@@ -23,7 +23,7 @@
           "commands": [
             "yarn install",
             "yarn workspace @textifai/web documents",
-            "yarn workspace @textifai/documents dev"
+            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/documents dev"
           ]
         }
       ]
