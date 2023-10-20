@@ -20,7 +20,7 @@ import { auth } from "../../app/config/firebase";
 
 const AccountMenuDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const currentUserDisplayName = auth.currentUser?.email;
+  const currentUserDisplayName = auth.currentUser?.displayName;
 
   return (
     <>

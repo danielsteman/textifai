@@ -1,8 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import dotenv from "dotenv";
-import path from "path";
 import { getMatchesFromEmbeddings } from "../pinecone/matches";
-
 import { templates } from "../langchain/prompts";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { ChatOpenAI } from "langchain/chat_models/openai";
@@ -11,10 +8,6 @@ import { PromptTemplate } from "langchain/prompts";
 import summarizer from "../langchain/summarizer";
 
 const router = express.Router();
-
-const envPath = path.resolve(__dirname, "../../../.env.local");
-
-dotenv.config({ path: envPath });
 
 const embed = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY,

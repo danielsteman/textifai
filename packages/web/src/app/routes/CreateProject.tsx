@@ -3,7 +3,6 @@ import {
   Center,
   FormControl,
   FormLabel,
-  // Heading,
   Input,
   VStack,
   useColorMode,
@@ -11,7 +10,7 @@ import {
 import theme from "../themes/theme";
 import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Project } from "@shared/firestoreInterfaces/Project";
+import { Project } from "@shared/interfaces/firebase/Project";
 import { Timestamp, addDoc, collection } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { AuthContext } from "../providers/AuthProvider";
@@ -75,20 +74,7 @@ const CreateProject = () => {
       bgColor={theme.colors[colorMode].surface}
       justifyContent="center"
     >
-      <Button
-        variant="ghost"
-        size="sm"
-        position="absolute"
-        top={"2em"}
-        right={"2em"}
-        onClick={() => navigate("/")}
-      >
-        Cancel
-      </Button>
       <form>
-        {/* <Heading mb={8} size="lg">
-          Let's create a new project first 🙌
-        </Heading> */}
         <FormControl isRequired mb={gap} w={"fit-content"}>
           <FormLabel>Project name</FormLabel>
           <Input

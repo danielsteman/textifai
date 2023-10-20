@@ -1,10 +1,3 @@
-resource "random_id" "rng" {
-  keepers = {
-    first = "${timestamp()}"
-  }
-  byte_length = 8
-}
-
 resource "google_cloud_run_v2_service" "service" {
   for_each = var.package_names
 
@@ -24,10 +17,6 @@ resource "google_cloud_run_v2_service" "service" {
         value = "production"
       }
     }
-  }
-
-  lifecycle {
-    replace_triggered_by = [random_id.rng]
   }
 }
 

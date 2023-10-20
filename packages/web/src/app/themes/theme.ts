@@ -2,6 +2,7 @@ import { StyleFunctionProps, extendTheme } from "@chakra-ui/react";
 
 import { modalTheme } from "./modalTheme";
 import { colors } from "./colors";
+import { drawerTheme } from "./drawerTheme";
 
 const config = {
   colors: colors,
@@ -35,6 +36,7 @@ const config = {
       }),
     },
     Modal: modalTheme,
+    Drawer: drawerTheme,
   },
 };
 

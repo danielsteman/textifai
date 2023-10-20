@@ -1,4 +1,4 @@
-import { Project } from "@shared/firestoreInterfaces/Project";
+import { Project } from "@shared/interfaces/firebase/Project";
 
 export const getCurrentProjectTitle = (userProjects: Project[]) => {
   const projectTitle = userProjects.filter(

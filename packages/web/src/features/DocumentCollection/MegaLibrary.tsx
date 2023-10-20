@@ -62,7 +62,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { Document } from "@shared/firestoreInterfaces/Document";
+import { Document } from "@shared/interfaces/firebase/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
 import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
