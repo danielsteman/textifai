@@ -42,7 +42,7 @@ const Paragraph: React.FC<ParagraphProps> = ({
   const { colorMode } = useColorMode();
   return (
     <Center>
-      <VStack px={[0, 12, 24]} align="start" gap={8} w={["80%", "90%"]}>
+      <VStack px={[0, 12, 12]} align="start" gap={8} w={["80%", "90%"]}>
         <Heading
           size="2xl"
           fontWeight={800}
@@ -79,7 +79,9 @@ const LandingPage = () => {
     >
       <GridItem>
         <Paragraph
-          heading={"Textifai, for the curious"}
+          heading={
+            "Supercharge your analysis with TAI: your personal AI research assistant"
+          }
           CTAButton={
             <HStack gap={8}>
               <Button
@@ -153,23 +155,6 @@ const LandingPage = () => {
         <PlaceHolder />
       </GridItem>
       <GridItem>
-        <Paragraph heading="Supercharge your analysis with TAI: your personal AI research assistant">
-          <Text>
-            Discover the transformative power of TAI, Textifai's adaptive AI. As
-            your research evolves, so does your TAI, fine-tuning its approach
-            based on your feedback and unique requirements. Seamlessly
-            partnering with you, the TAI navigates vast information landscapes,
-            ensuring data reliability and extracting insights. No more sifting
-            through the irrelevant or questioning source trustworthiness.
-            <br />
-            <br />
-            The magic lies in the balance we strike: while the TAI does the
-            heavy lifting, you remain firmly in the driver’s seat, guiding the
-            journey, applying insights, and shaping conclusions.
-          </Text>
-        </Paragraph>
-      </GridItem>
-      <GridItem>
         <Paragraph heading="Craft, collaborate, and conclude in one space">
           <Text>
             In the realm of research, disjointed tools can stifle creativity.
@@ -182,6 +167,23 @@ const LandingPage = () => {
             Dive deep into your resources, weave in data, and collaborate with
             your team seamlessly. No more shuffling between platforms; Textifai
             embodies the essence of efficient, unified research.
+          </Text>
+        </Paragraph>
+      </GridItem>
+      <GridItem>
+        <Paragraph heading="Textifai, for the curious">
+          <Text>
+            Discover the transformative power of TAI, Textifai's adaptive AI. As
+            your research evolves, so does your TAI, fine-tuning its approach
+            based on your feedback and unique requirements. Seamlessly
+            partnering with you, the TAI navigates vast information landscapes,
+            ensuring data reliability and extracting insights. No more sifting
+            through the irrelevant or questioning source trustworthiness.
+            <br />
+            <br />
+            The magic lies in the balance we strike: while the TAI does the
+            heavy lifting, you remain firmly in the driver’s seat, guiding the
+            journey, applying insights, and shaping conclusions.
           </Text>
         </Paragraph>
       </GridItem>
