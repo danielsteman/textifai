@@ -35,7 +35,7 @@ const EmailVerification = () => {
             }
         })();
     }
-}, [oobCode, history]);
+}, [oobCode, navigate]);
 
   return (
     <Modal isOpen={true} onClose={() => {}} isCentered size="md">

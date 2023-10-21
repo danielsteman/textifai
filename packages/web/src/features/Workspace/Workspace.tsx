@@ -153,46 +153,6 @@ const Workspace = () => {
 
   return (
     <HStack h="100%">
-      {!emailVerified && (
-        <Modal isOpen={!emailVerified} onClose={() => {}} isCentered size="md">
-          <ModalOverlay />
-          <ModalContent
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            borderRadius="md"
-          >
-            <ModalHeader
-              textColor={theme.colors[colorMode].onSecondaryContainer}
-            >
-              Verify your email
-            </ModalHeader>
-            <ModalBody>
-              <Text mb={4}>
-                We have sent an email to{" "}
-                <span style={{ fontWeight: "bold" }}>{currentUser!.email}</span>
-                .
-                <br />
-                <br />
-                If you have not received the verification mail, please check
-                your "Spam" folder. You can also click the resend button below
-                to have another email sent to you.
-              </Text>
-            </ModalBody>
-            <ModalFooter justifyContent="flex-start">
-              <Button
-                colorScheme={theme.colors[colorMode].onSecondaryContainer}
-                textColor={theme.colors[colorMode].onSecondaryContainer}
-                onClick={handleResendClick}
-                p={0}
-                isDisabled={mailResent}
-              >
-                {mailResent
-                  ? "Just resent another verification mail"
-                  : "Resend verification mail"}
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      )}
       {isMenuOpen && (
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}

@@ -8,19 +8,16 @@ import { WorkingDocument } from "@shared/firestoreInterfaces/WorkingDocument";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import StyledTextEditor from "./StyledTextEditor";
 import { useColorMode } from "@chakra-ui/react";
-import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
 import theme from "../../app/themes/theme";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
-import { setProjectId, setProjectName } from "../Workspace/projectSlice";
-import { ProjectContext } from "../../app/providers/ProjectProvider";
+import { setProjectName } from "../Workspace/projectSlice";
 
 const TextEditor = () => {
   const [value, setValue] = useState("");
   const [documentId, setDocumentId] = useState<string | null>(null);
   const currentUser = useContext(AuthContext);
-  const userProjects = useContext(ProjectContext);
   const { colorMode } = useColorMode();
 
   const dispatch = useDispatch();
