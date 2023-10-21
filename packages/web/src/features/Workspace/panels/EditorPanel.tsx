@@ -13,6 +13,9 @@ import { useContext, useState } from "react";
 import { ProjectContext } from "../../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../../common/utils/getCurrentProjectTitle";
 
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
+
 export interface CustomTabPanelProps {
   openChatSupport: boolean;
   openMiniLibrary: boolean;
@@ -23,7 +26,8 @@ const EditorPanel = () => {
   const userProjects = useContext(ProjectContext);
   const [inputMode, setInputMode] = useState<boolean>(false);
 
-  const currentProjectTitle = getCurrentProjectTitle(userProjects);
+  const currentProjectTitle = useSelector(
+    (state: RootState) => state.activeProject.projectName);
 
   return (
     <>
@@ -36,7 +40,7 @@ const EditorPanel = () => {
         <Tooltip label={"Change title"}>
           {inputMode ? (
             <HStack w="100%">
-              <Input placeholder={currentProjectTitle} />
+              <Input placeholder={currentProjectTitle!} />
               <Spacer />
               <CloseButton size="sm" onClick={() => setInputMode(!inputMode)} />
             </HStack>

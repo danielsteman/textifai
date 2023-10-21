@@ -24,13 +24,6 @@ import {
   MenuList,
   MenuButton,
   MenuGroup,
-  Text,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   MenuDivider,
 } from "@chakra-ui/react";
 import { ReactNode, useContext, useEffect, useState } from "react";
@@ -47,7 +40,6 @@ import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
 import { setActiveProjectForUser } from "../../common/utils/updateActiveProject";
 import { isEmailVerified } from "../../common/utils/fetchVerificationStatus";
-import { resendVerificationEmail } from "../../common/utils/resendVerificationMail";
 import {
   activateTab,
   closeTab,
@@ -76,8 +68,6 @@ const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [emailVerified, setEmailVerified] = useState<boolean>(false);
-  const [mailResent, setMailResent] = useState(false);
-  //const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
@@ -120,30 +110,21 @@ const Workspace = () => {
     dispatch(openTab(defaultTab));
   }, []);
 
-  useEffect(() => {
-    const checkEmailVerification = async () => {
-      if (currentUser && currentUser.uid) {
-        try {
-          const verified = await isEmailVerified(currentUser);
-          console.log("Received emailVerified status:", verified);
-          setEmailVerified(verified);
-        } catch (error) {
-          console.error("Error checking email verification:", error);
-        }
-      } else {
-        setEmailVerified(false);
-      }
-    };
+  // useEffect(() => {
+  //   const checkEmailVerification = async () => {
+  //     if (currentUser && currentUser.uid) {
+  //       try {
+  //         const verified = await isEmailVerified(currentUser);
+  //         setEmailVerified(verified);
+  //       } catch (error) {
+  //       }
+  //     } else {
+  //       setEmailVerified(false);
+  //     }
+  //   };
   
-    checkEmailVerification();
-  }, [currentUser]);
-  
-  const handleResendClick = () => {
-    if (currentUser) {
-      resendVerificationEmail(currentUser);
-      setMailResent(true);
-    }
-  };
+  //   checkEmailVerification();
+  // }, [currentUser]);
 
   const handleProjectClick = async (project: Project) => {
     await setActiveProjectForUser(project.name, currentUser!.uid);
