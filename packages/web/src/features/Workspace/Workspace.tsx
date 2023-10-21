@@ -121,16 +121,23 @@ const Workspace = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUser) {
-      isEmailVerified().then((verified: boolean) => { 
-        setEmailVerified(verified);
-      });
-    } else {
-      setEmailVerified(false);
-    }
+    const checkEmailVerification = async () => {
+      if (currentUser && currentUser.uid) {
+        try {
+          const verified = await isEmailVerified(currentUser);
+          console.log("Received emailVerified status:", verified);
+          setEmailVerified(verified);
+        } catch (error) {
+          console.error("Error checking email verification:", error);
+        }
+      } else {
+        setEmailVerified(false);
+      }
+    };
+  
+    checkEmailVerification();
   }, [currentUser]);
   
-
   const handleResendClick = () => {
     if (currentUser) {
       resendVerificationEmail(currentUser);

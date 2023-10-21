@@ -119,7 +119,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
             });
-            navigate("/features/onboarding");
+            navigate("/email-verification");
             break;
 
           case "signIn":
