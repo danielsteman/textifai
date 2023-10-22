@@ -1,4 +1,3 @@
-// EmailVerificationModal.tsx
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Text, Button } from "@chakra-ui/react";
 import { useColorMode } from "@chakra-ui/react";
 import theme from "../../app/themes/theme";
@@ -19,6 +18,9 @@ const EmailVerification = () => {
     if (currentUser) {
       resendVerificationEmail(currentUser);
       setMailResent(true);
+    }
+    else {
+      console.warn("Failed to send verification email because there is no logged in user")
     }
   };
 
