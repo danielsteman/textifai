@@ -24,6 +24,13 @@ import {
   MenuList,
   MenuButton,
   MenuGroup,
+  Text,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   MenuDivider,
 } from "@chakra-ui/react";
 import { ReactNode, useContext, useEffect, useState } from "react";
@@ -38,8 +45,10 @@ import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import fetchProjectUid from "../../common/utils/fetchProjectId";
 import { setActiveProjectForUser } from "../../common/utils/updateActiveProject";
 import { isEmailVerified } from "../../common/utils/fetchVerificationStatus";
+import { resendVerificationEmail } from "../../common/utils/resendVerificationMail";
 import {
   activateTab,
   closeTab,
@@ -51,7 +60,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { AuthContext } from "../../app/providers/AuthProvider";
-import { setProjectName } from "./projectSlice";
+import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/firestoreInterfaces/Project";
 import { useNavigate } from "react-router-dom"; 
 
@@ -68,6 +77,7 @@ const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [emailVerified, setEmailVerified] = useState<boolean>(false);
+  const [mailResent, setMailResent] = useState(false);
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
@@ -100,6 +110,26 @@ const Workspace = () => {
   }, [currentUser, dispatch]);
 
   useEffect(() => {
+    if (currentUser) {
+        const fetchAndSetProjectUid = async () => {
+            const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(uid!));
+        };
+
+        fetchAndSetProjectUid();
+    }
+  }, [currentUser, activeProjectName]);
+
+  useEffect(() => {
+    const fetchProjectTitle = async () => {
+      const projectTitle = await getCurrentProjectTitle(currentUser!.uid);
+      dispatch(setProjectName(projectTitle));
+    };
+
+    fetchProjectTitle();
+  }, [currentUser, dispatch]);
+
+  useEffect(() => {
     const defaultTab: ITab = {
       name: "Library",
       panel: <MegaLibraryPanel />,
@@ -110,21 +140,21 @@ const Workspace = () => {
     dispatch(openTab(defaultTab));
   }, []);
 
-  // useEffect(() => {
-  //   const checkEmailVerification = async () => {
-  //     if (currentUser && currentUser.uid) {
-  //       try {
-  //         const verified = await isEmailVerified(currentUser);
-  //         setEmailVerified(verified);
-  //       } catch (error) {
-  //       }
-  //     } else {
-  //       setEmailVerified(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const checkEmailVerification = async () => {
+      if (currentUser && currentUser.uid) {
+        try {
+          const verified = await isEmailVerified(currentUser);
+          setEmailVerified(verified);
+        } catch (error) {
+        }
+      } else {
+        setEmailVerified(false);
+      }
+    };
   
-  //   checkEmailVerification();
-  // }, [currentUser]);
+    checkEmailVerification();
+  }, [currentUser]);
 
   const handleProjectClick = async (project: Project) => {
     await setActiveProjectForUser(project.name, currentUser!.uid);
@@ -132,8 +162,55 @@ const Workspace = () => {
     dispatch(setProjectName(project!.name));
   };
 
+  const handleResendClick = () => {
+    if (currentUser) {
+      resendVerificationEmail(currentUser);
+      setMailResent(true);
+    }
+  };
+
   return (
     <HStack h="100%">
+      {!emailVerified && (
+        <Modal isOpen={!emailVerified} onClose={() => {}} isCentered size="md">
+          <ModalOverlay />
+          <ModalContent
+            bgColor={theme.colors[colorMode].secondaryContainer}
+            borderRadius="md"
+          >
+            <ModalHeader
+              textColor={theme.colors[colorMode].onSecondaryContainer}
+            >
+              Verify your email
+            </ModalHeader>
+            <ModalBody>
+              <Text mb={4}>
+                We have sent an email to{" "}
+                <span style={{ fontWeight: "bold" }}>{currentUser!.email}</span>
+                .
+                <br />
+                <br />
+                If you have not received the verification mail, please check
+                your "Spam" folder. You can also click the resend button below
+                to have another email sent to you.
+              </Text>
+            </ModalBody>
+            <ModalFooter justifyContent="flex-start">
+              <Button
+                colorScheme={theme.colors[colorMode].onSecondaryContainer}
+                textColor={theme.colors[colorMode].onSecondaryContainer}
+                onClick={handleResendClick}
+                p={0}
+                isDisabled={mailResent}
+              >
+                {mailResent
+                  ? "Just resent another verification mail"
+                  : "Resend verification mail"}
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
       {isMenuOpen && (
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}

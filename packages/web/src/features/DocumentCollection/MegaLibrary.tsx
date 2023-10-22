@@ -65,10 +65,12 @@ import {
 import { Document } from "@shared/firestoreInterfaces/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
-import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
+// import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { openTab } from "../Workspace/tabsSlice";
 import { useNavigate } from 'react-router-dom';
-import { setProjectId } from "../Workspace/projectSlice";
+import { setProjectId, setProjectName } from "../Workspace/projectSlice";
+import fetchProjectUid from "../../common/utils/fetchProjectId";
+import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -91,16 +93,28 @@ const MegaLibrary = () => {
 
   const didRunOnce = useRef(false);
 
-  const activeProject = useSelector((state: RootState) => state.activeProject.projectId);
+  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
+  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
 
   useEffect(() => {
-    const fetchActiveProject = async () => {
-      const projectId = await fetchProjectId(currentUser!.uid);
-      dispatch(setProjectId(projectId!));
+    const fetchProjectTitle = async () => {
+      const projectTitle = await getCurrentProjectTitle(currentUser!.uid);
+      dispatch(setProjectName(projectTitle));
     };
 
-    fetchActiveProject();
-  }, [currentUser, activeProject]);
+    fetchProjectTitle();
+  }, [currentUser, dispatch]);
+
+  useEffect(() => {
+    if (currentUser) {
+        const fetchAndSetProjectUid = async () => {
+            const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(uid!));
+        };
+
+        fetchAndSetProjectUid();
+    }
+  }, [currentUser, activeProjectName]);
 
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
@@ -148,7 +162,7 @@ const MegaLibrary = () => {
     const q = query(
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
   
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -164,7 +178,7 @@ const MegaLibrary = () => {
     });
   
     return () => unsubscribe();
-  }, [selectedDocuments, activeProject]);
+  }, [selectedDocuments, activeProjectId]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     if (selectedDocuments.includes(documentName)) {
@@ -197,7 +211,7 @@ const MegaLibrary = () => {
         documentsCollection,
         where("uploadedBy", "==", currentUser!.uid),
         where("uploadName", "==", fullPath),
-        where("projectId", "==", activeProject)
+        where("projectId", "==", activeProjectId)
       );
 
       // 1. Delete from Firestore
@@ -245,7 +259,7 @@ const MegaLibrary = () => {
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
 
     getDocs(q)
@@ -270,7 +284,7 @@ const MegaLibrary = () => {
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
 
     getDocs(q)
@@ -304,7 +318,7 @@ const MegaLibrary = () => {
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
 
     getDocs(q)

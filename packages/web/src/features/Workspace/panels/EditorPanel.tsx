@@ -9,9 +9,7 @@ import {
 } from "@chakra-ui/react";
 import TextEditor from "../../TextEditor/TextEditor";
 import theme from "../../../app/themes/theme";
-import { useContext, useState } from "react";
-import { ProjectContext } from "../../../app/providers/ProjectProvider";
-import { getCurrentProjectTitle } from "../../../common/utils/getCurrentProjectTitle";
+import { useState } from "react";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
@@ -23,7 +21,6 @@ export interface CustomTabPanelProps {
 
 const EditorPanel = () => {
   const { colorMode } = useColorMode();
-  const userProjects = useContext(ProjectContext);
   const [inputMode, setInputMode] = useState<boolean>(false);
 
   const currentProjectTitle = useSelector(

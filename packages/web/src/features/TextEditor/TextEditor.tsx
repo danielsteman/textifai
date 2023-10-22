@@ -25,6 +25,9 @@ const TextEditor = () => {
   const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
   const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);
 
+  console.log("Active project name: ", activeProjectName)
+  console.log("Active project id: ", activeProjectId)
+
   useEffect(() => {
     const fetchActiveProject = async () => {
       const projectName = await getCurrentProjectTitle(currentUser!.uid)
