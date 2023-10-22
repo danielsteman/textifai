@@ -121,15 +121,6 @@ const Workspace = () => {
   }, [currentUser, activeProjectName]);
 
   useEffect(() => {
-    const fetchProjectTitle = async () => {
-      const projectTitle = await getCurrentProjectTitle(currentUser!.uid);
-      dispatch(setProjectName(projectTitle));
-    };
-
-    fetchProjectTitle();
-  }, [currentUser, dispatch]);
-
-  useEffect(() => {
     const defaultTab: ITab = {
       name: "Library",
       panel: <MegaLibraryPanel />,

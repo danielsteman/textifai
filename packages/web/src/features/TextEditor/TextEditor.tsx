@@ -25,9 +25,6 @@ const TextEditor = () => {
   const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
   const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);
 
-  console.log("Active project name: ", activeProjectName)
-  console.log("Active project id: ", activeProjectId)
-
   useEffect(() => {
     const fetchActiveProject = async () => {
       const projectName = await getCurrentProjectTitle(currentUser!.uid)
@@ -71,13 +68,7 @@ const TextEditor = () => {
 
         return () => unsubscribe();
       }
-  }, [currentUser, activeProjectId]);
-
-  useEffect(() => {
-    if (value && documentId) {
-      updateTextInFirestore(value);
-    }
-  }, [value, documentId]);
+  }, [currentUser, documentId, activeProjectId]);
   
   const updateTextInFirestore = async (textContent: string) => {
     if (documentId) {
@@ -96,6 +87,12 @@ const TextEditor = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (value && documentId) {
+      updateTextInFirestore(value);
+    }
+  }, [value, documentId]);
 
   return (
     <StyledTextEditor
