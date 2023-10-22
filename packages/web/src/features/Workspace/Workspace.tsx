@@ -61,7 +61,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
-import { Project } from "@shared/firestoreInterfaces/Project";
+import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom"; 
 
 export type ITab = {
