@@ -4,6 +4,7 @@ interface IPineconeConfig {
   apiKey: string;
   environment: string;
   pineconeIndex: string;
+  pineconeDimension: number;
 }
 
 dotenv.config();
@@ -22,5 +23,6 @@ export const getPineconeConfig = (): IPineconeConfig => {
     apiKey: process.env.PINECONE_API_KEY,
     environment: process.env.PINECONE_ENV,
     pineconeIndex: process.env.PINECONE_INDEX,
+    pineconeDimension: 1536,
   };
 };
