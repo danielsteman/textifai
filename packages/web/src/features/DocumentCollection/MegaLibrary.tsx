@@ -62,7 +62,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { Document } from "@shared/firestoreInterfaces/Document";
+import { Document } from "@shared/interfaces/firebase/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
 import { openTab } from "../Workspace/tabsSlice";
@@ -782,7 +782,11 @@ const MegaLibrary = () => {
                       <Td textAlign="center">
                         <Icon
                           as={FaStar}
-                          color={doc.favoritedBy ? "teal" : "none"}
+                          color={
+                            doc.favoritedBy
+                              ? theme.colors[colorMode].primary
+                              : "none"
+                          }
                           onClick={() =>
                             toggleFavourite(doc.uploadName, !doc.favoritedBy)
                           }

@@ -1,13 +1,13 @@
 {
   "name": "@textifai/chat",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "app.ts",
   "license": "MIT",
   "scripts": {
     "build": "npx tsc --build tsconfig-build.json",
-    "start": "node dist/index.js",
+    "start": "node dist/app.js",
     "test": "jest",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/app.js\""
   },
   "dependencies": {
     "@pinecone-database/pinecone": "0.1.6",

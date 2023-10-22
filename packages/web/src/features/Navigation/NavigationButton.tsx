@@ -22,7 +22,7 @@ const NavigationButton: React.FC<Props> = ({ title, menudata }) => (
       <Menu>
         <MenuButton
           variant="ghost"
-          size="sm"
+          size="md"
           as={Button}
           rightIcon={<ChevronDownIcon />}
         >
@@ -47,7 +47,7 @@ const NavigationButton: React.FC<Props> = ({ title, menudata }) => (
     ) : (
       <Button
         variant="ghost"
-        size="sm"
+        size="md"
         as={NavLink}
         to={`/${title.toLowerCase()}`}
       >

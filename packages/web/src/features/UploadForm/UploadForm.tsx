@@ -8,11 +8,10 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { useColorModeValue } from "@chakra-ui/react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
-import { Document } from "@shared/firestoreInterfaces/Document";
+import { Document } from "@shared/interfaces/firebase/Document";
 import { db } from "../../app/config/firebase";
 import {
   collection,
@@ -73,9 +72,8 @@ const UploadForm: React.FC<UploadFormProps> = ({
   dropZoneText = "",
 }) => {
   const [files, setFiles] = useState<File[] | undefined>();
-  const [uploadSuccessful, setUploadSuccessful] = useState(false);
+  const [uploadStatusMessage, setUploadStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [fileExists, setFileExists] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -115,30 +113,23 @@ const UploadForm: React.FC<UploadFormProps> = ({
     accept: acceptedFormats,
   });
 
-  const resetForm = () => {
-    setUploadSuccessful(false);
-    setFiles(undefined);
-  };
-
   const handleFileUpload = async (file: any) => {
     const fileRef = ref(
       storage,
       `users/${currentUser?.uid}/uploads/${file.name}`
     );
 
-    // Check if the file already exists
     const exists = await getDownloadURL(fileRef)
       .then(() => true)
       .catch(() => false);
 
     if (exists) {
+      setUploadStatusMessage("A file with this name already exists! 📄");
       console.log("File already exists:", file.name);
-      setFileExists(true);
-      return; // Exit this function
+      return;
     }
 
     try {
-      // Post the file to your server
       const data = new FormData();
       data.append("file", file);
       data.append("userId", currentUser!.uid);
@@ -151,14 +142,12 @@ const UploadForm: React.FC<UploadFormProps> = ({
         }
       );
 
-      // Upload file to Firebase storage
       await uploadBytes(fileRef, file);
       console.log("Uploaded a blob or file:", file.name);
 
       console.log("File uploaded successfully:", file.name);
-      setUploadSuccessful(true);
+      setUploadStatusMessage("Done! ✅ Want to upload more?");
 
-      // Upload metadata to Firestore
       const metadata: PdfMetadata = res.data.metadata;
       await uploadMetadataToFirestore(
         metadata,
@@ -172,6 +161,9 @@ const UploadForm: React.FC<UploadFormProps> = ({
   };
 
   const handleSubmit = async () => {
+    setFiles(undefined);
+    setUploadStatusMessage("");
+
     if (!currentUser) {
       console.warn("User not authenticated. Please login to upload.");
       return;
@@ -185,10 +177,8 @@ const UploadForm: React.FC<UploadFormProps> = ({
       return;
     }
 
-    // Map each file to a promise and wait for all of them
     await Promise.all(files.map((file) => handleFileUpload(file)));
 
-    resetForm();
     setLoading(false);
     onUploadComplete();
   };
@@ -233,13 +223,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
         </Button>
       </Center>
       <Center height="100%" width="100%">
-        {fileExists && !uploadSuccessful ? (
-          <Text>File already exists!📄 Upload a new one!</Text>
-        ) : uploadSuccessful && fileExists ? (
-          <Text>Done!✅ Want to upload more?</Text>
-        ) : (
-          <></>
-        )}
+        {uploadStatusMessage}
       </Center>
     </Box>
   );

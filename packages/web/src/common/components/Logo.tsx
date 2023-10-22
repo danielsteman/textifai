@@ -8,10 +8,10 @@ const Logo = () => {
     <IconButton
       icon={<Image src={BoxLogo} alt="Box Logo" w={16} />}
       h="fit-content"
-      variant="unstyled"
       aria-label={"App logo"}
       onClick={() => navigate("/")}
-    />
+      variant="unstyled"
+    ></IconButton>
   );
 };
 

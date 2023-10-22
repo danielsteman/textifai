@@ -1,8 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import dotenv from "dotenv";
-import path from "path";
 import { getMatchesFromEmbeddings } from "../pinecone/matches";
-
 import { templates } from "../langchain/prompts";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { ChatOpenAI } from "langchain/chat_models/openai";
@@ -12,16 +9,11 @@ import summarizer from "../langchain/summarizer";
 
 const router = express.Router();
 
-const envPath = path.resolve(__dirname, "../../../.env.local");
-
-dotenv.config({ path: envPath });
-
 const embed = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY,
   modelName: "text-embedding-ada-002",
 });
 
-// initialize QA chain
 const initializedChain = async () => {
   const qaChain = new ChatOpenAI({
     verbose: false,
@@ -40,13 +32,11 @@ const initializedChain = async () => {
   return chain;
 };
 
-// QA Chain
 let qaChain: LLMChain;
 initializedChain().then((initializedChain) => {
   qaChain = initializedChain;
 });
 
-// initialize Inquiry chain
 const initializedInquiryChain = async () => {
   const llm = new ChatOpenAI({
     modelName: "gpt-4",
@@ -69,13 +59,11 @@ const initializedInquiryChain = async () => {
   return iqChain;
 };
 
-// Inquiry Chain
 let inquiryChain: LLMChain;
 initializedInquiryChain().then((initializedInquiryChain) => {
   inquiryChain = initializedInquiryChain;
 });
 
-// initialize Paraphrasing Chain
 const initializedRegenerateChain = async () => {
   const llm = new ChatOpenAI({
     modelName: "gpt-3.5-turbo",
@@ -96,13 +84,11 @@ const initializedRegenerateChain = async () => {
   return ppChain;
 };
 
-// Paraphrasing Chain
 let regenerateChain: LLMChain;
 initializedRegenerateChain().then((initializedRenegerateChain) => {
   regenerateChain = initializedRenegerateChain;
 });
 
-// PDF QA chain
 const initializedPdfChain = async () => {
   const pdfChain = new ChatOpenAI({
     verbose: false,
@@ -121,103 +107,98 @@ const initializedPdfChain = async () => {
   return chain;
 };
 
-// Pdf Chain
 let pdfChain: LLMChain;
 initializedPdfChain().then((initializedPdfChain) => {
   pdfChain = initializedPdfChain;
 });
 
-router.post(
-  "/ask",
-  async (
-    req: Request, res: Response, next: NextFunction
-  ) => {
-    const prompt = await req.body.prompt;
-    const conversationHistory = await req.body.history;
-    const option = await req.body.option;
-    const files = await req.body.files
-    const userId = await req.body.userId
+router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
+  const prompt = await req.body.prompt;
+  const conversationHistory = await req.body.history;
+  const option = await req.body.option;
+  const files = await req.body.files;
+  const userId = await req.body.userId;
 
-    if (option === "regenerate") {
-      try {
-        console.log("Regenerating answer...");
-        const answer = await regenerateChain.call({
-          document: prompt,
-        });
-
-        console.log(answer.text);
-        res.json({ answer: answer.text });
-      } catch (error) {
-        next(error);
-      }
-    }
-    else if (option === "pdfQa") {
-      try {
-        console.log("Answering PdfViewer questions...");
-        const answer = await pdfChain.call({
-          context: prompt,
-        });
-
-        console.log(answer.text);
-        res.json({ answer: answer.text });
-      } catch (error) {
-        next(error);
-      }
-    } else if (option === "GeneralQa") {
-      const inquiryChainResult = await inquiryChain.call({
-        userPrompt: prompt,
-        conversationHistory: conversationHistory,
+  if (option === "regenerate") {
+    try {
+      console.log("Regenerating answer...");
+      const answer = await regenerateChain.call({
+        document: prompt,
       });
 
-      console.log("Enhanced prompt: ", inquiryChainResult.text);
-      const inquiry = inquiryChainResult.text;
+      console.log(answer.text);
+      res.json({ answer: answer.text });
+    } catch (error) {
+      next(error);
+    }
+  } else if (option === "pdfQa") {
+    try {
+      console.log("Answering PdfViewer questions...");
+      const answer = await pdfChain.call({
+        context: prompt,
+      });
 
-      const vector = await embed.embedQuery(prompt);
-      const matches = await getMatchesFromEmbeddings(vector, 3, files, userId);
+      console.log(answer.text);
+      res.json({ answer: answer.text });
+    } catch (error) {
+      next(error);
+    }
+  } else if (option === "GeneralQa") {
+    const inquiryChainResult = await inquiryChain.call({
+      userPrompt: prompt,
+      conversationHistory: conversationHistory,
+    });
 
-      console.log("Matches found: ", matches)
-      interface Metadata {
-        text: string;
-        title: string;
-        userId: string;
-      }
+    console.log("Enhanced prompt: ", inquiryChainResult.text);
+    const inquiry = inquiryChainResult.text;
 
-      const docs = matches && matches.reduce((accumulator, match) => {
-        const metadata = match.metadata as Metadata; 
+    const vector = await embed.embedQuery(prompt);
+    const matches = await getMatchesFromEmbeddings(vector, 3, files, userId);
+
+    console.log("Matches found: ", matches);
+    interface Metadata {
+      text: string;
+      title: string;
+      userId: string;
+    }
+
+    const docs =
+      matches &&
+      matches.reduce((accumulator, match) => {
+        const metadata = match.metadata as Metadata;
         accumulator.push(metadata.text);
         return accumulator;
       }, [] as string[]);
 
-      console.log("Documents found: ", docs)
+    console.log("Documents found: ", docs);
 
-      const allDocs = docs.join("\n");
+    const allDocs = docs.join("\n");
 
-      if (allDocs.length > 4000) {
-        console.log(`Context too long, summarize...`);
-      }
+    if (allDocs.length > 4000) {
+      console.log(`Context too long, summarize...`);
+    }
 
-      const summary =
-        allDocs.length > 4000
-          ? await summarizer.summarizeLongDocument({
-              document: allDocs,
-              inquiry: prompt,
-            })
-          : allDocs;
+    const summary =
+      allDocs.length > 4000
+        ? await summarizer.summarizeLongDocument({
+            document: allDocs,
+            inquiry: prompt,
+          })
+        : allDocs;
 
-      try {
-        const answer = await qaChain.call({
-          summaries: summary,
-          question: inquiry,
-          conversationHistory,
-        });
+    try {
+      const answer = await qaChain.call({
+        summaries: summary,
+        question: inquiry,
+        conversationHistory,
+      });
 
-        console.log(answer.text);
-        res.json({ answer: answer.text });
-      } catch (error) {
-        next(error);
-      }
+      console.log(answer.text);
+      res.json({ answer: answer.text });
+    } catch (error) {
+      next(error);
     }
   }
-);
+});
 
 export default router;

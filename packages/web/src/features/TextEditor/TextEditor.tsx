@@ -4,7 +4,7 @@ import "./textEditor.css";
 import { Timestamp, onSnapshot } from "firebase/firestore";
 import { doc, updateDoc, addDoc, collection, query, where } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
-import { WorkingDocument } from "@shared/firestoreInterfaces/WorkingDocument";
+import { WorkingDocument } from "@shared/interfaces/firebase/WorkingDocument";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import StyledTextEditor from "./StyledTextEditor";
 import { useColorMode } from "@chakra-ui/react";

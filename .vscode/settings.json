@@ -1,0 +1,32 @@
+{
+  "restoreTerminals.terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "web",
+          "commands": [
+            "yarn install",
+            "yarn workspace @textifai/web build",
+            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/web dev"
+          ]
+        },
+        {
+          "name": "chat",
+          "commands": [
+            "yarn install",
+            "yarn workspace @textifai/chat build",
+            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/chat dev"
+          ]
+        },
+        {
+          "name": "documents",
+          "commands": [
+            "yarn install",
+            "yarn workspace @textifai/web documents",
+            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/documents dev"
+          ]
+        }
+      ]
+    }
+  ]
+}
