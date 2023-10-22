@@ -129,7 +129,6 @@ const Workspace = () => {
       openPdfViewer: false,
     };
     dispatch(openTab(defaultTab));
-    console.log("current tab: ", openTab)
   }, []);
 
   useEffect(() => {
