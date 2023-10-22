@@ -9,9 +9,6 @@ interface Props {
 
 const ProjectRoute: React.FC<Props> = ({ children, to = "/features/onboarding" }) => {
   const projects = useContext(ProjectContext);
-  const activeProject = projects.find(project => project.active);
-
-  //const noValidProject = projects.length === 0 || (activeProject && activeProject.name === "⚠️ Project title not found");
 
   if (projects.length === 0) {
     return <Navigate to={to} />;
