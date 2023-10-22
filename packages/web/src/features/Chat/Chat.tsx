@@ -192,21 +192,25 @@ const Chat = () => {
         const conversationsCollection = collection(db, "conversations");
         const q = query(
           conversationsCollection,
-          where("userId", "==", currentUser.uid)
-        );
+          where("userId", "==", currentUser.uid),
+          where("projectId", "==", activeProjectId)
+          );
         const querySnapshot = await getDocs(q);
   
         if (!querySnapshot.empty) {
-          setCurrentConversationId(querySnapshot.docs[0].id);
+          const existingConversationId = querySnapshot.docs[0].id;
+          setCurrentConversationId(existingConversationId);
+          console.log("Existing conversation ID:", existingConversationId);
         } else {
           const newConversationId = await startConversation(currentUser.uid, activeProjectId!);
           setCurrentConversationId(newConversationId || null);
+          console.log("New conversation ID:", newConversationId);
         }
       }
     };
   
     fetchConversationId();
-  }, [currentUser, activeProjectId]);
+  }, [currentUser, activeProjectId]);  
   
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();

@@ -177,7 +177,7 @@ const MegaLibrary = () => {
     });
   
     return () => unsubscribe();
-  }, [selectedDocuments, currentUser]);
+  }, [selectedDocuments, currentUser, activeProjectId]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     if (selectedDocuments.includes(documentName)) {

@@ -86,16 +86,16 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
   const currentUser = useContext(AuthContext);
 
-  // useEffect(() => {
-  //   if (currentUser) {
-  //       const fetchAndSetProjectUid = async () => {
-  //           const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
-  //           dispatch(setProjectId(uid!));
-  //       };
+  useEffect(() => {
+    if (currentUser) {
+        const fetchAndSetProjectUid = async () => {
+            const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(uid!));
+        };
 
-  //       fetchAndSetProjectUid();
-  //   }
-  // }, [currentUser, activeProjectName]);
+        fetchAndSetProjectUid();
+    }
+  }, [currentUser, activeProjectName]);
 
   const acceptedFormats = { "application/pdf": [".pdf"] };
 
