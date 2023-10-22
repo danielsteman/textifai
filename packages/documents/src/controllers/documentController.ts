@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import processText from "../lib/processText";
 import { extractTextFromPDF, extractMetadataFromPDF } from "../utils/pdfUtils";
 import path from "path";
-import { initializeIndex } from "../lib/initializeIndex";
+import { initializePineconeClient } from "../lib/initializeClient";
 
 export const documentController = async (
   req: Request,
@@ -27,7 +27,7 @@ export const documentController = async (
       fileType
     );
 
-    const index = await initializeIndex();
+    const index = await initializePineconeClient();
 
     console.log(`index received by controller: ${index}`);
 

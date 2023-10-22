@@ -1,7 +1,10 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 import { config } from "../configs/config";
+import { Index, RecordMetadata } from "@pinecone-database/pinecone";
 
-export async function initializeIndex() {
+export async function initializePineconeClient(): Promise<
+  Index<RecordMetadata>
+> {
   try {
     const pinecone = new Pinecone({
       apiKey: config.pineconeConfig.apiKey,
