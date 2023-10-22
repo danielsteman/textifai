@@ -9,9 +9,6 @@ export async function processText(
   userId: string,
   title: string
 ) {
-  console.log("index");
-  console.log(index);
-
   let chunks;
   try {
     const textSplitter = new RecursiveCharacterTextSplitter({

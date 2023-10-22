@@ -7,11 +7,7 @@ export async function initializeIndex() {
       apiKey: config.pineconeConfig.apiKey,
       environment: config.pineconeConfig.environment,
     });
-    const index = await pinecone.createIndex({
-      name: config.pineconeConfig.pineconeIndex,
-      dimension: config.pineconeConfig.pineconeDimension,
-    });
-    return index;
+    return pinecone.Index(config.pineconeConfig.pineconeIndex);
   } catch (error) {
     console.error("Failed to initialize Pinecone Client:", error);
     throw new Error("Failed to initialize Pinecone Client");

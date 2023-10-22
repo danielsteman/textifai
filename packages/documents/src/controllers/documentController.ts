@@ -3,7 +3,6 @@ import processText from "../lib/processText";
 import { extractTextFromPDF, extractMetadataFromPDF } from "../utils/pdfUtils";
 import path from "path";
 import { initializeIndex } from "../lib/initializeIndex";
-import { Index as PineconeIndex } from "@pinecone-database/pinecone";
 
 export const documentController = async (
   req: Request,
@@ -29,7 +28,8 @@ export const documentController = async (
     );
 
     const index = await initializeIndex();
-    console.log(index);
+
+    console.log(`index received by controller: ${index}`);
 
     await processText(index, text, user, fileName);
 
