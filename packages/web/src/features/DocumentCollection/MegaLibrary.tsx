@@ -65,7 +65,6 @@ import {
 import { Document } from "@shared/firestoreInterfaces/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
-// import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { openTab } from "../Workspace/tabsSlice";
 import { useNavigate } from 'react-router-dom';
 import { setProjectId, setProjectName } from "../Workspace/projectSlice";
@@ -178,7 +177,7 @@ const MegaLibrary = () => {
     });
   
     return () => unsubscribe();
-  }, [selectedDocuments, activeProjectId]);
+  }, [selectedDocuments]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     if (selectedDocuments.includes(documentName)) {
