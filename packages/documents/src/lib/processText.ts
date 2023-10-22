@@ -3,19 +3,21 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { config } from "../configs/config";
 
-export async function processFile(
+export async function processText(
   index: any,
   rawDoc: string,
   userId: string,
   title: string
 ) {
+  console.log("index");
+  console.log(index);
+
   let chunks;
   try {
     const textSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1000,
       chunkOverlap: 200,
     });
-
     chunks = await textSplitter.splitText(rawDoc);
   } catch (error) {
     console.error("Failed to chunk document:", error);
@@ -43,4 +45,4 @@ export async function processFile(
   }
 }
 
-export default processFile;
+export default processText;
