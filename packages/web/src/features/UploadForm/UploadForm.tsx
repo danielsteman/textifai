@@ -65,7 +65,7 @@ const uploadMetadataToFirestore = async (
 
 const UploadForm: React.FC<UploadFormProps> = ({
   onUploadComplete,
-  dropZoneText = "",
+  dropZoneText,
 }) => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadStatusMessage, setUploadStatusMessage] = useState("");
