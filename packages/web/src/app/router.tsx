@@ -15,6 +15,7 @@ import WorkspacePage from "./routes/WorkspacePage";
 import CreateProject from "./routes/CreateProject";
 import PdfViewer from "./routes/PdfViewer";
 import AccountSettings from "./routes/AccountSettings";
+import EmailVerification from "./routes/VerifyEmail";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,14 @@ export const router = createBrowserRouter([
     element: (
       <PrivateRoute>
         <CreateProject />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/email-verification",
+    element: (
+      <PrivateRoute>
+        <EmailVerification />
       </PrivateRoute>
     ),
   },

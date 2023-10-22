@@ -65,11 +65,15 @@ import {
 import { Document } from "@shared/interfaces/firebase/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
-import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { openTab } from "../Workspace/tabsSlice";
+import { useNavigate } from 'react-router-dom';
+import { setProjectId, setProjectName } from "../Workspace/projectSlice";
+import fetchProjectUid from "../../common/utils/fetchProjectId";
+import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
+  const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
@@ -82,26 +86,34 @@ const MegaLibrary = () => {
   const [customYearEnd, setCustomYearEnd] = useState<number | null>(null);
   const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
 
-  const [activeProject, setActiveProject] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
 
   const didRunOnce = useRef(false);
 
-  useEffect(() => {
-    if (documents.length === 0) {
-      onUploadFileOpen();
-    }
-  }, [documents]);
+  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
+  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
 
   useEffect(() => {
-    const fetchActiveProject = async () => {
-      const projectId = await fetchProjectId(currentUser!.uid);
-      setActiveProject(projectId);
+    const fetchProjectTitle = async () => {
+      const projectTitle = await getCurrentProjectTitle(currentUser!.uid);
+      dispatch(setProjectName(projectTitle));
     };
 
-    fetchActiveProject();
-  }, [currentUser]);
+    fetchProjectTitle();
+  }, [currentUser, dispatch]);
+
+  useEffect(() => {
+    if (currentUser) {
+        const fetchAndSetProjectUid = async () => {
+            const projectId = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(projectId!));
+        };
+
+        fetchAndSetProjectUid();
+    }
+  }, [currentUser, activeProjectName]);
 
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
@@ -135,7 +147,6 @@ const MegaLibrary = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!didRunOnce.current && documents.length > 0) {
@@ -150,19 +161,23 @@ const MegaLibrary = () => {
     const q = query(
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
-
+  
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedDocuments: Document[] = [];
       snapshot.forEach((doc) => {
         fetchedDocuments.push(doc.data() as Document);
       });
       setDocuments(fetchedDocuments);
+  
+      if (documents.length === 0 && fetchedDocuments.length === 0) {
+        onUploadFileOpen();
+      }
     });
-
+  
     return () => unsubscribe();
-  }, [selectedDocuments, activeProject]);
+  }, [selectedDocuments, currentUser, activeProjectId]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     if (selectedDocuments.includes(documentName)) {
@@ -183,7 +198,7 @@ const MegaLibrary = () => {
   };
 
   const handleDeleteDocument = async () => {
-    selectedDocuments.map(async (fullPath) => {
+    selectedDocuments.map(async (fullPath?) => {
       const documentRef = ref(
         storage,
         `users/${currentUser?.uid}/uploads/${fullPath}`
@@ -195,7 +210,7 @@ const MegaLibrary = () => {
         documentsCollection,
         where("uploadedBy", "==", currentUser!.uid),
         where("uploadName", "==", fullPath),
-        where("projectId", "==", activeProject)
+        where("projectId", "==", activeProjectId)
       );
 
       // 1. Delete from Firestore
@@ -243,7 +258,7 @@ const MegaLibrary = () => {
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
 
     getDocs(q)
@@ -268,7 +283,7 @@ const MegaLibrary = () => {
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
 
     getDocs(q)
@@ -302,7 +317,7 @@ const MegaLibrary = () => {
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
 
     getDocs(q)
@@ -551,6 +566,7 @@ const MegaLibrary = () => {
             size="sm"
             leftIcon={<FaRocket />}
             borderRadius={100}
+            onClick={() => navigate("/features/onboarding")}
           >
             New project
           </Button>
@@ -705,7 +721,7 @@ const MegaLibrary = () => {
                     let matchesCollection =
                       !collectionFilter ||
                       (doc.tags && doc.tags.includes(collectionFilter));
-                    let matchesProject = activeProject;
+                    //let matchesProject = activeProject;
                     let matchesFavorites = onlyFavoritesFilter
                       ? !!doc.favoritedBy
                       : true;
@@ -713,7 +729,7 @@ const MegaLibrary = () => {
                       matchesQuery &&
                       matchesYear &&
                       matchesCollection &&
-                      matchesProject &&
+                      //matchesProject &&
                       matchesFavorites
                     );
                   })

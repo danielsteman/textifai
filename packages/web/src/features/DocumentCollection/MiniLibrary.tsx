@@ -15,15 +15,17 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useSelector, useDispatch } from "react-redux";
-import { storage } from "../../app/config/firebase";
+import { db, storage } from "../../app/config/firebase";
 import { StorageReference, listAll, ref } from "firebase/storage";
 import { SearchIcon } from "@chakra-ui/icons";
 import { RootState } from "../../app/store";
 import { disableDocument, enableDocument } from "./librarySlice";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { Document } from "@shared/interfaces/firebase/Document";
 
 const MiniLibrary = () => {
   const currentUser = useContext(AuthContext);
-  const [documents, setDocuments] = useState<StorageReference[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
   const listRef = ref(storage, `users/${currentUser?.uid}/uploads`);
 
@@ -33,16 +35,37 @@ const MiniLibrary = () => {
 
   const dispatch = useDispatch();
 
+  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+
+  // useEffect(() => {
+  //   listAll(listRef)
+  //     .then((res) => {
+  //       setDocuments(res.items);
+  //     })
+  //     .catch((error) => {
+  //       console.warn("Something went wrong listing your files");
+  //       console.error(error);
+  //     });
+  // }, []);
+
   useEffect(() => {
-    listAll(listRef)
-      .then((res) => {
-        setDocuments(res.items);
-      })
-      .catch((error) => {
-        console.warn("Something went wrong listing your files");
-        console.error(error);
+    const documentsCollection = collection(db, "uploads");
+    const q = query(
+      documentsCollection,
+      where("uploadedBy", "==", currentUser!.uid),
+      where("projectId", "==", activeProjectId)
+    );
+  
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedDocuments: Document[] = [];
+      snapshot.forEach((doc) => {
+        fetchedDocuments.push(doc.data() as Document);
       });
-  }, []);
+      setDocuments(fetchedDocuments);
+    });
+  
+    return () => unsubscribe();
+  }, [selectedDocuments, currentUser, activeProjectId]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     if (selectedDocuments.includes(documentName)) {
@@ -83,17 +106,19 @@ const MiniLibrary = () => {
         <Tbody>
           {documents
             .filter((doc) =>
-              doc.name.toLowerCase().includes(documentQuery.toLowerCase())
+              doc.uploadName.toLowerCase().includes(documentQuery.toLowerCase())
             )
-            .map((doc) => (
-              <Tr key={doc.fullPath}>
+            .map((doc: Document) => (
+              <Tr key={doc.uploadName}>
                 <Td>
                   <Checkbox
-                    isChecked={selectedDocuments.includes(doc.name)}
-                    onChange={() => handleDocumentCheckboxChange(doc.name)}
+                      isChecked={selectedDocuments.includes(doc.uploadName)}
+                      onChange={() =>
+                        handleDocumentCheckboxChange(doc.uploadName)
+                      }
                   />
                 </Td>
-                <Td>{doc.name}</Td>
+                <Td>{doc.uploadName}</Td>
               </Tr>
             ))}
         </Tbody>

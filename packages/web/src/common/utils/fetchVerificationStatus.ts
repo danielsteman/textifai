@@ -1,18 +1,21 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, User, reload } from "firebase/auth";
 
-export async function isEmailVerified() {
-    const auth = getAuth();
-  
-    return new Promise((resolve) => {
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          resolve(user.emailVerified);
+export function isEmailVerified(currentUser?: User | null): Promise<boolean> {
+    return new Promise<boolean>(async (resolve, reject) => {
+        if (currentUser) {
+            await reload(currentUser);
+            resolve(currentUser.emailVerified);
         } else {
-          resolve(false);
+            const auth = getAuth();
+            const unsubscribe = onAuthStateChanged(auth, async (user) => {
+                unsubscribe();
+                if (user) {
+                    await reload(user);
+                    resolve(user.emailVerified);
+                } else {
+                    reject(new Error("User not found"));
+                }
+            });
         }
-      });
     });
-  }
-
-
-  
+}

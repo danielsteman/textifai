@@ -47,12 +47,13 @@ const conversationsCollection = collection(db, "conversations");
 const messagesCollection = collection(db, "messages");
 
 const startConversation = async (
-  currentUserUid: string
+  currentUserUid: string, 
+  activeProjectId: string
 ): Promise<string | void> => {
   try {
     const conversationDoc: Conversation = {
       userId: currentUserUid,
-      projectId: "currentProject", // TO DO --> Make dynamic
+      projectId: activeProjectId,
       creationDate: Timestamp.fromDate(new Date()),
       updatedDate: Timestamp.fromDate(new Date()),
     };
@@ -181,28 +182,36 @@ const Chat = () => {
 
   useLayoutEffect(scrollToBottom, [messageStack, answerStack]);
 
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
+  
   useEffect(() => {
     const fetchConversationId = async () => {
       if (currentUser) {
         const conversationsCollection = collection(db, "conversations");
         const q = query(
           conversationsCollection,
-          where("userId", "==", currentUser.uid)
-        );
+          where("userId", "==", currentUser.uid),
+          where("projectId", "==", activeProjectId)
+          );
         const querySnapshot = await getDocs(q);
-
+  
         if (!querySnapshot.empty) {
-          setCurrentConversationId(querySnapshot.docs[0].id); // Using the value directly from querySnapshot
+          const existingConversationId = querySnapshot.docs[0].id;
+          setCurrentConversationId(existingConversationId);
+          console.log("Existing conversation ID:", existingConversationId);
         } else {
-          const newConversationId = await startConversation(currentUser.uid);
-          setCurrentConversationId(newConversationId || null); // Using the value directly from newConversationId
+          const newConversationId = await startConversation(currentUser.uid, activeProjectId!);
+          setCurrentConversationId(newConversationId || null);
+          console.log("New conversation ID:", newConversationId);
         }
       }
     };
-
+  
     fetchConversationId();
-  }, [currentUser]);
-
+  }, [currentUser, activeProjectId]);  
+  
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setMessageStack([...messageStack, message]);

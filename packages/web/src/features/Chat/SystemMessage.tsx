@@ -17,8 +17,10 @@ import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
-import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
+// import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { FaPlus } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 
 interface SystemMessageProps {
   message: string;
@@ -35,19 +37,12 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
-  const [activeProject, setActiveProject] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchActiveProject = async () => {
-      const projectId = await fetchProjectId(currentUser!.uid);
-      setActiveProject(projectId);
-    };
-
-    fetchActiveProject();
-  }, [currentUser]);
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
 
   const handleMenuClick = () => {
-    appendToDocument(currentUser!.uid, activeProject!, message);
+    appendToDocument(currentUser!.uid, activeProjectId!, message);
     setMenuClicked(true);
   };
 

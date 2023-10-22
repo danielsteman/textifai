@@ -45,6 +45,8 @@ import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import fetchProjectUid from "../../common/utils/fetchProjectId";
+import { setActiveProjectForUser } from "../../common/utils/updateActiveProject";
 import { isEmailVerified } from "../../common/utils/fetchVerificationStatus";
 import { resendVerificationEmail } from "../../common/utils/resendVerificationMail";
 import {
@@ -58,6 +60,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { AuthContext } from "../../app/providers/AuthProvider";
+import { setProjectId, setProjectName } from "./projectSlice";
+import { Project } from "@shared/interfaces/firebase/Project";
+import { useNavigate } from "react-router-dom"; 
 
 export type ITab = {
   name: string;
@@ -77,15 +82,43 @@ const Workspace = () => {
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
 
+  const navigate = useNavigate()
+
   const dispatch = useDispatch();
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
   const activeTabIndex = useSelector(
     (state: RootState) => state.tabs.activeTabIndex
   );
+  const activeProjectName = useSelector(
+    (state: RootState) => state.activeProject.projectName);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const handleAddNewProject = () => {
+    navigate("/features/onboarding");
+  };
+
+  useEffect(() => {
+    const fetchProjectTitle = async () => {
+      const projectTitle = await getCurrentProjectTitle(currentUser!.uid);
+      dispatch(setProjectName(projectTitle));
+    };
+
+    fetchProjectTitle();
+  }, [currentUser, dispatch]);
+
+  useEffect(() => {
+    if (currentUser) {
+        const fetchAndSetProjectUid = async () => {
+            const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(uid!));
+        };
+
+        fetchAndSetProjectUid();
+    }
+  }, [currentUser, activeProjectName]);
 
   useEffect(() => {
     const defaultTab: ITab = {
@@ -99,14 +132,26 @@ const Workspace = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUser) {
-      isEmailVerified().then((verified) => {
-        setEmailVerified(true);
-      });
-    } else {
-      setEmailVerified(false);
-    }
+    const checkEmailVerification = async () => {
+      if (currentUser && currentUser.uid) {
+        try {
+          const verified = await isEmailVerified(currentUser);
+          setEmailVerified(verified);
+        } catch (error) {
+        }
+      } else {
+        setEmailVerified(false);
+      }
+    };
+  
+    checkEmailVerification();
   }, [currentUser]);
+
+  const handleProjectClick = async (project: Project) => {
+    await setActiveProjectForUser(project.name, currentUser!.uid);
+
+    dispatch(setProjectName(project!.name));
+  };
 
   const handleResendClick = () => {
     if (currentUser) {
@@ -181,14 +226,23 @@ const Workspace = () => {
               variant="ghost"
               rightIcon={<ChevronDownIcon />}
             >
-              {getCurrentProjectTitle(userProjects)}
+                {activeProjectName}
             </MenuButton>
             <MenuList>
               <MenuGroup title="All projects">
                 <MenuDivider />
                 {userProjects.map((project) => (
-                  <MenuItem key={project.name}>{project.name}</MenuItem>
+                  <MenuItem 
+                    key={project.name} 
+                    onClick={() => {
+                      handleProjectClick(project);
+                    }}
+                  >
+                    {project.name}
+                  </MenuItem>
                 ))}
+                <MenuDivider />
+                <MenuItem onClick={handleAddNewProject}>+ New project</MenuItem>
               </MenuGroup>
             </MenuList>
           </Menu>

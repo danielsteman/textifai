@@ -20,9 +20,13 @@ import {
   CollectionReference,
 } from "firebase/firestore";
 import axios from "axios";
-import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { config } from "../../app/config";
 import theme from "../../app/themes/theme";
+import { setProjectId, setProjectName } from "../Workspace/projectSlice";
+import fetchProjectUid from "../../common/utils/fetchProjectId";
+import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../app/store";
 
 interface PdfMetadata {
   fileName: string;
@@ -71,7 +75,10 @@ const UploadForm: React.FC<UploadFormProps> = ({
   const [uploadStatusMessage, setUploadStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [activeProject, setActiveProject] = useState<string | null>(null);
+  const dispatch = useDispatch();
+
+  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
+  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
 
   const onDrop = useCallback((acceptedFiles: any) => {
     setFiles(acceptedFiles);
@@ -80,13 +87,15 @@ const UploadForm: React.FC<UploadFormProps> = ({
   const currentUser = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchActiveProject = async () => {
-      const projectId = await fetchProjectId(currentUser!.uid);
-      setActiveProject(projectId);
-    };
+    if (currentUser) {
+        const fetchAndSetProjectUid = async () => {
+            const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(uid!));
+        };
 
-    fetchActiveProject();
-  }, [currentUser]);
+        fetchAndSetProjectUid();
+    }
+  }, [currentUser, activeProjectName]);
 
   const acceptedFormats = { "application/pdf": [".pdf"] };
 
@@ -134,7 +143,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
       await uploadMetadataToFirestore(
         metadata,
         currentUser!.uid,
-        activeProject!,
+        activeProjectId!,
         uploadsCollection
       );
     } catch (error) {

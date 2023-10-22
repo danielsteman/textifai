@@ -4,6 +4,7 @@ import messagesReducer from "../features/Chat/messageStackSlice";
 import answersReducer from "../features/Chat/answerStackSlice";
 import pdfReducer from "../features/PdfViewer/pdfSlice";
 import tabsSlice from "../features/Workspace/tabsSlice";
+import activeProjectReducer from "../features/Workspace/projectSlice";
 import loginOrRegisterModalSlice from "../features/Authentication/loginOrRegisterModalSlice";
 
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     answers: answersReducer,
     pdf: pdfReducer,
     tabs: tabsSlice,
+    activeProject: activeProjectReducer,
     loginOrRegisterModal: loginOrRegisterModalSlice,
   },
   middleware: (getDefaultMiddleware) =>

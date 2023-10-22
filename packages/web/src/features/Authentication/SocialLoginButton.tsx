@@ -56,6 +56,7 @@ const SocialLoginButton: React.FC<SocialLoginButtonProps> = (props) => {
 
           await setDoc(userRef, userData);
         }
+        navigate("/features/workspace");
       }
 
       onClose();
