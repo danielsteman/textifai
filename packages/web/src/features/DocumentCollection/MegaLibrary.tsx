@@ -107,8 +107,8 @@ const MegaLibrary = () => {
   useEffect(() => {
     if (currentUser) {
         const fetchAndSetProjectUid = async () => {
-            const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
-            dispatch(setProjectId(uid!));
+            const projectId = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(projectId!));
         };
 
         fetchAndSetProjectUid();
@@ -177,7 +177,7 @@ const MegaLibrary = () => {
     });
   
     return () => unsubscribe();
-  }, [selectedDocuments, activeProjectId]);
+  }, [selectedDocuments, currentUser]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     if (selectedDocuments.includes(documentName)) {
