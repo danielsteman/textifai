@@ -44,11 +44,11 @@ import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
-import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
-import fetchProjectUid from "../../common/utils/fetchProjectId";
-import { setActiveProjectForUser } from "../../common/utils/updateActiveProject";
-import { isEmailVerified } from "../../common/utils/fetchVerificationStatus";
-import { resendVerificationEmail } from "../../common/utils/resendVerificationMail";
+import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
+import fetchProjectUid from "../Projects/fetchProjectId";
+import { setActiveProjectForUser } from "../Projects/updateActiveProject";
+import { isEmailVerified } from "../Authentication/fetchVerificationStatus";
+import { resendVerificationEmail } from "../Authentication/resendVerificationMail";
 import {
   activateTab,
   closeTab,
@@ -62,7 +62,7 @@ import { RootState } from "../../app/store";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/interfaces/firebase/Project";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 export type ITab = {
   name: string;
@@ -82,7 +82,7 @@ const Workspace = () => {
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
@@ -90,7 +90,8 @@ const Workspace = () => {
     (state: RootState) => state.tabs.activeTabIndex
   );
   const activeProjectName = useSelector(
-    (state: RootState) => state.activeProject.projectName);
+    (state: RootState) => state.activeProject.projectName
+  );
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -111,12 +112,12 @@ const Workspace = () => {
 
   useEffect(() => {
     if (currentUser) {
-        const fetchAndSetProjectUid = async () => {
-            const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
-            dispatch(setProjectId(uid!));
-        };
+      const fetchAndSetProjectUid = async () => {
+        const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
+        dispatch(setProjectId(uid!));
+      };
 
-        fetchAndSetProjectUid();
+      fetchAndSetProjectUid();
     }
   }, [currentUser, activeProjectName]);
 
@@ -137,13 +138,12 @@ const Workspace = () => {
         try {
           const verified = await isEmailVerified(currentUser);
           setEmailVerified(verified);
-        } catch (error) {
-        }
+        } catch (error) {}
       } else {
         setEmailVerified(false);
       }
     };
-  
+
     checkEmailVerification();
   }, [currentUser]);
 
@@ -226,14 +226,14 @@ const Workspace = () => {
               variant="ghost"
               rightIcon={<ChevronDownIcon />}
             >
-                {activeProjectName}
+              {activeProjectName}
             </MenuButton>
             <MenuList>
               <MenuGroup title="All projects">
                 <MenuDivider />
                 {userProjects.map((project) => (
-                  <MenuItem 
-                    key={project.name} 
+                  <MenuItem
+                    key={project.name}
                     onClick={() => {
                       handleProjectClick(project);
                     }}

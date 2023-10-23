@@ -22,9 +22,8 @@ import {
 import axios from "axios";
 import { config } from "../../app/config";
 import theme from "../../app/themes/theme";
-import { setProjectId, setProjectName } from "../Workspace/projectSlice";
-import fetchProjectUid from "../../common/utils/fetchProjectId";
-import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import { setProjectId } from "../Workspace/projectSlice";
+import fetchProjectUid from "../Projects/fetchProjectId";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
 
@@ -77,8 +76,12 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
   const dispatch = useDispatch();
 
-  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
-  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+  const activeProjectName = useSelector(
+    (state: RootState) => state.activeProject.projectName
+  );
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
 
   const onDrop = useCallback((acceptedFiles: any) => {
     setFiles(acceptedFiles);
@@ -88,12 +91,12 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
   useEffect(() => {
     if (currentUser) {
-        const fetchAndSetProjectUid = async () => {
-            const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
-            dispatch(setProjectId(uid!));
-        };
+      const fetchAndSetProjectUid = async () => {
+        const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
+        dispatch(setProjectId(uid!));
+      };
 
-        fetchAndSetProjectUid();
+      fetchAndSetProjectUid();
     }
   }, [currentUser, activeProjectName]);
 
