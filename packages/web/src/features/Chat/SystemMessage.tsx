@@ -17,7 +17,6 @@ import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
-// import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
@@ -59,10 +58,10 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
         gap={0}
         w="fit-content"
         minH={8}
-        alignItems="center"
+        alignItems="start"
       >
         <HStack spacing={2}>
-          <VStack spacing={0} flex="1">
+          <VStack spacing={0} flex="1" alignItems="start">
             <ReactMarkdown>{message}</ReactMarkdown>
           </VStack>
           {!menuClicked && variant === "agent" && (
