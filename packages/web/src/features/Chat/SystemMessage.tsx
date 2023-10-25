@@ -52,7 +52,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
         textColor={textColor}
         bgColor={bgColor}
         pr={variant === "agent" ? 0 : 4}
-        pl={4}
+        pl={variant === "agent" ? 8 : 4}
         py={0.5}
         rounded={8}
         gap={0}
