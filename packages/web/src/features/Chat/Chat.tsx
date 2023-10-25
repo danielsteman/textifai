@@ -232,6 +232,8 @@ const Chat = () => {
           prompt: message,
           history: updatedConversationHistory,
           option: "GeneralQa",
+          files: selectedDocuments,
+          userId: currentUser!.uid
         });
 
         setAnswerStack([...answerStack, res.data.answer]);
