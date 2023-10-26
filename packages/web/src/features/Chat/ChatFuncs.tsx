@@ -9,7 +9,6 @@ import {
   doc,
   orderBy,
   limit,
-  DocumentData,
 } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { Conversation } from "@shared/interfaces/firebase/Conversation";
@@ -147,5 +146,32 @@ export const appendToDocument = async (
     }
   } catch (error) {
     console.error("Error appending message to document:", error);
+  }
+};
+
+export const fetchConversationId = async (
+  currentUserUid: string, 
+  currentProjectUid: string): Promise<string | void> => {
+  try {
+    const conversationsCollection = collection(db, "conversations");
+    const q = query(
+      conversationsCollection,
+      where("userId", "==", currentUserUid),
+      where("projectId", "==", currentProjectUid)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const existingConversationId = querySnapshot.docs[0].id;
+      console.log("Existing conversation ID:", existingConversationId);
+      return existingConversationId;
+    } else {
+      const newConversationId = await startConversation(currentUserUid, currentProjectUid);
+      console.log("New conversation ID:", newConversationId);
+      return newConversationId;
+    }
+  } catch (error) {
+    console.error("Error fetching conversation ID:", error);
   }
 };

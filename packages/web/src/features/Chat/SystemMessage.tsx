@@ -17,7 +17,6 @@ import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
-// import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
@@ -30,11 +29,10 @@ interface SystemMessageProps {
 const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   const [menuClicked, setMenuClicked] = useState(false);
   const { colorMode } = useColorMode();
-  const { primary, tertiary, onPrimary, onTertiary, onText } = theme.colors[colorMode];
+  const { primary, tertiary, onPrimary, onTertiary } = theme.colors[colorMode];
 
   const bgColor = variant === "agent" ? tertiary : primary;
   const textColor = variant === "agent" ? onTertiary : onPrimary;
-  const textbocColor = onText;
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
@@ -54,16 +52,16 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
         textColor={textColor}
         bgColor={bgColor}
         pr={variant === "agent" ? 0 : 4}
-        pl={4}
+        pl={variant === "agent" ? 8 : 4}
         py={0.5}
         rounded={8}
         gap={0}
         w="fit-content"
         minH={8}
-        alignItems="center"
+        alignItems="start"
       >
         <HStack spacing={2}>
-          <VStack spacing={0} flex="1">
+          <VStack spacing={0} flex="1" alignItems="start">
             <ReactMarkdown>{message}</ReactMarkdown>
           </VStack>
           {!menuClicked && variant === "agent" && (

@@ -1,5 +1,5 @@
-import { Box, Flex } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { Box, Flex, Input } from "@chakra-ui/react";
+import React, { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import { getDownloadURL, StorageReference } from "firebase/storage";
 import { useDispatch } from "react-redux";
@@ -16,8 +16,15 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const [scale, setScale] = useState<number>(1);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [showInput, setShowInput] = useState(false);
+  const [userQuestion, setUserQuestion] = useState("");
+  const [isCustomHovered, setIsCustomHovered] = useState(false);
+  const [savedSelection, setSavedSelection] = useState<Range | null>(null);
 
   const dispatch = useDispatch();
+  
+  const menuRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const fetchDocumentUrl = async () => {
@@ -40,9 +47,16 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
       }
     }
     window.document.addEventListener("mousedown", handleClickOutside);
-    return () =>
+    return () => {
       window.document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
+
+  useEffect(() => {
+    if (isCustomHovered && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isCustomHovered]);
 
   const showContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -59,6 +73,13 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     }
   };
 
+  const handleCustomHover = () => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      setSavedSelection(selection.getRangeAt(0));
+    }
+  };  
+
   const handleContextMenuOption = (option: string, e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     const selection = window.getSelection();
@@ -68,13 +89,13 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     const text = selection.toString();
   
     switch (option) {
-      case 'Summarise':
+      case 'summarise':
         message = `Summarise the following piece of text: ${text}`;
         break;
-      case 'Show key points':
+      case 'key':
         message = `Show the key points of the following piece of text: ${text}`;
         break;
-      case 'Explain':
+      case 'explain':
         message = `Explain the following piece of text: ${text}`;
         break;
       default:
@@ -85,15 +106,23 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     dispatch(openChatSupport(document.name));
     setMenuVisible(false);
   };
-  
-  const menuRef = useRef<HTMLDivElement>(null);
+
+  const handleSubmitQuestion = () => {
+    let selectedText = savedSelection ? savedSelection.toString() : '';
+    const message = `${userQuestion} ${selectedText}`;
+    dispatch(setSelectedText(message));
+    dispatch(openChatSupport(document.name));
+    setMenuVisible(false);
+    setIsCustomHovered(false);
+    setUserQuestion("");
+  };  
 
   return (
     <Flex width="100%" height="100%" direction="column">
       <Box position="sticky" top="0" zIndex={1} p="0.5rem" display="flex" justifyContent="center">
-          <button onClick={() => setScale((prev) => Math.max(prev - 0.1, 0.5))}>-</button>
-          <span style={{ margin: "0 1rem" }}>{Math.round(scale * 100)}%</span>
-          <button onClick={() => setScale((prev) => Math.min(prev + 0.1, 3))}>+</button>
+        <button onClick={() => setScale((prev) => Math.max(prev - 0.1, 0.5))}>-</button>
+        <span style={{ margin: "0 1rem" }}>{Math.round(scale * 100)}%</span>
+        <button onClick={() => setScale((prev) => Math.min(prev + 0.1, 3))}>+</button>
       </Box>
 
       <Box flex="1" position="relative" overflowY="auto">
@@ -113,7 +142,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
               display="block"
               p="1rem"
               color="black"
-              onClick={(e: any) => handleContextMenuOption('Summarise', e)}
+              onClick={(e: any) => handleContextMenuOption('summarise', e)}
             >
               Summarise
             </Box>
@@ -122,7 +151,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
               display="block"
               p="1rem"
               color="black"
-              onClick={(e: any) => handleContextMenuOption('Show key points', e)}
+              onClick={(e: any) => handleContextMenuOption('key', e)}
             >
               Show key points
             </Box>
@@ -131,13 +160,63 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
               display="block"
               p="1rem"
               color="black"
-              onClick={(e: any) => handleContextMenuOption('Explain', e)}
+              onClick={(e: any) => handleContextMenuOption('explain', e)}
             >
               Explain
             </Box>
+            <Flex
+              position="relative"
+              p="1rem"
+              color="black"
+              alignItems="center"
+              direction="row"
+              onMouseEnter={() => {
+                handleCustomHover();
+                setIsCustomHovered(true);
+              }}
+              onMouseLeave={() => {
+                if (!userQuestion) {
+                  setIsCustomHovered(false);
+                  //setShowInput(false);
+                }
+              }}
+            >
+              <Box>Your own question...</Box>
+              {isCustomHovered && (
+                <Input 
+                  size="sm"
+                  ref={inputRef}
+                  value={userQuestion}
+                  autoFocus
+                  height="100%"
+                  paddingY="0" 
+                  backgroundColor="white" 
+                  border="1px solid #E2E8F0"
+                  placeholder="Type your question and hit Enter"
+                  onChange={(e) => setUserQuestion(e.target.value)}
+                  onBlur={() => {
+                    if (savedSelection && window.getSelection) {
+                      const selection = window.getSelection();
+                      selection!.removeAllRanges();
+                      selection!.addRange(savedSelection);
+                      setSavedSelection(null);
+                      if (!userQuestion) setIsCustomHovered(false);
+                    }
+                  }}                  
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSubmitQuestion();
+                    }
+                  }}
+                  position="absolute"  
+                  top="50%"  
+                  left="100%"  
+                  transform="translateY(-50%)"
+                />
+              )}
+            </Flex>
           </Box>
         )}
-
         <Box
           display="flex"
           flexDirection="column"

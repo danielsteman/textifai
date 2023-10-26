@@ -70,6 +70,8 @@ import { useNavigate } from 'react-router-dom';
 import { setProjectId, setProjectName } from "../Workspace/projectSlice";
 import fetchProjectUid from "../../common/utils/fetchProjectId";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import { setCurrentConversationId } from "../Chat/chatSlice";
+import { fetchConversationId } from "../Chat/ChatFuncs";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -179,17 +181,30 @@ const MegaLibrary = () => {
     return () => unsubscribe();
   }, [selectedDocuments, currentUser, activeProjectId]);
 
+  // useEffect(() => {
+  //   const updateConversationId = async () => {
+  //     const fetchedId = await fetchConversationId(currentUser, activeProjectId!);
+  //     console.log("Fetched conversation id: ", fetchedId)
+  //     if (fetchedId) {
+  //       dispatch(setCurrentConversationId(fetchedId));
+  //     }
+  //   };
+  
+  //   updateConversationId();
+  // }, [currentUser, dispatch]);
+
   useEffect(() => {
-    const updateConversationId = async () => {
-      const fetchedId = await fetchConversationId(currentUser, activeProject);
-      console.log("Fetched conversation id: ", fetchedId)
-      if (fetchedId) {
-        dispatch(setCurrentConversationId(fetchedId));
+    const getAndDispatchConversationId = async () => {
+      if (currentUser && activeProjectId) {
+        const conversationId = await fetchConversationId(currentUser.uid, activeProjectId);
+        if (conversationId) {
+          dispatch(setCurrentConversationId(conversationId));
+        }
       }
     };
   
-    updateConversationId();
-  }, [currentUser, dispatch]);
+    getAndDispatchConversationId();
+  }, [currentUser, activeProjectId, dispatch]);
 
   const handleDocumentCheckboxChange = (documentName: string) => {
     if (selectedDocuments.includes(documentName)) {

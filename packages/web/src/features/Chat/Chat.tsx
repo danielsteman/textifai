@@ -32,11 +32,10 @@ import {
   updateConversationDate, 
   fetchConversationId, 
 } from "./ChatFuncs";
-import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { useSelector, useDispatch } from 'react-redux';
 import { setMessages, pushMessage } from './messageStackSlice'; 
 import { setAnswers, pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
-import { setCurrentConversationId } from './chatSlice'; 
+import { setCurrentConversationId } from './chatSlice';
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -48,37 +47,24 @@ const Chat = () => {
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
-  const [activeProject, setActiveProject] = useState<string | null>(null);
-
   const messageStack = useSelector((state: RootState) => state.messages);
   const answerStack = useSelector((state: RootState) => state.answers);
   const selectedText = useSelector((state: RootState) => state.pdf.selectedText);
   const currentConversationId = useSelector((state: RootState) => state.chat.currentConversationId);
+  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // console.log("selectedText value updated: ", selectedText);
-    
-    // console.log("isProcessing state value: ", isProcessing);
     if (isProcessing) return;
     
     if (selectedText && selectedText !== lastProcessedTextRef.current) {
+      console.log("Current selected text: ", selectedText)
         setIsProcessing(true);
         handleSubmit({ preventDefault: () => {} });
     }
   }, [selectedText, isProcessing]);
-
-  useEffect(() => {
-    // console.log('Effect for currentUser triggered');
-    const fetchActiveProject = async () => {
-      const projectId = await fetchProjectId(currentUser!.uid);
-      setActiveProject(projectId);
-    };
-
-    fetchActiveProject();
-  }, [currentUser]);
-
+  
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
@@ -88,12 +74,9 @@ const Chat = () => {
   };
 
   useLayoutEffect(() => {
-    // console.log('LayoutEffect for currentConversationId triggered');
     const initializeMessages = async () => {
       if (currentConversationId) {
-        const messages = await fetchMessagesForConversation(
-          currentConversationId
-        );
+        const messages = await fetchMessagesForConversation(currentConversationId!);
         const userMessages = messages
           .filter((msg) => msg.variant === "user")
           .map((msg) => msg.messageBody);
@@ -110,88 +93,86 @@ const Chat = () => {
     initializeMessages();
   }, [currentConversationId]);
 
-  useLayoutEffect(() => {
-    // console.log('LayoutEffect for messageStack and answerStack triggered');
-    scrollToBottom();
-  }, [messageStack, answerStack]);
+  useLayoutEffect(scrollToBottom, [messageStack, answerStack]);
 
   useEffect(() => {
-    const updateConversationId = async () => {
-        const fetchedId = await fetchConversationId(currentUser, activeProject);
-
-        if (fetchedId && fetchedId !== currentConversationId) {
-            dispatch(setCurrentConversationId(fetchedId));
+    const getConversationId = async () => {
+      if (currentUser && activeProjectId) {
+        const conversationId = await fetchConversationId(currentUser.uid, activeProjectId);
+        console.log("Current conversation id: ", conversationId)
+        if (conversationId) {
+          dispatch(setCurrentConversationId(conversationId));
         }
+      }
     };
+  
+    getConversationId();
+  }, [currentUser, activeProjectId, dispatch]);
 
-    updateConversationId();
-  }, [currentUser]);
+  const handleChatAction = async (regenerate = false, pdfText?: string) => {
+    try {
+        setLoading(true);
 
-const handleChatAction = async (regenerate = false, pdfText?: string) => {
-  // console.log('handleChatAction called with', { regenerate, pdfText });
+        let requestPayload;
+        if (pdfText) {
+            console.log("Handling PdfQa Chain...");
+            dispatch(pushMessage(pdfText));
+            setMessage("");
+            requestPayload = {
+                prompt: pdfText,
+                files: selectedDocuments,
+                option: 'pdfQa',
+            };
+        } else if (regenerate) {
+            console.log("Handling Regenerate Chain...");
+            const lastSystemMessage = answerStack[answerStack.length - 1];
+            requestPayload = {
+                prompt: lastSystemMessage,
+                option: "regenerate"
+            };
+        } else {
+            console.log("Handling Regular Chain...");
+            dispatch(pushMessage(message));
+            setMessage("");
+            
+            const updatedConversationHistory = await getConversation(currentConversationId!);
+            setConversationHistory(updatedConversationHistory);
 
-  try {
-      setLoading(true);
+            requestPayload = {
+                prompt: message,
+                history: conversationHistory,
+                option: "GeneralQa",
+                files: selectedDocuments,
+                userId: currentUser!.uid
+            };
+        }
 
-      let requestPayload;
-      if (pdfText) {
-          console.log("Handling PdfQa Chain...");
-          dispatch(pushMessage(pdfText));
-          setMessage("");
-          requestPayload = {
-              prompt: pdfText,
-              option: 'pdfqa',
-          };
-      } else if (regenerate) {
-          console.log("Handling Regenerate Chain...");
-          const lastSystemMessage = answerStack[answerStack.length - 1];
-          requestPayload = {
-              prompt: lastSystemMessage,
-              option: "regenerate"
-          };
-      } else {
-          console.log("Handling Regular Chain...");
-          dispatch(pushMessage(message));
-          setMessage("");
-          
-          const updatedConversationHistory = await getConversation(currentConversationId!);
-          setConversationHistory(updatedConversationHistory);
+        const res = await axios.post("http://localhost:3001/api/chat/ask", requestPayload);
 
-          requestPayload = {
-              prompt: message,
-              history: conversationHistory,
-              option: "GeneralQa",
-              files: selectedDocuments,
-              userId: currentUser!.uid
-          };
+        if (pdfText) {
+            dispatch(pushAnswer(res.data.answer));
+            scrollToBottom();
+
+            await addMessageToCollection(pdfText, "user", currentConversationId, null);
+            await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
+            await updateConversationDate(currentConversationId!);
+
+        } else if (regenerate) {
+            dispatch(replaceLastAnswer(res.data.answer));
+        } else {
+            dispatch(pushAnswer(res.data.answer));
+            scrollToBottom();
+
+            await addMessageToCollection(message, "user", currentConversationId, null);
+            await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
+            await updateConversationDate(currentConversationId!);
+        }
+
+        setLoading(false);
+
+    } catch (error) {
+        console.error("Error in handleChatAction:", error); 
       }
-
-      const res = await axios.post("http://localhost:3001/api/chat/ask", requestPayload);
-
-      if (pdfText) {
-          dispatch(pushAnswer(res.data.answer));
-          scrollToBottom();
-
-          await addMessageToCollection(pdfText, "user", currentConversationId, null);
-          await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
-          await updateConversationDate(currentConversationId!);
-
-      } else if (regenerate) {
-          dispatch(replaceLastAnswer(res.data.answer));
-      } else {
-          dispatch(pushAnswer(res.data.answer));
-          scrollToBottom();
-
-          await addMessageToCollection(message, "user", currentConversationId, null);
-          await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
-          await updateConversationDate(currentConversationId!);
-      }
-
-      setLoading(false);
-
-  } catch (error) {
-      console.error("Error in handleChatAction:", error); 
-    }
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
