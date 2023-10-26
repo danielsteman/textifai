@@ -1,0 +1,20 @@
+{
+  "name": "@textifai/payments",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "npx tsc --build tsconfig-build.json",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\""
+  },
+  "dependencies": {
+    "stripe": "^14.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.3.1",
+    "nodemon": "^3.0.1"
+  }
+}
