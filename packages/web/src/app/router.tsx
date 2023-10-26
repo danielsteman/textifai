@@ -5,6 +5,7 @@ import Login from "./routes/Login";
 import Pricing from "./routes/Pricing";
 import LandingPage from "./routes/LandingPage";
 import PrivateRoute from "./routes/routeUtils/PrivateRoute";
+import ProjectRoute from "./routes/routeUtils/ProjectRoute";
 import Support from "./routes/Support";
 import Assistant from "./routes/Assistant";
 import Layout from "./layouts/Layout";
@@ -14,13 +15,16 @@ import WorkspacePage from "./routes/WorkspacePage";
 import CreateProject from "./routes/CreateProject";
 import PdfViewer from "./routes/PdfViewer";
 import AccountSettings from "./routes/AccountSettings";
+import EmailVerification from "./routes/VerifyEmail";
 
 export const router = createBrowserRouter([
   {
     path: "/features/workspace",
     element: (
       <PrivateRoute>
-        <WorkspacePage />
+        <ProjectRoute>
+          <WorkspacePage />
+        </ProjectRoute>
       </PrivateRoute>
     ),
   },
@@ -37,6 +41,14 @@ export const router = createBrowserRouter([
     element: (
       <PrivateRoute>
         <CreateProject />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/email-verification",
+    element: (
+      <PrivateRoute>
+        <EmailVerification />
       </PrivateRoute>
     ),
   },

@@ -1,4 +1,3 @@
-import { PlusSquareIcon } from "@chakra-ui/icons";
 import {
   Menu,
   MenuButton,
@@ -10,6 +9,7 @@ import {
   Box,
   useColorMode,
   Spacer,
+  Text,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import theme from "../../app/themes/theme";
@@ -17,7 +17,10 @@ import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
-import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
+// import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
+import { FaPlus } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 
 interface SystemMessageProps {
   message: string;
@@ -35,19 +38,12 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
-  const [activeProject, setActiveProject] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchActiveProject = async () => {
-      const projectId = await fetchProjectId(currentUser!.uid);
-      setActiveProject(projectId);
-    };
-
-    fetchActiveProject();
-  }, [currentUser]);
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
 
   const handleMenuClick = () => {
-    appendToDocument(currentUser!.uid, activeProject!, message);
+    appendToDocument(currentUser!.uid, activeProjectId!, message);
     setMenuClicked(true);
   };
 
@@ -57,16 +53,17 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       <Box
         textColor={textColor}
         bgColor={bgColor}
-        pr={variant === "agent" ? 0 : 6}
-        pl={variant === "agent" ? 6 : 4}
+        pr={variant === "agent" ? 0 : 4}
+        pl={4}
         py={0.5}
         rounded={8}
         gap={0}
         w="fit-content"
         minH={8}
+        alignItems="center"
       >
-        <HStack spacing={2} align="start">
-          <VStack align="start" spacing={0} flex="1">
+        <HStack spacing={2}>
+          <VStack spacing={0} flex="1">
             <ReactMarkdown>{message}</ReactMarkdown>
           </VStack>
           {!menuClicked && variant === "agent" && (
@@ -74,16 +71,16 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
               <MenuButton
                 as={IconButton}
                 aria-label="Options"
-                icon={<PlusSquareIcon />}
+                icon={<FaPlus />}
                 variant="ghost"
                 size="sm"
+                color={theme.colors[colorMode].onSecondary}
               />
               <MenuList>
-                <MenuItem 
-                  onClick={handleMenuClick}
-                  color={textbocColor}
-                  >
-                  Copy to Working Document
+                <MenuItem onClick={handleMenuClick}>
+                  <Text color={theme.colors[colorMode].secondary}>
+                    Copy to Working Document
+                  </Text>
                 </MenuItem>
               </MenuList>
             </Menu>

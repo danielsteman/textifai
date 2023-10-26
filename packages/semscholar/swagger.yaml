@@ -1,0 +1,14 @@
+swagger: "2.0"
+info:
+  title: Textifai API
+  description: API for retrieving academic paper references and abstracts
+  version: 1.0.0
+host: api.example.com
+basePath: /v1
+schemes:
+  - http
+paths:
+  /scholar:
+    get:
+      summary: API for retrieving academic paper references and abstracts
+      description: API for retrieving academic paper references and abstracts

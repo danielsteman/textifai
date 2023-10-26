@@ -1,12 +1,19 @@
-import { Project } from "@shared/firestoreInterfaces/Project";
+import { doc, getDoc } from "@firebase/firestore";
+import { db } from "../../app/config/firebase";
 
-export const getCurrentProjectTitle = (userProjects: Project[]) => {
-  const projectTitle = userProjects.filter(
-    (project) => project.active === true
-  );
-  if (projectTitle && projectTitle.length > 0) {
-    return projectTitle[0].name;
-  } else {
+export const getCurrentProjectTitle = async (uid: string): Promise<string> => {
+  const userDocRef = doc(db, 'users', uid);
+  const userDocSnap = await getDoc(userDocRef);
+  
+  if (!userDocSnap.exists()) {
     return "⚠️ Project title not found";
   }
+  
+  const userData = userDocSnap.data();
+  
+  if (!userData || !userData.activeProject) {
+    return "⚠️ Project title not found";
+  }
+
+  return userData.activeProject;
 };

@@ -10,8 +10,8 @@ import {
 import theme from "../themes/theme";
 import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Project } from "@shared/firestoreInterfaces/Project";
-import { Timestamp, addDoc, collection } from "firebase/firestore";
+import { Project } from "@shared/interfaces/firebase/Project";
+import { updateDoc, Timestamp, addDoc, collection, getDocs, query, where, doc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { AuthContext } from "../providers/AuthProvider";
 
@@ -29,7 +29,7 @@ const CreateProject = () => {
     description: "",
     industry: "",
   });
-
+  const [error, setError] = useState<string | null>(null);
   const currentUser = useContext(AuthContext);
 
   const onChange = (
@@ -43,23 +43,39 @@ const CreateProject = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setError(null);
     const projectsCollection = collection(db, "projects");
+
     if (currentUser) {
-      const projectData: Project = {
-        ...formData,
-        users: [currentUser?.uid],
-        creationDate: Timestamp.fromDate(new Date()),
-        active: true,
-      };
-      try {
-        const docRef = await addDoc(projectsCollection, projectData);
-        console.log("Project created with ID: ", docRef.id);
-        navigate("/features/workspace");
-      } catch (error) {
-        console.error("Error adding document: ", error);
-      }
+        const existingProjectSnapshot = await getDocs(query(projectsCollection, where("name", "==", formData.name), where("users", "array-contains", currentUser.uid)));
+        
+        if (!existingProjectSnapshot.empty) {
+            console.error("A project with this name already exists.");
+            setError("A project with this name already exists."); 
+            return;
+        }
+
+        const projectData: Project = {
+            ...formData,
+            users: [currentUser?.uid],
+            creationDate: Timestamp.fromDate(new Date()),
+        };
+
+        try {
+            const docRef = await addDoc(projectsCollection, projectData);
+            console.log("Project created with ID: ", docRef.id);
+
+            const userDocRef = doc(db, "users", currentUser?.uid); 
+            await updateDoc(userDocRef, {
+                activeProject: formData.name
+            });
+
+            navigate("/features/workspace");
+        } catch (error) {
+            console.error("Error adding document: ", error);
+        }
     } else {
-      console.error("Current user not found");
+        console.error("Current user not found");
     }
   };
 
@@ -85,7 +101,10 @@ const CreateProject = () => {
         Cancel
       </Button>
       <form>
-        <FormControl isRequired mb={gap}>
+        {/* Display the error message if it exists */}
+        {error && <div style={{ color: "red", marginBottom: '16px' }}>{error}</div>}
+        
+        <FormControl isRequired mb={gap} w={"fit-content"}>
           <FormLabel>Project name</FormLabel>
           <Input
             type="text"
@@ -93,7 +112,7 @@ const CreateProject = () => {
             onChange={(e) => onChange("name", e)}
           />
         </FormControl>
-        <FormControl mb={gap}>
+        <FormControl mb={gap} w={"fit-content"}>
           <FormLabel>Project description</FormLabel>
           <Input
             type="text"
@@ -101,7 +120,7 @@ const CreateProject = () => {
             onChange={(e) => onChange("description", e)}
           />
         </FormControl>
-        <FormControl mb={gap}>
+        <FormControl mb={gap} w={"fit-content"}>
           <FormLabel>Industry</FormLabel>
           <Input
             type="text"

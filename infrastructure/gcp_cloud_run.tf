@@ -1,7 +1,7 @@
 resource "google_cloud_run_v2_service" "service" {
   for_each = var.package_names
 
-  name     = each.value
+  name     = each.value.name
   location = var.location
   project  = google_project.default.project_id
   client   = "terraform"
@@ -9,6 +9,13 @@ resource "google_cloud_run_v2_service" "service" {
   template {
     containers {
       image = local.image_urls[each.key]
+      ports {
+        container_port = each.value.port
+      }
+      env {
+        name  = "NODE_ENV"
+        value = "production"
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import {
   Box,
@@ -44,11 +44,13 @@ import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "../Workspace/Workspace";
 import PdfViewer from "../PdfViewer/PdfViewer";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "src/app/store";
+import { RootState } from "../../app/store";
 import {
   disableDocument,
   enableDocument,
   initializeSelectedDocuments,
+  selectAllDocuments,
+  clearAllSelections,
 } from "./librarySlice";
 import {
   collection,
@@ -60,16 +62,18 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { Document } from "@shared/firestoreInterfaces/Document";
+import { Document } from "@shared/interfaces/firebase/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
-import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
 import { openTab } from "../Workspace/tabsSlice";
-import { fetchConversationId } from "../Chat/ChatFuncs";
-import { setCurrentConversationId } from "../Chat/chatSlice";
+import { useNavigate } from 'react-router-dom';
+import { setProjectId, setProjectName } from "../Workspace/projectSlice";
+import fetchProjectUid from "../../common/utils/fetchProjectId";
+import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
+  const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
@@ -82,22 +86,47 @@ const MegaLibrary = () => {
   const [customYearEnd, setCustomYearEnd] = useState<number | null>(null);
   const [isCustomRangeSelected, setIsCustomRangeSelected] = useState(false);
 
-  const [activeProject, setActiveProject] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
 
+  const didRunOnce = useRef(false);
+
+  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
+  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+
   useEffect(() => {
-    const fetchActiveProject = async () => {
-      const projectId = await fetchProjectId(currentUser!.uid);
-      setActiveProject(projectId);
+    const fetchProjectTitle = async () => {
+      const projectTitle = await getCurrentProjectTitle(currentUser!.uid);
+      dispatch(setProjectName(projectTitle));
     };
 
-    fetchActiveProject();
-  }, [currentUser]);
+    fetchProjectTitle();
+  }, [currentUser, dispatch]);
+
+  useEffect(() => {
+    if (currentUser) {
+        const fetchAndSetProjectUid = async () => {
+            const projectId = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(projectId!));
+        };
+
+        fetchAndSetProjectUid();
+    }
+  }, [currentUser, activeProjectName]);
 
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
   );
+
+  const toggleAllDocuments = () => {
+    if (selectedDocuments.length === documents.length) {
+      dispatch(clearAllSelections());
+    } else {
+      const allDocumentNames = documents.map((doc) => doc.uploadName);
+      dispatch(selectAllDocuments(allDocumentNames));
+    }
+  };
 
   const {
     isOpen: isDeleteFileOpen,
@@ -118,33 +147,37 @@ const MegaLibrary = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (documents.length > 0 && selectedDocuments.length === 0) {
+    if (!didRunOnce.current && documents.length > 0) {
       const allUploadNames = documents.map((doc) => doc.uploadName);
       dispatch(initializeSelectedDocuments(allUploadNames));
+      didRunOnce.current = true;
     }
-  }, [documents, dispatch, selectedDocuments]);
+  }, [documents, dispatch]);
 
   useEffect(() => {
     const documentsCollection = collection(db, "uploads");
     const q = query(
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
-
+  
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedDocuments: Document[] = [];
       snapshot.forEach((doc) => {
         fetchedDocuments.push(doc.data() as Document);
       });
       setDocuments(fetchedDocuments);
+  
+      if (documents.length === 0 && fetchedDocuments.length === 0) {
+        onUploadFileOpen();
+      }
     });
-
+  
     return () => unsubscribe();
-  }, [selectedDocuments, activeProject]);
+  }, [selectedDocuments, currentUser, activeProjectId]);
 
   useEffect(() => {
     const updateConversationId = async () => {
@@ -177,7 +210,7 @@ const MegaLibrary = () => {
   };
 
   const handleDeleteDocument = async () => {
-    selectedDocuments.map(async (fullPath) => {
+    selectedDocuments.map(async (fullPath?) => {
       const documentRef = ref(
         storage,
         `users/${currentUser?.uid}/uploads/${fullPath}`
@@ -189,7 +222,7 @@ const MegaLibrary = () => {
         documentsCollection,
         where("uploadedBy", "==", currentUser!.uid),
         where("uploadName", "==", fullPath),
-        where("projectId", "==", activeProject)
+        where("projectId", "==", activeProjectId)
       );
 
       // 1. Delete from Firestore
@@ -237,7 +270,7 @@ const MegaLibrary = () => {
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
 
     getDocs(q)
@@ -262,7 +295,7 @@ const MegaLibrary = () => {
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
 
     getDocs(q)
@@ -296,7 +329,7 @@ const MegaLibrary = () => {
       documentsCollection,
       where("uploadedBy", "==", currentUser!.uid),
       where("uploadName", "==", fileName),
-      where("projectId", "==", activeProject)
+      where("projectId", "==", activeProjectId)
     );
 
     getDocs(q)
@@ -339,7 +372,7 @@ const MegaLibrary = () => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.error(`Error parsing topics: ${error.message}`);
+        console.warn(`Error parsing topics: ${error.message}`);
       } else {
         console.error("An unknown error occurred while parsing topics.");
       }
@@ -513,30 +546,31 @@ const MegaLibrary = () => {
           </Button>
           <Box h={4} />
           <Heading size="xs">Collections</Heading>
-          {allCollections.map((collection, index) => (
-            <Button
-              key={index}
-              bgColor={
-                collectionFilter === collection
-                  ? theme.colors[colorMode].onPrimary
-                  : undefined
-              }
-              variant="ghost"
-              size="xs"
-              textColor={theme.colors[colorMode].onSurface}
-              onClick={() => {
-                if (collectionFilter === collection) {
-                  setCollectionFilter(null);
-                } else {
-                  setCollectionFilter(collection);
+          {allCollections
+            .filter((collection) => collection && collection.trim() !== "")
+            .map((collection, index) => (
+              <Button
+                key={index}
+                bgColor={
+                  collectionFilter === collection
+                    ? theme.colors[colorMode].onPrimary
+                    : undefined
                 }
-              }}
-            >
-              {collection}
-            </Button>
-          ))}
+                variant="ghost"
+                size="xs"
+                textColor={theme.colors[colorMode].onSurface}
+                onClick={() => {
+                  if (collectionFilter === collection) {
+                    setCollectionFilter(null);
+                  } else {
+                    setCollectionFilter(collection);
+                  }
+                }}
+              >
+                {collection}
+              </Button>
+            ))}
           <Box h={4} />
-          <Heading size="xs">Projects</Heading>
           <Spacer />
           <Button
             textColor={theme.colors[colorMode].onTertiaryContainer}
@@ -544,6 +578,7 @@ const MegaLibrary = () => {
             size="sm"
             leftIcon={<FaRocket />}
             borderRadius={100}
+            onClick={() => navigate("/features/onboarding")}
           >
             New project
           </Button>
@@ -571,11 +606,14 @@ const MegaLibrary = () => {
           </Button>
           <Modal isOpen={isUploadFileOpen} onClose={onUploadFileClose}>
             <ModalOverlay />
-            <ModalContent>
+            <ModalContent position="fixed" top="20%">
               <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <UploadForm onUploadComplete={handleUploadComplete} />
+                <UploadForm
+                  onUploadComplete={handleUploadComplete}
+                  dropZoneText="Uploaded files will appear in your personal library"
+                />
               </ModalBody>
             </ModalContent>
           </Modal>
@@ -657,11 +695,16 @@ const MegaLibrary = () => {
         </HStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1} overflow="auto">
-        <TableContainer>
+        <TableContainer width="100%">
           <Table size="sm">
             <Thead>
               <Tr>
-                <Th />
+                <Th>
+                  <Checkbox
+                    isChecked={selectedDocuments.length === documents.length}
+                    onChange={toggleAllDocuments}
+                  />
+                </Th>
                 <Th>Title</Th>
                 <Th>Author(s)</Th>
                 <Th isNumeric>Year</Th>
@@ -690,7 +733,7 @@ const MegaLibrary = () => {
                     let matchesCollection =
                       !collectionFilter ||
                       (doc.tags && doc.tags.includes(collectionFilter));
-                    let matchesProject = activeProject;
+                    //let matchesProject = activeProject;
                     let matchesFavorites = onlyFavoritesFilter
                       ? !!doc.favoritedBy
                       : true;
@@ -698,7 +741,7 @@ const MegaLibrary = () => {
                       matchesQuery &&
                       matchesYear &&
                       matchesCollection &&
-                      matchesProject &&
+                      //matchesProject &&
                       matchesFavorites
                     );
                   })
@@ -751,7 +794,11 @@ const MegaLibrary = () => {
                       <Td textAlign="center">
                         <Icon
                           as={FaStar}
-                          color={doc.favoritedBy ? "teal" : "none"}
+                          color={
+                            doc.favoritedBy
+                              ? theme.colors[colorMode].primary
+                              : "none"
+                          }
                           onClick={() =>
                             toggleFavourite(doc.uploadName, !doc.favoritedBy)
                           }

@@ -24,26 +24,31 @@ import {
   MenuList,
   MenuButton,
   MenuGroup,
+  Text,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  MenuDivider,
 } from "@chakra-ui/react";
-import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
 import EditorPanel from "../../features/Workspace/panels/EditorPanel";
-import {
-  FaBook,
-  FaBookOpen,
-  FaEdit,
-  FaFilePdf,
-  FaRegFilePdf,
-} from "react-icons/fa";
+import { FaBook, FaBookOpen, FaEdit, FaRegFilePdf } from "react-icons/fa";
 import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
-import PdfViewerPanel from "./panels/PdfViewerPanel";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import fetchProjectUid from "../../common/utils/fetchProjectId";
+import { setActiveProjectForUser } from "../../common/utils/updateActiveProject";
+import { isEmailVerified } from "../../common/utils/fetchVerificationStatus";
+import { resendVerificationEmail } from "../../common/utils/resendVerificationMail";
 import {
   activateTab,
   closeTab,
@@ -54,6 +59,10 @@ import {
 } from "./tabsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
+import { AuthContext } from "../../app/providers/AuthProvider";
+import { setProjectId, setProjectName } from "./projectSlice";
+import { Project } from "@shared/interfaces/firebase/Project";
+import { useNavigate } from "react-router-dom"; 
 
 export type ITab = {
   name: string;
@@ -67,18 +76,49 @@ export type ITab = {
 const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [emailVerified, setEmailVerified] = useState<boolean>(false);
+  const [mailResent, setMailResent] = useState(false);
 
+  const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
+
+  const navigate = useNavigate()
 
   const dispatch = useDispatch();
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
   const activeTabIndex = useSelector(
     (state: RootState) => state.tabs.activeTabIndex
   );
+  const activeProjectName = useSelector(
+    (state: RootState) => state.activeProject.projectName);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const handleAddNewProject = () => {
+    navigate("/features/onboarding");
+  };
+
+  useEffect(() => {
+    const fetchProjectTitle = async () => {
+      const projectTitle = await getCurrentProjectTitle(currentUser!.uid);
+      dispatch(setProjectName(projectTitle));
+    };
+
+    fetchProjectTitle();
+  }, [currentUser, dispatch]);
+
+  useEffect(() => {
+    if (currentUser) {
+        const fetchAndSetProjectUid = async () => {
+            const uid = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(uid!));
+        };
+
+        fetchAndSetProjectUid();
+    }
+  }, [currentUser, activeProjectName]);
 
   useEffect(() => {
     const defaultTab: ITab = {
@@ -91,8 +131,77 @@ const Workspace = () => {
     dispatch(openTab(defaultTab));
   }, []);
 
+  useEffect(() => {
+    const checkEmailVerification = async () => {
+      if (currentUser && currentUser.uid) {
+        try {
+          const verified = await isEmailVerified(currentUser);
+          setEmailVerified(verified);
+        } catch (error) {
+        }
+      } else {
+        setEmailVerified(false);
+      }
+    };
+  
+    checkEmailVerification();
+  }, [currentUser]);
+
+  const handleProjectClick = async (project: Project) => {
+    await setActiveProjectForUser(project.name, currentUser!.uid);
+
+    dispatch(setProjectName(project!.name));
+  };
+
+  const handleResendClick = () => {
+    if (currentUser) {
+      resendVerificationEmail(currentUser);
+      setMailResent(true);
+    }
+  };
+
   return (
     <HStack h="100%">
+      {!emailVerified && (
+        <Modal isOpen={!emailVerified} onClose={() => {}} isCentered size="md">
+          <ModalOverlay />
+          <ModalContent
+            bgColor={theme.colors[colorMode].secondaryContainer}
+            borderRadius="md"
+          >
+            <ModalHeader
+              textColor={theme.colors[colorMode].onSecondaryContainer}
+            >
+              Verify your email
+            </ModalHeader>
+            <ModalBody>
+              <Text mb={4}>
+                We have sent an email to{" "}
+                <span style={{ fontWeight: "bold" }}>{currentUser!.email}</span>
+                .
+                <br />
+                <br />
+                If you have not received the verification mail, please check
+                your "Spam" folder. You can also click the resend button below
+                to have another email sent to you.
+              </Text>
+            </ModalBody>
+            <ModalFooter justifyContent="flex-start">
+              <Button
+                colorScheme={theme.colors[colorMode].onSecondaryContainer}
+                textColor={theme.colors[colorMode].onSecondaryContainer}
+                onClick={handleResendClick}
+                p={0}
+                isDisabled={mailResent}
+              >
+                {mailResent
+                  ? "Just resent another verification mail"
+                  : "Resend verification mail"}
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
       {isMenuOpen && (
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}
@@ -117,13 +226,23 @@ const Workspace = () => {
               variant="ghost"
               rightIcon={<ChevronDownIcon />}
             >
-              {getCurrentProjectTitle(userProjects)}
+                {activeProjectName}
             </MenuButton>
             <MenuList>
               <MenuGroup title="All projects">
+                <MenuDivider />
                 {userProjects.map((project) => (
-                  <MenuItem key={project.name}>{project.name}</MenuItem>
+                  <MenuItem 
+                    key={project.name} 
+                    onClick={() => {
+                      handleProjectClick(project);
+                    }}
+                  >
+                    {project.name}
+                  </MenuItem>
                 ))}
+                <MenuDivider />
+                <MenuItem onClick={handleAddNewProject}>+ New project</MenuItem>
               </MenuGroup>
             </MenuList>
           </Menu>
@@ -133,7 +252,7 @@ const Workspace = () => {
             aria-label={"editor"}
             leftIcon={<FaEdit />}
             variant="ghost"
-            size="sm"
+            size="md"
             onClick={() => {
               const tab = {
                 name: "Editor",
@@ -153,7 +272,7 @@ const Workspace = () => {
             aria-label={"chat"}
             leftIcon={<ChatIcon />}
             variant="ghost"
-            size="sm"
+            size="md"
             onClick={() => {
               const tab: ITab = {
                 name: "Chat",
@@ -173,7 +292,7 @@ const Workspace = () => {
             aria-label={"documents"}
             leftIcon={<FaBook />}
             variant="ghost"
-            size="sm"
+            size="md"
             onClick={() => {
               const tab: ITab = {
                 name: "Library",
@@ -186,26 +305,6 @@ const Workspace = () => {
             }}
           >
             Library
-          </Button>
-          <Button
-            w="100%"
-            justifyContent="flex-start"
-            aria-label={"documents"}
-            leftIcon={<FaFilePdf />}
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              const tab: ITab = {
-                name: "PdfViewer",
-                panel: <PdfViewerPanel />,
-                openChatSupport: false,
-                openMiniLibrary: false,
-                openPdfViewer: false,
-              };
-              dispatch(openTab(tab));
-            }}
-          >
-            Pdf Viewer
           </Button>
           <Spacer />
           <Divider />
@@ -263,20 +362,6 @@ const Workspace = () => {
               const tab: ITab = {
                 name: "Library",
                 panel: <MegaLibraryPanel />,
-                openChatSupport: false,
-                openMiniLibrary: false,
-                openPdfViewer: false,
-              };
-              dispatch(openTab(tab));
-            }}
-          />
-          <IconButton
-            aria-label={"Pdf Viewer"}
-            icon={<FaFilePdf />}
-            onClick={() => {
-              const tab: ITab = {
-                name: "PdfViewer",
-                panel: <PdfViewerPanel />,
                 openChatSupport: false,
                 openMiniLibrary: false,
                 openPdfViewer: false,

@@ -4,6 +4,7 @@ import styled from "styled-components";
 const StyledQuillEditor = styled(ReactQuill)<{
   editorBackgroundColor?: string;
   toolbarBackgroundColor?: string;
+  toolbarButtonIconColor?: string;
   textColor?: string;
 }>`
   .react-quill {
@@ -39,7 +40,43 @@ const StyledQuillEditor = styled(ReactQuill)<{
   .ql-editor {
     max-height: 100%;
     overflow: auto;
-    color: ${(props) => props.textColor};
+    color: ${(props) => props.textColor} !important;
+  }
+
+  .ql-toolbar .ql-stroke {
+    fill: none;
+    stroke: #c4c7c6;
+  }
+
+  .ql-toolbar .ql-fill {
+    fill: #c4c7c6;
+    stroke: none;
+  }
+
+  .ql-toolbar .ql-picker {
+    color: #c4c7c6;
+  }
+
+  button:hover .ql-stroke,
+  .ql-picker-label:hover .ql-stroke {
+    fill: none;
+    stroke: #3cdccf !important;
+  }
+
+  .ql-active .ql-stroke {
+    fill: none;
+    stroke: #3cdccf !important;
+  }
+
+  button:hover .ql-fill,
+  .ql-picker-label:hover .ql-fill {
+    fill: #3cdccf !important;
+    stroke: none;
+  }
+
+  .ql-active .ql-fill {
+    fill: #3cdccf !important;
+    stroke: none;
   }
 `;
 

@@ -92,3 +92,14 @@ Workflow TODO: add pre-commit hooks - Protect main branch
 Deployment TODO: create Dockerfiles
 
 Workflow TODO: build and push docker images to GCR in pipeline
+
+Add Terraform job in build pipeline to taint the cloud run services. Checkout `tfci`.
+
+```
+docker run -it --rm \
+  -e "TF_HOSTNAME" \
+  -e "TF_API_TOKEN" \
+  -e "TF_CLOUD_ORGANIZATION" \
+  hashicorp/tfci:latest \
+  tfci run show --help
+```

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { User as FirebaseUser } from "firebase/auth";
 import { auth } from "../config/firebase";
-import { Spinner } from "@chakra-ui/react";
+import LoadingScreen from "../../common/components/LoadingScreen";
 
 interface Props {
   children: React.ReactNode;
@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
   if (loading) {
-    return <Spinner />;
+    return <LoadingScreen />;
   }
 
   return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;

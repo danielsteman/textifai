@@ -58,7 +58,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: packages/web/Dockerfile
-          push: true
+          push: false
           build-args: |
             FIREBASE_APIKEY=${{ secrets.FIREBASE_APIKEY }}
             FIREBASE_AUTHDOMAIN=${{ secrets.FIREBASE_AUTHDOMAIN }}
@@ -75,7 +75,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: packages/documents/Dockerfile
-          push: true
+          push: false
           build-args: |
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
@@ -90,7 +90,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: packages/chat/Dockerfile
-          push: true
+          push: false
           build-args: |
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
