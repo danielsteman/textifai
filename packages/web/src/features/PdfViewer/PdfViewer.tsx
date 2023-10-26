@@ -1,5 +1,5 @@
-import { Box, Flex, Input } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
+import { Box, Flex, Input } from "@chakra-ui/react";
 import { Document, Page } from "react-pdf";
 import { getDownloadURL, StorageReference } from "firebase/storage";
 import { useDispatch } from "react-redux";
@@ -16,17 +16,18 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const [scale, setScale] = useState<number>(1);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  const [showInput, setShowInput] = useState(false);
   const [userQuestion, setUserQuestion] = useState("");
   const [isCustomHovered, setIsCustomHovered] = useState(false);
   const [savedSelection, setSavedSelection] = useState<Range | null>(null);
 
   const dispatch = useDispatch();
-  
   const menuRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const pdfContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (!document) return;
+    
     const fetchDocumentUrl = async () => {
       try {
         const pdfDownloadURL = await getDownloadURL(document);
@@ -35,9 +36,8 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         console.error("Error fetching PDF URL", error);
       }
     };
-    if (document) {
-      fetchDocumentUrl();
-    }
+    
+    fetchDocumentUrl();
   }, [document]);
 
   useEffect(() => {
@@ -47,9 +47,8 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
       }
     }
     window.document.addEventListener("mousedown", handleClickOutside);
-    return () => {
+    return () =>
       window.document.removeEventListener("mousedown", handleClickOutside);
-    };
   }, []);
 
   useEffect(() => {
@@ -58,19 +57,47 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     }
   }, [isCustomHovered]);
 
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      // Check if Ctrl or Cmd key is pressed during the scroll
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault(); // prevent the default zooming behavior of some browsers
+
+        // Determine zoom direction: + for zoom in, - for zoom out
+        const direction = e.deltaY < 0 ? 0.1 : -0.1;
+
+        setScale(prev => {
+          const newScale = prev + direction;
+          return newScale < 0.5 ? 0.5 : newScale > 3 ? 3 : newScale; // Make sure to stay within your min and max scale boundaries
+        });
+      }
+    };
+
+    // Add event listener to the container
+    const container = pdfContainerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel);
+    }
+
+    // Cleanup event listener on unmount
+    return () => {
+      if (container) {
+        container.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, []);
+
   const showContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
     const selection = window.getSelection();
-
-    if (selection && selection.toString().trim() !== "") {
-      setMenuPosition({
-        x: (event.clientX + window.scrollX) / scale,
-        y: (event.clientY + window.scrollY) / scale,
-      });
-      setMenuVisible(true);
-    } else {
-      setMenuVisible(false);
-    }
+    
+    if (!selection || selection.toString().trim() === "") return;
+    
+    setMenuPosition({
+      x: (event.clientX + window.scrollX) / scale,
+      y: (event.clientY + window.scrollY) / scale,
+    });
+    setMenuVisible(true);
   };
 
   const handleCustomHover = () => {
@@ -78,16 +105,16 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     if (selection && selection.rangeCount > 0) {
       setSavedSelection(selection.getRangeAt(0));
     }
-  };  
+  };
 
   const handleContextMenuOption = (option: string, e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     const selection = window.getSelection();
     if (!selection) return;
-  
-    let message = '';
+
     const text = selection.toString();
-  
+    let message = '';
+
     switch (option) {
       case 'summarise':
         message = `Summarise the following piece of text: ${text}`;
@@ -102,20 +129,22 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         console.error('Invalid option');
         return;
     }
+
     dispatch(setSelectedText(message));
     dispatch(openChatSupport(document.name));
     setMenuVisible(false);
   };
 
   const handleSubmitQuestion = () => {
-    let selectedText = savedSelection ? savedSelection.toString() : '';
+    const selectedText = savedSelection ? savedSelection.toString() : '';
     const message = `${userQuestion} ${selectedText}`;
+    
     dispatch(setSelectedText(message));
     dispatch(openChatSupport(document.name));
     setMenuVisible(false);
     setIsCustomHovered(false);
     setUserQuestion("");
-  };  
+  };
 
   return (
     <Flex width="100%" height="100%" direction="column">
@@ -223,6 +252,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
           alignItems="center"
           height="100%"
           overflow="auto"
+          ref={pdfContainerRef}
         >
           {pdfURL && (
             <Document
