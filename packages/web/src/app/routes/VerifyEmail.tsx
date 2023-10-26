@@ -1,11 +1,20 @@
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Text, Button } from "@chakra-ui/react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Text,
+  Button,
+} from "@chakra-ui/react";
 import { useColorMode } from "@chakra-ui/react";
 import theme from "../../app/themes/theme";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../app/providers/AuthProvider";
-import { resendVerificationEmail } from "../../common/utils/resendVerificationMail";
-import { handleOOBCode } from "../../common/utils/updateEmailVerification"; 
+import { resendVerificationEmail } from "../../features/Authentication/resendVerificationMail";
+import { handleOOBCode } from "../../features/Authentication/updateEmailVerification";
 
 const EmailVerification = () => {
   const { colorMode } = useColorMode();
@@ -18,26 +27,27 @@ const EmailVerification = () => {
     if (currentUser) {
       resendVerificationEmail(currentUser);
       setMailResent(true);
-    }
-    else {
-      console.warn("Failed to send verification email because there is no logged in user")
+    } else {
+      console.warn(
+        "Failed to send verification email because there is no logged in user"
+      );
     }
   };
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const oobCode = queryParams.get('oobCode');
+  const oobCode = queryParams.get("oobCode");
 
   useEffect(() => {
     if (oobCode) {
-        (async () => {
-            const isSuccess = await handleOOBCode(oobCode);
-            if (isSuccess) {
-                navigate('/features/onboarding');
-            }
-        })();
+      (async () => {
+        const isSuccess = await handleOOBCode(oobCode);
+        if (isSuccess) {
+          navigate("/features/onboarding");
+        }
+      })();
     }
-}, [oobCode, navigate]);
+  }, [oobCode, navigate]);
 
   return (
     <Modal isOpen={true} onClose={() => {}} isCentered size="md">
@@ -51,9 +61,11 @@ const EmailVerification = () => {
         </ModalHeader>
         <ModalBody>
           <Text mb={4}>
-            We have sent an email to <span style={{ fontWeight: "bold" }}>{currentUser!.email}</span>. 
-            If you have not received the verification mail, please check your "Spam" folder. 
-            You can also click the resend button below to have another email sent to you.
+            We have sent an email to{" "}
+            <span style={{ fontWeight: "bold" }}>{currentUser!.email}</span>. If
+            you have not received the verification mail, please check your
+            "Spam" folder. You can also click the resend button below to have
+            another email sent to you.
           </Text>
         </ModalBody>
         <ModalFooter justifyContent="flex-start">
@@ -64,12 +76,14 @@ const EmailVerification = () => {
             p={0}
             isDisabled={mailResent}
           >
-            {mailResent ? "Just resent another verification mail" : "Resend verification mail"}
+            {mailResent
+              ? "Just resent another verification mail"
+              : "Resend verification mail"}
           </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
   );
-}
+};
 
 export default EmailVerification;

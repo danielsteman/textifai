@@ -13,4 +13,4 @@ export interface User {
   isActive: boolean;
   projects: string[];
   activeProject?: string;
-};
+}
