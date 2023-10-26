@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { StripeContext } from "src/app/providers/StripeProvider";
+import { StripeContext } from "../../app/providers/StripeProvider";
 
 interface PaymentIntent {
   errorMessage?: string;
