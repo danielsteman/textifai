@@ -19,6 +19,7 @@
     "@emotion/styled": "^11.10.6",
     "@pinecone-database/pinecone": "^0.1.6",
     "@reduxjs/toolkit": "^1.9.5",
+    "@stripe/stripe-js": "^2.1.10",
     "@types/pdfjs-dist": "^2.10.378",
     "@types/react-redux": "^7.1.25",
     "@types/uuid": "^9.0.1",

@@ -9,7 +9,6 @@ The Stripe API key can be found [here](https://dashboard.stripe.com/apikeys).
 ```
 STRIPE_PUBLISHABLE_KEY
 STRIPE_SECRET_KEY
-STATIC_DIR
 STRIPE_WEBHOOK_SECRET
 ```
 

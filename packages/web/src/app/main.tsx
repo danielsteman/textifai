@@ -9,6 +9,7 @@ import { router } from "./router";
 import { ProjectProvider } from "./providers/ProjectProvider";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { StripeProvider } from "./providers/StripeProvider";
 
 if (!localStorage.getItem("chakra-ui-color-mode-default")) {
   localStorage.setItem("chakra-ui-color-mode", "dark");
@@ -19,9 +20,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <Provider store={store}>
     <ChakraProvider theme={theme}>
       <AuthProvider>
-        <ProjectProvider>
-          <RouterProvider router={router} />
-        </ProjectProvider>
+        <StripeProvider>
+          <ProjectProvider>
+            <RouterProvider router={router} />
+          </ProjectProvider>
+        </StripeProvider>
       </AuthProvider>
     </ChakraProvider>
   </Provider>
