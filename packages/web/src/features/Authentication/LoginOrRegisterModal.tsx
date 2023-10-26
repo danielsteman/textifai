@@ -14,7 +14,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useDisclosure,
   VStack,
   Spinner,
   Text,
@@ -22,9 +21,6 @@ import {
   Divider,
   Flex,
   useColorMode,
-  Link,
-  HStack,
-  Box,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,

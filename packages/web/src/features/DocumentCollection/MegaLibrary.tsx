@@ -66,10 +66,10 @@ import { Document } from "@shared/interfaces/firebase/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
 import { openTab } from "../Workspace/tabsSlice";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { setProjectId, setProjectName } from "../Workspace/projectSlice";
-import fetchProjectUid from "../../common/utils/fetchProjectId";
-import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import fetchProjectUid from "../Projects/fetchProjectId";
+import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -92,8 +92,12 @@ const MegaLibrary = () => {
 
   const didRunOnce = useRef(false);
 
-  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
-  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+  const activeProjectName = useSelector(
+    (state: RootState) => state.activeProject.projectName
+  );
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
 
   useEffect(() => {
     const fetchProjectTitle = async () => {
@@ -106,12 +110,15 @@ const MegaLibrary = () => {
 
   useEffect(() => {
     if (currentUser) {
-        const fetchAndSetProjectUid = async () => {
-            const projectId = await fetchProjectUid(currentUser.uid, activeProjectName!);
-            dispatch(setProjectId(projectId!));
-        };
+      const fetchAndSetProjectUid = async () => {
+        const projectId = await fetchProjectUid(
+          currentUser.uid,
+          activeProjectName!
+        );
+        dispatch(setProjectId(projectId!));
+      };
 
-        fetchAndSetProjectUid();
+      fetchAndSetProjectUid();
     }
   }, [currentUser, activeProjectName]);
 
@@ -163,19 +170,19 @@ const MegaLibrary = () => {
       where("uploadedBy", "==", currentUser!.uid),
       where("projectId", "==", activeProjectId)
     );
-  
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedDocuments: Document[] = [];
       snapshot.forEach((doc) => {
         fetchedDocuments.push(doc.data() as Document);
       });
       setDocuments(fetchedDocuments);
-  
+
       if (documents.length === 0 && fetchedDocuments.length === 0) {
         onUploadFileOpen();
       }
     });
-  
+
     return () => unsubscribe();
   }, [selectedDocuments, currentUser, activeProjectId]);
 

@@ -11,7 +11,16 @@ import theme from "../themes/theme";
 import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Project } from "@shared/interfaces/firebase/Project";
-import { updateDoc, Timestamp, addDoc, collection, getDocs, query, where, doc } from "firebase/firestore";
+import {
+  updateDoc,
+  Timestamp,
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+} from "firebase/firestore";
 import { db } from "../config/firebase";
 import { AuthContext } from "../providers/AuthProvider";
 
@@ -47,35 +56,41 @@ const CreateProject = () => {
     const projectsCollection = collection(db, "projects");
 
     if (currentUser) {
-        const existingProjectSnapshot = await getDocs(query(projectsCollection, where("name", "==", formData.name), where("users", "array-contains", currentUser.uid)));
-        
-        if (!existingProjectSnapshot.empty) {
-            console.error("A project with this name already exists.");
-            setError("A project with this name already exists."); 
-            return;
-        }
+      const existingProjectSnapshot = await getDocs(
+        query(
+          projectsCollection,
+          where("name", "==", formData.name),
+          where("users", "array-contains", currentUser.uid)
+        )
+      );
 
-        const projectData: Project = {
-            ...formData,
-            users: [currentUser?.uid],
-            creationDate: Timestamp.fromDate(new Date()),
-        };
+      if (!existingProjectSnapshot.empty) {
+        console.error("A project with this name already exists.");
+        setError("A project with this name already exists.");
+        return;
+      }
 
-        try {
-            const docRef = await addDoc(projectsCollection, projectData);
-            console.log("Project created with ID: ", docRef.id);
+      const projectData: Project = {
+        ...formData,
+        users: [currentUser?.uid],
+        creationDate: Timestamp.fromDate(new Date()),
+      };
 
-            const userDocRef = doc(db, "users", currentUser?.uid); 
-            await updateDoc(userDocRef, {
-                activeProject: formData.name
-            });
+      try {
+        const docRef = await addDoc(projectsCollection, projectData);
+        console.log("Project created with ID: ", docRef.id);
 
-            navigate("/features/workspace");
-        } catch (error) {
-            console.error("Error adding document: ", error);
-        }
+        const userDocRef = doc(db, "users", currentUser?.uid);
+        await updateDoc(userDocRef, {
+          activeProject: formData.name,
+        });
+
+        navigate("/features/workspace");
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
     } else {
-        console.error("Current user not found");
+      console.error("Current user not found");
     }
   };
 
@@ -101,9 +116,9 @@ const CreateProject = () => {
         Cancel
       </Button>
       <form>
-        {/* Display the error message if it exists */}
-        {error && <div style={{ color: "red", marginBottom: '16px' }}>{error}</div>}
-        
+        {error && (
+          <div style={{ color: "red", marginBottom: "16px" }}>{error}</div>
+        )}
         <FormControl isRequired mb={gap} w={"fit-content"}>
           <FormLabel>Project name</FormLabel>
           <Input
