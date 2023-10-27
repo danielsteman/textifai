@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import libraryReducer from "../features/DocumentCollection/librarySlice";
 import messagesReducer from "../features/Chat/messageStackSlice";
 import answersReducer from "../features/Chat/answerStackSlice";
+import chatReducer from "../features/Chat/chatSlice";
 import pdfReducer from "../features/PdfViewer/pdfSlice";
 import tabsSlice from "../features/Workspace/tabsSlice";
 import activeProjectReducer from "../features/Workspace/projectSlice";
@@ -14,6 +15,7 @@ export const store = configureStore({
     answers: answersReducer,
     pdf: pdfReducer,
     tabs: tabsSlice,
+    chat: chatReducer,
     activeProject: activeProjectReducer,
     loginOrRegisterModal: loginOrRegisterModalSlice,
   },

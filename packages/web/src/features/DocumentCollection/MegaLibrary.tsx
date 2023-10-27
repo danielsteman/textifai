@@ -35,7 +35,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { db, storage } from "../../app/config/firebase";
-import { deleteObject, ref } from "firebase/storage";
+import { ref } from "firebase/storage";
 import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
 import { MdUpload } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
@@ -46,30 +46,36 @@ import PdfViewer from "../PdfViewer/PdfViewer";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
 import {
-  disableDocument,
-  enableDocument,
   initializeSelectedDocuments,
   selectAllDocuments,
   clearAllSelections,
+  disableDocument,
+  enableDocument,
 } from "./librarySlice";
 import {
   collection,
-  deleteDoc,
-  doc,
-  getDocs,
   onSnapshot,
   query,
-  updateDoc,
   where,
 } from "firebase/firestore";
 import { Document } from "@shared/interfaces/firebase/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
 import { openTab } from "../Workspace/tabsSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { setProjectId, setProjectName } from "../Workspace/projectSlice";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
+import { setCurrentConversationId } from "../Chat/chatSlice";
+import { fetchConversationId } from "../Chat/ChatFuncs";
+import { 
+  handleDeleteDocument, 
+  addCollectionToDocument, 
+  deleteCollectionFromDocument, 
+  parseTopics, 
+  toggleFavourite, 
+  handleUploadComplete
+} from "./libraryFuncs";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -78,6 +84,7 @@ const MegaLibrary = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
   const [yearFilter, setYearFilter] = useState<number | null>(null);
+  const [documentLoading, setDocumentLoading] = useState(true);
 
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
   const [onlyFavoritesFilter, setOnlyFavoritesFilter] =
@@ -92,12 +99,53 @@ const MegaLibrary = () => {
 
   const didRunOnce = useRef(false);
 
-  const activeProjectName = useSelector(
-    (state: RootState) => state.activeProject.projectName
+  const selectedDocuments = useSelector(
+    (state: RootState) => state.library.selectedDocuments
   );
-  const activeProjectId = useSelector(
-    (state: RootState) => state.activeProject.projectId
+  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
+  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+
+  const allCollections = Array.from(
+    new Set(documents.flatMap((doc) => doc.tags))
   );
+
+  const handleOpenDocumentInTab = async (uploadName: string) => {
+    const storageLocation = `users/${currentUser?.uid}/uploads/${uploadName}`;
+    const fileRef = ref(storage, storageLocation);
+
+    const tab: ITab = {
+      name: uploadName,
+      panel: <PdfViewer document={fileRef} />,
+      openChatSupport: false,
+      openMiniLibrary: false,
+      openPdfViewer: false,
+    };
+    dispatch(openTab(tab));
+    dispatch(initializeSelectedDocuments([tab.name]));
+  };
+
+  const handleChangeDocumentQuery = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setDocumentQuery(e.target.value);
+  };
+
+  const handleDocumentCheckboxChange = (documentName: string) => {
+    if (selectedDocuments.includes(documentName)) {
+      dispatch(disableDocument(documentName));
+    } else {
+      dispatch(enableDocument(documentName));
+    }
+  };
+
+  const toggleAllDocuments = () => {
+    if (selectedDocuments.length === documents.length) {
+      dispatch(clearAllSelections());
+    } else {
+      const allDocumentNames = documents.map((doc) => doc.uploadName);
+      dispatch(selectAllDocuments(allDocumentNames));
+    }
+  };
 
   useEffect(() => {
     const fetchProjectTitle = async () => {
@@ -110,30 +158,17 @@ const MegaLibrary = () => {
 
   useEffect(() => {
     if (currentUser) {
-      const fetchAndSetProjectUid = async () => {
-        const projectId = await fetchProjectUid(
-          currentUser.uid,
-          activeProjectName!
-        );
-        dispatch(setProjectId(projectId!));
-      };
+        const fetchAndSetProjectUid = async () => {
+            const projectId = await fetchProjectUid(currentUser.uid, activeProjectName!);
+            dispatch(setProjectId(projectId!));
+            setDocumentLoading(false);
+        };
 
-      fetchAndSetProjectUid();
+        fetchAndSetProjectUid();
+    } else {
+        setDocumentLoading(false);
     }
   }, [currentUser, activeProjectName]);
-
-  const allCollections = Array.from(
-    new Set(documents.flatMap((doc) => doc.tags))
-  );
-
-  const toggleAllDocuments = () => {
-    if (selectedDocuments.length === documents.length) {
-      dispatch(clearAllSelections());
-    } else {
-      const allDocumentNames = documents.map((doc) => doc.uploadName);
-      dispatch(selectAllDocuments(allDocumentNames));
-    }
-  };
 
   const {
     isOpen: isDeleteFileOpen,
@@ -151,10 +186,6 @@ const MegaLibrary = () => {
     if (onlyFavoritesFilter) setYearFilter(null);
   };
 
-  const selectedDocuments = useSelector(
-    (state: RootState) => state.library.selectedDocuments
-  );
-
   useEffect(() => {
     if (!didRunOnce.current && documents.length > 0) {
       const allUploadNames = documents.map((doc) => doc.uploadName);
@@ -164,10 +195,12 @@ const MegaLibrary = () => {
   }, [documents, dispatch]);
 
   useEffect(() => {
+    if (!activeProjectId || !currentUser || documentLoading) return;
+
     const documentsCollection = collection(db, "uploads");
     const q = query(
       documentsCollection,
-      where("uploadedBy", "==", currentUser!.uid),
+      where("uploadedBy", "==", currentUser.uid),
       where("projectId", "==", activeProjectId)
     );
 
@@ -177,203 +210,32 @@ const MegaLibrary = () => {
         fetchedDocuments.push(doc.data() as Document);
       });
       setDocuments(fetchedDocuments);
-
-      if (documents.length === 0 && fetchedDocuments.length === 0) {
-        onUploadFileOpen();
-      }
     });
 
     return () => unsubscribe();
-  }, [selectedDocuments, currentUser, activeProjectId]);
+  }, [currentUser, activeProjectId, documentLoading]);
 
-  const handleDocumentCheckboxChange = (documentName: string) => {
-    if (selectedDocuments.includes(documentName)) {
-      dispatch(disableDocument(documentName));
-    } else {
-      dispatch(enableDocument(documentName));
+  useEffect(() => {
+    if (documents.length === 0 && !documentLoading) {
+        const timeout = setTimeout(() => {
+            onUploadFileOpen();
+        }, 750);
+        return () => clearTimeout(timeout);
     }
-  };
+  }, [documents, documentLoading]);
 
-  const handleChangeDocumentQuery = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setDocumentQuery(e.target.value);
-  };
-
-  const handleUploadComplete = () => {
-    console.log("Upload complete!");
-  };
-
-  const handleDeleteDocument = async () => {
-    selectedDocuments.map(async (fullPath?) => {
-      const documentRef = ref(
-        storage,
-        `users/${currentUser?.uid}/uploads/${fullPath}`
-      );
-
-      // Construct your Firestore query
-      const documentsCollection = collection(db, "uploads");
-      const q = query(
-        documentsCollection,
-        where("uploadedBy", "==", currentUser!.uid),
-        where("uploadName", "==", fullPath),
-        where("projectId", "==", activeProjectId)
-      );
-
-      // 1. Delete from Firestore
-      try {
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((documentSnapshot) => {
-          deleteDoc(doc(db, "uploads", documentSnapshot.id));
-        });
-        console.log(`Document with id ${fullPath} deleted from Firestore.`);
-      } catch (error) {
-        console.log("Error deleting document from Firestore:", error);
+  useEffect(() => {
+    const getConversationId = async () => {
+      if (currentUser && activeProjectId) {
+        const conversationId = await fetchConversationId(currentUser.uid, activeProjectId);
+        if (conversationId) {
+          dispatch(setCurrentConversationId(conversationId));
+        }
       }
-
-      // 2. Delete from Firebase Storage
-      deleteObject(documentRef)
-        .then(() => {
-          dispatch(disableDocument(fullPath));
-          onDeleteFileClose();
-          console.log(`${fullPath} file is deleted from Firebase Storage.`);
-        })
-        .catch((error) => {
-          console.log("Error deleting file from Firebase Storage:", error);
-        });
-    });
-  };
-
-  const handleOpenDocumentInTab = async (uploadName: string) => {
-    const storageLocation = `users/${currentUser?.uid}/uploads/${uploadName}`;
-    const fileRef = ref(storage, storageLocation);
-
-    const tab: ITab = {
-      name: uploadName,
-      panel: <PdfViewer document={fileRef} />,
-      openChatSupport: false,
-      openMiniLibrary: false,
-      openPdfViewer: false,
     };
-    dispatch(openTab(tab));
-    dispatch(initializeSelectedDocuments([tab.name]));
-  };
-
-  const toggleFavourite = (fileName: string, isFavourite: boolean) => {
-    const documentsCollection = collection(db, "uploads");
-    const q = query(
-      documentsCollection,
-      where("uploadedBy", "==", currentUser!.uid),
-      where("uploadName", "==", fileName),
-      where("projectId", "==", activeProjectId)
-    );
-
-    getDocs(q)
-      .then((snapshot) => {
-        if (!snapshot.empty) {
-          const docRef = doc(db, "uploads", snapshot.docs[0].id);
-          updateDoc(docRef, { favoritedBy: isFavourite });
-        } else {
-          console.error(
-            "Document with the specified fileName not found or user mismatch!"
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching documents:", error);
-      });
-  };
-
-  const addCollectionToDocument = (fileName: string, newCollection: string) => {
-    const documentsCollection = collection(db, "uploads");
-    const q = query(
-      documentsCollection,
-      where("uploadedBy", "==", currentUser!.uid),
-      where("uploadName", "==", fileName),
-      where("projectId", "==", activeProjectId)
-    );
-
-    getDocs(q)
-      .then((snapshot) => {
-        if (!snapshot.empty) {
-          const docRef = doc(db, "uploads", snapshot.docs[0].id);
-          const currentCollections = snapshot.docs[0].data().tags || [];
-
-          if (!currentCollections.includes(newCollection)) {
-            updateDoc(docRef, { tags: [...currentCollections, newCollection] });
-          } else {
-            console.log("Collection already exists for this document!");
-          }
-        } else {
-          console.error(
-            "Document with the specified fileName not found or user mismatch!"
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching documents:", error);
-      });
-  };
-
-  const deleteCollectionFromDocument = (
-    fileName: string,
-    collectionToDelete: string
-  ) => {
-    const documentsCollection = collection(db, "uploads");
-    const q = query(
-      documentsCollection,
-      where("uploadedBy", "==", currentUser!.uid),
-      where("uploadName", "==", fileName),
-      where("projectId", "==", activeProjectId)
-    );
-
-    getDocs(q)
-      .then((snapshot) => {
-        if (!snapshot.empty) {
-          const docRef = doc(db, "uploads", snapshot.docs[0].id);
-          const currentCollections = snapshot.docs[0].data().tags || [];
-
-          if (currentCollections.includes(collectionToDelete)) {
-            const updatedCollections = currentCollections.filter(
-              (tag: string) => tag !== collectionToDelete
-            );
-            updateDoc(docRef, { tags: updatedCollections });
-          } else {
-            console.log("Collection not found for this document!");
-          }
-        } else {
-          console.error(
-            "Document with the specified fileName not found or user mismatch!"
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching documents:", error);
-      });
-  };
-
-  const parseTopics = (topicsString: string): string => {
-    try {
-      // Convert single quotes to double quotes and replace hyphens
-      const correctedString = topicsString
-        .replace(/'/g, '"')
-        .replace(/-/g, " ");
-      const topicsArray = JSON.parse(correctedString);
-      if (Array.isArray(topicsArray)) {
-        return topicsArray.join(", ");
-      } else {
-        console.error("Parsed value is not an array:", topicsArray);
-        return "";
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.warn(`Error parsing topics: ${error.message}`);
-      } else {
-        console.error("An unknown error occurred while parsing topics.");
-      }
-      return "";
-    }
-  };
+  
+    getConversationId();
+  }, [currentUser, activeProjectId, dispatch]);
 
   return (
     <Grid
@@ -680,7 +542,16 @@ const MegaLibrary = () => {
                 <Button
                   variant="ghost"
                   colorScheme="red"
-                  onClick={handleDeleteDocument}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDeleteDocument(
+                      currentUser!.uid, 
+                      activeProjectId!, 
+                      selectedDocuments, 
+                      onDeleteFileOpen, 
+                      dispatch
+                    );
+                  }}
                 >
                   Delete
                 </Button>
@@ -775,10 +646,16 @@ const MegaLibrary = () => {
                         <TagInput
                           tags={doc.tags}
                           onAddTag={(newTag) =>
-                            addCollectionToDocument(doc.uploadName, newTag)
+                            addCollectionToDocument(
+                              currentUser!.uid, 
+                              activeProjectId!,
+                              doc.uploadName, 
+                              newTag)
                           }
                           onDeleteTag={(tagToDelete) =>
                             deleteCollectionFromDocument(
+                              currentUser!.uid, 
+                              activeProjectId!,
                               doc.uploadName,
                               tagToDelete
                             )
@@ -795,7 +672,12 @@ const MegaLibrary = () => {
                               : "none"
                           }
                           onClick={() =>
-                            toggleFavourite(doc.uploadName, !doc.favoritedBy)
+                            toggleFavourite(
+                              currentUser!.uid, 
+                              activeProjectId!,
+                              doc.uploadName, 
+                              !doc.favoritedBy
+                            )
                           }
                         />
                       </Td>

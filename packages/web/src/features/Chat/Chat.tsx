@@ -19,137 +19,51 @@ import {
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import {
-  collection,
-  addDoc,
-  Timestamp,
-  getDocs,
-  query,
-  where,
-  updateDoc,
-  doc,
-  orderBy,
-  limit,
-} from "firebase/firestore";
-import { db } from "../../app/config/firebase";
-import { Conversation } from "@shared/interfaces/firebase/Conversation";
-import { Message } from "@shared/interfaces/firebase/Message";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
-import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
-import { config } from "../../app/config";
-
-const conversationsCollection = collection(db, "conversations");
-const messagesCollection = collection(db, "messages");
-
-const startConversation = async (
-  currentUserUid: string, 
-  activeProjectId: string
-): Promise<string | void> => {
-  try {
-    const conversationDoc: Conversation = {
-      userId: currentUserUid,
-      projectId: activeProjectId,
-      creationDate: Timestamp.fromDate(new Date()),
-      updatedDate: Timestamp.fromDate(new Date()),
-    };
-    const conversationRef = await addDoc(
-      conversationsCollection,
-      conversationDoc
-    );
-    return conversationRef.id;
-  } catch (error) {
-    console.error("Error creating new conversation:", error);
-  }
-};
-
-const addMessageToCollection = async (
-  message: any,
-  variant: any,
-  conversationId: any,
-  parentMessageId: any
-) => {
-  try {
-    const messageDoc: Message = {
-      conversationId: conversationId,
-      creationDate: Timestamp.fromDate(new Date()),
-      variant: variant,
-      messageBody: message,
-      parentMessageId: parentMessageId,
-    };
-    await addDoc(messagesCollection, messageDoc);
-  } catch (error) {
-    console.error("Error adding message to collection:", error);
-  }
-};
-
-const updateConversationDate = async (conversationId: string) => {
-  try {
-    const conversationRef = doc(db, "conversations", conversationId);
-    await updateDoc(conversationRef, {
-      updatedDate: Timestamp.fromDate(new Date()),
-    });
-  } catch (error) {
-    console.error("Error updating conversation date:", error);
-  }
-};
-
-const getConversation = async (conversationId: string) => {
-  const messagesCollection = collection(db, "messages");
-  const q = query(
-    messagesCollection,
-    where("conversationId", "==", conversationId),
-    orderBy("creationDate", "desc"),
-    limit(6)
-  );
-
-  const querySnapshot = await getDocs(q);
-
-  const lastThreeConversations: string[] = [];
-  querySnapshot.docs.reverse().forEach((doc) => {
-    const data = doc.data();
-    const prefix = data.variant === "user" ? "USER: " : "AI: ";
-    lastThreeConversations.push(prefix + data.messageBody);
-  });
-
-  return lastThreeConversations.join("\n");
-};
-
-const fetchMessagesForConversation = async (conversationId: string) => {
-  const messagesArray: { variant: string; messageBody: string }[] = [];
-  const q = query(
-    messagesCollection,
-    where("conversationId", "==", conversationId),
-    orderBy("creationDate", "asc")
-  );
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    messagesArray.push({
-      variant: data.variant,
-      messageBody: data.messageBody,
-    });
-  });
-  return messagesArray;
-};
+import { 
+  fetchMessagesForConversation, 
+  getConversation, 
+  addMessageToCollection, 
+  updateConversationDate, 
+  fetchConversationId, 
+} from "./ChatFuncs";
+import { useSelector, useDispatch } from 'react-redux';
+import { setMessages, pushMessage } from './messageStackSlice'; 
+import { setAnswers, pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
+import { setCurrentConversationId } from './chatSlice';
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
-  const [messageStack, setMessageStack] = useState<string[]>([]);
-  const [answerStack, setAnswerStack] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const [currentConversationId, setCurrentConversationId] = useState<
-    string | null
-  >(null);
   const [conversationHistory, setConversationHistory] = useState<string>("");
+  const lastProcessedTextRef = useRef<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
+  const messageStack = useSelector((state: RootState) => state.messages);
+  const answerStack = useSelector((state: RootState) => state.answers);
+  const selectedText = useSelector((state: RootState) => state.pdf.selectedText);
+  const currentConversationId = useSelector((state: RootState) => state.chat.currentConversationId);
+  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isProcessing) return;
+    
+    if (selectedText && selectedText !== lastProcessedTextRef.current) {
+        setIsProcessing(true);
+        handleSubmit({ preventDefault: () => {} });
+    }
+  }, [selectedText, isProcessing]);
+  
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
@@ -161,9 +75,7 @@ const Chat = () => {
   useLayoutEffect(() => {
     const initializeMessages = async () => {
       if (currentConversationId) {
-        const messages = await fetchMessagesForConversation(
-          currentConversationId
-        );
+        const messages = await fetchMessagesForConversation(currentConversationId!);
         const userMessages = messages
           .filter((msg) => msg.variant === "user")
           .map((msg) => msg.messageBody);
@@ -171,8 +83,8 @@ const Chat = () => {
           .filter((msg) => msg.variant === "agent")
           .map((msg) => msg.messageBody);
 
-        setMessageStack(userMessages);
-        setAnswerStack(agentMessages);
+        dispatch(setMessages(userMessages));
+        dispatch(setAnswers(agentMessages));
 
         scrollToBottom();
       }
@@ -182,112 +94,101 @@ const Chat = () => {
 
   useLayoutEffect(scrollToBottom, [messageStack, answerStack]);
 
-  const activeProjectId = useSelector(
-    (state: RootState) => state.activeProject.projectId
-  );
-  
   useEffect(() => {
-    const fetchConversationId = async () => {
-      if (currentUser) {
-        const conversationsCollection = collection(db, "conversations");
-        const q = query(
-          conversationsCollection,
-          where("userId", "==", currentUser.uid),
-          where("projectId", "==", activeProjectId)
-          );
-        const querySnapshot = await getDocs(q);
-  
-        if (!querySnapshot.empty) {
-          const existingConversationId = querySnapshot.docs[0].id;
-          setCurrentConversationId(existingConversationId);
-          console.log("Existing conversation ID:", existingConversationId);
-        } else {
-          const newConversationId = await startConversation(currentUser.uid, activeProjectId!);
-          setCurrentConversationId(newConversationId || null);
-          console.log("New conversation ID:", newConversationId);
+    const getConversationId = async () => {
+      if (currentUser && activeProjectId) {
+        const conversationId = await fetchConversationId(currentUser.uid, activeProjectId);
+        if (conversationId) {
+          dispatch(setCurrentConversationId(conversationId));
         }
       }
     };
   
-    fetchConversationId();
-  }, [currentUser, activeProjectId]);  
-  
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    setMessageStack([...messageStack, message]);
-    setMessage("");
+    getConversationId();
+  }, [currentUser, activeProjectId, dispatch]);
 
+  const handleChatAction = async (regenerate = false, pdfText?: string) => {
     try {
-      setLoading(true);
+        setLoading(true);
 
-      // Ensure currentConversationId is not null before using it
-      if (currentConversationId) {
-        // Fetch the conversation history
-        const updatedConversationHistory = await getConversation(
-          currentConversationId!
-        );
-        setConversationHistory(updatedConversationHistory);
-        // Now, send the updated history to the Axios server
-        const res = await axios.post(`${config.chat.url}/api/chat/ask`, {
-          prompt: message,
-          history: updatedConversationHistory,
-          option: "GeneralQa",
-          files: selectedDocuments,
-          userId: currentUser!.uid
-        });
+        let requestPayload;
+        if (pdfText) {
+            console.log("Handling PdfQa Chain...");
+            dispatch(pushMessage(pdfText));
+            setMessage("");
+            requestPayload = {
+                prompt: pdfText,
+                files: selectedDocuments,
+                option: 'pdfQa',
+            };
+        } else if (regenerate) {
+            console.log("Handling Regenerate Chain...");
+            const lastSystemMessage = answerStack[answerStack.length - 1];
+            requestPayload = {
+                prompt: lastSystemMessage,
+                option: "regenerate"
+            };
+        } else {
+            console.log("Handling Regular Chain...");
+            dispatch(pushMessage(message));
+            setMessage("");
+            
+            const updatedConversationHistory = await getConversation(currentConversationId!);
+            setConversationHistory(updatedConversationHistory);
 
-        setAnswerStack([...answerStack, res.data.answer]);
+            requestPayload = {
+                prompt: message,
+                history: conversationHistory,
+                option: "GeneralQa",
+                files: selectedDocuments,
+                userId: currentUser!.uid
+            };
+        }
 
-        // Always scroll to bottom
-        scrollToBottom();
+        const res = await axios.post("http://localhost:3001/api/chat/ask", requestPayload);
+
+        if (pdfText) {
+            dispatch(pushAnswer(res.data.answer));
+            scrollToBottom();
+
+            await addMessageToCollection(pdfText, "user", currentConversationId, null);
+            await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
+            await updateConversationDate(currentConversationId!);
+
+        } else if (regenerate) {
+            dispatch(replaceLastAnswer(res.data.answer));
+        } else {
+            dispatch(pushAnswer(res.data.answer));
+            scrollToBottom();
+
+            await addMessageToCollection(message, "user", currentConversationId, null);
+            await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
+            await updateConversationDate(currentConversationId!);
+        }
+
         setLoading(false);
 
-        // Add user's message to the collection
-        await addMessageToCollection(
-          message,
-          "user",
-          currentConversationId,
-          null
-        );
-
-        // Add AI's response to the collection
-        await addMessageToCollection(
-          res.data.answer,
-          "agent",
-          currentConversationId,
-          null
-        );
-
-        // Update the conversation's updatedDate
-        await updateConversationDate(currentConversationId);
-      } else {
-        console.error("currentConversationId is null.");
-      }
     } catch (error) {
-      console.log(error);
-    }
+        console.error("Error in handleChatAction:", error); 
+      }
   };
 
-  const handleRegenerate = async () => {
-    // Capture the last message from answerStack
-    const lastSystemMessage = answerStack[answerStack.length - 1];
-
-    try {
-      // Make the API call with the last system message
-      const res = await axios.post(`${config.chat.url}/api/chat/ask`, {
-        prompt: lastSystemMessage, // Sending the last system message
-        option: "regenerate", // The option is set to "regenerate"
-      });
-
-      // Replace the last message in answerStack with the regenerated one
-      setAnswerStack((prevAnswers) => {
-        const updatedAnswers = [...prevAnswers];
-        updatedAnswers[updatedAnswers.length - 1] = res.data.answer;
-        return updatedAnswers;
-      });
-    } catch (error) {
-      console.log(error);
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    console.log('handleSubmit called');
+    e.preventDefault();
+    
+    if (selectedText && selectedText !== lastProcessedTextRef.current) {
+        await handleChatAction(false, selectedText);
+        lastProcessedTextRef.current = selectedText;
+    } else {
+        await handleChatAction(); 
     }
+    
+    setIsProcessing(false);
+};
+
+  const handleRegenerate = () => {
+      handleChatAction(true);
   };
 
   function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -346,6 +247,6 @@ const Chat = () => {
       </form>
     </Flex>
   );
-};
+  };
 
-export default Chat;
+  export default Chat;
