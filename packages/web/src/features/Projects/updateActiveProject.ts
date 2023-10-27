@@ -4,7 +4,7 @@ import {
   where,
   getDocs,
   updateDoc,
-  doc
+  doc,
 } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 
@@ -20,13 +20,15 @@ export const setActiveProjectForUser = async (
   );
 
   const querySnapshot = await getDocs(q);
-  
+
   if (!querySnapshot.empty) {
     const userRef = doc(db, "users", userId);
     await updateDoc(userRef, {
-      activeProject: projectName
+      activeProject: projectName,
     });
   } else {
-    console.warn(`No project found with the name ${projectName} for the user with ID ${userId}`);
+    console.warn(
+      `No project found with the name ${projectName} for the user with ID ${userId}`
+    );
   }
 };
