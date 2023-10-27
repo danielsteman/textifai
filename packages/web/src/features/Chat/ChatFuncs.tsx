@@ -164,11 +164,9 @@ export const fetchConversationId = async (
 
     if (!querySnapshot.empty) {
       const existingConversationId = querySnapshot.docs[0].id;
-      console.log("Existing conversation ID:", existingConversationId);
       return existingConversationId;
     } else {
       const newConversationId = await startConversation(currentUserUid, currentProjectUid);
-      console.log("New conversation ID:", newConversationId);
       return newConversationId;
     }
   } catch (error) {

@@ -59,7 +59,6 @@ const Chat = () => {
     if (isProcessing) return;
     
     if (selectedText && selectedText !== lastProcessedTextRef.current) {
-      console.log("Current selected text: ", selectedText)
         setIsProcessing(true);
         handleSubmit({ preventDefault: () => {} });
     }
@@ -99,7 +98,6 @@ const Chat = () => {
     const getConversationId = async () => {
       if (currentUser && activeProjectId) {
         const conversationId = await fetchConversationId(currentUser.uid, activeProjectId);
-        console.log("Current conversation id: ", conversationId)
         if (conversationId) {
           dispatch(setCurrentConversationId(conversationId));
         }

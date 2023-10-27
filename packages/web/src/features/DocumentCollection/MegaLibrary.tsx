@@ -84,6 +84,7 @@ const MegaLibrary = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [documentQuery, setDocumentQuery] = useState<string>("");
   const [yearFilter, setYearFilter] = useState<number | null>(null);
+  const [documentLoading, setDocumentLoading] = useState(true);
 
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
   const [onlyFavoritesFilter, setOnlyFavoritesFilter] =
@@ -160,9 +161,12 @@ const MegaLibrary = () => {
         const fetchAndSetProjectUid = async () => {
             const projectId = await fetchProjectUid(currentUser.uid, activeProjectName!);
             dispatch(setProjectId(projectId!));
+            setDocumentLoading(false);
         };
 
         fetchAndSetProjectUid();
+    } else {
+        setDocumentLoading(false);
     }
   }, [currentUser, activeProjectName]);
 
@@ -191,30 +195,37 @@ const MegaLibrary = () => {
   }, [documents, dispatch]);
 
   useEffect(() => {
+    if (!activeProjectId || !currentUser || documentLoading) return;
+
     const documentsCollection = collection(db, "uploads");
     const q = query(
       documentsCollection,
-      where("uploadedBy", "==", currentUser!.uid),
-      where("projectId", "==", activeProjectId!)
+      where("uploadedBy", "==", currentUser.uid),
+      where("projectId", "==", activeProjectId)
     );
-  
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedDocuments: Document[] = [];
       snapshot.forEach((doc) => {
         fetchedDocuments.push(doc.data() as Document);
       });
       setDocuments(fetchedDocuments);
-  
-      if (documents.length === 0 && fetchedDocuments.length === 0) {
-        onUploadFileOpen();
-      }
     });
-  
+
     return () => unsubscribe();
-  }, [selectedDocuments, currentUser, activeProjectId]);
+  }, [currentUser, activeProjectId, documentLoading]);
 
   useEffect(() => {
-    const getAndDispatchConversationId = async () => {
+    if (documents.length === 0 && !documentLoading) {
+        const timeout = setTimeout(() => {
+            onUploadFileOpen();
+        }, 750);
+        return () => clearTimeout(timeout);
+    }
+  }, [documents, documentLoading]);
+
+  useEffect(() => {
+    const getConversationId = async () => {
       if (currentUser && activeProjectId) {
         const conversationId = await fetchConversationId(currentUser.uid, activeProjectId);
         if (conversationId) {
@@ -223,7 +234,7 @@ const MegaLibrary = () => {
       }
     };
   
-    getAndDispatchConversationId();
+    getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
 
   return (
