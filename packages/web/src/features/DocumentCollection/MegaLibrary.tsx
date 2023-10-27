@@ -64,8 +64,8 @@ import TagInput from "../../common/components/CollectionTags";
 import { openTab } from "../Workspace/tabsSlice";
 import { useNavigate } from 'react-router-dom';
 import { setProjectId, setProjectName } from "../Workspace/projectSlice";
-import fetchProjectUid from "../../common/utils/fetchProjectId";
-import { getCurrentProjectTitle } from "../../common/utils/getCurrentProjectTitle";
+import fetchProjectUid from "../Projects/fetchProjectId";
+import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import { setCurrentConversationId } from "../Chat/chatSlice";
 import { fetchConversationId } from "../Chat/ChatFuncs";
 import { 
