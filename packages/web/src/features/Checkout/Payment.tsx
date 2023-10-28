@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
-import { StripeContext } from "src/app/providers/StripeProvider";
+import { loadStripe } from "@stripe/stripe-js";
 
 const Payment = () => {
-  const stripePromise = useContext(StripeContext);
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
   const [clientSecret, setClientSecret] = useState("");
 
   useEffect(() => {
