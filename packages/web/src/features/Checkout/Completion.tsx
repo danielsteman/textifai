@@ -1,5 +1,5 @@
+import { loadStripe } from "@stripe/stripe-js";
 import { useContext, useEffect, useState } from "react";
-import { StripeContext } from "../../app/providers/StripeProvider";
 
 interface PaymentIntent {
   errorMessage?: string;
@@ -8,7 +8,7 @@ interface PaymentIntent {
 }
 
 const Completion = () => {
-  const stripePromise = useContext(StripeContext);
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
   const [paymentIntentState, setPaymentIntentState] = useState<PaymentIntent>();
 
   useEffect(() => {

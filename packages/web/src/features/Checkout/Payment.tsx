@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import { loadStripe } from "@stripe/stripe-js";
+import { config } from "../../app/config/config";
 
 const Payment = () => {
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -9,7 +10,7 @@ const Payment = () => {
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
-    fetch("/create-payment-intent")
+    fetch(`${config.payments.url}/api/payments/create-payment-intent`)
       .then((res) => res.json())
       .then(({ clientSecret }) => setClientSecret(clientSecret));
   }, []);
