@@ -8,8 +8,8 @@ interface PaymentIntent {
 }
 
 const Completion = () => {
-  const [paymentIntentState, setPaymentIntentState] = useState<PaymentIntent>();
   const stripePromise = useContext(StripeContext);
+  const [paymentIntentState, setPaymentIntentState] = useState<PaymentIntent>();
 
   useEffect(() => {
     if (!stripePromise) return;

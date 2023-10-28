@@ -15,10 +15,7 @@ export const StripeProvider: React.FC<Props> = ({ children }) => {
   >();
 
   useEffect(() => {
-    fetch("/api/payments/config").then(async (r) => {
-      const { publishableKey } = await r.json();
-      setStripePromise(loadStripe(publishableKey));
-    });
+    setStripePromise(loadStripe(import.meta.env.VITE_FIREBASE_APIKEY));
   }, []);
 
   return (
