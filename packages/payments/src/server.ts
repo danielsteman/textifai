@@ -1,4 +1,5 @@
 import env from "dotenv";
+import cors from "cors";
 env.config({ path: "../.env" });
 
 import bodyParser from "body-parser";
@@ -17,6 +18,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 const app = express();
+app.use(cors());
 
 app.use(
   (
@@ -32,14 +34,16 @@ app.use(
   }
 );
 
-app.get("/config", (_: express.Request, res: express.Response): void => {
+const router = express.Router();
+
+router.get("/config", (_: express.Request, res: express.Response): void => {
   // Serve checkout page.
   res.send({
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
   });
 });
 
-app.get(
+router.get(
   "/create-payment-intent",
   async (req: express.Request, res: express.Response): Promise<void> => {
     // Create a PaymentIntent with the order amount and currency.
@@ -72,7 +76,7 @@ app.get(
 // Expose a endpoint as a webhook handler for asynchronous events.
 // Configure your webhook in the stripe developer dashboard:
 // https://dashboard.stripe.com/test/webhooks
-app.post(
+router.post(
   "/webhook",
   // Use body-parser to retrieve the raw body as a buffer.
   bodyParser.raw({ type: "application/json" }),
@@ -113,6 +117,8 @@ app.post(
     res.sendStatus(200);
   }
 );
+
+app.use("api/payments", router);
 
 app.listen(4242, (): void =>
   console.log(`Node server listening on port ${4242}!`)
