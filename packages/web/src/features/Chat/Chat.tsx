@@ -41,13 +41,13 @@ import { RootState } from "../../app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
-import { config } from "../../app/config";
+import { config } from "../../app/config/config";
 
 const conversationsCollection = collection(db, "conversations");
 const messagesCollection = collection(db, "messages");
 
 const startConversation = async (
-  currentUserUid: string, 
+  currentUserUid: string,
   activeProjectId: string
 ): Promise<string | void> => {
   try {
@@ -185,7 +185,7 @@ const Chat = () => {
   const activeProjectId = useSelector(
     (state: RootState) => state.activeProject.projectId
   );
-  
+
   useEffect(() => {
     const fetchConversationId = async () => {
       if (currentUser) {
@@ -194,24 +194,27 @@ const Chat = () => {
           conversationsCollection,
           where("userId", "==", currentUser.uid),
           where("projectId", "==", activeProjectId)
-          );
+        );
         const querySnapshot = await getDocs(q);
-  
+
         if (!querySnapshot.empty) {
           const existingConversationId = querySnapshot.docs[0].id;
           setCurrentConversationId(existingConversationId);
           console.log("Existing conversation ID:", existingConversationId);
         } else {
-          const newConversationId = await startConversation(currentUser.uid, activeProjectId!);
+          const newConversationId = await startConversation(
+            currentUser.uid,
+            activeProjectId!
+          );
           setCurrentConversationId(newConversationId || null);
           console.log("New conversation ID:", newConversationId);
         }
       }
     };
-  
+
     fetchConversationId();
-  }, [currentUser, activeProjectId]);  
-  
+  }, [currentUser, activeProjectId]);
+
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setMessageStack([...messageStack, message]);
@@ -233,7 +236,7 @@ const Chat = () => {
           history: updatedConversationHistory,
           option: "GeneralQa",
           files: selectedDocuments,
-          userId: currentUser!.uid
+          userId: currentUser!.uid,
         });
 
         setAnswerStack([...answerStack, res.data.answer]);

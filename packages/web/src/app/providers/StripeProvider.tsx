@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Stripe, loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 
 interface Props {
   children: React.ReactNode;
 }
 
 export const StripeContext = React.createContext<
-  Promise<Stripe | null> | undefined | null
+  Stripe | PromiseLike<Stripe | null> | null
 >(null);
 
 export const StripeProvider: React.FC<Props> = ({ children }) => {
   const [stripePromise, setStripePromise] = useState<
-    Promise<Stripe | null> | undefined | null
+    Stripe | PromiseLike<Stripe | null> | null
   >();
 
   useEffect(() => {
-    setStripePromise(loadStripe(import.meta.env.VITE_FIREBASE_APIKEY));
+    setStripePromise(loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY));
   }, []);
 
   return (
-    <StripeContext.Provider value={stripePromise}>
-      {children}
-    </StripeContext.Provider>
+    <>
+      {stripePromise && <Elements stripe={stripePromise}>{children}</Elements>}
+    </>
   );
 };

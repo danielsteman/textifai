@@ -21,11 +21,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <Provider store={store}>
     <ChakraProvider theme={theme}>
       <AuthProvider>
-        {/* <StripeProvider> */}
-        <ProjectProvider>
-          <RouterProvider router={router} />
-        </ProjectProvider>
-        {/* </StripeProvider> */}
+        <StripeProvider>
+          <ProjectProvider>
+            <RouterProvider router={router} />
+          </ProjectProvider>
+        </StripeProvider>
       </AuthProvider>
     </ChakraProvider>
   </Provider>

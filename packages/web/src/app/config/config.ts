@@ -14,6 +14,9 @@ const settings = {
     documents: {
       url: "http://localhost:3000",
     },
+    payments: {
+      url: "http://localhost:4242",
+    },
   },
 };
 
