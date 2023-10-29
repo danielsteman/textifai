@@ -23,10 +23,6 @@ const app = express();
 
 app.use(cors());
 
-app.listen(port, (): void =>
-  console.log(`Node server listening on port ${port}!`)
-);
-
 app.use(
   (
     req: express.Request,

@@ -7,7 +7,7 @@
     "build": "npx tsc --build tsconfig-build.json",
     "start": "node dist/server.js",
     "test": "jest",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\""
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
   },
   "dependencies": {
     "stripe": "^14.2.0"
@@ -15,6 +15,7 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "dotenv": "^16.3.1",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "ts-node-dev": "^2.0.0"
   }
 }
