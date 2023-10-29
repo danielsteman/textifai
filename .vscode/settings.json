@@ -22,8 +22,16 @@
           "name": "documents",
           "commands": [
             "yarn install",
-            "yarn workspace @textifai/web documents",
+            "yarn workspace @textifai/documents build",
             "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/documents dev"
+          ]
+        },
+        {
+          "name": "payments",
+          "commands": [
+            "yarn install",
+            "yarn workspace @textifai/payments build",
+            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/payments dev"
           ]
         }
       ]

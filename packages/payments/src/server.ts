@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import express from "express";
 
 import Stripe from "stripe";
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
   appInfo: {
@@ -17,8 +18,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   typescript: true,
 });
 
+const port = process.env.PORT || 4242;
 const app = express();
+
 app.use(cors());
+
+app.listen(port, (): void =>
+  console.log(`Node server listening on port ${port}!`)
+);
 
 app.use(
   (
@@ -26,7 +33,7 @@ app.use(
     res: express.Response,
     next: express.NextFunction
   ): void => {
-    if (req.originalUrl === "/webhook") {
+    if (req.originalUrl === "/api/payments/webhook") {
       next();
     } else {
       bodyParser.json()(req, res, next);
@@ -118,8 +125,8 @@ router.post(
   }
 );
 
-app.use("api/payments", router);
+app.use("/api/payments", router);
 
-app.listen(4242, (): void =>
-  console.log(`Node server listening on port ${4242}!`)
+app.listen(port, (): void =>
+  console.log(`Node server listening on port ${port}!`)
 );

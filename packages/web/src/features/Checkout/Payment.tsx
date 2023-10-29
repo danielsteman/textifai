@@ -11,8 +11,11 @@ const Payment = () => {
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
     fetch(`${config.payments.url}/api/payments/create-payment-intent`)
-      .then((res) => res.json())
-      .then(({ clientSecret }) => setClientSecret(clientSecret));
+      .then((res) => {
+        console.log(res);
+        return res; // Might need to be unpacked with .json()
+      })
+      .then(({ clientSecret }: any) => setClientSecret(clientSecret));
   }, []);
 
   return (
