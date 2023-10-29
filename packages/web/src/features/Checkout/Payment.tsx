@@ -13,7 +13,7 @@ const Payment = () => {
     fetch(`${config.payments.url}/api/payments/create-payment-intent`)
       .then((res) => {
         console.log(res);
-        return res; // Might need to be unpacked with .json()
+        return res.json();
       })
       .then(({ clientSecret }: any) => setClientSecret(clientSecret));
   }, []);
