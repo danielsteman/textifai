@@ -72,27 +72,7 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useLayoutEffect(() => {
-    const initializeMessages = async () => {
-      if (currentConversationId) {
-        const messages = await fetchMessagesForConversation(currentConversationId!);
-        const userMessages = messages
-          .filter((msg) => msg.variant === "user")
-          .map((msg) => msg.messageBody);
-        const agentMessages = messages
-          .filter((msg) => msg.variant === "agent")
-          .map((msg) => msg.messageBody);
-
-        dispatch(setMessages(userMessages));
-        dispatch(setAnswers(agentMessages));
-
-        scrollToBottom();
-      }
-    };
-    initializeMessages();
-  }, [currentConversationId]);
-
-  useLayoutEffect(scrollToBottom, [messageStack, answerStack]);
+  useLayoutEffect(scrollToBottom, [messageStack, answerStack, dispatch]);
 
   useEffect(() => {
     const getConversationId = async () => {
