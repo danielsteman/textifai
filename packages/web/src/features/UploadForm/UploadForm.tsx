@@ -2,14 +2,13 @@ import {
   Box,
   Button,
   Center,
-  Spinner,
   Text,
   useColorMode,
   Progress
 } from "@chakra-ui/react";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../../app/config/firebase";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { Document } from "@shared/interfaces/firebase/Document";
@@ -114,43 +113,43 @@ const UploadForm: React.FC<UploadFormProps> = ({
     const exists = await getDownloadURL(fileRef).then(() => true).catch(() => false);
 
     if (exists) {
-      setUploadStatusMessage("A file with this name already exists! 📄");
-      return;
+        setUploadStatusMessage("A file with this name already exists! 📄");
+        return;
     }
 
     try {
-      const data = new FormData();
-      data.append("file", file);
-      data.append("userId", currentUser!.uid);
+        const data = new FormData();
+        data.append("file", file);
+        data.append("userId", currentUser!.uid);
 
-      const res = await axios.post(`${config.documents.url}/api/documents/upload`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+        const uploadTask = uploadBytesResumable(fileRef, file);
 
-      const uploadTask = uploadBytesResumable(fileRef, file);
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log(`${file.name} upload progress: ${progress}%`);
+                setUploadProgress((prev) => ({
+                    ...prev,
+                    [file.name]: progress,
+                }));
+            },
+            (error) => {
+                console.error(`An error occurred while uploading ${file.name}:`, error);
+            }
+        );
 
-      // Monitor the progress of the upload
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`${file.name} upload progress: ${progress}%`); // Debugging line
-          setUploadProgress((prev) => ({
-            ...prev,
-            [file.name]: progress,
-          }));
-        },
-        (error) => {
-          console.error(`An error occurred while uploading ${file.name}:`, error);
-        },
-        () => {
-          setUploadStatusMessage("Done! ✅ Want to upload more?");
-          const metadata: PdfMetadata = res.data.metadata;
-          uploadMetadataToFirestore(metadata, currentUser!.uid, activeProjectId!, uploadsCollection);
-        }
-      );
+        const res = await axios.post(`${config.documents.url}/api/documents/upload`, data, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        uploadTask.then(() => {
+            setUploadStatusMessage("Done! ✅ Want to upload more?");
+            const metadata: PdfMetadata = res.data.metadata;
+            uploadMetadataToFirestore(metadata, currentUser!.uid, activeProjectId!, uploadsCollection);
+        });
 
     } catch (error) {
-      console.error(`An error occurred while processing ${file.name}:`, error);
+        console.error(`An error occurred while processing ${file.name}:`, error);
     }
   };
 
@@ -162,20 +161,25 @@ const UploadForm: React.FC<UploadFormProps> = ({
       return;
     }
 
-    setLoading(true);
-
     if (!files || files.length === 0) {
       console.warn("No files were uploaded");
-      setLoading(false);
       return;
     }
 
-    await Promise.all(files.map((file) => handleFileUpload(file)));
+    // Set initial progress for each file
+    const initialProgress = files.reduce<{ [key: string]: number }>((acc, file) => {
+      acc[file.name] = 0;
+      return acc;
+    }, {});  
+    setUploadProgress(prev => ({ ...prev, ...initialProgress }));
 
+    setLoading(true);
+    await Promise.all(files.map((file) => handleFileUpload(file)));
     setLoading(false);
+
     onUploadComplete();
     setFiles(undefined);
-  };
+};
 
   const { colorMode } = useColorMode();
 
@@ -206,13 +210,8 @@ const UploadForm: React.FC<UploadFormProps> = ({
         <Center height="100%" width="100%" mt={4}>
             {uploadStatusMessage}
         </Center>
-        {loading && (
-            <Center>
-                <Spinner />
-            </Center>
-        )}
     </Box>
-  )
-};
+  );
+}
 
 export default UploadForm;
