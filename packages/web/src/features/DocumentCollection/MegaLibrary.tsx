@@ -76,10 +76,12 @@ import {
   deleteCollectionFromDocument, 
   parseTopics, 
   toggleFavourite, 
-  handleUploadComplete
+  handleUploadComplete,
+  parseSampleQuestions
 } from "./libraryFuncs";
 import { setAnswers } from "../Chat/answerStackSlice";
 import { setMessages } from "../Chat/messageStackSlice";
+import { setQuestions } from "../Chat/questionSlice";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -278,6 +280,36 @@ const MegaLibrary = () => {
     return () => unsubscribe();
   }, [currentUser, activeProjectId, documentLoading]);
 
+  useEffect(() => {  
+    if (!activeProjectId || !currentUser || documentLoading) return;
+  
+    const documentsCollection = collection(db, "uploads");
+    const q = query(
+      documentsCollection,
+      where("uploadedBy", "==", currentUser.uid),
+      where("projectId", "==", activeProjectId)
+    );
+  
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedSampleQuestions: string[][] = [];
+  
+      snapshot.forEach((doc) => {
+        const documentData = doc.data();
+      
+        if (documentData.sampleQuestions && typeof documentData.sampleQuestions === 'string') {
+          const parsedQuestions = parseSampleQuestions(documentData.sampleQuestions);
+          if (parsedQuestions.length > 0) {
+            console.log("Sample questions: ", parsedQuestions)
+            fetchedSampleQuestions.push(parsedQuestions);
+          }
+        }
+      });
+        dispatch(setQuestions(fetchedSampleQuestions.flat()));
+    });
+  
+    return () => unsubscribe();
+  }, [currentUser, activeProjectId, documentLoading]);
+  
   useEffect(() => {
     if (documents.length === 0 && !documentLoading) {
         const timeout = setTimeout(() => {

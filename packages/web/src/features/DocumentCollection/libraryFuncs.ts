@@ -165,7 +165,6 @@ export const deleteCollectionFromDocument = (
 
 export const parseTopics = (topicsString: string): string => {
     try {
-      // Convert single quotes to double quotes and replace hyphens
       const correctedString = topicsString
         .replace(/'/g, '"')
         .replace(/-/g, " ");
@@ -185,3 +184,25 @@ export const parseTopics = (topicsString: string): string => {
       return "";
     }
   };
+
+  export const parseSampleQuestions = (questionsString: string): string[] => {
+    try {
+        const correctedString = questionsString
+            .replace(/'/g, '"')
+            .replace(/-/g, " ");
+        const questionsArray = JSON.parse(correctedString);
+        if (Array.isArray(questionsArray)) {
+            return questionsArray;
+        } else {
+            console.error("Parsed value is not an array:", questionsArray);
+            return [];
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.warn(`Error parsing sample questions: ${error.message}`);
+        } else {
+            console.error("An unknown error occurred while parsing sample questions.");
+        }
+        return [];
+    }
+};
