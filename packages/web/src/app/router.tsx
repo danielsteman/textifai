@@ -17,7 +17,6 @@ import PdfViewer from "./routes/PdfViewer";
 import AccountSettings from "./routes/AccountSettings";
 import EmailVerification from "./routes/VerifyEmail";
 import CheckoutCompleted from "./routes/CheckoutCompleted";
-import Checkout from "./routes/Checkout";
 import Payment from "../features/Checkout/Payment";
 
 export const router = createBrowserRouter([
