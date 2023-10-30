@@ -1,5 +1,7 @@
+import { Box, Button, Heading, Link } from "@chakra-ui/react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface PaymentIntent {
   errorMessage?: string;
@@ -9,7 +11,12 @@ interface PaymentIntent {
 
 const Completion = () => {
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-  const [paymentIntentState, setPaymentIntentState] = useState<PaymentIntent>();
+  const [paymentIntentState, setPaymentIntentState] = useState<PaymentIntent>({
+    errorMessage: "",
+    status: "",
+    id: "",
+  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!stripePromise) return;
@@ -33,9 +40,16 @@ const Completion = () => {
   }, [stripePromise]);
 
   return (
-    <>
-      <h1>Thank you!</h1>
-      <a href="/">home</a>
+    <Box
+      w="100%"
+      h="100vh"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      flexDir="column"
+      gap={4}
+    >
+      <Heading>Thank you!</Heading>
       <div
         id="messages"
         role="alert"
@@ -44,18 +58,21 @@ const Completion = () => {
         {paymentIntentState?.errorMessage ? (
           <>{paymentIntentState?.errorMessage}</>
         ) : (
-          <a
+          <Link
             href={`https://dashboard.stripe.com/test/payments/${
               paymentIntentState!.id
             }`}
             target="_blank"
             rel="noreferrer"
           >
-            {paymentIntentState!.id}
-          </a>
+            Your receipt
+          </Link>
         )}
       </div>
-    </>
+      <Button onClick={() => navigate("/features/workspace")}>
+        Let's get to work
+      </Button>
+    </Box>
   );
 };
 

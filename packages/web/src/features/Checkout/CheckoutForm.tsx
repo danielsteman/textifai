@@ -2,14 +2,17 @@ import {
   PaymentElement,
   LinkAuthenticationElement,
 } from "@stripe/react-stripe-js";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { Button } from "@chakra-ui/react";
+import { AuthContext } from "../../app/providers/AuthProvider";
 
 export default function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
+  const currentUser = useContext(AuthContext);
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -48,21 +51,20 @@ export default function CheckoutForm() {
     <form id="payment-form" onSubmit={handleSubmit}>
       <LinkAuthenticationElement
         id="link-authentication-element"
-        // Access the email value like so:
-        // onChange={(event) => {
-        //  setEmail(event.value.email);
-        // }}
-        //
-        // Prefill the email field like so:
-        // options={{defaultValues: {email: 'foo@bar.com'}}}
+        options={{ defaultValues: { email: currentUser?.email! } }}
       />
       <PaymentElement id="payment-element" />
-      <button disabled={isLoading || !stripe || !elements} id="submit">
+      <Button
+        disabled={isLoading || !stripe || !elements}
+        id="submit"
+        type="submit"
+        mt={4}
+        size="lg"
+      >
         <span id="button-text">
           {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
         </span>
-      </button>
-      {/* Show any error or success messages */}
+      </Button>
       {message && <div id="payment-message">{message}</div>}
     </form>
   );

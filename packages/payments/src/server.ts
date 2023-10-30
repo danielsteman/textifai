@@ -40,7 +40,6 @@ app.use(
 const router = express.Router();
 
 router.get("/config", (_: express.Request, res: express.Response): void => {
-  // Serve checkout page.
   res.send({
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
   });
@@ -50,7 +49,6 @@ router.get(
   "/create-payment-intent",
   async (req: express.Request, res: express.Response): Promise<void> => {
     // Create a PaymentIntent with the order amount and currency.
-    console.log("Creating payment intent");
 
     const params: Stripe.PaymentIntentCreateParams = {
       amount: 1999,
@@ -63,8 +61,6 @@ router.get(
     try {
       const paymentIntent: Stripe.PaymentIntent =
         await stripe.paymentIntents.create(params);
-
-      console.log(paymentIntent);
 
       // Send publishable key and PaymentIntent client_secret to client.
       res.status(200).send({
