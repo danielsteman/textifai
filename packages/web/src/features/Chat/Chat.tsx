@@ -35,6 +35,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { pushMessage } from './messageStackSlice'; 
 import { pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
 import { setCurrentConversationId } from './chatSlice';
+import { config } from "../../app/config";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -124,7 +125,7 @@ const Chat = () => {
             };
         }
 
-        const res = await axios.post("http://localhost:3001/api/chat/ask", requestPayload);
+        const res = await axios.post(`${config.chat.url}/api/chat/ask`, requestPayload);
 
         if (pdfText) {
             dispatch(pushAnswer(res.data.answer));

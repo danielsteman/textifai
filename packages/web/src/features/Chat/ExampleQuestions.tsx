@@ -9,6 +9,7 @@ import { User } from "firebase/auth";
 import { useContext } from "react";
 import axios from "axios";
 import { addMessageToCollection, updateConversationDate } from "./ChatFuncs";
+import { config } from "../../app/config";
 
 const ExampleQuestions = () => {
   
@@ -29,7 +30,7 @@ const ExampleQuestions = () => {
             userId: currentUser!.uid
         };
 
-        const res = await axios.post("http://localhost:3001/api/chat/ask", requestPayload);
+        const res = await axios.post(`${config.chat.url}/api/chat/ask`, requestPayload);
 
         dispatch(pushAnswer(res.data.answer));
         await addMessageToCollection(question, "user", currentConversationId, null);
