@@ -1,4 +1,4 @@
-import { Flex, HStack, Button, useColorMode } from "@chakra-ui/react";
+import { Flex, HStack, Button, useColorMode, Box } from "@chakra-ui/react";
 import { useSelector } from "react-redux"
 import { RootState } from "../../app/store";
 import theme from "../../app/themes/theme";
@@ -23,30 +23,48 @@ const ExampleQuestions = () => {
       <HStack gap={2}>
         {randomQuestions.slice(0, 2).map((question, index) => (
           <Button 
-            size="sm" 
-            width="30vw"
-            height="2vw"
-            onClick={() => {/* Your logic here */}} 
-            key={index}
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            textColor={theme.colors[colorMode].onSecondaryContainer}
+              size="sm" 
+              width="30vw"
+              height="2vw"
+              onClick={() => {/* Your logic here */}} 
+              key={index}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
           >
-            {question}
+            <Box 
+                as="span"
+                display="block"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+                w="100%"
+            >
+                {question}
+            </Box>
           </Button>
         ))}
       </HStack>
       <HStack gap={2}>
         {randomQuestions.slice(2, 4).map((question, index) => (
           <Button 
-            size="sm" 
-            width="30vw"
-            height="2vw"
-            onClick={() => {/* Your logic here */}} 
-            key={index}
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            textColor={theme.colors[colorMode].onSecondaryContainer}
+              size="sm" 
+              width="30vw"
+              height="2vw"
+              onClick={() => {/* Your logic here */}} 
+              key={index}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
           >
-            {question}
+            <Box 
+                as="span"
+                display="block"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+                w="100%"
+            >
+                {question}
+            </Box>
           </Button>
         ))}
       </HStack>
