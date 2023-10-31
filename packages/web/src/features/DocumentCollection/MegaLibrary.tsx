@@ -282,34 +282,36 @@ const MegaLibrary = () => {
 
   useEffect(() => {  
     if (!activeProjectId || !currentUser || documentLoading) return;
-  
+
     const documentsCollection = collection(db, "uploads");
     const q = query(
       documentsCollection,
       where("uploadedBy", "==", currentUser.uid),
       where("projectId", "==", activeProjectId)
     );
-  
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedSampleQuestions: string[][] = [];
-  
+
       snapshot.forEach((doc) => {
         const documentData = doc.data();
-      
-        if (documentData.sampleQuestions && typeof documentData.sampleQuestions === 'string') {
-          const parsedQuestions = parseSampleQuestions(documentData.sampleQuestions);
-          if (parsedQuestions.length > 0) {
-            console.log("Sample questions: ", parsedQuestions)
-            fetchedSampleQuestions.push(parsedQuestions);
+
+        if (selectedDocuments.includes(documentData.uploadName)) {
+          if (documentData.sampleQuestions && typeof documentData.sampleQuestions === 'string') {
+            const parsedQuestions = parseSampleQuestions(documentData.sampleQuestions);
+            if (parsedQuestions.length > 0) {
+              console.log("Sample questions: ", parsedQuestions);
+              fetchedSampleQuestions.push(parsedQuestions);
+            }
           }
         }
       });
-        dispatch(setQuestions(fetchedSampleQuestions.flat()));
+      dispatch(setQuestions(fetchedSampleQuestions.flat()));
     });
-  
+
     return () => unsubscribe();
-  }, [currentUser, activeProjectId, documentLoading]);
-  
+  }, [currentUser, activeProjectId, documentLoading, selectedDocuments]); 
+
   useEffect(() => {
     if (documents.length === 0 && !documentLoading) {
         const timeout = setTimeout(() => {

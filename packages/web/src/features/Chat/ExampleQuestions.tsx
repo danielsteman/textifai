@@ -19,7 +19,7 @@ const ExampleQuestions = () => {
   const selectedDocuments = useSelector((state: RootState) => state.library.selectedDocuments);  
   const currentConversationId = useSelector((state: RootState) => state.chat.currentConversationId);
   
-  const handleButtonClick = async (question: string) => {
+  const handleSubmit = async (question: string) => {
     try {
         dispatch(pushMessage(question));
         const requestPayload = {
@@ -36,10 +36,9 @@ const ExampleQuestions = () => {
         await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
         await updateConversationDate(currentConversationId!);
     } catch (error) {
-        console.error("Error in handleButtonClick:", error);
+        console.error("Error in handleSubmit:", error);
     }
-};
-
+  };
 
   const pickRandomQuestions = (questions: string[], count: number | undefined) => {
     const shuffled = [...questions].sort(() => 0.5 - Math.random());
@@ -57,7 +56,7 @@ const ExampleQuestions = () => {
               size="sm" 
               width="30vw"
               height="2vw"
-              onClick={() => handleButtonClick(question)}
+              onClick={() => handleSubmit(question)}
               key={index}
               bgColor={theme.colors[colorMode].secondaryContainer}
               textColor={theme.colors[colorMode].onSecondaryContainer}
@@ -81,7 +80,7 @@ const ExampleQuestions = () => {
               size="sm" 
               width="30vw"
               height="2vw"
-              onClick={() => handleButtonClick(question)}
+              onClick={() => handleSubmit(question)}
               key={index}
               bgColor={theme.colors[colorMode].secondaryContainer}
               textColor={theme.colors[colorMode].onSecondaryContainer}
