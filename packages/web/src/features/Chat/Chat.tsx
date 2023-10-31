@@ -26,15 +26,14 @@ import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
 import { 
-  fetchMessagesForConversation, 
   getConversation, 
   addMessageToCollection, 
   updateConversationDate, 
   fetchConversationId, 
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from 'react-redux';
-import { setMessages, pushMessage } from './messageStackSlice'; 
-import { setAnswers, pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
+import { pushMessage } from './messageStackSlice'; 
+import { pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
 import { setCurrentConversationId } from './chatSlice';
 
 const Chat = () => {
