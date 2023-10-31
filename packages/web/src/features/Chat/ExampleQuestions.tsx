@@ -10,6 +10,7 @@ import { useContext } from "react";
 import axios from "axios";
 import { addMessageToCollection, updateConversationDate } from "./ChatFuncs";
 import { config } from "../../app/config";
+import { setLoading } from "./chatSlice";
 
 const ExampleQuestions = () => {
   
@@ -22,6 +23,8 @@ const ExampleQuestions = () => {
   
   const handleSubmit = async (question: string) => {
     try {
+        dispatch(setLoading(true));
+
         dispatch(pushMessage(question));
         const requestPayload = {
             prompt: question,
@@ -36,6 +39,8 @@ const ExampleQuestions = () => {
         await addMessageToCollection(question, "user", currentConversationId, null);
         await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
         await updateConversationDate(currentConversationId!);
+
+        dispatch(setLoading(false));
     } catch (error) {
         console.error("Error in handleSubmit:", error);
     }

@@ -34,12 +34,12 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { pushMessage } from './messageStackSlice'; 
 import { pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
-import { setCurrentConversationId } from './chatSlice';
+import { setCurrentConversationId, setLoading } from './chatSlice';
 import { config } from "../../app/config";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  //const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const [conversationHistory, setConversationHistory] = useState<string>("");
   const lastProcessedTextRef = useRef<string | null>(null);
@@ -52,6 +52,7 @@ const Chat = () => {
   const selectedText = useSelector((state: RootState) => state.pdf.selectedText);
   const currentConversationId = useSelector((state: RootState) => state.chat.currentConversationId);
   const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+  const loading = useSelector((state: RootState) => state.chat.loading);
 
   const dispatch = useDispatch();
 
@@ -89,7 +90,7 @@ const Chat = () => {
 
   const handleChatAction = async (regenerate = false, pdfText?: string) => {
     try {
-        setLoading(true);
+        dispatch(setLoading(true));
 
         let requestPayload;
         if (pdfText) {
@@ -146,7 +147,7 @@ const Chat = () => {
             await updateConversationDate(currentConversationId!);
         }
 
-        setLoading(false);
+        dispatch(setLoading(false));
 
     } catch (error) {
         console.error("Error in handleChatAction:", error); 
