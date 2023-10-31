@@ -39,7 +39,6 @@ import { config } from "../../app/config";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
-  //const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const [conversationHistory, setConversationHistory] = useState<string>("");
   const lastProcessedTextRef = useRef<string | null>(null);
