@@ -7,6 +7,12 @@ import { LLMChain } from "langchain/chains";
 import { PromptTemplate } from "langchain/prompts";
 import summarizer from "../langchain/summarizer";
 
+interface Metadata {
+  text: string;
+  title: string;
+  userId: string;
+}
+
 const router = express.Router();
 
 const embed = new OpenAIEmbeddings({
@@ -156,11 +162,6 @@ router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
     const matches = await getMatchesFromEmbeddings(vector, 3, files, userId);
 
     console.log("Matches found: ", matches);
-    interface Metadata {
-      text: string;
-      title: string;
-      userId: string;
-    }
 
     const docs =
       matches &&
@@ -187,14 +188,18 @@ router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
         : allDocs;
 
     try {
-      const answer = await qaChain.call({
+      const answerStream = await qaChain.stream({
         summaries: summary,
         question: inquiry,
         conversationHistory,
       });
 
-      console.log(answer.text);
-      res.json({ answer: answer.text });
+      // console.log(answer.text);
+      // res.json({ answer: answer.text });
+      for await (const chunk of answerStream) {
+        res.write(chunk);
+      }
+      res.end();
     } catch (error) {
       next(error);
     }

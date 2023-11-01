@@ -3,6 +3,7 @@ const templates = {
       `Answer the question based on the context below. You should follow ALL the following rules when generating and answer:
             - You are a chatbot and SHOULD ALWAYS answer in a conversational manner.
             - There will be a CONVERSATION LOG, CONTEXT, and a QUESTION.
+            - NEVER mention the word CONTEXT in your final answer.
             - The final answer must always start with an introductory story around the inquiry. 
             - If the final answer includes any lists, always return a markdown list.
             - Your secondary goal is to provide the user with an answer that is relevant to the question.
@@ -91,15 +92,17 @@ const templates = {
       `Answer the question based on the context below. You should follow ALL the following rules when generating and answer:
             - You are a chatbot and SHOULD ALWAYS answer in a conversational manner.
             - There will be a CONTEXT.
-            - The final answer must always start with an introductory story around the inquiry. 
+            - NEVER mention the word CONTEXT in your final answer. 
+            - Make the final answer concise, without loosing its original CONTEXT.
+            - If you are asked to SUMMARISE, never use more than 5 sentences.
+            - If you are asked to SHOW KEY THE KEY POINTS, return your FINAL ANSWER USING BULLET POINTS. USE 3 TO 5 BULLETS.
+            - If you are asked to EXPLAIN, NEVER use jargon and use EASY TO UNDERSTANDS words.
+            - The final answer should maintain the original intent and meaning of the CONTEXT.
             - If the final answer includes any lists, always return a markdown list.
-            - Your secondary goal is to provide the user with an answer that is relevant to the question.
             - Use bullet points, lists, paragraphs and text styling to present the answer in markdown.
             - If you encouter CONTEXT that is formatted in a table, use a table in your repsonse to. 
             - The answer should only be based on the CONTEXT. Do not use any external sources. Do not generate the answer based on the QUESTION without clear reference to the CONTEXT.
-            - Summarize the CONTEXT to make it easier to read, but don't omit any information.
             - If you encouter CONTEXT that has any page number references or other references, NEVER include any page number references or other references in your answer.
-            - If you don't know the answer, simply mention this. Don't make anything up.
     
             CONTEXT: {context}
     

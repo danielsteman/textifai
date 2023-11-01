@@ -7,21 +7,20 @@ const answerStackSlice = createSlice({
   initialState,
   reducers: {
     pushAnswer: (state, action: PayloadAction<string>) => {
-      state.push(action.payload);
+      return [...state, action.payload];
     },
-    popAnswer: (state) => {
-      state.pop();
-    },
-    clearAnswers: (state) => {
-      return initialState;
+    setAnswers: (state, action: PayloadAction<string[]>) => {
+      return [...action.payload];
     },
     replaceLastAnswer: (state, action: PayloadAction<string>) => {
-      if (state.length) {
-        state[state.length - 1] = action.payload;
-      }
+      if (!state.length) return state;
+      
+      const newState = [...state];
+      newState[newState.length - 1] = action.payload;
+      return newState;
     },
   },
 });
 
-export const { pushAnswer, popAnswer, clearAnswers, replaceLastAnswer } = answerStackSlice.actions;
+export const { pushAnswer, setAnswers, replaceLastAnswer } = answerStackSlice.actions;
 export default answerStackSlice.reducer;
