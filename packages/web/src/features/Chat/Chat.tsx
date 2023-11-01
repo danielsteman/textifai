@@ -26,21 +26,19 @@ import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
 import { 
-  fetchMessagesForConversation, 
   getConversation, 
   addMessageToCollection, 
   updateConversationDate, 
   fetchConversationId, 
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from 'react-redux';
-import { setMessages, pushMessage } from './messageStackSlice'; 
-import { setAnswers, pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
-import { setCurrentConversationId } from './chatSlice';
+import { pushMessage } from './messageStackSlice'; 
+import { pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
+import { setCurrentConversationId, setLoading } from './chatSlice';
 import { config } from "../../app/config";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const [conversationHistory, setConversationHistory] = useState<string>("");
   const lastProcessedTextRef = useRef<string | null>(null);
@@ -53,6 +51,7 @@ const Chat = () => {
   const selectedText = useSelector((state: RootState) => state.pdf.selectedText);
   const currentConversationId = useSelector((state: RootState) => state.chat.currentConversationId);
   const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+  const loading = useSelector((state: RootState) => state.chat.loading);
 
   const dispatch = useDispatch();
 
@@ -73,27 +72,7 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useLayoutEffect(() => {
-    const initializeMessages = async () => {
-      if (currentConversationId) {
-        const messages = await fetchMessagesForConversation(currentConversationId!);
-        const userMessages = messages
-          .filter((msg) => msg.variant === "user")
-          .map((msg) => msg.messageBody);
-        const agentMessages = messages
-          .filter((msg) => msg.variant === "agent")
-          .map((msg) => msg.messageBody);
-
-        dispatch(setMessages(userMessages));
-        dispatch(setAnswers(agentMessages));
-
-        scrollToBottom();
-      }
-    };
-    initializeMessages();
-  }, [currentConversationId]);
-
-  useLayoutEffect(scrollToBottom, [messageStack, answerStack]);
+  useLayoutEffect(scrollToBottom, [messageStack, answerStack, dispatch]);
 
   useEffect(() => {
     const getConversationId = async () => {
@@ -110,7 +89,7 @@ const Chat = () => {
 
   const handleChatAction = async (regenerate = false, pdfText?: string) => {
     try {
-        setLoading(true);
+        dispatch(setLoading(true));
 
         let requestPayload;
         if (pdfText) {
@@ -167,7 +146,7 @@ const Chat = () => {
             await updateConversationDate(currentConversationId!);
         }
 
-        setLoading(false);
+        dispatch(setLoading(false));
 
     } catch (error) {
         console.error("Error in handleChatAction:", error); 

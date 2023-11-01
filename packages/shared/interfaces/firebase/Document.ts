@@ -17,4 +17,5 @@ export interface Document {
   extractedText: string;
   topicText: string;
   favoritedBy: Boolean;
+  sampleQuestions: string[];
 }

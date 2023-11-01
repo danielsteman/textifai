@@ -35,7 +35,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { db, storage } from "../../app/config/firebase";
-import { ref } from "firebase/storage";
+import { deleteObject, ref } from "firebase/storage";
 import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
 import { MdUpload } from "react-icons/md";
 import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
@@ -54,6 +54,9 @@ import {
 } from "./librarySlice";
 import {
   collection,
+  deleteDoc,
+  doc,
+  getDocs,
   onSnapshot,
   query,
   where,
@@ -67,15 +70,18 @@ import { setProjectId, setProjectName } from "../Workspace/projectSlice";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import { setCurrentConversationId } from "../Chat/chatSlice";
-import { fetchConversationId } from "../Chat/ChatFuncs";
+import { fetchConversationId, fetchMessagesForConversation } from "../Chat/ChatFuncs";
 import { 
-  handleDeleteDocument, 
   addCollectionToDocument, 
   deleteCollectionFromDocument, 
   parseTopics, 
   toggleFavourite, 
-  handleUploadComplete
+  handleUploadComplete,
+  parseSampleQuestions
 } from "./libraryFuncs";
+import { setAnswers } from "../Chat/answerStackSlice";
+import { setMessages } from "../Chat/messageStackSlice";
+import { setQuestions } from "../Chat/questionSlice";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -104,6 +110,7 @@ const MegaLibrary = () => {
   );
   const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
   const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+  const currentConversationId = useSelector((state: RootState) => state.chat.currentConversationId);
 
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
@@ -122,6 +129,46 @@ const MegaLibrary = () => {
     };
     dispatch(openTab(tab));
     dispatch(initializeSelectedDocuments([tab.name]));
+  };
+
+  const handleDeleteDocument = async () => {
+    selectedDocuments.map(async (fullPath) => {
+      const documentRef = ref(
+        storage,
+        `users/${currentUser?.uid}/uploads/${fullPath}`
+      );
+
+      // Construct your Firestore query
+      const documentsCollection = collection(db, "uploads");
+      const q = query(
+        documentsCollection,
+        where("uploadedBy", "==", currentUser!.uid),
+        where("uploadName", "==", fullPath),
+        where("projectId", "==", activeProjectId!)
+      );
+
+      // 1. Delete from Firestore
+      try {
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((documentSnapshot) => {
+          deleteDoc(doc(db, "uploads", documentSnapshot.id));
+        });
+        console.log(`Document with id ${fullPath} deleted from Firestore.`);
+      } catch (error) {
+        console.log("Error deleting document from Firestore:", error);
+      }
+
+      // 2. Delete from Firebase Storage
+      deleteObject(documentRef)
+        .then(() => {
+          dispatch(disableDocument(fullPath));
+          onDeleteFileClose();
+          console.log(`${fullPath} file is deleted from Firebase Storage.`);
+        })
+        .catch((error) => {
+          console.log("Error deleting file from Firebase Storage:", error);
+        });
+    });
   };
 
   const handleChangeDocumentQuery = (
@@ -155,6 +202,24 @@ const MegaLibrary = () => {
 
     fetchProjectTitle();
   }, [currentUser, dispatch]);
+
+  useEffect(() => {
+    const initializeMessages = async () => {
+      if (currentConversationId) {
+        const messages = await fetchMessagesForConversation(currentConversationId!);
+        const userMessages = messages
+          .filter((msg) => msg.variant === "user")
+          .map((msg) => msg.messageBody);
+        const agentMessages = messages
+          .filter((msg) => msg.variant === "agent")
+          .map((msg) => msg.messageBody);
+
+        dispatch(setMessages(userMessages));
+        dispatch(setAnswers(agentMessages));
+      }
+    };
+    initializeMessages();
+  }, [currentConversationId]);
 
   useEffect(() => {
     if (currentUser) {
@@ -214,6 +279,38 @@ const MegaLibrary = () => {
 
     return () => unsubscribe();
   }, [currentUser, activeProjectId, documentLoading]);
+
+  useEffect(() => {  
+    if (!activeProjectId || !currentUser || documentLoading) return;
+
+    const documentsCollection = collection(db, "uploads");
+    const q = query(
+      documentsCollection,
+      where("uploadedBy", "==", currentUser.uid),
+      where("projectId", "==", activeProjectId)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedSampleQuestions: string[][] = [];
+
+      snapshot.forEach((doc) => {
+        const documentData = doc.data();
+
+        if (selectedDocuments.includes(documentData.uploadName)) {
+          if (documentData.sampleQuestions && typeof documentData.sampleQuestions === 'string') {
+            const parsedQuestions = parseSampleQuestions(documentData.sampleQuestions);
+            if (parsedQuestions.length > 0) {
+              console.log("Sample questions: ", parsedQuestions);
+              fetchedSampleQuestions.push(parsedQuestions);
+            }
+          }
+        }
+      });
+      dispatch(setQuestions(fetchedSampleQuestions.flat()));
+    });
+
+    return () => unsubscribe();
+  }, [currentUser, activeProjectId, documentLoading, selectedDocuments]); 
 
   useEffect(() => {
     if (documents.length === 0 && !documentLoading) {
@@ -542,16 +639,7 @@ const MegaLibrary = () => {
                 <Button
                   variant="ghost"
                   colorScheme="red"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleDeleteDocument(
-                      currentUser!.uid, 
-                      activeProjectId!, 
-                      selectedDocuments, 
-                      onDeleteFileOpen, 
-                      dispatch
-                    );
-                  }}
+                  onClick={handleDeleteDocument}
                 >
                   Delete
                 </Button>

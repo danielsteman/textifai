@@ -7,6 +7,7 @@ import pdfReducer from "../features/PdfViewer/pdfSlice";
 import tabsSlice from "../features/Workspace/tabsSlice";
 import activeProjectReducer from "../features/Workspace/projectSlice";
 import loginOrRegisterModalSlice from "../features/Authentication/loginOrRegisterModalSlice";
+import questionReducer from "../features/Chat/questionSlice";
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     chat: chatReducer,
     activeProject: activeProjectReducer,
     loginOrRegisterModal: loginOrRegisterModalSlice,
+    sampleQuestions: questionReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
