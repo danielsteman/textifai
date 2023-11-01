@@ -65,19 +65,22 @@ import { Document } from "@shared/interfaces/firebase/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
 import { openTab } from "../Workspace/tabsSlice";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { setProjectId, setProjectName } from "../Workspace/projectSlice";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import { setCurrentConversationId } from "../Chat/chatSlice";
-import { fetchConversationId, fetchMessagesForConversation } from "../Chat/ChatFuncs";
-import { 
-  addCollectionToDocument, 
-  deleteCollectionFromDocument, 
-  parseTopics, 
-  toggleFavourite, 
+import {
+  fetchConversationId,
+  fetchMessagesForConversation,
+} from "../Chat/ChatFuncs";
+import {
+  addCollectionToDocument,
+  deleteCollectionFromDocument,
+  parseTopics,
+  toggleFavourite,
   handleUploadComplete,
-  parseSampleQuestions
+  parseSampleQuestions,
 } from "./libraryFuncs";
 import { setAnswers } from "../Chat/answerStackSlice";
 import { setMessages } from "../Chat/messageStackSlice";
@@ -108,9 +111,15 @@ const MegaLibrary = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
-  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
-  const currentConversationId = useSelector((state: RootState) => state.chat.currentConversationId);
+  const activeProjectName = useSelector(
+    (state: RootState) => state.activeProject.projectName
+  );
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
+  const currentConversationId = useSelector(
+    (state: RootState) => state.chat.currentConversationId
+  );
 
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
@@ -206,7 +215,9 @@ const MegaLibrary = () => {
   useEffect(() => {
     const initializeMessages = async () => {
       if (currentConversationId) {
-        const messages = await fetchMessagesForConversation(currentConversationId!);
+        const messages = await fetchMessagesForConversation(
+          currentConversationId!
+        );
         const userMessages = messages
           .filter((msg) => msg.variant === "user")
           .map((msg) => msg.messageBody);
@@ -223,15 +234,18 @@ const MegaLibrary = () => {
 
   useEffect(() => {
     if (currentUser) {
-        const fetchAndSetProjectUid = async () => {
-            const projectId = await fetchProjectUid(currentUser.uid, activeProjectName!);
-            dispatch(setProjectId(projectId!));
-            setDocumentLoading(false);
-        };
-
-        fetchAndSetProjectUid();
-    } else {
+      const fetchAndSetProjectUid = async () => {
+        const projectId = await fetchProjectUid(
+          currentUser.uid,
+          activeProjectName!
+        );
+        dispatch(setProjectId(projectId!));
         setDocumentLoading(false);
+      };
+
+      fetchAndSetProjectUid();
+    } else {
+      setDocumentLoading(false);
     }
   }, [currentUser, activeProjectName]);
 
@@ -280,7 +294,7 @@ const MegaLibrary = () => {
     return () => unsubscribe();
   }, [currentUser, activeProjectId, documentLoading]);
 
-  useEffect(() => {  
+  useEffect(() => {
     if (!activeProjectId || !currentUser || documentLoading) return;
 
     const documentsCollection = collection(db, "uploads");
@@ -297,8 +311,13 @@ const MegaLibrary = () => {
         const documentData = doc.data();
 
         if (selectedDocuments.includes(documentData.uploadName)) {
-          if (documentData.sampleQuestions && typeof documentData.sampleQuestions === 'string') {
-            const parsedQuestions = parseSampleQuestions(documentData.sampleQuestions);
+          if (
+            documentData.sampleQuestions &&
+            typeof documentData.sampleQuestions === "string"
+          ) {
+            const parsedQuestions = parseSampleQuestions(
+              documentData.sampleQuestions
+            );
             if (parsedQuestions.length > 0) {
               console.log("Sample questions: ", parsedQuestions);
               fetchedSampleQuestions.push(parsedQuestions);
@@ -310,27 +329,21 @@ const MegaLibrary = () => {
     });
 
     return () => unsubscribe();
-  }, [currentUser, activeProjectId, documentLoading, selectedDocuments]); 
-
-  useEffect(() => {
-    if (documents.length === 0 && !documentLoading) {
-        const timeout = setTimeout(() => {
-            onUploadFileOpen();
-        }, 750);
-        return () => clearTimeout(timeout);
-    }
-  }, [documents, documentLoading]);
+  }, [currentUser, activeProjectId, documentLoading, selectedDocuments]);
 
   useEffect(() => {
     const getConversationId = async () => {
       if (currentUser && activeProjectId) {
-        const conversationId = await fetchConversationId(currentUser.uid, activeProjectId);
+        const conversationId = await fetchConversationId(
+          currentUser.uid,
+          activeProjectId
+        );
         if (conversationId) {
           dispatch(setCurrentConversationId(conversationId));
         }
       }
     };
-  
+
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
 
@@ -735,14 +748,15 @@ const MegaLibrary = () => {
                           tags={doc.tags}
                           onAddTag={(newTag) =>
                             addCollectionToDocument(
-                              currentUser!.uid, 
+                              currentUser!.uid,
                               activeProjectId!,
-                              doc.uploadName, 
-                              newTag)
+                              doc.uploadName,
+                              newTag
+                            )
                           }
                           onDeleteTag={(tagToDelete) =>
                             deleteCollectionFromDocument(
-                              currentUser!.uid, 
+                              currentUser!.uid,
                               activeProjectId!,
                               doc.uploadName,
                               tagToDelete
@@ -761,9 +775,9 @@ const MegaLibrary = () => {
                           }
                           onClick={() =>
                             toggleFavourite(
-                              currentUser!.uid, 
+                              currentUser!.uid,
                               activeProjectId!,
-                              doc.uploadName, 
+                              doc.uploadName,
                               !doc.favoritedBy
                             )
                           }

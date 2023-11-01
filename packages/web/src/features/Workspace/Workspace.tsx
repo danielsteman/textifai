@@ -47,7 +47,6 @@ import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { setActiveProjectForUser } from "../Projects/updateActiveProject";
-import { isEmailVerified } from "../Authentication/fetchVerificationStatus";
 import { resendVerificationEmail } from "../Authentication/resendVerificationMail";
 import {
   activateTab,
@@ -76,7 +75,6 @@ export type ITab = {
 const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-  const [emailVerified, setEmailVerified] = useState<boolean>(false);
   const [mailResent, setMailResent] = useState(false);
 
   const currentUser = useContext(AuthContext);
@@ -132,21 +130,6 @@ const Workspace = () => {
     dispatch(openTab(defaultTab));
   }, []);
 
-  useEffect(() => {
-    const checkEmailVerification = async () => {
-      if (currentUser && currentUser.uid) {
-        try {
-          const verified = await isEmailVerified(currentUser);
-          setEmailVerified(verified);
-        } catch (error) {}
-      } else {
-        setEmailVerified(false);
-      }
-    };
-
-    checkEmailVerification();
-  }, [currentUser]);
-
   const handleProjectClick = async (project: Project) => {
     await setActiveProjectForUser(project.name, currentUser!.uid);
 
@@ -162,8 +145,13 @@ const Workspace = () => {
 
   return (
     <HStack h="100%">
-      {!emailVerified && (
-        <Modal isOpen={!emailVerified} onClose={() => {}} isCentered size="md">
+      {!currentUser?.emailVerified && (
+        <Modal
+          isOpen={!currentUser?.emailVerified}
+          onClose={() => {}}
+          isCentered
+          size="md"
+        >
           <ModalOverlay />
           <ModalContent
             bgColor={theme.colors[colorMode].secondaryContainer}
