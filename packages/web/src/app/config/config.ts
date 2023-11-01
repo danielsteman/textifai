@@ -6,6 +6,9 @@ const settings = {
     documents: {
       url: "https://textifai-documents-6ti4marjoq-ez.a.run.app",
     },
+    payments: {
+      url: "http://localhost:4242",
+    },
   },
   development: {
     chat: {
@@ -13,6 +16,9 @@ const settings = {
     },
     documents: {
       url: "http://localhost:3000",
+    },
+    payments: {
+      url: "http://localhost:4242",
     },
   },
 };

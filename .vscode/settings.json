@@ -10,20 +10,28 @@
             "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/web dev"
           ]
         },
+        // {
+        //   "name": "chat",
+        //   "commands": [
+        //     "yarn install",
+        //     "yarn workspace @textifai/chat build",
+        //     "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/chat dev"
+        //   ]
+        // },
+        // {
+        //   "name": "documents",
+        //   "commands": [
+        //     "yarn install",
+        //     "yarn workspace @textifai/documents build",
+        //     "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/documents dev"
+        //   ]
+        // },
         {
-          "name": "chat",
+          "name": "payments",
           "commands": [
             "yarn install",
-            "yarn workspace @textifai/chat build",
-            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/chat dev"
-          ]
-        },
-        {
-          "name": "documents",
-          "commands": [
-            "yarn install",
-            "yarn workspace @textifai/web documents",
-            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/documents dev"
+            "yarn workspace @textifai/payments build",
+            "env $(cat .vscode/.env | tr -s '\n' ' ') yarn workspace @textifai/payments dev"
           ]
         }
       ]

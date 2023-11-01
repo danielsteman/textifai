@@ -16,6 +16,8 @@ import CreateProject from "./routes/CreateProject";
 import PdfViewer from "./routes/PdfViewer";
 import AccountSettings from "./routes/AccountSettings";
 import EmailVerification from "./routes/VerifyEmail";
+import CheckoutCompleted from "./routes/CheckoutCompleted";
+import Payment from "../features/Checkout/Payment";
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +51,22 @@ export const router = createBrowserRouter([
     element: (
       <PrivateRoute>
         <EmailVerification />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/checkout-completed",
+    element: (
+      <PrivateRoute>
+        <CheckoutCompleted />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/checkout",
+    element: (
+      <PrivateRoute>
+        <Payment />
       </PrivateRoute>
     ),
   },

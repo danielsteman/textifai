@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import "./index.css";
@@ -10,6 +9,7 @@ import { ProjectProvider } from "./providers/ProjectProvider";
 import { Provider } from "react-redux";
 import { store } from "./store";
 
+// Force darkmode
 if (!localStorage.getItem("chakra-ui-color-mode-default")) {
   localStorage.setItem("chakra-ui-color-mode", "dark");
   localStorage.setItem("chakra-ui-color-mode-default", "set");

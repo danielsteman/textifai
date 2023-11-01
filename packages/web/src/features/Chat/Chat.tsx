@@ -25,17 +25,17 @@ import { RootState } from "../../app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
 import ExampleQuestions from "./ExampleQuestions";
-import { 
-  getConversation, 
-  addMessageToCollection, 
-  updateConversationDate, 
-  fetchConversationId, 
+import {
+  getConversation,
+  addMessageToCollection,
+  updateConversationDate,
+  fetchConversationId,
 } from "./ChatFuncs";
-import { useSelector, useDispatch } from 'react-redux';
-import { pushMessage } from './messageStackSlice'; 
-import { pushAnswer, replaceLastAnswer } from './answerStackSlice'; 
-import { setCurrentConversationId, setLoading } from './chatSlice';
-import { config } from "../../app/config";
+import { useSelector, useDispatch } from "react-redux";
+import { pushMessage } from "./messageStackSlice";
+import { pushAnswer, replaceLastAnswer } from "./answerStackSlice";
+import { setCurrentConversationId, setLoading } from "./chatSlice";
+import { config } from "../../app/config/config";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -48,22 +48,28 @@ const Chat = () => {
 
   const messageStack = useSelector((state: RootState) => state.messages);
   const answerStack = useSelector((state: RootState) => state.answers);
-  const selectedText = useSelector((state: RootState) => state.pdf.selectedText);
-  const currentConversationId = useSelector((state: RootState) => state.chat.currentConversationId);
-  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+  const selectedText = useSelector(
+    (state: RootState) => state.pdf.selectedText
+  );
+  const currentConversationId = useSelector(
+    (state: RootState) => state.chat.currentConversationId
+  );
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
   const loading = useSelector((state: RootState) => state.chat.loading);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (isProcessing) return;
-    
+
     if (selectedText && selectedText !== lastProcessedTextRef.current) {
-        setIsProcessing(true);
-        handleSubmit({ preventDefault: () => {} });
+      setIsProcessing(true);
+      handleSubmit({ preventDefault: () => {} });
     }
   }, [selectedText, isProcessing]);
-  
+
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
@@ -77,98 +83,124 @@ const Chat = () => {
   useEffect(() => {
     const getConversationId = async () => {
       if (currentUser && activeProjectId) {
-        const conversationId = await fetchConversationId(currentUser.uid, activeProjectId);
+        const conversationId = await fetchConversationId(
+          currentUser.uid,
+          activeProjectId
+        );
         if (conversationId) {
           dispatch(setCurrentConversationId(conversationId));
         }
       }
     };
-  
+
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
 
   const handleChatAction = async (regenerate = false, pdfText?: string) => {
     try {
-        dispatch(setLoading(true));
+      dispatch(setLoading(true));
 
-        let requestPayload;
-        if (pdfText) {
-            console.log("Handling PdfQa Chain...");
-            dispatch(pushMessage(pdfText));
-            setMessage("");
-            requestPayload = {
-                prompt: pdfText,
-                files: selectedDocuments,
-                option: 'pdfQa',
-            };
-        } else if (regenerate) {
-            console.log("Handling Regenerate Chain...");
-            const lastSystemMessage = answerStack[answerStack.length - 1];
-            requestPayload = {
-                prompt: lastSystemMessage,
-                option: "regenerate"
-            };
-        } else {
-            console.log("Handling Regular Chain...");
-            dispatch(pushMessage(message));
-            setMessage("");
-            
-            const updatedConversationHistory = await getConversation(currentConversationId!);
-            setConversationHistory(updatedConversationHistory);
+      let requestPayload;
+      if (pdfText) {
+        console.log("Handling PdfQa Chain...");
+        dispatch(pushMessage(pdfText));
+        setMessage("");
+        requestPayload = {
+          prompt: pdfText,
+          files: selectedDocuments,
+          option: "pdfQa",
+        };
+      } else if (regenerate) {
+        console.log("Handling Regenerate Chain...");
+        const lastSystemMessage = answerStack[answerStack.length - 1];
+        requestPayload = {
+          prompt: lastSystemMessage,
+          option: "regenerate",
+        };
+      } else {
+        console.log("Handling Regular Chain...");
+        dispatch(pushMessage(message));
+        setMessage("");
 
-            requestPayload = {
-                prompt: message,
-                history: conversationHistory,
-                option: "GeneralQa",
-                files: selectedDocuments,
-                userId: currentUser!.uid
-            };
-        }
+        const updatedConversationHistory = await getConversation(
+          currentConversationId!
+        );
+        setConversationHistory(updatedConversationHistory);
 
-        const res = await axios.post(`${config.chat.url}/api/chat/ask`, requestPayload);
-
-        if (pdfText) {
-            dispatch(pushAnswer(res.data.answer));
-            scrollToBottom();
-
-            await addMessageToCollection(pdfText, "user", currentConversationId, null);
-            await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
-            await updateConversationDate(currentConversationId!);
-
-        } else if (regenerate) {
-            dispatch(replaceLastAnswer(res.data.answer));
-        } else {
-            dispatch(pushAnswer(res.data.answer));
-            scrollToBottom();
-
-            await addMessageToCollection(message, "user", currentConversationId, null);
-            await addMessageToCollection(res.data.answer, "agent", currentConversationId, null);
-            await updateConversationDate(currentConversationId!);
-        }
-
-        dispatch(setLoading(false));
-
-    } catch (error) {
-        console.error("Error in handleChatAction:", error); 
+        requestPayload = {
+          prompt: message,
+          history: conversationHistory,
+          option: "GeneralQa",
+          files: selectedDocuments,
+          userId: currentUser!.uid,
+        };
       }
+
+      const res = await axios.post(
+        `${config.chat.url}/api/chat/ask`,
+        requestPayload
+      );
+
+      if (pdfText) {
+        dispatch(pushAnswer(res.data.answer));
+        scrollToBottom();
+
+        await addMessageToCollection(
+          pdfText,
+          "user",
+          currentConversationId,
+          null
+        );
+        await addMessageToCollection(
+          res.data.answer,
+          "agent",
+          currentConversationId,
+          null
+        );
+        await updateConversationDate(currentConversationId!);
+      } else if (regenerate) {
+        dispatch(replaceLastAnswer(res.data.answer));
+      } else {
+        dispatch(pushAnswer(res.data.answer));
+        scrollToBottom();
+
+        await addMessageToCollection(
+          message,
+          "user",
+          currentConversationId,
+          null
+        );
+        await addMessageToCollection(
+          res.data.answer,
+          "agent",
+          currentConversationId,
+          null
+        );
+        await updateConversationDate(currentConversationId!);
+      }
+
+      dispatch(setLoading(false));
+    } catch (error) {
+      console.error("Error in handleChatAction:", error);
+    }
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
-    console.log('handleSubmit called');
+    console.log("handleSubmit called");
     e.preventDefault();
-    
+
     if (selectedText && selectedText !== lastProcessedTextRef.current) {
-        await handleChatAction(false, selectedText);
-        lastProcessedTextRef.current = selectedText;
+      await handleChatAction(false, selectedText);
+      lastProcessedTextRef.current = selectedText;
     } else {
-        await handleChatAction(); 
+      await handleChatAction();
     }
-    
+
     setIsProcessing(false);
-};
+  };
 
   const handleRegenerate = () => {
-      handleChatAction(true);
+    handleChatAction(true);
   };
 
   function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -227,6 +259,6 @@ const Chat = () => {
       </form>
     </Flex>
   );
-  };
+};
 
-  export default Chat;
+export default Chat;

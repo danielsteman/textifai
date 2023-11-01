@@ -20,7 +20,7 @@ import {
   CollectionReference,
 } from "firebase/firestore";
 import axios from "axios";
-import { config } from "../../app/config";
+import { config } from "../../app/config/config";
 import theme from "../../app/themes/theme";
 import { setProjectId } from "../Workspace/projectSlice";
 import fetchProjectUid from "../Projects/fetchProjectId";

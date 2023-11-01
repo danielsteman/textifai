@@ -21,7 +21,7 @@ const swaggerData: any = fs.readFileSync(swaggerFile, "utf8");
 const swaggerDocument = YAML.parse(swaggerData);
 
 app.use(
-  "/docs",
+  "/api/documents/docs",
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocument, {
     swaggerOptions: {
