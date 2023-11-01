@@ -58,6 +58,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
         rounded={8}
         gap={0}
         w="fit-content"
+        maxW="80%"
         minH={8}
         alignItems="center"
       >
