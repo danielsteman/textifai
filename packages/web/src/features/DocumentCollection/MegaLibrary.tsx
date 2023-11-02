@@ -33,6 +33,7 @@ import {
   VStack,
   useColorMode,
   useDisclosure,
+  Center,
 } from "@chakra-ui/react";
 import { db, storage } from "../../app/config/firebase";
 import { deleteObject, ref } from "firebase/storage";
@@ -311,14 +312,14 @@ const MegaLibrary = () => {
     return () => unsubscribe();
   }, [currentUser, activeProjectId, documentLoading, selectedDocuments]); 
 
-  useEffect(() => {
-    if (documents.length === 0 && !documentLoading) {
-        const timeout = setTimeout(() => {
-            onUploadFileOpen();
-        }, 750);
-        return () => clearTimeout(timeout);
-    }
-  }, [documents, documentLoading]);
+  // useEffect(() => {
+  //   if (documents.length === 0 && !documentLoading) {
+  //       const timeout = setTimeout(() => {
+  //           onUploadFileOpen();
+  //       }, 750);
+  //       return () => clearTimeout(timeout);
+  //   }
+  // }, [documents, documentLoading]);
 
   useEffect(() => {
     const getConversationId = async () => {
@@ -648,6 +649,24 @@ const MegaLibrary = () => {
         </HStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1} overflow="auto">
+      {documents.length === 0 ? (
+        <>
+        <Center h="75%">
+          <VStack>
+            <Button
+              size="lg"
+              leftIcon={<MdUpload />}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
+              onClick={onUploadFileOpen} 
+              borderRadius={100}
+            >
+              Upload Documents
+            </Button>
+          </VStack>
+        </Center>
+        </>
+        ) : (
         <TableContainer width="100%">
           <Table size="sm">
             <Thead>
@@ -773,6 +792,7 @@ const MegaLibrary = () => {
             </Tbody>
           </Table>
         </TableContainer>
+        )}
       </GridItem>
     </Grid>
   );
