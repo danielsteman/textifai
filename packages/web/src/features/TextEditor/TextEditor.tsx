@@ -114,9 +114,12 @@ const TextEditor = () => {
       modules={{
         toolbar: [
           [{ header: "1" }, { header: "2" }],
-          ["bold", "italic", "underline"],
+          ["bold", "italic", "underline", "strike", "blockquote", "code-block"],
           ["link"],
-          [{ list: "ordered" }, { list: "bullet" }],
+          [{ list: "ordered" }, { list: "bullet" }], 
+          [{ 'script': 'sub'}, { 'script': 'super' }],  
+          [{indent: '-1'}, {indent: '+1'}],
+          [{align: null}, {align: "justify"}, {align: "center"}, {align: "right"}],
           ["image"],
           ["clean"],
         ],

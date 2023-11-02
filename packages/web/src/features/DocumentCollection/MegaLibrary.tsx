@@ -33,6 +33,7 @@ import {
   VStack,
   useColorMode,
   useDisclosure,
+  Center,
 } from "@chakra-ui/react";
 import { db, storage } from "../../app/config/firebase";
 import { deleteObject, ref } from "firebase/storage";
@@ -319,7 +320,6 @@ const MegaLibrary = () => {
               documentData.sampleQuestions
             );
             if (parsedQuestions.length > 0) {
-              console.log("Sample questions: ", parsedQuestions);
               fetchedSampleQuestions.push(parsedQuestions);
             }
           }
@@ -662,132 +662,153 @@ const MegaLibrary = () => {
         </HStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1} overflow="auto">
-        <TableContainer width="100%">
-          <Table size="sm">
-            <Thead>
-              <Tr>
-                <Th>
-                  <Checkbox
-                    isChecked={selectedDocuments.length === documents.length}
-                    onChange={toggleAllDocuments}
-                  />
-                </Th>
-                <Th>Title</Th>
-                <Th>Author(s)</Th>
-                <Th isNumeric>Year</Th>
-                <Th>Collection</Th>
-                <Th>Topics</Th>
-                <Th>Favorite</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {documents.length > 0 &&
-                documents
-                  .filter((doc) => {
-                    let matchesQuery = doc.uploadName.includes(documentQuery);
-                    let matchesYear =
-                      (!yearFilter && !isCustomRangeSelected) ||
-                      (yearFilter &&
-                        doc.creationDate.toDate().getFullYear() ===
-                          yearFilter) ||
-                      (isCustomRangeSelected &&
-                        customYearStart &&
-                        customYearEnd &&
-                        customYearStart <=
-                          doc.creationDate.toDate().getFullYear() &&
-                        doc.creationDate.toDate().getFullYear() <=
-                          customYearEnd);
-                    let matchesCollection =
-                      !collectionFilter ||
-                      (doc.tags && doc.tags.includes(collectionFilter));
-                    //let matchesProject = activeProject;
-                    let matchesFavorites = onlyFavoritesFilter
-                      ? !!doc.favoritedBy
-                      : true;
-                    return (
-                      matchesQuery &&
-                      matchesYear &&
-                      matchesCollection &&
-                      //matchesProject &&
-                      matchesFavorites
-                    );
-                  })
-                  .map((doc: Document) => (
-                    <Tr
-                      key={doc.uploadName}
-                      _hover={{
-                        bgColor:
-                          theme.colors[colorMode].surfaceContainerHighest,
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Td>
-                        <Checkbox
-                          isChecked={selectedDocuments.includes(doc.uploadName)}
-                          onChange={() =>
-                            handleDocumentCheckboxChange(doc.uploadName)
-                          }
-                        />
-                      </Td>
-                      <Td>
-                        <Button
-                          variant="link"
-                          onClick={() =>
-                            handleOpenDocumentInTab(doc.uploadName)
-                          }
-                        >
-                          {doc.uploadName}
-                        </Button>
-                      </Td>
-                      <Td>{doc.author}</Td>
-                      <Td isNumeric>
-                        {doc.creationDate.toDate().getFullYear()}
-                      </Td>
-                      <Td>
-                        <TagInput
-                          tags={doc.tags}
-                          onAddTag={(newTag) =>
-                            addCollectionToDocument(
-                              currentUser!.uid,
-                              activeProjectId!,
-                              doc.uploadName,
-                              newTag
-                            )
-                          }
-                          onDeleteTag={(tagToDelete) =>
-                            deleteCollectionFromDocument(
-                              currentUser!.uid,
-                              activeProjectId!,
-                              doc.uploadName,
-                              tagToDelete
-                            )
-                          }
-                        />
-                      </Td>
-                      <Td>{parseTopics(doc.topics)}</Td>
-                      <Td textAlign="center">
-                        <Icon
-                          as={FaStar}
-                          color={
-                            doc.favoritedBy
-                              ? theme.colors[colorMode].primary
-                              : "none"
-                          }
-                          onClick={() =>
-                            toggleFavourite(
-                              currentUser!.uid,
-                              activeProjectId!,
-                              doc.uploadName,
-                              !doc.favoritedBy
-                            )
-                          }
-                        />
-                      </Td>
-                    </Tr>
-                  ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
+        {documents.length === 0 ? (
+          <>
+            <Center h="75%">
+              <VStack>
+                <Button
+                  size="lg"
+                  leftIcon={<MdUpload />}
+                  bgColor={theme.colors[colorMode].secondaryContainer}
+                  textColor={theme.colors[colorMode].onSecondaryContainer}
+                  onClick={onUploadFileOpen}
+                  borderRadius={100}
+                >
+                  Upload Documents
+                </Button>
+              </VStack>
+            </Center>
+          </>
+        ) : (
+          <TableContainer width="100%">
+            <Table size="sm">
+              <Thead>
+                <Tr>
+                  <Th>
+                    <Checkbox
+                      isChecked={selectedDocuments.length === documents.length}
+                      onChange={toggleAllDocuments}
+                    />
+                  </Th>
+                  <Th>Title</Th>
+                  <Th>Author(s)</Th>
+                  <Th isNumeric>Year</Th>
+                  <Th>Collection</Th>
+                  <Th>Topics</Th>
+                  <Th>Favorite</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {documents.length > 0 &&
+                  documents
+                    .filter((doc) => {
+                      let matchesQuery = doc.uploadName.includes(documentQuery);
+                      let matchesYear =
+                        (!yearFilter && !isCustomRangeSelected) ||
+                        (yearFilter &&
+                          doc.creationDate.toDate().getFullYear() ===
+                            yearFilter) ||
+                        (isCustomRangeSelected &&
+                          customYearStart &&
+                          customYearEnd &&
+                          customYearStart <=
+                            doc.creationDate.toDate().getFullYear() &&
+                          doc.creationDate.toDate().getFullYear() <=
+                            customYearEnd);
+                      let matchesCollection =
+                        !collectionFilter ||
+                        (doc.tags && doc.tags.includes(collectionFilter));
+                      //let matchesProject = activeProject;
+                      let matchesFavorites = onlyFavoritesFilter
+                        ? !!doc.favoritedBy
+                        : true;
+                      return (
+                        matchesQuery &&
+                        matchesYear &&
+                        matchesCollection &&
+                        //matchesProject &&
+                        matchesFavorites
+                      );
+                    })
+                    .map((doc: Document) => (
+                      <Tr
+                        key={doc.uploadName}
+                        _hover={{
+                          bgColor:
+                            theme.colors[colorMode].surfaceContainerHighest,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Td>
+                          <Checkbox
+                            isChecked={selectedDocuments.includes(
+                              doc.uploadName
+                            )}
+                            onChange={() =>
+                              handleDocumentCheckboxChange(doc.uploadName)
+                            }
+                          />
+                        </Td>
+                        <Td>
+                          <Button
+                            variant="link"
+                            onClick={() =>
+                              handleOpenDocumentInTab(doc.uploadName)
+                            }
+                          >
+                            {doc.uploadName}
+                          </Button>
+                        </Td>
+                        <Td>{doc.author}</Td>
+                        <Td isNumeric>
+                          {doc.creationDate.toDate().getFullYear()}
+                        </Td>
+                        <Td>
+                          <TagInput
+                            tags={doc.tags}
+                            onAddTag={(newTag) =>
+                              addCollectionToDocument(
+                                currentUser!.uid,
+                                activeProjectId!,
+                                doc.uploadName,
+                                newTag
+                              )
+                            }
+                            onDeleteTag={(tagToDelete) =>
+                              deleteCollectionFromDocument(
+                                currentUser!.uid,
+                                activeProjectId!,
+                                doc.uploadName,
+                                tagToDelete
+                              )
+                            }
+                          />
+                        </Td>
+                        <Td>{parseTopics(doc.topics)}</Td>
+                        <Td textAlign="center">
+                          <Icon
+                            as={FaStar}
+                            color={
+                              doc.favoritedBy
+                                ? theme.colors[colorMode].primary
+                                : "none"
+                            }
+                            onClick={() =>
+                              toggleFavourite(
+                                currentUser!.uid,
+                                activeProjectId!,
+                                doc.uploadName,
+                                !doc.favoritedBy
+                              )
+                            }
+                          />
+                        </Td>
+                      </Tr>
+                    ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        )}
       </GridItem>
     </Grid>
   );

@@ -40,7 +40,6 @@ import { config } from "../../app/config/config";
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const [conversationHistory, setConversationHistory] = useState<string>("");
   const lastProcessedTextRef = useRef<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
@@ -125,11 +124,10 @@ const Chat = () => {
         const updatedConversationHistory = await getConversation(
           currentConversationId!
         );
-        setConversationHistory(updatedConversationHistory);
 
         requestPayload = {
           prompt: message,
-          history: conversationHistory,
+          history: updatedConversationHistory,
           option: "GeneralQa",
           files: selectedDocuments,
           userId: currentUser!.uid,
