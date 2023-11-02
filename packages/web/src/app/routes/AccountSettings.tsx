@@ -113,6 +113,7 @@ const AccountSettings = () => {
   };
 
   const navigate = useNavigate();
+
   const handleDeleteAccount = () => {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -123,10 +124,10 @@ const AccountSettings = () => {
           navigate("/");
         })
         .catch((error) => {
-          // Handle error during user deletion
+          console.warn("Failed to delete account!");
         });
     } else {
-      // Handle scenario where current user is not found
+      console.warn("User not found!");
     }
   };
 
