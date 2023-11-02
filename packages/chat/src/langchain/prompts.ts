@@ -54,23 +54,13 @@ const templates = {
         Final answer:
         `,
     inquiryTemplate:
-      `Given the following user prompt and conversation log, formulate a question that would be the most relevant to provide the user with an answer from a knowledge base.
-        You should follow the following rules when generating and answer:
-        - Always prioritize the user prompt over the conversation log.
-        - The conversation log consists of previous user prompts and ai generated responses.
-        - Ignore any conversation log that is not directly related to the user prompt.
-        - Only attempt to answer if a question was posed.
-        - The question should be a single sentence
-        - You should remove any punctuation from the question
-        - You should remove any words that are not relevant to the question
-        - If you are unable to formulate a question, respond with the same USER PROMPT you got.
-    
-        USER PROMPT: {userPrompt}
-    
-        CONVERSATION LOG: {conversationHistory}
-    
-        Final answer:
-        `,
+      `
+      Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
+      Chat History:
+      {conversationHistory}
+      Follow Up Input: {userPrompt}
+      Standalone question:
+      `,
     summerierTemplate:
       `Summarize the following text. You should follow the following rules when generating and answer:
       `,
