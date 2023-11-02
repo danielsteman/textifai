@@ -21,7 +21,6 @@ import theme from "../../app/themes/theme";
 import { User } from "@shared/interfaces/firebase/User";
 import { AuthContext } from "../providers/AuthProvider";
 import { getUser, updateUser } from "../../common/firestoreHelpers/users";
-import { db } from "../config/firebase";
 
 const AccountSettings = () => {
   const [user, setUser] = useState<User | undefined>();
