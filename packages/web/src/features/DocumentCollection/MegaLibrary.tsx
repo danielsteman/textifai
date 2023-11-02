@@ -300,7 +300,6 @@ const MegaLibrary = () => {
           if (documentData.sampleQuestions && typeof documentData.sampleQuestions === 'string') {
             const parsedQuestions = parseSampleQuestions(documentData.sampleQuestions);
             if (parsedQuestions.length > 0) {
-              console.log("Sample questions: ", parsedQuestions);
               fetchedSampleQuestions.push(parsedQuestions);
             }
           }
