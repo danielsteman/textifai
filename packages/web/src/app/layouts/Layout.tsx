@@ -21,8 +21,6 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ promoComponent }) => {
   const currentUser = useContext(AuthContext);
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
   const { colorMode } = useColorMode();
 
   return (
