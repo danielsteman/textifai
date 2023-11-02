@@ -312,15 +312,6 @@ const MegaLibrary = () => {
     return () => unsubscribe();
   }, [currentUser, activeProjectId, documentLoading, selectedDocuments]); 
 
-  // useEffect(() => {
-  //   if (documents.length === 0 && !documentLoading) {
-  //       const timeout = setTimeout(() => {
-  //           onUploadFileOpen();
-  //       }, 750);
-  //       return () => clearTimeout(timeout);
-  //   }
-  // }, [documents, documentLoading]);
-
   useEffect(() => {
     const getConversationId = async () => {
       if (currentUser && activeProjectId) {
