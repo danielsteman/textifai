@@ -139,6 +139,16 @@ const AccountSettings = () => {
       w="50%"
       m="auto"
     >
+      <Button
+        variant="ghost"
+        size="sm"
+        position="absolute"
+        top={"2em"}
+        right={"2em"}
+        onClick={() => navigate("/")}
+      >
+        Cancel
+      </Button>
       <Heading fontSize="2xl" mb={4}>
         Account settings
       </Heading>
