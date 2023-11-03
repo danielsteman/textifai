@@ -2,9 +2,10 @@ import { LLMChain } from "langchain/chains";
 import { PromptTemplate } from "langchain/prompts";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { templates } from "../langchain/prompts";
+import { templates } from "../utils/prompts";
 import { getMatchesFromEmbeddings } from "../pinecone/matches";
-import summarizer from "../langchain/summarizer";
+import summarizer from "../utils/summarizer";
+import { ScoredVector } from "@pinecone-database/pinecone";
 
 // Initialize OpenAI Embeddings
 const embed = new OpenAIEmbeddings({
@@ -17,13 +18,14 @@ let qaChain: LLMChain<string, ChatOpenAI>;
 const initializedChain = async () => {
   const chain = new ChatOpenAI({
     verbose: false,
-    modelName: "gpt-3.5-turbo",
+    modelName: "gpt-4",
+    temperature: 0.5
   });
 
   const qaChain = new LLMChain({
     prompt: new PromptTemplate({
       template: templates.qaTemplate,
-      inputVariables: ["summaries", "question", "conversationHistory"],
+      inputVariables: ["context", "question", "conversationHistory"],
     }),
     llm: chain,
     verbose: false,
@@ -40,7 +42,7 @@ let inquiryChain: LLMChain<string, ChatOpenAI>;
 const initializedInquiryChain = async () => {
   const llm = new ChatOpenAI({
     modelName: "gpt-4",
-    temperature: 0.1,
+    temperature: 0.3,
     topP: 1,
     frequencyPenalty: 0,
     presencePenalty: 1,
@@ -79,8 +81,13 @@ async function generalQaHandler(
 
   const vector = await embed.embedQuery(prompt);
   const matches = await getMatchesFromEmbeddings(vector, 3, files, userId);
+  //const filteredResults = matches.filter((match): match is ScoredVector & { score: number } => match.score !== undefined && match.score >= 0.75);
 
   console.log("Matches found: ", matches);
+
+  // Build new feature, 
+  // If there are no matches, return a that the question couldn't be answered 
+  // Create a new and more specified question and find relevant information
 
   interface Metadata {
     text: string;
@@ -93,8 +100,6 @@ async function generalQaHandler(
     accumulator.push(metadata.text);
     return accumulator;
   }, [] as string[]);
-
-  console.log("Documents found: ", docs);
 
   const allDocs = docs.join("\n");
 
@@ -111,7 +116,7 @@ async function generalQaHandler(
       : allDocs;
 
   const answer = await qaChain.call({
-    summaries: summary,
+    context: summary,
     question: inquiry,
     conversationHistory,
   });

@@ -1,14 +1,15 @@
 import { LLMChain } from "langchain/chains";
 import { PromptTemplate } from "langchain/prompts";
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { templates } from "../langchain/prompts";
+import { templates } from "../utils/prompts";
 
 // PDF QA chain initialization
 let pdfChain: LLMChain<string, ChatOpenAI>;
 const initializedPdfChain = async () => {
   const chain = new ChatOpenAI({
     verbose: false,
-    modelName: "gpt-3.5-turbo",
+    modelName: "gpt-4",
+    temperature: 0.5
   });
 
   const pdfChain = new LLMChain({
