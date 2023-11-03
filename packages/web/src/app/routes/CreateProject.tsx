@@ -106,7 +106,7 @@ const CreateProject = () => {
     >
       <Button
         variant="ghost"
-        size="sm"
+        size="md"
         position="absolute"
         top={"2em"}
         right={"2em"}
