@@ -12,6 +12,7 @@ import {
   FormErrorMessage,
   Tooltip,
   HStack,
+  FormLabel,
 } from "@chakra-ui/react";
 import { AiFillExclamationCircle } from "react-icons/ai";
 import { deleteUser } from "firebase/auth";
@@ -126,6 +127,7 @@ const AccountSettings = () => {
         <form onSubmit={handleSubmit}>
           <VStack gap={2} alignItems="start">
             <FormControl isInvalid={missingFirstName}>
+              <FormLabel>First name</FormLabel>
               <InputGroup size="md">
                 <Input
                   value={firstName}
@@ -134,6 +136,7 @@ const AccountSettings = () => {
                   }}
                   placeholder={user?.firstName}
                   bgColor={theme.colors[colorMode].surfaceContainerHigh}
+                  isRequired
                 />
               </InputGroup>
               {missingFirstName && (
@@ -141,6 +144,7 @@ const AccountSettings = () => {
               )}
             </FormControl>
             <FormControl isInvalid={missingLastName}>
+              <FormLabel>Last name</FormLabel>
               <InputGroup size="md">
                 <Input
                   value={lastName}
@@ -149,12 +153,16 @@ const AccountSettings = () => {
                   }}
                   placeholder={user?.lastName}
                   bgColor={theme.colors[colorMode].surfaceContainerHigh}
+                  isRequired
                 />
               </InputGroup>
               {missingLastName && (
                 <FormErrorMessage>Last name is required.</FormErrorMessage>
               )}
             </FormControl>
+            <Button type="submit" mt={4}>
+              Save
+            </Button>
             <Tooltip
               label="If you no longer want to use Textifai, you can permenantly delete your
         account. You can't undo this action."
@@ -164,11 +172,11 @@ const AccountSettings = () => {
                 variant="outline"
                 leftIcon={<Icon as={AiFillExclamationCircle} />}
                 onClick={handleDeleteAccount}
+                mt={8}
               >
                 Delete Account
               </Button>
             </Tooltip>
-            <Button type="submit">Save</Button>
           </VStack>
         </form>
       </HStack>
