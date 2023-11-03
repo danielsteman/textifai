@@ -82,6 +82,7 @@ import {
   toggleFavourite,
   handleUploadComplete,
   parseSampleQuestions,
+  updateFilename,
 } from "./libraryFuncs";
 import { setAnswers } from "../Chat/answerStackSlice";
 import { setMessages } from "../Chat/messageStackSlice";
@@ -95,6 +96,7 @@ const MegaLibrary = () => {
   const [documentQuery, setDocumentQuery] = useState<string>("");
   const [yearFilter, setYearFilter] = useState<number | null>(null);
   const [documentLoading, setDocumentLoading] = useState(true);
+  const [fileUpdated, setFileUpdated] = useState(false);
 
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
   const [onlyFavoritesFilter, setOnlyFavoritesFilter] =
@@ -293,7 +295,7 @@ const MegaLibrary = () => {
     });
 
     return () => unsubscribe();
-  }, [currentUser, activeProjectId, documentLoading]);
+  }, [currentUser, activeProjectId, documentLoading, fileUpdated]);
 
   useEffect(() => {
     if (!activeProjectId || !currentUser || documentLoading) return;
@@ -346,6 +348,21 @@ const MegaLibrary = () => {
 
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
+
+  const handleRightClick = (event: any, doc: any) => {
+    event.preventDefault(); 
+    
+    const newFileName = prompt('Enter the new file name', doc.fileName);
+    if (newFileName && newFileName !== doc.fileName) {
+      updateFilename(currentUser!.uid, activeProjectId!, doc.uploadName, newFileName)
+        .then(() => {
+          setFileUpdated(prevFlag => !prevFlag);
+        })
+        .catch(error => {
+          console.error('Failed to update file name:', error);
+        });
+    }
+  };
 
   return (
     <Grid
@@ -749,14 +766,14 @@ const MegaLibrary = () => {
                             }
                           />
                         </Td>
-                        <Td>
+                        <Td onContextMenu={(e) => handleRightClick(e, doc)}>
                           <Button
                             variant="link"
                             onClick={() =>
                               handleOpenDocumentInTab(doc.uploadName)
                             }
                           >
-                            {doc.uploadName}
+                            {doc.fileName}
                           </Button>
                         </Td>
                         <Td>{doc.author}</Td>

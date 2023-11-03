@@ -206,3 +206,54 @@ export const parseTopics = (topicsString: string): string => {
         return [];
     }
 };
+
+export const updateFilename = async (
+  currentUserUid: string,
+  activeProjectId: string,
+  oldFileName: string,
+  newFileName: string
+) => {
+  // Define the collection
+  const documentsCollection = collection(db, "uploads");
+
+  // Create a query for the old file name
+  const q = query(
+    documentsCollection,
+    where("uploadedBy", "==", currentUserUid),
+    where("uploadName", "==", oldFileName),
+    where("projectId", "==", activeProjectId)
+  );
+
+  try {
+    // Attempt to get the document with the old file name
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+      // Get the first document's reference
+      const docRef = doc(db, "uploads", snapshot.docs[0].id);
+
+      // Check if a file with the new file name already exists
+      const newNameQuery = query(
+        documentsCollection,
+        where("uploadedBy", "==", currentUserUid),
+        where("uploadName", "==", newFileName),
+        where("projectId", "==", activeProjectId)
+      );
+
+      const newNameSnapshot = await getDocs(newNameQuery);
+      if (newNameSnapshot.empty) {
+        // No document with the new file name exists, safe to update
+        await updateDoc(docRef, { fileName: newFileName });
+        console.log("File name updated successfully!");
+      } else {
+        // A document with the new file name already exists
+        throw new Error("A file with the new name already exists!");
+      }
+    } else {
+      throw new Error("Document with the specified file name not found or user mismatch!");
+    }
+  } catch (error) {
+    console.error("Error updating file name:", error);
+    throw error; // Re-throw the error if you want calling code to handle it
+  }
+};
+
