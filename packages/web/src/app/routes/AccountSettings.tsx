@@ -133,7 +133,6 @@ const AccountSettings = () => {
                     setFirstName(e.target.value);
                   }}
                   placeholder={user?.firstName}
-                  type="email"
                   bgColor={theme.colors[colorMode].surfaceContainerHigh}
                 />
               </InputGroup>
@@ -141,15 +140,14 @@ const AccountSettings = () => {
                 <FormErrorMessage>First name is required.</FormErrorMessage>
               )}
             </FormControl>
-            <FormControl isInvalid={missingFirstName}>
+            <FormControl isInvalid={missingLastName}>
               <InputGroup size="md">
                 <Input
-                  value={firstName}
+                  value={lastName}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setLastName(e.target.value);
                   }}
                   placeholder={user?.lastName}
-                  type="email"
                   bgColor={theme.colors[colorMode].surfaceContainerHigh}
                 />
               </InputGroup>
