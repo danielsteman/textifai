@@ -88,7 +88,7 @@ const AccountSettings = () => {
         position="absolute"
         top={"2em"}
         right={"2em"}
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/features/workspace")}
       >
         Cancel
       </Button>
