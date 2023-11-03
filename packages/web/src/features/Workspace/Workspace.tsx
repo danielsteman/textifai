@@ -309,6 +309,7 @@ const Workspace = () => {
           spacing={4}
           pb={3}
           pt={3}
+          px={8}
         >
           <IconButton
             aria-label="Open Menu"
