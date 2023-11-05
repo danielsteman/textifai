@@ -112,7 +112,7 @@ const templates = {
       promptClassifier: 
         `
         You will be presented with various user questions regarding documents they have uploaded. For each question, 
-        respond with either "RAG" if the question implies that Retrieval-Augmented Generation is the appropriate method to use, 
+        respond with either "rag" if the question implies that Retrieval-Augmented Generation is the appropriate method to use, 
         or "else" for methods that do not involve RAG.
 
         Note: "RAG" should be used when the question asks for specific information retrieval where a combination of retrieval 
@@ -122,24 +122,24 @@ const templates = {
         Example 1:
         User Question: What is the economic impact of climate change on weather conditions in The Netherlands?
         Answer Question 1:
-        RAG
+        rag
 
         Example 2:
         User Question: Give me a summary of the uploaded documents.
         Answer Question 2:
-        Else
+        else
 
         Example 3: 
         User Question:
         What are the net sales for the year 2023 and what were the main drivers of success?
         Answer Question 3:
-        RAG
+        rag
 
         Example 4: 
         User Question:
         Give me a detailed summary of the current economic status of the Dutch SME's?
         Answer Question 4:
-        Else
+        else
 
         Question: {question}
         `
