@@ -14,6 +14,10 @@ router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     let result;
+    // const classifier = await promptClassifierHandler(prompt);
+    // console.log("Prompt is classified as: ", classifier)
+
+    // result = "Status received"
     if (option === "regenerate") {
       result = await regenerateHandler(prompt);
     } else if (option === "pdfQa") {

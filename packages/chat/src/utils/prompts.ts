@@ -108,7 +108,40 @@ const templates = {
         Step-back Question: Who broadened the doctrine of philosophy of language?
 
         Proceed to generate a step-back question for the following original question: {question}
+        `, 
+      promptClassifier: 
         `
-    };
-    
+        You will be presented with various user questions regarding documents they have uploaded. For each question, 
+        respond with either "RAG" if the question implies that Retrieval-Augmented Generation is the appropriate method to use, 
+        or "else" for methods that do not involve RAG.
+
+        Note: "RAG" should be used when the question asks for specific information retrieval where a combination of retrieval 
+        and generation is necessary. Respond with "else" for queries asking for general document processing like summarization 
+        which does not specifically require the RAG method.
+
+        Example 1:
+        User Question: What is the economic impact of climate change on weather conditions in The Netherlands?
+        Answer Question 1:
+        RAG
+
+        Example 2:
+        User Question: Give me a summary of the uploaded documents.
+        Answer Question 2:
+        Else
+
+        Example 3: 
+        User Question:
+        What are the net sales for the year 2023 and what were the main drivers of success?
+        Answer Question 3:
+        RAG
+
+        Example 4: 
+        User Question:
+        Give me a detailed summary of the current economic status of the Dutch SME's?
+        Answer Question 4:
+        Else
+
+        Question: {question}
+        `
+      };
     export { templates };
