@@ -32,10 +32,7 @@ const AccountSettings = () => {
   const currentUser = useContext(AuthContext);
 
   useEffect(() => {
-    getUser(currentUser!.uid).then((userObject) => {
-      setUser(userObject);
-      console.log(userObject);
-    });
+    getUser(currentUser!.uid).then((userObject) => setUser(userObject));
   }, []);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,6 +48,7 @@ const AccountSettings = () => {
     e.preventDefault();
     setAttempts(attempts + 1);
     await updateUser(currentUser?.uid!, { firstName, lastName });
+    getUser(currentUser!.uid).then((userObject) => setUser(userObject));
   };
 
   const { colorMode } = useColorMode();
