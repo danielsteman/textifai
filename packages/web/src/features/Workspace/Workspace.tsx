@@ -73,6 +73,18 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom";
+import {
+  collection,
+  addDoc,
+  Timestamp,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc,
+  orderBy,
+  limit,
+} from "firebase/firestore";import { db } from "../../app/config/firebase";
 
 export type ITab = {
   name: string;
@@ -87,6 +99,7 @@ const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [mailResent, setMailResent] = useState(false);
+  const [conversations, setConversations] = useState<string[]>([]);
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
@@ -100,6 +113,9 @@ const Workspace = () => {
   );
   const activeProjectName = useSelector(
     (state: RootState) => state.activeProject.projectName
+  );
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
   );
 
   const toggleMenu = () => {
@@ -153,6 +169,25 @@ const Workspace = () => {
       setMailResent(true);
     }
   };
+
+  const fetchMessages = async () => {
+    try {
+      const q = query(
+        collection(db, "conversations"), 
+        where("userId", "==", currentUser!.uid), 
+        where("projectId", "==", activeProjectId)
+      );
+      const querySnapshot = await getDocs(q);
+      const fetchedConversationIds = querySnapshot.docs.map(doc => doc.id);
+      setConversations(fetchedConversationIds);
+    } catch (error) {
+      console.error("Error fetching messages: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, [activeProjectId, currentUser, dispatch]);
 
   return (
     <HStack h="100%">
@@ -310,30 +345,35 @@ const Workspace = () => {
             activeTabIndex &&
             openTabs[activeTabIndex].name === "Chat" && (
               <VStack w="100%">
-                <HStack
-                  w="100%"
-                  bgColor={theme.colors[colorMode].surfaceContainerHigh}
-                  borderRadius={8}
-                  px={4}
-                  py={3}
-                  cursor="pointer"
-                  _hover={{
-                    bgColor: theme.colors[colorMode].surfaceContainerHighest,
-                  }}
-                >
-                  <Heading size="sm" fontWeight={500}>
-                    Your first chat
-                  </Heading>
-                  <Spacer />
-                  <Box
-                    color={theme.colors[colorMode].onSurface}
+                {
+                  conversations.map((conversation) => (
+                  <HStack
+                    key={conversation}
+                    w="100%"
+                    bgColor={theme.colors[colorMode].surfaceContainerHigh} 
+                    borderRadius="lg" 
+                    px={4}
+                    py={3}
+                    cursor="pointer"
                     _hover={{
-                      color: theme.colors[colorMode].primary,
+                      bgColor: theme.colors[colorMode].surfaceContainerHighest, 
                     }}
                   >
-                    <FaTrash />
-                  </Box>
-                </HStack>
+                    <Heading size="sm" fontWeight={500}>
+                      {conversation} {/* Display the message ID */}
+                    </Heading>
+                    <Spacer />
+                    <Box
+                      color={theme.colors[colorMode].onSurface}
+                      _hover={{
+                        color: theme.colors[colorMode].primary,
+                      }}
+                    >
+                      <FaTrash />
+                    </Box>
+                  </HStack>
+                  ))
+                }
                 <HStack
                   w="100%"
                   borderStyle="dashed"
