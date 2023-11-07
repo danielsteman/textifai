@@ -442,7 +442,7 @@ const Workspace = () => {
           flexDirection="column"
         >
           <Flex direction="row" p={2}>
-            <TabList>
+            <TabList gap={2}>
               {openTabs.map((tab) => {
                 const defaultProps = {
                   borderRadius: "8px",
@@ -451,13 +451,14 @@ const Workspace = () => {
                   tab.name === openTabs[activeTabIndex].name
                     ? {
                         ...defaultProps,
-                        borderBottom: "2px",
-                        borderColor: theme.colors[colorMode].primary,
+                        backgroundColor:
+                          theme.colors[colorMode].surfaceContainerHigh,
                       }
                     : {
                         _hover: {
                           ...defaultProps,
-                          backgroundColor: theme.colors[colorMode].onPrimary,
+                          backgroundColor:
+                            theme.colors[colorMode].surfaceContainer,
                         },
                       };
                 return (
@@ -479,8 +480,9 @@ const Workspace = () => {
                       position={"absolute"}
                       right={0.5}
                       variant="ghost"
-                      borderRadius={16}
-                      top={1.5}
+                      borderRadius={4}
+                      right={2}
+                      top={2}
                       size="xs"
                       aria-label={"close"}
                       icon={<SmallCloseIcon />}
