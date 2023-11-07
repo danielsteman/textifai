@@ -7,8 +7,8 @@ import { templates } from "../utils/prompts";
 let regenerateChain: LLMChain<string, ChatOpenAI>;
 const initializedRegenerateChain = async () => {
   const llm = new ChatOpenAI({
-    modelName: "gpt-4",
-    temperature: 0.3,
+    modelName: "gpt-4-1106-preview",
+    temperature: 1,
     topP: 1,
     verbose: false,
   });

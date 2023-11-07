@@ -18,8 +18,8 @@ let qaChain: LLMChain<string, ChatOpenAI>;
 const initializedChain = async () => {
   const chain = new ChatOpenAI({
     verbose: false,
-    modelName: "gpt-4",
-    temperature: 0.5
+    modelName: "gpt-4-1106-preview",
+    temperature: 1
   });
 
   const qaChain = new LLMChain({
@@ -41,7 +41,7 @@ initializedChain().then((chain) => {
 let inquiryChain: LLMChain<string, ChatOpenAI>;
 const initializedInquiryChain = async () => {
   const llm = new ChatOpenAI({
-    modelName: "gpt-4",
+    modelName: "gpt-4-1106-preview",
     temperature: 0.3,
     topP: 1,
     frequencyPenalty: 0,
@@ -80,7 +80,7 @@ async function generalQaHandler(
   const inquiry = inquiryChainResult.text;
 
   const vector = await embed.embedQuery(prompt);
-  const matches = await getMatchesFromEmbeddings(vector, 3, files, userId);
+  const matches = await getMatchesFromEmbeddings(vector, 10, files, userId);
   //const filteredResults = matches.filter((match): match is ScoredVector & { score: number } => match.score !== undefined && match.score >= 0.75);
 
   console.log("Matches found: ", matches);
@@ -101,22 +101,10 @@ async function generalQaHandler(
     return accumulator;
   }, [] as string[]);
 
-  const allDocs = docs.join("\n");
-
-  if (allDocs.length > 4000) {
-    console.log(`Context too long, summarize...`);
-  }
-
-  const summary =
-    allDocs.length > 4000
-      ? await summarizer.summarizeLongDocument({
-          document: allDocs,
-          inquiry: prompt,
-        })
-      : allDocs;
+  const context = docs.join("\n");
 
   const answer = await qaChain.call({
-    context: summary,
+    context: context,
     question: inquiry,
     conversationHistory,
   });

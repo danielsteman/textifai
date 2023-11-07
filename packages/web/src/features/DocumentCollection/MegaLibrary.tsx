@@ -70,7 +70,7 @@ import { useNavigate } from "react-router-dom";
 import { setProjectId, setProjectName } from "../Workspace/projectSlice";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
-import { setCurrentConversationId } from "../Chat/chatSlice";
+import { setCurrentConversationId, setExtractedText } from "../Chat/chatSlice";
 import {
   fetchConversationId,
   fetchMessagesForConversation,
@@ -328,6 +328,32 @@ const MegaLibrary = () => {
         }
       });
       dispatch(setQuestions(fetchedSampleQuestions.flat()));
+    });
+
+    return () => unsubscribe();
+  }, [currentUser, activeProjectId, documentLoading, selectedDocuments]);
+
+  useEffect(() => {
+    if (!activeProjectId || !currentUser || documentLoading) return;
+  
+    const documentsCollection = collection(db, "uploads");
+    const q = query(
+      documentsCollection,
+      where("uploadedBy", "==", currentUser.uid),
+      where("projectId", "==", activeProjectId)
+    );
+  
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      let concatenatedExtractedText = '';
+  
+      snapshot.forEach((doc) => {
+        const documentData = doc.data();
+  
+        if (selectedDocuments.includes(documentData.uploadName)) {
+          concatenatedExtractedText += documentData.extractedText || '';
+        }
+      });
+      dispatch(setExtractedText(concatenatedExtractedText));
     });
 
     return () => unsubscribe();

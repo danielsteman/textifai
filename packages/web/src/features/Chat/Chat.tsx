@@ -57,6 +57,7 @@ const Chat = () => {
     (state: RootState) => state.activeProject.projectId
   );
   const loading = useSelector((state: RootState) => state.chat.loading);
+  const extractedText = useSelector((state: RootState) => state.chat.extractedText);
 
   const dispatch = useDispatch();
 
@@ -107,6 +108,7 @@ const Chat = () => {
         requestPayload = {
           prompt: pdfText,
           files: selectedDocuments,
+          extractedText: extractedText,
           option: "pdfQa",
         };
       } else if (regenerate) {
@@ -131,6 +133,7 @@ const Chat = () => {
           option: "GeneralQa",
           files: selectedDocuments,
           userId: currentUser!.uid,
+          extractedText: extractedText,
         };
       }
 
@@ -179,6 +182,7 @@ const Chat = () => {
 
       dispatch(setLoading(false));
     } catch (error) {
+      dispatch(setLoading(false));
       console.error("Error in handleChatAction:", error);
     }
   };

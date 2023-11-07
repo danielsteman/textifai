@@ -8,8 +8,8 @@ let pdfChain: LLMChain<string, ChatOpenAI>;
 const initializedPdfChain = async () => {
   const chain = new ChatOpenAI({
     verbose: false,
-    modelName: "gpt-4",
-    temperature: 0.5
+    modelName: "gpt-4-1106-preview",
+    temperature: 1
   });
 
   const pdfChain = new LLMChain({

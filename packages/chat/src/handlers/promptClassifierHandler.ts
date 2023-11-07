@@ -8,7 +8,7 @@ let promptClassifier: LLMChain<string, ChatOpenAI>;
 const categoriseChain = async () => {
   const chain = new ChatOpenAI({
     verbose: false,
-    modelName: "gpt-4",
+    modelName: "gpt-4-1106-preview",
     temperature: 1
   });
 

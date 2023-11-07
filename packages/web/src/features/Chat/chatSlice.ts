@@ -5,6 +5,7 @@ const chatSlice = createSlice({
   initialState: {
     currentConversationId: null,
     loading: false,
+    extractedText: '',
   },
   reducers: {
     setCurrentConversationId: (state, action) => {
@@ -13,9 +14,12 @@ const chatSlice = createSlice({
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
+    setExtractedText: (state, action) => {
+      state.extractedText = action.payload;
+    },
   },
 });
 
-export const { setCurrentConversationId, setLoading } = chatSlice.actions;
+export const { setCurrentConversationId, setLoading, setExtractedText } = chatSlice.actions;
 
 export default chatSlice.reducer;
