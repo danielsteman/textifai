@@ -45,6 +45,7 @@ import {
   FaBook,
   FaBookOpen,
   FaEdit,
+  FaPlus,
   FaRegFilePdf,
   FaTrash,
 } from "react-icons/fa";
@@ -330,6 +331,30 @@ const Workspace = () => {
                     <FaTrash />
                   </Box>
                 </HStack>
+                <HStack
+                  w="100%"
+                  bgColor={theme.colors[colorMode].surfaceContainerHigh}
+                  borderRadius={8}
+                  px={4}
+                  py={3}
+                  cursor="pointer"
+                  _hover={{
+                    bgColor: theme.colors[colorMode].surfaceContainerHighest,
+                  }}
+                >
+                  <Heading size="sm" fontWeight={300}>
+                    New chat
+                  </Heading>
+                  <Spacer />
+                  <Box
+                    color={theme.colors[colorMode].primary}
+                    _hover={{
+                      color: theme.colors[colorMode].primaryFixed,
+                    }}
+                  >
+                    <FaPlus />
+                  </Box>
+                </HStack>
               </VStack>
             )}
           <Spacer />
@@ -415,14 +440,19 @@ const Workspace = () => {
           <Flex direction="row" p={2}>
             <TabList>
               {openTabs.map((tab) => {
+                const defaultProps = {
+                  borderRadius: "8px",
+                };
                 const activeProps =
                   tab.name === openTabs[activeTabIndex].name
                     ? {
+                        ...defaultProps,
                         borderBottom: "2px",
                         borderColor: theme.colors[colorMode].primary,
                       }
                     : {
                         _hover: {
+                          ...defaultProps,
                           backgroundColor: theme.colors[colorMode].onPrimary,
                         },
                       };
