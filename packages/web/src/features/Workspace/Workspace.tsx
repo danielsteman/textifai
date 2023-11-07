@@ -478,10 +478,9 @@ const Workspace = () => {
                     </Tab>
                     <IconButton
                       position={"absolute"}
-                      right={0.5}
+                      right={2}
                       variant="ghost"
                       borderRadius={4}
-                      right={2}
                       top={2}
                       size="xs"
                       aria-label={"close"}
