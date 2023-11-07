@@ -314,13 +314,16 @@ const Workspace = () => {
                   w="100%"
                   bgColor={theme.colors[colorMode].surfaceContainerHigh}
                   borderRadius={8}
-                  p={4}
+                  px={4}
+                  py={3}
                   cursor="pointer"
                   _hover={{
                     bgColor: theme.colors[colorMode].surfaceContainerHighest,
                   }}
                 >
-                  <Heading size="sm">Your first chat</Heading>
+                  <Heading size="sm" fontWeight={500}>
+                    Your first chat
+                  </Heading>
                   <Spacer />
                   <Box
                     color={theme.colors[colorMode].primary}
@@ -333,16 +336,18 @@ const Workspace = () => {
                 </HStack>
                 <HStack
                   w="100%"
-                  bgColor={theme.colors[colorMode].surfaceContainerHigh}
+                  // bgColor={theme.colors[colorMode].surfaceContainerHigh}
+                  borderStyle="dashed"
+                  borderWidth={1}
                   borderRadius={8}
                   px={4}
                   py={3}
                   cursor="pointer"
                   _hover={{
-                    bgColor: theme.colors[colorMode].surfaceContainerHighest,
+                    bgColor: theme.colors[colorMode].surfaceContainerHigh,
                   }}
                 >
-                  <Heading size="sm" fontWeight={300}>
+                  <Heading size="sm" fontWeight={500}>
                     New chat
                   </Heading>
                   <Spacer />
