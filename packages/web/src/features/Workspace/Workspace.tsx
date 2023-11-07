@@ -210,7 +210,7 @@ const Workspace = () => {
               mb={2}
               w="100%"
               as={Button}
-              size="sm"
+              size="md"
               variant="ghost"
               rightIcon={<ChevronDownIcon />}
             >

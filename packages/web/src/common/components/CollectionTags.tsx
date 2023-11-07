@@ -1,5 +1,13 @@
-import React, { KeyboardEvent } from 'react';
-import { Tag, TagCloseButton, TagLabel, Input, Flex, useColorMode, Box, } from "@chakra-ui/react";
+import React, { KeyboardEvent } from "react";
+import {
+  Tag,
+  TagCloseButton,
+  TagLabel,
+  Input,
+  Flex,
+  useColorMode,
+  Box,
+} from "@chakra-ui/react";
 import theme from "../../app/themes/theme";
 
 type TagInputProps = {
@@ -12,24 +20,28 @@ const stringToHash = (str: string) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char; 
-    hash |= 0; 
+    hash = (hash << 5) - hash + char;
+    hash |= 0;
   }
   return hash;
 };
 
 const getColorForTag = (tag: string, colorMode: string) => {
   const colors = [
-    theme.colors[colorMode].onPrimary, 
-    theme.colors[colorMode].onSecondary, 
+    theme.colors[colorMode].onPrimary,
+    theme.colors[colorMode].onSecondary,
     theme.colors[colorMode].onTertiary,
-    theme.colors[colorMode].inverseOnSurface
+    theme.colors[colorMode].inverseOnSurface,
   ];
 
   return colors[Math.abs(stringToHash(tag)) % colors.length];
 };
 
-const TagInput: React.FC<TagInputProps> = ({ tags = [], onAddTag, onDeleteTag }) => {
+const TagInput: React.FC<TagInputProps> = ({
+  tags = [],
+  onAddTag,
+  onDeleteTag,
+}) => {
   const { colorMode } = useColorMode();
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
