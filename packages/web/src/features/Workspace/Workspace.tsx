@@ -305,31 +305,33 @@ const Workspace = () => {
             Library
           </Button>
           <Divider />
-          {openTabs[activeTabIndex].name === "Chat" && (
-            <VStack w="100%">
-              <HStack
-                w="100%"
-                bgColor={theme.colors[colorMode].surfaceContainerHigh}
-                borderRadius={8}
-                p={4}
-                cursor="pointer"
-                _hover={{
-                  bgColor: theme.colors[colorMode].surfaceContainerHighest,
-                }}
-              >
-                <Heading size="sm">Chat 1</Heading>
-                <Spacer />
-                <Box
-                  color={theme.colors[colorMode].primary}
+          {openTabs &&
+            activeTabIndex &&
+            openTabs[activeTabIndex].name === "Chat" && (
+              <VStack w="100%">
+                <HStack
+                  w="100%"
+                  bgColor={theme.colors[colorMode].surfaceContainerHigh}
+                  borderRadius={8}
+                  p={4}
+                  cursor="pointer"
                   _hover={{
-                    color: theme.colors[colorMode].primaryFixed,
+                    bgColor: theme.colors[colorMode].surfaceContainerHighest,
                   }}
                 >
-                  <FaTrash />
-                </Box>
-              </HStack>
-            </VStack>
-          )}
+                  <Heading size="sm">Your first chat</Heading>
+                  <Spacer />
+                  <Box
+                    color={theme.colors[colorMode].primary}
+                    _hover={{
+                      color: theme.colors[colorMode].primaryFixed,
+                    }}
+                  >
+                    <FaTrash />
+                  </Box>
+                </HStack>
+              </VStack>
+            )}
           <Spacer />
           <Divider />
           <UserCard />
@@ -421,9 +423,9 @@ const Workspace = () => {
                       }
                     : {
                         _hover: {
-                          backgroundColor: theme.colors[colorMode].onPrimary, 
+                          backgroundColor: theme.colors[colorMode].onPrimary,
                         },
-                    };
+                      };
                 return (
                   <Box
                     key={tab.name}
