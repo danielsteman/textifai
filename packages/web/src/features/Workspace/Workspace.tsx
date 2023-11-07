@@ -383,7 +383,11 @@ const Workspace = () => {
                         borderBottom: "2px",
                         borderColor: theme.colors[colorMode].primary,
                       }
-                    : {};
+                    : {
+                        _hover: {
+                          backgroundColor: theme.colors[colorMode].onPrimary, 
+                        },
+                    };
                 return (
                   <Box
                     key={tab.name}
@@ -395,6 +399,7 @@ const Workspace = () => {
                       px={12}
                       onClick={() => dispatch(activateTab(tab))}
                       whiteSpace="nowrap"
+                      borderRadius="lg"
                     >
                       {tab.name}
                     </Tab>
