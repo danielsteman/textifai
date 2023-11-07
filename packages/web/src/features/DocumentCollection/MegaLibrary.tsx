@@ -335,22 +335,22 @@ const MegaLibrary = () => {
 
   useEffect(() => {
     if (!activeProjectId || !currentUser || documentLoading) return;
-  
+
     const documentsCollection = collection(db, "uploads");
     const q = query(
       documentsCollection,
       where("uploadedBy", "==", currentUser.uid),
       where("projectId", "==", activeProjectId)
     );
-  
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      let concatenatedExtractedText = '';
-  
+      let concatenatedExtractedText = "";
+
       snapshot.forEach((doc) => {
         const documentData = doc.data();
-  
+
         if (selectedDocuments.includes(documentData.uploadName)) {
-          concatenatedExtractedText += documentData.extractedText || '';
+          concatenatedExtractedText += documentData.extractedText || "";
         }
       });
       dispatch(setExtractedText(concatenatedExtractedText));
@@ -376,16 +376,21 @@ const MegaLibrary = () => {
   }, [currentUser, activeProjectId, dispatch]);
 
   const handleRightClick = (event: any, doc: any) => {
-    event.preventDefault(); 
-    
-    const newFileName = prompt('Enter the new file name', doc.fileName);
+    event.preventDefault();
+
+    const newFileName = prompt("Enter the new file name", doc.fileName);
     if (newFileName && newFileName !== doc.fileName) {
-      updateFilename(currentUser!.uid, activeProjectId!, doc.uploadName, newFileName)
+      updateFilename(
+        currentUser!.uid,
+        activeProjectId!,
+        doc.uploadName,
+        newFileName
+      )
         .then(() => {
-          setFileUpdated(prevFlag => !prevFlag);
+          setFileUpdated((prevFlag) => !prevFlag);
         })
-        .catch(error => {
-          console.error('Failed to update file name:', error);
+        .catch((error) => {
+          console.error("Failed to update file name:", error);
         });
     }
   };
@@ -434,7 +439,9 @@ const MegaLibrary = () => {
           textColor={theme.colors[colorMode].onSurface}
           h="100%"
         >
-          <Heading size="xs">Filters</Heading>
+          <Heading size="sm" pl={2}>
+            Filters
+          </Heading>
           <Button
             bgColor={
               yearFilter === null &&
@@ -444,7 +451,7 @@ const MegaLibrary = () => {
                 : undefined
             }
             variant="ghost"
-            size="xs"
+            size="sm"
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setYearFilter(null);
@@ -461,7 +468,7 @@ const MegaLibrary = () => {
                 : undefined
             }
             variant="ghost"
-            size="xs"
+            size="sm"
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setIsCustomRangeSelected(false);
@@ -477,7 +484,7 @@ const MegaLibrary = () => {
                 : undefined
             }
             variant="ghost"
-            size="xs"
+            size="sm"
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setIsCustomRangeSelected(false);
@@ -494,7 +501,7 @@ const MegaLibrary = () => {
             }
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
-            size="xs"
+            size="sm"
             onClick={() => {
               setYearFilter(2021);
               setIsCustomRangeSelected(false);
@@ -510,7 +517,7 @@ const MegaLibrary = () => {
             }
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
-            size="xs"
+            size="sm"
             onClick={() => {
               setIsCustomRangeSelected(true);
               setYearFilter(null);
@@ -522,7 +529,7 @@ const MegaLibrary = () => {
             <HStack spacing={2}>
               <Input
                 placeholder="Start"
-                size="xs"
+                size="sm"
                 type="number"
                 value={customYearStart || ""}
                 onChange={(e) => setCustomYearStart(Number(e.target.value))}
@@ -532,7 +539,7 @@ const MegaLibrary = () => {
               <Text>-</Text>
               <Input
                 placeholder="End"
-                size="xs"
+                size="sm"
                 type="number"
                 value={customYearEnd || ""}
                 onChange={(e) => setCustomYearEnd(Number(e.target.value))}
@@ -548,14 +555,16 @@ const MegaLibrary = () => {
                 : undefined
             }
             variant="ghost"
-            size="xs"
+            size="sm"
             textColor={theme.colors[colorMode].onSurface}
             onClick={handleToggleFavoritesFilter}
           >
             Only show favorites
           </Button>
           <Box h={4} />
-          <Heading size="xs">Collections</Heading>
+          <Heading size="sm" pl={2}>
+            Collections
+          </Heading>
           {allCollections
             .filter((collection) => collection && collection.trim() !== "")
             .map((collection, index) => (
@@ -585,7 +594,7 @@ const MegaLibrary = () => {
           <Button
             textColor={theme.colors[colorMode].onTertiaryContainer}
             bgColor={theme.colors[colorMode].tertiaryContainer}
-            size="sm"
+            size="md"
             leftIcon={<FaRocket />}
             borderRadius={100}
             onClick={() => navigate("/features/onboarding")}
@@ -601,10 +610,12 @@ const MegaLibrary = () => {
           textColor={theme.colors[colorMode].onSurface}
           p={2}
         >
-          <Heading size="xs">Documents</Heading>
+          <Heading size="md" pl={4}>
+            Documents
+          </Heading>
           <Spacer />
           <Button
-            size="sm"
+            size="md"
             aria-label={"upload"}
             leftIcon={<MdUpload />}
             borderRadius={100}
@@ -628,7 +639,7 @@ const MegaLibrary = () => {
             </ModalContent>
           </Modal>
           <Button
-            size="sm"
+            size="md"
             aria-label={"ask tai"}
             leftIcon={<ChatIcon />}
             borderRadius={100}
@@ -652,7 +663,7 @@ const MegaLibrary = () => {
             Ask TAI
           </Button>
           <Button
-            size="sm"
+            size="md"
             borderRadius={100}
             bgColor={theme.colors[colorMode].tertiaryContainer}
             textColor={theme.colors[colorMode].onTertiaryContainer}
@@ -661,7 +672,7 @@ const MegaLibrary = () => {
           </Button>
           <Tooltip label="Select documents in the table below!">
             <IconButton
-              size="sm"
+              size="md"
               aria-label={"delete"}
               icon={<FaTrash />}
               onClick={onDeleteFileOpen}

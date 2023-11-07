@@ -258,7 +258,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
           Upload
         </Button>
       </Center>
-      <Center height="100%" width="100%" mt={4}>
+      <Center height="100%" width="100%" my={4}>
         {uploadStatusMessage}
       </Center>
     </Box>
