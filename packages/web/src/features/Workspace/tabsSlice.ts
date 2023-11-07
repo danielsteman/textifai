@@ -28,9 +28,10 @@ export const tabsSlice = createSlice({
       }
     },
     closeTab: (state, action: PayloadAction<ITab>) => {
-      state.openTabs = state.openTabs.filter(
-        (tab) => tab.name !== action.payload.name
-      );
+      state.openTabs =
+        state.openTabs.length > 1
+          ? state.openTabs.filter((tab) => tab.name !== action.payload.name)
+          : state.openTabs;
       state.activeTabIndex = state.openTabs.length - 1;
     },
     activateTab: (state, action: PayloadAction<ITab>) => {
