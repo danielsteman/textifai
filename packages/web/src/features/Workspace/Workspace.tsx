@@ -326,9 +326,9 @@ const Workspace = () => {
                   </Heading>
                   <Spacer />
                   <Box
-                    color={theme.colors[colorMode].primary}
+                    color={theme.colors[colorMode].onSurface}
                     _hover={{
-                      color: theme.colors[colorMode].primaryFixed,
+                      color: theme.colors[colorMode].primary,
                     }}
                   >
                     <FaTrash />
@@ -336,7 +336,6 @@ const Workspace = () => {
                 </HStack>
                 <HStack
                   w="100%"
-                  // bgColor={theme.colors[colorMode].surfaceContainerHigh}
                   borderStyle="dashed"
                   borderWidth={1}
                   borderRadius={8}
@@ -352,9 +351,9 @@ const Workspace = () => {
                   </Heading>
                   <Spacer />
                   <Box
-                    color={theme.colors[colorMode].primary}
+                    color={theme.colors[colorMode].onSurface}
                     _hover={{
-                      color: theme.colors[colorMode].primaryFixed,
+                      color: theme.colors[colorMode].primary,
                     }}
                   >
                     <FaPlus />
