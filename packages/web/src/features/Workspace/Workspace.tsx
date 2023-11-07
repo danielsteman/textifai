@@ -3,7 +3,6 @@ import {
   SmallCloseIcon,
   HamburgerIcon,
   ChevronDownIcon,
-  CloseIcon,
 } from "@chakra-ui/icons";
 import {
   Box,
@@ -33,9 +32,7 @@ import {
   ModalHeader,
   ModalOverlay,
   MenuDivider,
-  CloseButton,
   Heading,
-  Icon,
 } from "@chakra-ui/react";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
@@ -75,16 +72,12 @@ import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom";
 import {
   collection,
-  addDoc,
-  Timestamp,
   getDocs,
   query,
   where,
-  updateDoc,
-  doc,
-  orderBy,
-  limit,
-} from "firebase/firestore";import { db } from "../../app/config/firebase";
+} from "firebase/firestore";
+import { db } from "../../app/config/firebase";
+import { startConversation } from "../Chat/ChatFuncs";
 
 export type ITab = {
   name: string;
@@ -382,6 +375,11 @@ const Workspace = () => {
                   px={4}
                   py={3}
                   cursor="pointer"
+                  onClick={async () => { 
+                    const newChatId = await startConversation(currentUser!.uid, activeProjectId!);
+                    await fetchMessages();
+                    // Do something with newChatId, like navigating to the chat or updating state
+                  }}
                   _hover={{
                     bgColor: theme.colors[colorMode].surfaceContainerHigh,
                   }}
