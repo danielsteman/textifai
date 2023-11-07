@@ -3,6 +3,7 @@ import {
   SmallCloseIcon,
   HamburgerIcon,
   ChevronDownIcon,
+  CloseIcon,
 } from "@chakra-ui/icons";
 import {
   Box,
@@ -32,12 +33,21 @@ import {
   ModalHeader,
   ModalOverlay,
   MenuDivider,
+  CloseButton,
+  Heading,
+  Icon,
 } from "@chakra-ui/react";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
 import EditorPanel from "../../features/Workspace/panels/EditorPanel";
-import { FaBook, FaBookOpen, FaEdit, FaRegFilePdf } from "react-icons/fa";
+import {
+  FaBook,
+  FaBookOpen,
+  FaEdit,
+  FaRegFilePdf,
+  FaTrash,
+} from "react-icons/fa";
 import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
@@ -294,6 +304,32 @@ const Workspace = () => {
           >
             Library
           </Button>
+          <Divider />
+          {openTabs[activeTabIndex].name === "Chat" && (
+            <VStack w="100%">
+              <HStack
+                w="100%"
+                bgColor={theme.colors[colorMode].surfaceContainerHigh}
+                borderRadius={8}
+                p={4}
+                cursor="pointer"
+                _hover={{
+                  bgColor: theme.colors[colorMode].surfaceContainerHighest,
+                }}
+              >
+                <Heading size="sm">Chat 1</Heading>
+                <Spacer />
+                <Box
+                  color={theme.colors[colorMode].primary}
+                  _hover={{
+                    color: theme.colors[colorMode].primaryFixed,
+                  }}
+                >
+                  <FaTrash />
+                </Box>
+              </HStack>
+            </VStack>
+          )}
           <Spacer />
           <Divider />
           <UserCard />
