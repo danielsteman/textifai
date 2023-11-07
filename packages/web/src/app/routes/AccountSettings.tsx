@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { AiFillExclamationCircle } from "react-icons/ai";
 import { deleteUser } from "firebase/auth";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import theme from "../../app/themes/theme";
 import { User } from "@shared/interfaces/firebase/User";
@@ -35,7 +35,7 @@ const AccountSettings = () => {
     getUser(currentUser!.uid).then((userObject) => setUser(userObject));
   }, []);
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -44,11 +44,11 @@ const AccountSettings = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
     setAttempts(attempts + 1);
-    updateUser(currentUser?.uid!, { firstName, lastName }).then((res) =>
-      console.log(res)
-    );
+    await updateUser(currentUser?.uid!, { firstName, lastName });
+    getUser(currentUser!.uid).then((userObject) => setUser(userObject));
   };
 
   const { colorMode } = useColorMode();

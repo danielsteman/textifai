@@ -16,7 +16,7 @@ export const getUser = async (uid: string): Promise<User | undefined> => {
 export const updateUser = async (uid: string, fields: Partial<User>) => {
   const docRef = doc(db, "users", uid);
   try {
-    await updateDoc(docRef, fields as any);
+    await updateDoc(docRef, fields);
     console.log("Document updated successfully");
   } catch (error) {
     console.error("Error updating document: ", error);
