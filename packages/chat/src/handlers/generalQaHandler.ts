@@ -4,8 +4,6 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { templates } from "../utils/prompts";
 import { getMatchesFromEmbeddings } from "../pinecone/matches";
-import summarizer from "../utils/summarizer";
-import { ScoredVector } from "@pinecone-database/pinecone";
 
 // Initialize OpenAI Embeddings
 const embed = new OpenAIEmbeddings({

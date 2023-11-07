@@ -19,33 +19,6 @@ const templates = {
         
         Final Answer:
         `,
-      summarizerTemplate:
-        `Shorten the text in the CONTENT, attempting to answer the INQUIRY You should follow the following rules when generating the summary:
-          - Any code found in the CONTENT should ALWAYS be preserved in the summary, unchanged.
-          - Code will be surrounded by backticks (\`) or triple backticks (\`\`\`).
-          - Summary should include code examples that are relevant to the INQUIRY, based on the content. Do not make up any code examples on your own.
-          - The summary will answer the INQUIRY. If it cannot be answered, the summary should be empty, AND NO TEXT SHOULD BE RETURNED IN THE FINAL ANSWER AT ALL.
-          - If the INQUIRY cannot be answered, the final answer should be empty.
-          - The summary should be under 4000 characters.
-          - The summary should be 2000 characters long, if possible.
-      
-          INQUIRY: {inquiry}
-          CONTENT: {document}
-      
-          Final answer:
-          `,
-      summarizerDocumentTemplate:
-        `Summarize the text in the CONTENT. You should follow the following rules when generating the summary:
-          - Any code found in the CONTENT should ALWAYS be preserved in the summary, unchanged.
-          - Code will be surrounded by backticks (\`) or triple backticks (\`\`\`).
-          - Summary should include code examples when possible. Do not make up any code examples on your own.
-          - The summary should be under 4000 characters.
-          - The summary should be at least 1500 characters long, if possible.
-      
-          CONTENT: {document}
-      
-          Final answer:
-          `,
       inquiryTemplate:
         `
         Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
@@ -53,9 +26,6 @@ const templates = {
         {conversationHistory}
         Follow Up Input: {userPrompt}
         Standalone question:
-        `,
-      summerierTemplate:
-        `Summarize the following text. You should follow the following rules when generating and answer:
         `,
       regenerateTemplate: 
         `Paraphrase the text in the CONTENT. You should follow the following rules when paraphrasing the CONTENT:
@@ -150,45 +120,21 @@ const templates = {
         to the userPrompt, ensure your answer is both comprehensive and easily digestible, using a tone that bridges professional 
         insight with conversational clarity.
 
-        Please follow this structured approach to address the user's inquiry:
-
-        1. Executive Summary: Start with a succinct overview that encapsulates the essence of the user's query in a 
-           manner befitting a professional dialogue.
-        2. In-Depth Response:
-          - For financial questions: Offer detailed financial insights, interpret market data, and provide forward-looking 
-            statements based on the prompt.
-          - For legal requests: Analyze the legal context, clarify the ramifications of legal principles, and outline the 
-            practical application concerning the prompt.
-          - For research-related topics: Summarize the study's outcomes, discuss the relevance, and connect the findings to 
-            the field's current challenges or questions.
-        3. Key Insights: Distill the discussion into key insights, giving a concise rundown of the most significant points 
-           in an accessible format.
-        4. Supplementary Information: Where appropriate, include any ancillary information that could inform further inquiry 
-           or decision-making related to the prompt.
-        5. Conversational Conclusion: Wrap up the response with a brief conclusion that reiterates the answer in a manner that 
-           could naturally conclude a professional conversation.
-
         Throughout your response, apply professional language that remains approachable. Utilize bullet points, tables, and 
         structured paragraphs to aid comprehension. In instances where the information is not readily available, simply 
         state that you don't know and avoid making anything up.
+        
+        The final answer should be tailored to each prompt, ensuring a unique and clear structure that aids the user's understanding 
+        and should be formatted using react-markdown styling. 
 
-        Framework for your answer:
-
-        Executive Summary:
-        Present an overview in a conversational yet professional tone based on userPrompt
-
-        In-Depth Response:
-        Detailed explanation and analysis as required by the userPrompt's domain
-
-        Key Insights:
-        Itemize the most pertinent insights in response to the userPrompt
-
-        Supplementary Information:
-        Include additional relevant information if necessary
-
-        Conversational Conclusion:
-        Conclude the discussion with a professional, conversational recap of the findings
-
+        Header 1: # 
+        Header 2: ##
+        Header 3: ###
+        Italic: *text*
+        Bold: **text**
+        Strong: __text__
+        Ordered list: 1. text
+        Unorderder list: - text
         --------
         User Prompt: {userPrompt}
         --------
@@ -197,6 +143,7 @@ const templates = {
         Context: {context}
         --------
 
+      
         Final answer:
         `
       };

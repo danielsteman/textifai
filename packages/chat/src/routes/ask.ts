@@ -45,7 +45,6 @@ router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
         break;
       case 'else':
         result = await summarizationHandler(extractedText, prompt, conversationHistory)
-        console.log("Result received: ", result)
         if (result) {
           res.json(result);
         }

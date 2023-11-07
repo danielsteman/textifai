@@ -11,7 +11,7 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import theme from "../../app/themes/theme";
 import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
@@ -49,7 +49,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
     <HStack m={2}>
       {variant === "user" && <Spacer />}
       <Box
-        textColor={textColor}
+        color={textColor}
         bgColor={bgColor}
         pr={variant === "agent" ? 0 : 4}
         pl={variant === "agent" ? 8 : 4}

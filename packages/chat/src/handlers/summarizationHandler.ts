@@ -1,7 +1,6 @@
 import { LLMChain } from "langchain/chains";
 import { PromptTemplate } from "langchain/prompts";
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { templates } from "../utils/prompts";
 
 // Initialize QA Chain
