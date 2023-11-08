@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { getDatabaseReference } from "../db/getDatabaseReference";
+import { getDatabaseReference } from "../db/getFirebaseReference";
 
 export const getDocuments = async (
   req: Request,
