@@ -77,7 +77,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
-import { startConversation } from "../Chat/ChatFuncs";
+import { startConversation, deleteConversation } from "../Chat/ChatFuncs";
 import { setCurrentConversationId } from "../Chat/chatSlice";
 
 export type ITab = {
@@ -394,7 +394,12 @@ const Workspace = () => {
                         color: theme.colors[colorMode].primary,
                       }}
                     >
-                      <FaTrash />
+                      <FaTrash 
+                        onClick={ async () => { 
+                          deleteConversation(conversation)
+                          await fetchMessages();
+                        }}
+                      />
                     </Box>
                   </HStack>
                   ))

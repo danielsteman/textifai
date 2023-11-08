@@ -9,6 +9,7 @@ import {
   doc,
   orderBy,
   limit,
+  deleteDoc
 } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { Conversation } from "@shared/interfaces/firebase/Conversation";
@@ -35,6 +36,15 @@ export const startConversation = async (
     return conversationRef.id;
   } catch (error) {
     console.error("Error creating new conversation:", error);
+  }
+};
+
+export const deleteConversation = async (conversationId: string) => {
+  try {
+    await deleteDoc(doc(conversationsCollection, conversationId));
+    console.log("Document deleted successfully");
+  } catch (error) {
+    console.error("Error removing document: ", error);
   }
 };
 
