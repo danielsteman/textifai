@@ -20,5 +20,7 @@ export const getDocuments = async (
     console.log(file.name);
   });
 
-  res.status(200).send("ok");
+  const fileNames = uploads[0].map((doc) => doc.name);
+
+  res.status(200).send({ fileNames });
 };
