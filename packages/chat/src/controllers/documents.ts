@@ -16,10 +16,6 @@ export const getDocuments = async (
     prefix: `users/${currentUserId}/uploads`,
   });
 
-  uploads[0].forEach((file) => {
-    console.log(file.name);
-  });
-
   const fileNames = uploads[0].map((doc) => doc.name);
 
   res.status(200).send({ fileNames });
