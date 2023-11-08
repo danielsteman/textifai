@@ -670,7 +670,7 @@ const MegaLibrary = () => {
           >
             View selected documents
           </Button>
-          <Tooltip label="Select documents in the table below!">
+          <Tooltip label="Select documents in the table below">
             <IconButton
               size="md"
               aria-label={"delete"}

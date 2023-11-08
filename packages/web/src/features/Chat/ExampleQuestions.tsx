@@ -1,4 +1,4 @@
-import { Flex, HStack, Button, useColorMode, Box } from "@chakra-ui/react";
+import { Flex, HStack, Button, useColorMode, Box, Tooltip } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import theme from "../../app/themes/theme";
@@ -94,6 +94,7 @@ const ExampleQuestions = () => {
             bgColor={theme.colors[colorMode].secondaryContainer}
             textColor={theme.colors[colorMode].onSecondaryContainer}
           >
+            <Tooltip label={question} placement="top" hasArrow>
             <Box
               as="span"
               display="block"
@@ -104,6 +105,7 @@ const ExampleQuestions = () => {
             >
               {question}
             </Box>
+            </Tooltip>
           </Button>
         ))}
       </HStack>
@@ -118,6 +120,7 @@ const ExampleQuestions = () => {
             bgColor={theme.colors[colorMode].secondaryContainer}
             textColor={theme.colors[colorMode].onSecondaryContainer}
           >
+            <Tooltip label={question} placement="top" hasArrow>
             <Box
               as="span"
               display="block"
@@ -128,6 +131,7 @@ const ExampleQuestions = () => {
             >
               {question}
             </Box>
+            </Tooltip>
           </Button>
         ))}
       </HStack>

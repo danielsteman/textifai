@@ -102,6 +102,9 @@ const Workspace = () => {
 
   const dispatch = useDispatch();
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+  const currentConversationId = useSelector(
+    (state: RootState) => state.chat.currentConversationId
+  );
   const activeTabIndex = useSelector(
     (state: RootState) => state.tabs.activeTabIndex
   );
@@ -234,7 +237,9 @@ const Workspace = () => {
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}
           h="100%"
+          w="17.5em" 
           p={2}
+          overflowY="auto"
         >
           <Flex justifyContent="flex-end" w="100%">
             <IconButton
@@ -339,25 +344,47 @@ const Workspace = () => {
             activeTabIndex &&
             openTabs[activeTabIndex].name === "Chat" && (
               <VStack w="100%">
+                  <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
+                    Conversations
+                  </Heading>
+                <>
                 {
                   conversations.map((conversation) => (
                   <HStack
                     key={conversation}
                     w="100%"
-                    bgColor={theme.colors[colorMode].surfaceContainerHigh} 
+                    borderWidth="1px"
+                    borderColor={
+                      conversation === currentConversationId
+                        ? theme.colors[colorMode].primary
+                        : theme.colors[colorMode].surfaceContainerHigh
+                    }
                     borderRadius="lg" 
                     px={4}
                     py={3}
                     cursor="pointer"
                     _hover={{
-                      bgColor: theme.colors[colorMode].surfaceContainerHighest, 
+                      bgColor: conversation === currentConversationId
+                        ? theme.colors[colorMode].activeTabBg // Keep the active tab background color on hover
+                        : theme.colors[colorMode].surfaceContainerHighest, // Inactive tab background color on hover
+                      color: conversation === currentConversationId
+                        ? theme.colors[colorMode].activeTabText // Keep the active tab text color on hover
+                        : theme.colors[colorMode].onSurfaceContainerHover // Inactive tab text color on hover
                     }}
                     onClick={async () => { 
                       dispatch(setCurrentConversationId(conversation))
                       // Do something with newChatId, like navigating to the chat or updating state
                     }}
                   >
-                    <Heading size="sm" fontWeight={500}>
+                    <Heading 
+                      size="sm"
+                      fontWeight={500}
+                      isTruncated
+                      maxWidth="80%"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                    >
                       {conversation} {/* Display the message ID */}
                     </Heading>
                     <Spacer />
@@ -403,6 +430,7 @@ const Workspace = () => {
                     <FaPlus />
                   </Box>
                 </HStack>
+                </>
               </VStack>
             )}
           <Spacer />
