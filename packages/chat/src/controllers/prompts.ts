@@ -1,13 +1,15 @@
-import express, { Request, Response, NextFunction } from "express";
-import generalQaHandler from "../handlers/generalQaHandler";
-import regenerateHandler from "../handlers/regenerateHandler";
-import pdfQaHandler from "../handlers/pdfQaHandler";
+import { Request, Response, NextFunction } from "express";
 import promptClassifierHandler from "../handlers/promptClassifierHandler";
+import generalQaHandler from "../handlers/generalQaHandler";
+import pdfQaHandler from "../handlers/pdfQaHandler";
+import regenerateHandler from "../handlers/regenerateHandler";
 import summarizationHandler from "../handlers/summarizationHandler";
 
-const router = express.Router();
-
-router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
+export const postPrompt = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const prompt = req.body.prompt;
   const conversationHistory = req.body.history;
   const option = req.body.option;
@@ -65,6 +67,4 @@ router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     next(error);
   }
-});
-
-export default router;
+};
