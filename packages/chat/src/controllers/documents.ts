@@ -16,11 +16,9 @@ export const getDocuments = async (
     prefix: `users/${currentUserId}/uploads`,
   });
 
-  console.log("done loading files");
-
-  uploads.forEach((file) => {
+  uploads[0].forEach((file) => {
     console.log(file.name);
   });
 
-  return res.status(200);
+  res.status(200).send("ok");
 };
