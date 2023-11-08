@@ -131,7 +131,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               updatedDate: Timestamp.fromDate(new Date()),
               language: "english",
               isActive: true,
-              projects: [],
             };
 
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
