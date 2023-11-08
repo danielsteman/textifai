@@ -14,6 +14,22 @@ Following microservices architecture, the backend is separated into several smal
   - You can use `nvm` to easily switch between Node versions. Read [install instructions](https://github.com/nvm-sh/nvm).
 - Yarn
   - Is faster than NPM and be installed with [these instructions](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)
+- [gcloud cli](https://cloud.google.com/sdk/docs/install)
+
+### Authenticate
+
+Use [Application Default Credentials (ADC)](https://cloud.google.com/docs/authentication/provide-credentials-adc#local-dev)
+
+```
+gcloud init
+gcloud auth application-default login
+```
+
+When you're done:
+
+```
+gcloud auth application-default revoke
+```
 
 ### 🌎 Environment variables used by the Firebase client library:
 

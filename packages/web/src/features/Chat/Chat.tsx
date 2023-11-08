@@ -57,7 +57,9 @@ const Chat = () => {
     (state: RootState) => state.activeProject.projectId
   );
   const loading = useSelector((state: RootState) => state.chat.loading);
-  const extractedText = useSelector((state: RootState) => state.chat.extractedText);
+  const extractedText = useSelector(
+    (state: RootState) => state.chat.extractedText
+  );
 
   const dispatch = useDispatch();
 
@@ -136,6 +138,19 @@ const Chat = () => {
           extractedText: extractedText,
         };
       }
+
+      // DEBUG START
+
+      // const documentsRes = await axios.post(
+      //   `${config.chat.url}/api/chat/documents`,
+      //   { currentUserId: currentUser!.uid }
+      // );
+
+      // console.log(documentsRes);
+
+      // return;
+
+      // DEBUG END
 
       const res = await axios.post(
         `${config.chat.url}/api/chat/ask`,

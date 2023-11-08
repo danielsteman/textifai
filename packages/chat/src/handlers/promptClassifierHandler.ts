@@ -9,7 +9,7 @@ const categoriseChain = async () => {
   const chain = new ChatOpenAI({
     verbose: false,
     modelName: "gpt-4-1106-preview",
-    temperature: 1
+    temperature: 1,
   });
 
   const promptClassifier = new LLMChain({
@@ -29,7 +29,7 @@ categoriseChain().then((chain) => {
 });
 
 async function promptClassifierHandler(prompt: string) {
-  console.log("Classifiyingn prompt...");
+  console.log("Classifying prompt...");
   const answer = await promptClassifier.call({ question: prompt });
   console.log(answer.text);
   return { answer: answer.text };

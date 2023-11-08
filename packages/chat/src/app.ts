@@ -5,6 +5,9 @@ import swaggerUi from "swagger-ui-express";
 import router from "./routes/ask";
 import YAML from "yaml";
 import fs from "fs";
+import * as documentsController from "./controllers/documents";
+import { initializeApp } from "firebase-admin/app";
+import { getStorage } from "firebase-admin/storage";
 
 const port = process.env.PORT || 3001;
 
@@ -29,6 +32,7 @@ app.use(
 );
 
 app.use("/api/chat", router);
+app.post("/api/chat/documents", documentsController.getDocuments);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
