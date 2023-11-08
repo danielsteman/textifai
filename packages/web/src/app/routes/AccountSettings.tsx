@@ -109,7 +109,7 @@ const AccountSettings = () => {
                 onClick={() => fileInputRef.current?.click()}
                 cursor="pointer"
                 _hover={{
-                  bgColor: theme.colors[colorMode].tertiary,
+                  bgColor: theme.colors[colorMode].primaryFixed,
                   transitionDuration: "0.5s",
                   transitionTimingFunction: "ease-in-out",
                 }}
