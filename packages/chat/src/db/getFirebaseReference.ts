@@ -13,9 +13,9 @@ export const getFirebaseReference = () => {
 
 let storage: Storage | null = null;
 
-export const getDatabaseReference = () => {
+export const getStorageReference = () => {
   if (storage === null) {
-    const app = initializeApp();
+    const app = getFirebaseReference();
     storage = getStorage(app);
   }
   return storage;
@@ -25,6 +25,7 @@ let db: Firestore | null = null;
 
 export const getFirestoreReference = () => {
   if (db === null) {
+    getFirebaseReference();
     db = getFirestore();
   }
   return db;
