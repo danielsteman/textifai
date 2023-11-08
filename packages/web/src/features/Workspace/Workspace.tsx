@@ -78,6 +78,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { startConversation } from "../Chat/ChatFuncs";
+import { setCurrentConversationId } from "../Chat/chatSlice";
 
 export type ITab = {
   name: string;
@@ -351,6 +352,10 @@ const Workspace = () => {
                     _hover={{
                       bgColor: theme.colors[colorMode].surfaceContainerHighest, 
                     }}
+                    onClick={async () => { 
+                      dispatch(setCurrentConversationId(conversation))
+                      // Do something with newChatId, like navigating to the chat or updating state
+                    }}
                   >
                     <Heading size="sm" fontWeight={500}>
                       {conversation} {/* Display the message ID */}
@@ -376,8 +381,9 @@ const Workspace = () => {
                   py={3}
                   cursor="pointer"
                   onClick={async () => { 
-                    const newChatId = await startConversation(currentUser!.uid, activeProjectId!);
+                    const newConversationId = await startConversation(currentUser!.uid, activeProjectId!);
                     await fetchMessages();
+                    dispatch(setCurrentConversationId(newConversationId))
                     // Do something with newChatId, like navigating to the chat or updating state
                   }}
                   _hover={{
