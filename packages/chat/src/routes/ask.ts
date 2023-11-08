@@ -13,7 +13,7 @@ router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
   const option = req.body.option;
   const files = req.body.files;
   const userId = req.body.userId;
-  const extractedText = req.body.extractedText
+  const extractedText = req.body.extractedText;
 
   try {
     let result;
@@ -22,19 +22,24 @@ router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
     console.log("Prompt is classified as: ", classifier);
 
     switch (classifier) {
-      case 'rag':
+      case "rag":
         switch (option) {
           case "regenerate":
-            result = await regenerateHandler(prompt);            
-            console.log("Result received: ", result)
+            result = await regenerateHandler(prompt);
+            console.log("Result received: ", result);
             break;
           case "pdfQa":
-            result = await pdfQaHandler(prompt)
-            console.log("Result received: ", result)
+            result = await pdfQaHandler(prompt);
+            console.log("Result received: ", result);
             break;
           case "GeneralQa":
-            result = await generalQaHandler(prompt, conversationHistory, files, userId);
-            console.log("Result received: ", result)
+            result = await generalQaHandler(
+              prompt,
+              conversationHistory,
+              files,
+              userId
+            );
+            console.log("Result received: ", result);
             break;
           default:
             return res.status(400).send("Invalid option provided.");
@@ -43,20 +48,23 @@ router.post("/ask", async (req: Request, res: Response, next: NextFunction) => {
           res.json(result);
         }
         break;
-      case 'else':
-        result = await summarizationHandler(extractedText, prompt, conversationHistory)
+      case "else":
+        result = await summarizationHandler(
+          extractedText,
+          prompt,
+          conversationHistory
+        );
         if (result) {
           res.json(result);
         }
         break;
-        default:
-          res.status(400).send("Unknown classifier response.");
-          break;
-      }
-    } catch (error) {
-      next(error);
+      default:
+        res.status(400).send("Unknown classifier response.");
+        break;
     }
+  } catch (error) {
+    next(error);
   }
-)
+});
 
 export default router;
