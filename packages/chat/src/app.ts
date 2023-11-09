@@ -30,6 +30,7 @@ app.use(
 );
 
 app.post("/api/chat/ask", promptsController.postPrompt);
+app.post("/api/chat/rag", promptsController.postStreamingRAGPrompt);
 app.get("/api/chat/documents", documentsController.getDocuments);
 
 app.listen(port, () => {

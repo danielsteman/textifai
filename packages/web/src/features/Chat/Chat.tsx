@@ -152,6 +152,8 @@ const Chat = () => {
 
       // DEBUG END
 
+      console.log(requestPayload);
+
       const res = await axios.post(
         `${config.chat.url}/api/chat/ask`,
         requestPayload
