@@ -4,7 +4,6 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { templates } from "../utils/prompts";
 import { getMatchesFromEmbeddings } from "../pinecone/matches";
-import { StringOutputParser } from "langchain/schema/output_parser";
 
 interface Metadata {
   text: string;
@@ -85,37 +84,15 @@ export const retrievalAugmentedGenerator = async (
   });
   const promptTemplate = PromptTemplate.fromTemplate(templates.qaTemplate);
   const runnable = promptTemplate.pipe(llm);
-  const response = await runnable.stream({
-    context: "Tell me a joke about a bear",
-    question: "Tell me a joke about a bear",
-    conversationHistory: "conversationHistory",
+  const stream = await runnable.stream({
+    context,
+    question: inquiry,
+    conversationHistory,
   });
-  for await (const chunk of response) {
-    console.log(chunk);
-  }
-
-  // const stream = await qaChain.stream({
-  //   context: context,
-  //   question: inquiry,
-  //   conversationHistory,
-  // });
 
   // for await (const chunk of stream) {
   //   console.log(chunk);
   // }
 
-  // const chatDebug = new ChatOpenAI({
-  //   maxTokens: 25,
-  // });
-  // Pass in a human message. Also accepts a raw string, which is automatically
-  // inferred to be a human message.
-  // const parser = new StringOutputParser();
-  // const streamDebug = await chatDebug
-  //   .pipe(parser)
-  //   .stream("Tell me a joke about bears.");
-  // for await (const chunk of streamDebug) {
-  //   console.log(chunk);
-  // }
-
-  // return { stream };
+  return { stream };
 };
