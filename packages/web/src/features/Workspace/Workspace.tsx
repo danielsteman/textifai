@@ -45,6 +45,7 @@ import {
   FaPlus,
   FaRegFilePdf,
   FaTrash,
+  FaPen,
 } from "react-icons/fa";
 import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
@@ -74,6 +75,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { startConversation, deleteConversation } from "../Chat/ChatFuncs";
 import { setCurrentConversationId } from "../Chat/chatSlice";
+import { deleteProject } from "../Projects/deleteProject";
 
 export type ITab = {
   name: string;
@@ -232,7 +234,7 @@ const Workspace = () => {
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}
           h="100%"
-          w="16.5em"
+          w="17.5em"
           p={2}
           overflowY="auto"
         >
@@ -266,7 +268,26 @@ const Workspace = () => {
                       handleProjectClick(project);
                     }}
                   >
-                    {project.name}
+                    <HStack justifyContent="space-between" width="100%">
+                      <Text isTruncated>{project.name}</Text>
+                      <HStack spacing={0}>
+                        <Tooltip label="Delete project">
+                          <IconButton
+                            icon={<FaTrash />}
+                            aria-label="Delete"
+                            size="sm"
+                            variant="ghost"
+                            _hover={{
+                              color: theme.colors[colorMode].primary,
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteProject(activeProjectId!, currentUser!.uid);
+                            }}
+                          />
+                        </Tooltip>
+                      </HStack>
+                    </HStack>
                   </MenuItem>
                 ))}
                 <MenuDivider />
