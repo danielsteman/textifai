@@ -4,6 +4,8 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { templates } from "../utils/prompts";
 import { getMatchesFromEmbeddings } from "../pinecone/matches";
+import { IterableReadableStream } from "langchain/dist/util/stream";
+import { BaseMessageChunk } from "langchain/dist/schema";
 
 interface Metadata {
   text: string;
@@ -94,5 +96,5 @@ export const retrievalAugmentedGenerator = async (
   //   console.log(chunk);
   // }
 
-  return { stream };
+  return stream;
 };

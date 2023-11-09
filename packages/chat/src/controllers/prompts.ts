@@ -87,5 +87,9 @@ export const postStreamingRAGPrompt = async (
     userId
   );
 
-  res.status(200).json(stream);
+  for await (const chunk of stream) {
+    res.write(chunk?.content);
+  }
+
+  res.status(200).end();
 };
