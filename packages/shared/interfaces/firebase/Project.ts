@@ -6,5 +6,4 @@ export interface Project {
   industry: string;
   users: string[];
   creationDate: Timestamp;
-  //active: boolean;
 }

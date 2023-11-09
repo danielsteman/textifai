@@ -35,6 +35,7 @@ import AuthError from "./AuthError";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { Timestamp, doc, setDoc } from "firebase/firestore";
 import { User } from "@shared/interfaces/firebase/User";
+import { Project } from "@shared/interfaces/firebase/Project";
 import theme from "../../app/themes/theme";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -117,7 +118,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
             if (userCredential.user) {
               sendEmailVerification(userCredential.user);
-              //console.log("Verification email sent.");
             }
 
             const userData: User = {
@@ -133,7 +133,16 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               isActive: true,
             };
 
+            const projectData: Project = {
+              name: "My project",
+              description: "",
+              industry: "",
+              users: [userCredential.user.uid],
+              creationDate: Timestamp.fromDate(new Date())
+            };
+
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
+            await setDoc(doc(db, "projects"), projectData);
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
             });
