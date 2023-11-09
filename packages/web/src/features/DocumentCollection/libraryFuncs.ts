@@ -13,10 +13,6 @@ import {
   where,
 } from "firebase/firestore";
 
-export const handleUploadComplete = () => {
-    console.log("Upload complete!");
-  };
-
 export const handleDeleteDocument = async (
     currentUser: any, 
     activeProjectId: string, 

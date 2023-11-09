@@ -80,7 +80,6 @@ import {
   deleteCollectionFromDocument,
   parseTopics,
   toggleFavourite,
-  handleUploadComplete,
   parseSampleQuestions,
   updateFilename,
 } from "./libraryFuncs";
@@ -296,6 +295,15 @@ const MegaLibrary = () => {
 
     return () => unsubscribe();
   }, [currentUser, activeProjectId, documentLoading, fileUpdated]);
+
+  const handleUploadComplete = () => {
+    console.log("Upload complete!");
+    
+    setTimeout(() => {
+      console.log("Closing the modal after 5 seconds...");
+      onUploadFileClose(); 
+    }, 5000);
+  };
 
   useEffect(() => {
     if (!activeProjectId || !currentUser || documentLoading) return;
