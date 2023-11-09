@@ -10,6 +10,7 @@ import {
   useColorMode,
   Spacer,
   Text,
+  Heading,
 } from "@chakra-ui/react";
 import { useContext, useState } from "react";
 import theme from "../../app/themes/theme";
@@ -45,6 +46,12 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
     setMenuClicked(true);
   };
 
+  const markdownComponentMapping = {
+    h1: ({ ...props }) => <Heading size="lg">{props.children}</Heading>,
+    h2: ({ ...props }) => <Heading size="md">{props.children}</Heading>,
+    h3: ({ ...props }) => <Heading size="sm">{props.children}</Heading>,
+  };
+
   return (
     <HStack m={2}>
       {variant === "user" && <Spacer />}
@@ -63,7 +70,9 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       >
         <HStack spacing={2}>
           <VStack spacing={0} flex="1" alignItems="start">
-            <ReactMarkdown>{message}</ReactMarkdown>
+            <ReactMarkdown components={markdownComponentMapping}>
+              {message}
+            </ReactMarkdown>
           </VStack>
           {!menuClicked && variant === "agent" && (
             <Menu>
