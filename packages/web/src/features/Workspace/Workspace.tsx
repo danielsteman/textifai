@@ -360,16 +360,15 @@ const Workspace = () => {
                       _hover={{
                         bgColor:
                           conversation === currentConversationId
-                            ? theme.colors[colorMode].activeTabBg // Keep the active tab background color on hover
-                            : theme.colors[colorMode].surfaceContainerHighest, // Inactive tab background color on hover
+                            ? theme.colors[colorMode].activeTabBg
+                            : theme.colors[colorMode].surfaceContainerHighest, 
                         color:
                           conversation === currentConversationId
-                            ? theme.colors[colorMode].activeTabText // Keep the active tab text color on hover
-                            : theme.colors[colorMode].onSurfaceContainerHover, // Inactive tab text color on hover
+                            ? theme.colors[colorMode].activeTabText 
+                            : theme.colors[colorMode].onSurfaceContainerHover, 
                       }}
                       onClick={async () => {
                         dispatch(setCurrentConversationId(conversation));
-                        // Do something with newChatId, like navigating to the chat or updating state
                       }}
                     >
                       <Heading
@@ -379,7 +378,7 @@ const Workspace = () => {
                         textOverflow="ellipsis"
                         whiteSpace="nowrap"
                       >
-                        {conversation} {/* Display the message ID */}
+                        {conversation}
                       </Heading>
                       <Spacer />
                       <Box
@@ -388,7 +387,12 @@ const Workspace = () => {
                           color: theme.colors[colorMode].primary,
                         }}
                       >
-                        <FaTrash />
+                        <FaTrash 
+                          onClick={async () => {
+                            await deleteConversation(conversation!);
+                            await await fetchMessages();
+                          }}
+                        />
                       </Box>
                     </HStack>
                   ))}
@@ -407,7 +411,6 @@ const Workspace = () => {
                       );
                       await fetchMessages();
                       dispatch(setCurrentConversationId(newConversationId));
-                      // Do something with newChatId, like navigating to the chat or updating state
                     }}
                     _hover={{
                       bgColor: theme.colors[colorMode].surfaceContainerHigh,
