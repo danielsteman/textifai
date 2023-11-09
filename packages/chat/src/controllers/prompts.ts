@@ -4,6 +4,7 @@ import generalQaHandler from "../handlers/generalQaHandler";
 import pdfQaHandler from "../handlers/pdfQaHandler";
 import regenerateHandler from "../handlers/regenerateHandler";
 import summarizationHandler from "../handlers/summarizationHandler";
+import { retrievalAugmentedGenerator } from "../services/retrievalAugmentedGenerator";
 
 export const postPrompt = async (
   req: Request,
@@ -67,4 +68,24 @@ export const postPrompt = async (
   } catch (error) {
     next(error);
   }
+};
+
+export const postStreamingRAGPrompt = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const prompt = req.body.prompt;
+  const conversationHistory = req.body.history;
+  const files = req.body.files;
+  const userId = req.body.userId;
+
+  const stream = await retrievalAugmentedGenerator(
+    prompt,
+    conversationHistory,
+    files,
+    userId
+  );
+
+  res.status(200).json(stream);
 };
