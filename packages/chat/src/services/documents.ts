@@ -1,9 +1,12 @@
+import { DocumentData } from "firebase-admin/firestore";
 import {
   getFirestoreReference,
   getStorageReference,
 } from "../db/getFirebaseReference";
 
-export const getDocumentContent = async (userId: string) => {
+export const getDocumentContent = async (
+  userId: string
+): Promise<DocumentData[]> => {
   const db = getFirestoreReference();
   const uploadedDocumentsRef = db.collection("uploads");
   const snapshot = await uploadedDocumentsRef
@@ -12,11 +15,11 @@ export const getDocumentContent = async (userId: string) => {
     .get();
 
   if (snapshot.empty) {
-    console.log("No matching documents.");
-    return;
+    console.log(`No documents found for ${userId}.`);
+    return [];
   }
 
-  const documents: any = [];
+  const documents: DocumentData[] = [];
 
   snapshot.forEach((doc) => {
     const data = doc.data();
