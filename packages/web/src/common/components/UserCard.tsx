@@ -38,17 +38,20 @@ const UserCard = () => {
     >
       <VStack align="start" spacing={2}>
         <HStack gap={2} w="100%">
-          <Avatar size="sm" />
-          <Heading
-            size="xs"
-            color={theme.colors[colorMode].onSecondaryContainer}
-            whiteSpace="nowrap"
-          >
-            {currentUser?.displayName &&
-              shortenString(currentUser?.displayName, 14)}
-          </Heading>
-          <Spacer />
           <Menu>
+            <MenuButton>
+              <Avatar size="sm" />
+            </MenuButton>
+            <Heading
+              size="xs"
+              color={theme.colors[colorMode].onSecondaryContainer}
+              whiteSpace="nowrap"
+            >
+              {currentUser?.displayName &&
+                shortenString(currentUser?.displayName, 14)}
+            </Heading>
+            <Spacer />
+
             <MenuButton
               as={IconButton}
               icon={<UpDownIcon />}
