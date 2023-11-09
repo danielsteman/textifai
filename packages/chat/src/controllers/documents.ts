@@ -1,22 +1,21 @@
 import { NextFunction, Request, Response } from "express";
-import { getDatabaseReference } from "../db/getDatabaseReference";
+import { getDocumentContent } from "../services/documents";
+
+interface QueryParamProps {
+  userId: string;
+}
 
 export const getDocuments = async (
-  req: Request,
+  req: Request<{}, {}, {}, QueryParamProps>,
   res: Response,
   next: NextFunction
 ) => {
-  console.log(req.body.currentUserId);
+  const userId: string = req.query.userId;
 
-  const currentUserId = req.body.currentUserId;
+  if (!userId) {
+    return res.status(422).json({ error: "The userId has not been received" });
+  }
 
-  const db = getDatabaseReference();
-  const users = db.bucket("textifai-g5njdml004.appspot.com");
-  const uploads = await users.getFiles({
-    prefix: `users/${currentUserId}/uploads`,
-  });
-
-  const fileNames = uploads[0].map((doc) => doc.name);
-
-  res.status(200).send({ fileNames });
+  const uploadedDocumentsContents = await getDocumentContent(userId);
+  return res.status(200).json({ uploadedDocumentsContents });
 };

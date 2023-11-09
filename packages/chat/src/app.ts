@@ -2,10 +2,10 @@ import express, { Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
-import router from "./routes/ask";
 import YAML from "yaml";
 import fs from "fs";
 import * as documentsController from "./controllers/documents";
+import * as promptsController from "./controllers/prompts";
 
 const port = process.env.PORT || 3001;
 
@@ -29,8 +29,8 @@ app.use(
   })
 );
 
-app.use("/api/chat", router);
-app.post("/api/chat/documents", documentsController.getDocuments);
+app.post("/api/chat/ask", promptsController.postPrompt);
+app.get("/api/chat/documents", documentsController.getDocuments);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
