@@ -12,6 +12,7 @@ import {
   MenuList,
   Heading,
   Text,
+  Spacer,
 } from "@chakra-ui/react";
 import { SettingsIcon, UpDownIcon } from "@chakra-ui/icons";
 import { auth } from "../../app/config/firebase";
@@ -36,7 +37,7 @@ const UserCard = () => {
       borderRadius="md"
     >
       <VStack align="start" spacing={2}>
-        <HStack gap={2}>
+        <HStack gap={2} w="100%">
           <Avatar size="sm" />
           <Heading
             size="xs"
@@ -46,6 +47,7 @@ const UserCard = () => {
             {currentUser?.displayName &&
               shortenString(currentUser?.displayName, 14)}
           </Heading>
+          <Spacer />
           <Menu>
             <MenuButton
               as={IconButton}

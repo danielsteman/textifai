@@ -70,12 +70,7 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { startConversation } from "../Chat/ChatFuncs";
 import { setCurrentConversationId } from "../Chat/chatSlice";
@@ -170,12 +165,12 @@ const Workspace = () => {
   const fetchMessages = async () => {
     try {
       const q = query(
-        collection(db, "conversations"), 
-        where("userId", "==", currentUser!.uid), 
+        collection(db, "conversations"),
+        where("userId", "==", currentUser!.uid),
         where("projectId", "==", activeProjectId)
       );
       const querySnapshot = await getDocs(q);
-      const fetchedConversationIds = querySnapshot.docs.map(doc => doc.id);
+      const fetchedConversationIds = querySnapshot.docs.map((doc) => doc.id);
       setConversations(fetchedConversationIds);
     } catch (error) {
       console.error("Error fetching messages: ", error);
@@ -237,7 +232,7 @@ const Workspace = () => {
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}
           h="100%"
-          w="17.5em" 
+          w="16.5em"
           p={2}
           overflowY="auto"
         >
@@ -344,48 +339,82 @@ const Workspace = () => {
             activeTabIndex &&
             openTabs[activeTabIndex].name === "Chat" && (
               <VStack w="100%">
-                  <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
-                    Conversations
-                  </Heading>
+                <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
+                  Conversations
+                </Heading>
                 <>
-                {
-                  conversations.map((conversation) => (
+                  {conversations.map((conversation) => (
+                    <HStack
+                      key={conversation}
+                      w="100%"
+                      borderWidth="1px"
+                      borderColor={
+                        conversation === currentConversationId
+                          ? theme.colors[colorMode].primary
+                          : theme.colors[colorMode].surfaceContainerHigh
+                      }
+                      borderRadius="lg"
+                      px={4}
+                      py={3}
+                      cursor="pointer"
+                      _hover={{
+                        bgColor:
+                          conversation === currentConversationId
+                            ? theme.colors[colorMode].activeTabBg // Keep the active tab background color on hover
+                            : theme.colors[colorMode].surfaceContainerHighest, // Inactive tab background color on hover
+                        color:
+                          conversation === currentConversationId
+                            ? theme.colors[colorMode].activeTabText // Keep the active tab text color on hover
+                            : theme.colors[colorMode].onSurfaceContainerHover, // Inactive tab text color on hover
+                      }}
+                      onClick={async () => {
+                        dispatch(setCurrentConversationId(conversation));
+                        // Do something with newChatId, like navigating to the chat or updating state
+                      }}
+                    >
+                      <Heading
+                        size="sm"
+                        fontWeight={500}
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                      >
+                        {conversation} {/* Display the message ID */}
+                      </Heading>
+                      <Spacer />
+                      <Box
+                        color={theme.colors[colorMode].onSurface}
+                        _hover={{
+                          color: theme.colors[colorMode].primary,
+                        }}
+                      >
+                        <FaTrash />
+                      </Box>
+                    </HStack>
+                  ))}
                   <HStack
-                    key={conversation}
                     w="100%"
-                    borderWidth="1px"
-                    borderColor={
-                      conversation === currentConversationId
-                        ? theme.colors[colorMode].primary
-                        : theme.colors[colorMode].surfaceContainerHigh
-                    }
-                    borderRadius="lg" 
+                    borderStyle="dashed"
+                    borderWidth={1}
+                    borderRadius={8}
                     px={4}
                     py={3}
                     cursor="pointer"
-                    _hover={{
-                      bgColor: conversation === currentConversationId
-                        ? theme.colors[colorMode].activeTabBg // Keep the active tab background color on hover
-                        : theme.colors[colorMode].surfaceContainerHighest, // Inactive tab background color on hover
-                      color: conversation === currentConversationId
-                        ? theme.colors[colorMode].activeTabText // Keep the active tab text color on hover
-                        : theme.colors[colorMode].onSurfaceContainerHover // Inactive tab text color on hover
-                    }}
-                    onClick={async () => { 
-                      dispatch(setCurrentConversationId(conversation))
+                    onClick={async () => {
+                      const newConversationId = await startConversation(
+                        currentUser!.uid,
+                        activeProjectId!
+                      );
+                      await fetchMessages();
+                      dispatch(setCurrentConversationId(newConversationId));
                       // Do something with newChatId, like navigating to the chat or updating state
                     }}
+                    _hover={{
+                      bgColor: theme.colors[colorMode].surfaceContainerHigh,
+                    }}
                   >
-                    <Heading 
-                      size="sm"
-                      fontWeight={500}
-                      isTruncated
-                      maxWidth="80%"
-                      overflow="hidden"
-                      textOverflow="ellipsis"
-                      whiteSpace="nowrap"
-                    >
-                      {conversation} {/* Display the message ID */}
+                    <Heading size="sm" fontWeight={500}>
+                      New chat
                     </Heading>
                     <Spacer />
                     <Box
@@ -394,42 +423,9 @@ const Workspace = () => {
                         color: theme.colors[colorMode].primary,
                       }}
                     >
-                      <FaTrash />
+                      <FaPlus />
                     </Box>
                   </HStack>
-                  ))
-                }
-                <HStack
-                  w="100%"
-                  borderStyle="dashed"
-                  borderWidth={1}
-                  borderRadius={8}
-                  px={4}
-                  py={3}
-                  cursor="pointer"
-                  onClick={async () => { 
-                    const newConversationId = await startConversation(currentUser!.uid, activeProjectId!);
-                    await fetchMessages();
-                    dispatch(setCurrentConversationId(newConversationId))
-                    // Do something with newChatId, like navigating to the chat or updating state
-                  }}
-                  _hover={{
-                    bgColor: theme.colors[colorMode].surfaceContainerHigh,
-                  }}
-                >
-                  <Heading size="sm" fontWeight={500}>
-                    New chat
-                  </Heading>
-                  <Spacer />
-                  <Box
-                    color={theme.colors[colorMode].onSurface}
-                    _hover={{
-                      color: theme.colors[colorMode].primary,
-                    }}
-                  >
-                    <FaPlus />
-                  </Box>
-                </HStack>
                 </>
               </VStack>
             )}
