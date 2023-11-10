@@ -137,8 +137,8 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
             await setDoc(userDocRef, userData);
         
             const projectData: Project = {
-              name: "My Default Project",
-              description: "This is your default project.",
+              name: "My Project",
+              description: "This is my first project.",
               industry: "",
               users: [userCredential.user.uid],
               creationDate: Timestamp.fromDate(new Date())
