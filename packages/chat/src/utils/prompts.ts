@@ -145,6 +145,29 @@ const templates = {
 
       
         Final answer:
+        `, 
+      conversationTitleTemplate:
+        `
+        As an AI, your task is to generate a concise and meaningful title that captures the essence of the conversation based 
+        on the initial userPrompt. This title should reflect the core topic or question raised in the first message of the conversation, 
+        providing a clear and engaging overview of what the conversation will be about.
+
+        Instructions:
+        1. Read and analyze the initial userPrompt carefully to understand the main topic or question being addressed.
+        2. Create a title that succinctly encapsulates the central theme or key issue presented in the userPrompt.
+        3. The title must be concise, engaging, and accurately reflective of the conversation's subject matter.
+        4. Always aim to return a title that is not longer than 5 words
+
+        Remember, the title should be broad enough to encompass the possible directions the conversation could take but specific enough to 
+        give a clear idea of the main topic.
+
+        Process the following information to create the title:
+
+        --------
+        User Prompt: {userPromt}
+        --------
+
+        Generated Title:
         `
       };
     export { templates };
