@@ -584,7 +584,7 @@ const MegaLibrary = () => {
                     : undefined
                 }
                 variant="ghost"
-                size="xs"
+                size="sm"
                 textColor={theme.colors[colorMode].onSurface}
                 onClick={() => {
                   if (collectionFilter === collection) {
