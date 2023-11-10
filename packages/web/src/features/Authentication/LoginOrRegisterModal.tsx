@@ -33,7 +33,7 @@ import { auth, db } from "../../app/config/firebase";
 import Socials from "./Socials";
 import AuthError from "./AuthError";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { Timestamp, doc, setDoc } from "firebase/firestore";
+import { Timestamp, collection, doc, setDoc } from "firebase/firestore";
 import { User } from "@shared/interfaces/firebase/User";
 import { Project } from "@shared/interfaces/firebase/Project";
 import theme from "../../app/themes/theme";
@@ -132,17 +132,21 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               language: "english",
               isActive: true,
             };
-
+        
+            const userDocRef = doc(db, "users", userCredential.user.uid);
+            await setDoc(userDocRef, userData);
+        
             const projectData: Project = {
-              name: "My project",
-              description: "",
+              name: "My Default Project",
+              description: "This is your default project.",
               industry: "",
               users: [userCredential.user.uid],
               creationDate: Timestamp.fromDate(new Date())
             };
-
-            await setDoc(doc(db, "users", userCredential.user.uid), userData);
-            await setDoc(doc(db, "projects"), projectData);
+        
+            const projectDocRef = doc(collection(db, "projects"));
+        
+            await setDoc(projectDocRef, projectData);
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
             });
