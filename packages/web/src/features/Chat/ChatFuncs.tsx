@@ -28,6 +28,7 @@ export const startConversation = async (
       projectId: currentProjectUid,
       creationDate: Timestamp.fromDate(new Date()),
       updatedDate: Timestamp.fromDate(new Date()),
+      title:""
     };
     const conversationRef = await addDoc(
       conversationsCollection,

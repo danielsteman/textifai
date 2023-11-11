@@ -5,4 +5,5 @@ export interface Conversation {
   projectId: string;
   creationDate: Timestamp;
   updatedDate: Timestamp;
+  title: string;
 }

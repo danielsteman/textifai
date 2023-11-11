@@ -78,6 +78,7 @@ import { startConversation, deleteConversation } from "../Chat/ChatFuncs";
 import { setCurrentConversationId } from "../Chat/chatSlice";
 import { deleteProject } from "../Projects/deleteProject";
 import { handleEditProjectName } from "../Projects/changeProjectName";
+import { keyframes } from '@emotion/react';
 
 export type ITab = {
   name: string;
@@ -87,6 +88,15 @@ export type ITab = {
   openPdfViewer: boolean;
   isActive?: boolean;
 };
+
+const typing = keyframes`
+  from { width: 0; }
+  to { width: 100%; }
+`;
+
+const blinkCaret = keyframes`
+  50% { border-color: transparent; }
+`;
 
 const Workspace = () => {
   const { colorMode } = useColorMode();
@@ -433,15 +443,24 @@ const Workspace = () => {
                         dispatch(setCurrentConversationId(conversation));
                       }}
                     >
-                      <Heading
-                        size="sm"
-                        fontWeight={500}
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        whiteSpace="nowrap"
-                      >
-                        {conversation}
-                      </Heading>
+                      <Tooltip label={conversation} aria-label="Full conversation text" placement="top">
+                        <Text
+                          size="xs"
+                          fontWeight={500}
+                          overflow="hidden"
+                          textOverflow="ellipsis"
+                          whiteSpace="nowrap"
+                          css={{
+                            maxWidth: '100%', 
+                            borderRight: '2px solid transparent',
+                            animation: `${typing} ${conversation!.length / 10}s steps(${conversation!.length}, end), 
+                                        ${blinkCaret} .75s step-end infinite`,
+                            animationFillMode: 'forwards'
+                          }}
+                        >
+                          {conversation}
+                        </Text>
+                      </Tooltip>
                       <Spacer />
                       <Box
                         color={theme.colors[colorMode].onSurface}
