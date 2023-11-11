@@ -98,6 +98,49 @@ const Chat = () => {
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
 
+  const handleStreamingAnswer = async () => {
+    const ragPayload = {
+      prompt: "Tell me a bear joke",
+      history: "",
+      files: [],
+      userId: currentUser!.uid,
+    };
+
+    const ragResponse = await fetch(`${config.chat.url}/api/chat/rag`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(ragPayload),
+    });
+
+    if (!ragResponse.ok || !ragResponse.body) {
+      throw new Error(
+        `Error fetching response from RAG chain, HTTP code: ${ragResponse.status}`
+      );
+    }
+
+    console.log(ragResponse.body);
+
+    const reader = ragResponse.body.getReader();
+    let data = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      const text = new TextDecoder().decode(value);
+      console.log(text);
+
+      data += text;
+    }
+
+    console.log("End of stream");
+  };
+
   const handleChatAction = async (regenerate = false, pdfText?: string) => {
     try {
       dispatch(setLoading(true));
@@ -138,21 +181,6 @@ const Chat = () => {
           extractedText: extractedText,
         };
       }
-
-      // DEBUG START
-
-      // const documentsRes = await axios.post(
-      //   `${config.chat.url}/api/chat/documents`,
-      //   { currentUserId: currentUser!.uid }
-      // );
-
-      // console.log(documentsRes);
-
-      // return;
-
-      // DEBUG END
-
-      console.log(requestPayload);
 
       const res = await axios.post(
         `${config.chat.url}/api/chat/ask`,
@@ -207,6 +235,8 @@ const Chat = () => {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     console.log("handleSubmit called");
     e.preventDefault();
+
+    // await handleStreamingAnswer();
 
     if (selectedText && selectedText !== lastProcessedTextRef.current) {
       await handleChatAction(false, selectedText);

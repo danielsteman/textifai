@@ -80,6 +80,11 @@ export const postStreamingRAGPrompt = async (
   const files = req.body.files;
   const userId = req.body.userId;
 
+  res.writeHead(200, {
+    "Content-Type": "text/plain",
+    "Transfer-Encoding": "chunked",
+  });
+
   const stream = await retrievalAugmentedGenerator(
     prompt,
     conversationHistory,

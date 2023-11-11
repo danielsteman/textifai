@@ -4,8 +4,6 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { templates } from "../utils/prompts";
 import { getMatchesFromEmbeddings } from "../pinecone/matches";
-import { IterableReadableStream } from "langchain/dist/util/stream";
-import { BaseMessageChunk } from "langchain/dist/schema";
 
 interface Metadata {
   text: string;
@@ -16,20 +14,6 @@ interface Metadata {
 const embed = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY,
   modelName: "text-embedding-ada-002",
-});
-
-const qaChain = new LLMChain({
-  prompt: new PromptTemplate({
-    template: templates.qaTemplate,
-    inputVariables: ["context", "question", "conversationHistory"],
-  }),
-  llm: new ChatOpenAI({
-    verbose: true,
-    modelName: "gpt-4-1106-preview",
-    temperature: 1,
-    streaming: true,
-  }),
-  verbose: false,
 });
 
 const inquiryChain = new LLMChain({
@@ -60,13 +44,9 @@ export const retrievalAugmentedGenerator = async (
     conversationHistory: conversationHistory,
   });
 
-  console.log("Enhanced prompt: ", inquiryChainResult.text);
   const inquiry = inquiryChainResult.text;
-
   const vector = await embed.embedQuery(prompt);
   const matches = await getMatchesFromEmbeddings(vector, 10, files, userId);
-
-  console.log("Matches found: ", matches);
 
   const docs =
     matches &&
