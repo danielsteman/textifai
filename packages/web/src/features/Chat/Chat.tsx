@@ -268,14 +268,7 @@ const Chat = () => {
               <>
                 {index === messageStack.length - 1 ? (
                   <>
-                    <SystemMessage
-                      message={
-                        messageStack.length === answerStack.length
-                          ? answerStack[answerStack.length - 1]
-                          : answerStream
-                      }
-                      variant="agent"
-                    />
+                    <SystemMessage message={answerStream} variant="agent" />
                     <Flex justifyContent="center" alignItems="center" py={4}>
                       <Button
                         rounded={8}
