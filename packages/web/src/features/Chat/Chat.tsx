@@ -206,12 +206,10 @@ const Chat = () => {
           }
 
           const text = new TextDecoder().decode(value);
-
           setAnswerStream((prev): string => `${prev}${text}`);
         }
 
         scrollToBottom();
-
         dispatch(pushAnswer(answerStream));
 
         await addMessageToCollection(
