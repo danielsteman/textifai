@@ -4,7 +4,10 @@ import generalQaHandler from "../handlers/generalQaHandler";
 import pdfQaHandler from "../handlers/pdfQaHandler";
 import regenerateHandler from "../handlers/regenerateHandler";
 import summarizationHandler from "../handlers/summarizationHandler";
-import { retrievalAugmentedGenerator } from "../services/retrievalAugmentedGenerator";
+import {
+  retrievalAugmentedGenerator,
+  retrievalAugmentedRegenerator,
+} from "../services/retrievalAugmentedGenerators";
 
 export const postPrompt = async (
   req: Request,
@@ -70,8 +73,16 @@ export const postPrompt = async (
   }
 };
 
+interface StreamingRAGPromptRequest {
+  prompt: string;
+  history: string;
+  files: string[];
+  userId: string;
+  regenerate?: boolean;
+}
+
 export const postStreamingRAGPrompt = async (
-  req: Request,
+  req: Request<{}, {}, StreamingRAGPromptRequest>,
   res: Response,
   next: NextFunction
 ) => {
@@ -85,12 +96,22 @@ export const postStreamingRAGPrompt = async (
     "Transfer-Encoding": "chunked",
   });
 
-  const stream = await retrievalAugmentedGenerator(
-    prompt,
-    conversationHistory,
-    files,
-    userId
-  );
+  let stream;
+
+  if (req.body.regenerate) {
+    console.log("Pass prompt to retrievalAugmentedRegenerator");
+
+    stream = await retrievalAugmentedRegenerator(prompt);
+  } else {
+    console.log("Pass prompt to retrievalAugmentedGenerator");
+
+    stream = await retrievalAugmentedGenerator(
+      prompt,
+      conversationHistory,
+      files,
+      userId
+    );
+  }
 
   for await (const chunk of stream) {
     res.write(chunk?.content);

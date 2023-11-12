@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { textExtractor } from "../services/textExtractor";
+import { textExtractor } from "../services/textExtractors";
 
 interface QueryParamProps {
   userId: string;
