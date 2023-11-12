@@ -194,14 +194,16 @@ const Chat = () => {
           );
         }
 
-        dispatch(setLoading(false));
-
         const reader = response.body.getReader();
+
+        dispatch(setLoading(false));
 
         while (true) {
           const { done, value } = await reader.read();
 
           if (done) {
+            console.log(`Dispatching this answer: ${answerStream}`);
+            dispatch(pushAnswer(answerStream));
             break;
           }
 
@@ -210,7 +212,6 @@ const Chat = () => {
         }
 
         scrollToBottom();
-        dispatch(pushAnswer(answerStream));
 
         await addMessageToCollection(
           message,
