@@ -1,10 +1,13 @@
 import {
+  Box,
+  Center,
   CloseButton,
   HStack,
   Input,
   Spacer,
   Text,
   Tooltip,
+  VStack,
   useColorMode,
 } from "@chakra-ui/react";
 import TextEditor from "../../TextEditor/TextEditor";
@@ -24,37 +27,43 @@ const EditorPanel = () => {
   const [inputMode, setInputMode] = useState<boolean>(false);
 
   const currentProjectTitle = useSelector(
-    (state: RootState) => state.activeProject.projectName);
+    (state: RootState) => state.activeProject.projectName
+  );
 
   return (
-    <>
-      <HStack
-        mb={2}
-        p={2}
-        bgColor={theme.colors[colorMode].surfaceContainerLow}
-        rounded={8}
-      >
-        <Tooltip label={"Change title"}>
-          {inputMode ? (
-            <HStack w="100%">
-              <Input placeholder={currentProjectTitle!} />
-              <Spacer />
-              <CloseButton size="sm" onClick={() => setInputMode(!inputMode)} />
-            </HStack>
-          ) : (
-            <Text
-              ml={4}
-              cursor="pointer"
-              onClick={() => setInputMode(!inputMode)}
-            >
-              {currentProjectTitle}
-            </Text>
-          )}
-        </Tooltip>
-        <Spacer />
-      </HStack>
-      <TextEditor />
-    </>
+    <Center h="100%">
+      <VStack h="100%" align="center" justify="center" w="70%">
+        <HStack
+          w="100%"
+          p={2}
+          bgColor={theme.colors[colorMode].surfaceContainerLow}
+          rounded={8}
+        >
+          <Tooltip label={"Change title"}>
+            {inputMode ? (
+              <HStack w="100%">
+                <Input placeholder={currentProjectTitle!} />
+                <Spacer />
+                <CloseButton
+                  size="sm"
+                  onClick={() => setInputMode(!inputMode)}
+                />
+              </HStack>
+            ) : (
+              <Text
+                mx={4}
+                cursor="pointer"
+                onClick={() => setInputMode(!inputMode)}
+              >
+                {currentProjectTitle}
+              </Text>
+            )}
+          </Tooltip>
+          <Spacer />
+        </HStack>
+        <TextEditor />
+      </VStack>
+    </Center>
   );
 };
 
