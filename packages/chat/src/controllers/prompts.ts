@@ -7,7 +7,7 @@ import summarizationHandler from "../handlers/summarizationHandler";
 import {
   retrievalAugmentedGenerator,
   retrievalAugmentedRegenerator,
-} from "../services/retrievalAugmentedGenerators";
+} from "../services/augmentedGenerators";
 
 export const postPrompt = async (
   req: Request,

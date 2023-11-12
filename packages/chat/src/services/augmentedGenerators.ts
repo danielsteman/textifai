@@ -95,3 +95,20 @@ export const retrievalAugmentedRegenerator = async (prompt: string) => {
 
   return stream;
 };
+
+export const pdfAugmentedGenerator = async (prompt: string) => {
+  const llm = new ChatOpenAI({
+    modelName: "gpt-4-1106-preview",
+    temperature: 1,
+    verbose: false,
+  });
+
+  const promptTemplate = PromptTemplate.fromTemplate(templates.pdfTemplate);
+
+  const runnable = promptTemplate.pipe(llm);
+  const stream = await runnable.stream({
+    context: prompt,
+  });
+
+  return stream;
+};
