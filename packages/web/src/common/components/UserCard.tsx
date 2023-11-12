@@ -48,7 +48,7 @@ const UserCard = () => {
     >
       <Popover placement="top-start">
         <PopoverTrigger>
-        <HStack
+          <HStack
             ref={triggerRef}
             display="flex"
             alignItems="center"
@@ -82,18 +82,25 @@ const UserCard = () => {
           borderRadius="md"
           boxShadow="sm"
         >
-          {/* <PopoverArrow bgColor={theme.colors[colorMode].secondaryContainer} /> */}
           <PopoverBody>
             <VStack align="start">
-              <Button w="full" justifyContent="start" onClick={() => navigate("/settings")}>
+              <Button
+                w="full"
+                justifyContent="start"
+                onClick={() => navigate("/settings")}
+              >
                 <SettingsIcon mr={2} />
                 <Text ml={0}>Settings</Text>
               </Button>
-              <Button w="full" justifyContent="start" onClick={() => {
-                auth.signOut();
-                navigate("/");
-              }}>
-                <MdLogout/>
+              <Button
+                w="full"
+                justifyContent="start"
+                onClick={() => {
+                  auth.signOut();
+                  navigate("/");
+                }}
+              >
+                <MdLogout />
                 <Text ml={2}>Sign out</Text>
               </Button>
               <ColorModeSwitcher />

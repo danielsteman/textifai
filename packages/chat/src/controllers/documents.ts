@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { getDocumentContent } from "../services/documents";
+import { textExtractor } from "../services/textExtractor";
 
 interface QueryParamProps {
   userId: string;
@@ -16,6 +16,6 @@ export const getDocuments = async (
     return res.status(422).json({ error: "The userId has not been received" });
   }
 
-  const uploadedDocumentsContents = await getDocumentContent(userId);
+  const uploadedDocumentsContents = await textExtractor(userId);
   return res.status(200).json({ uploadedDocumentsContents });
 };

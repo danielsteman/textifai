@@ -4,7 +4,7 @@ import {
   getStorageReference,
 } from "../db/getFirebaseReference";
 
-export const getDocumentContent = async (
+export const textExtractor = async (
   userId: string
 ): Promise<DocumentData[]> => {
   const db = getFirestoreReference();

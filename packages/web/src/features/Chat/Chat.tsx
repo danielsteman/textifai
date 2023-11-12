@@ -120,8 +120,6 @@ const Chat = () => {
       );
     }
 
-    console.log(ragResponse.body);
-
     const reader = ragResponse.body.getReader();
     let data = "";
 
@@ -165,6 +163,7 @@ const Chat = () => {
         };
       } else {
         console.log("Handling Regular Chain...");
+
         dispatch(pushMessage(message));
         setMessage("");
 
