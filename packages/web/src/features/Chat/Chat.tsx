@@ -42,6 +42,7 @@ const Chat = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const lastProcessedTextRef = useRef<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [answerStream, setAnswerStream] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
@@ -62,6 +63,20 @@ const Chat = () => {
   );
 
   const dispatch = useDispatch();
+
+  // DEBUG LOGS: uncomment if necessary, delete when stable
+  //
+  useEffect(() => {
+    console.log(answerStream);
+    console.log(`answer stack length: ${answerStack.length}`);
+    console.log(`message stack length: ${messageStack.length}`);
+
+    console.log(answerStack[answerStack.length - 1]);
+
+    console.log("Start answer stack");
+    console.log(answerStack);
+    console.log("end answer stack");
+  }, [answerStream, answerStack]);
 
   useEffect(() => {
     if (isProcessing) return;
@@ -98,52 +113,13 @@ const Chat = () => {
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
 
-  const handleStreamingAnswer = async () => {
-    const ragPayload = {
-      prompt: "Tell me a bear joke",
-      history: "",
-      files: [],
-      userId: currentUser!.uid,
-    };
-
-    const ragResponse = await fetch(`${config.chat.url}/api/chat/rag`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(ragPayload),
-    });
-
-    if (!ragResponse.ok || !ragResponse.body) {
-      throw new Error(
-        `Error fetching response from RAG chain, HTTP code: ${ragResponse.status}`
-      );
-    }
-
-    const reader = ragResponse.body.getReader();
-    let data = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-
-      if (done) {
-        break;
-      }
-
-      const text = new TextDecoder().decode(value);
-      console.log(text);
-
-      data += text;
-    }
-
-    console.log("End of stream");
-  };
-
   const handleChatAction = async (regenerate = false, pdfText?: string) => {
     try {
       dispatch(setLoading(true));
 
       let requestPayload;
+      let res;
+
       if (pdfText) {
         console.log("Handling PdfQa Chain...");
         dispatch(pushMessage(pdfText));
@@ -154,39 +130,10 @@ const Chat = () => {
           extractedText: extractedText,
           option: "pdfQa",
         };
-      } else if (regenerate) {
-        console.log("Handling Regenerate Chain...");
-        const lastSystemMessage = answerStack[answerStack.length - 1];
-        requestPayload = {
-          prompt: lastSystemMessage,
-          option: "regenerate",
-        };
-      } else {
-        console.log("Handling Regular Chain...");
-
-        dispatch(pushMessage(message));
-        setMessage("");
-
-        const updatedConversationHistory = await getConversation(
-          currentConversationId!
+        res = await axios.post(
+          `${config.chat.url}/api/chat/ask`,
+          requestPayload
         );
-
-        requestPayload = {
-          prompt: message,
-          history: updatedConversationHistory,
-          option: "GeneralQa",
-          files: selectedDocuments,
-          userId: currentUser!.uid,
-          extractedText: extractedText,
-        };
-      }
-
-      const res = await axios.post(
-        `${config.chat.url}/api/chat/ask`,
-        requestPayload
-      );
-
-      if (pdfText) {
         dispatch(pushAnswer(res.data.answer));
         scrollToBottom();
 
@@ -204,10 +151,68 @@ const Chat = () => {
         );
         await updateConversationDate(currentConversationId!);
       } else if (regenerate) {
+        console.log("Handling Regenerate Chain...");
+        const lastSystemMessage = answerStack[answerStack.length - 1];
+        requestPayload = {
+          prompt: lastSystemMessage,
+          option: "regenerate",
+        };
+        res = await axios.post(
+          `${config.chat.url}/api/chat/ask`,
+          requestPayload
+        );
         dispatch(replaceLastAnswer(res.data.answer));
       } else {
-        dispatch(pushAnswer(res.data.answer));
+        console.log("Handling Regular Chain...");
+
+        dispatch(pushMessage(message));
+        setMessage("");
+        setAnswerStream("");
+
+        const updatedConversationHistory = await getConversation(
+          currentConversationId!
+        );
+
+        requestPayload = {
+          prompt: message,
+          history: updatedConversationHistory,
+          files: selectedDocuments,
+          userId: currentUser!.uid,
+        };
+
+        const response = await fetch(`${config.chat.url}/api/chat/rag`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestPayload),
+        });
+
+        if (!response.ok || !response.body) {
+          throw new Error(
+            `Error fetching response from RAG chain, HTTP code: ${response.status}`
+          );
+        }
+
+        dispatch(setLoading(false));
+
+        const reader = response.body.getReader();
+
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            break;
+          }
+
+          const text = new TextDecoder().decode(value);
+
+          setAnswerStream((prev): string => `${prev}${text}`);
+        }
+
         scrollToBottom();
+
+        dispatch(pushAnswer(answerStream));
 
         await addMessageToCollection(
           message,
@@ -216,14 +221,13 @@ const Chat = () => {
           null
         );
         await addMessageToCollection(
-          res.data.answer,
+          answerStream,
           "agent",
           currentConversationId,
           null
         );
         await updateConversationDate(currentConversationId!);
       }
-
       dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
@@ -234,8 +238,6 @@ const Chat = () => {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     console.log("handleSubmit called");
     e.preventDefault();
-
-    // await handleStreamingAnswer();
 
     if (selectedText && selectedText !== lastProcessedTextRef.current) {
       await handleChatAction(false, selectedText);
@@ -265,9 +267,16 @@ const Chat = () => {
               <MessageLoadingIndicator />
             ) : (
               <>
-                <SystemMessage message={answerStack[index]} variant="agent" />
-                {index === answerStack.length - 1 &&
-                  messageStack.length === answerStack.length && (
+                {index === messageStack.length - 1 ? (
+                  <>
+                    <SystemMessage
+                      message={
+                        messageStack.length === answerStack.length
+                          ? answerStack[answerStack.length - 1]
+                          : answerStream
+                      }
+                      variant="agent"
+                    />
                     <Flex justifyContent="center" alignItems="center" py={4}>
                       <Button
                         rounded={8}
@@ -278,7 +287,10 @@ const Chat = () => {
                         Regenerate
                       </Button>
                     </Flex>
-                  )}
+                  </>
+                ) : (
+                  <SystemMessage message={answerStack[index]} variant="agent" />
+                )}
               </>
             )}
           </Box>
