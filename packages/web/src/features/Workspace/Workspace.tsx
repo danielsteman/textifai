@@ -78,7 +78,7 @@ import { startConversation, deleteConversation } from "../Chat/ChatFuncs";
 import { setCurrentConversationId } from "../Chat/chatSlice";
 import { deleteProject } from "../Projects/deleteProject";
 import { handleEditProjectName } from "../Projects/changeProjectName";
-import { keyframes } from '@emotion/react';
+import { keyframes } from "@emotion/react";
 
 export type ITab = {
   name: string;
@@ -103,7 +103,7 @@ const Workspace = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [mailResent, setMailResent] = useState(false);
   const [conversations, setConversations] = useState<string[]>([]);
-  const [editedName, setEditedName] = useState('');
+  const [editedName, setEditedName] = useState("");
   const [editMode, setEditMode] = useState(false);
 
   const currentUser = useContext(AuthContext);
@@ -276,40 +276,49 @@ const Workspace = () => {
               <MenuGroup title="All projects">
                 <MenuDivider />
                 {userProjects.map((project) => (
-                  <MenuItem key={project.name} onClick={() => handleProjectClick(project)}>
-                  <HStack justifyContent="space-between" width="100%">
-                  {editMode && activeProjectName === project.name ? (
-                    <Box onClick={(e) => e.stopPropagation()}>
-                      <Input
-                        value={editedName}
-                        onChange={(e) => setEditedName(e.target.value)}
-                        onBlur={() => {
-                          setEditMode(false);
-                          handleEditProjectName(activeProjectId!, editedName);
-                          dispatch(setProjectName(editedName));
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            setEditMode(false);
-                            handleEditProjectName(activeProjectId!, editedName);
-                            dispatch(setProjectName(editedName));
-                          } else if (e.key === ' ') {
-                            e.stopPropagation(); 
-                          }
-                        }}
-                        autoFocus
-                      />
-                    </Box>
-                    ) : (
-                      <Text isTruncated>{project.name}</Text>
-                    )}
+                  <MenuItem
+                    key={project.name}
+                    onClick={() => handleProjectClick(project)}
+                  >
+                    <HStack justifyContent="space-between" width="100%">
+                      {editMode && activeProjectName === project.name ? (
+                        <Box onClick={(e) => e.stopPropagation()}>
+                          <Input
+                            value={editedName}
+                            onChange={(e) => setEditedName(e.target.value)}
+                            onBlur={() => {
+                              setEditMode(false);
+                              handleEditProjectName(
+                                activeProjectId!,
+                                editedName
+                              );
+                              dispatch(setProjectName(editedName));
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                setEditMode(false);
+                                handleEditProjectName(
+                                  activeProjectId!,
+                                  editedName
+                                );
+                                dispatch(setProjectName(editedName));
+                              } else if (e.key === " ") {
+                                e.stopPropagation();
+                              }
+                            }}
+                            autoFocus
+                          />
+                        </Box>
+                      ) : (
+                        <Text isTruncated>{project.name}</Text>
+                      )}
                       <HStack spacing={0}>
-                      <Tooltip label="Edit project name">
+                        <Tooltip label="Edit project name">
                           <IconButton
                             icon={<FaPen />}
                             aria-label="Edit"
                             size="sm"
-                            variant="ghost"                       
+                            variant="ghost"
                             _hover={{
                               color: theme.colors[colorMode].primary,
                             }}
@@ -410,96 +419,63 @@ const Workspace = () => {
           {openTabs &&
             activeTabIndex &&
             openTabs[activeTabIndex].name === "Chat" && (
-              <VStack w="100%">
+              <VStack w="100%" overflowY="scroll">
                 <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
                   Conversations
                 </Heading>
-                <>
-                  {conversations.map((conversation) => (
-                    <HStack
-                      key={conversation}
-                      w="100%"
-                      borderWidth="1px"
-                      borderColor={
-                        conversation === currentConversationId
-                          ? theme.colors[colorMode].primary
-                          : theme.colors[colorMode].surfaceContainerHigh
-                      }
-                      borderRadius="lg"
-                      px={4}
-                      py={3}
-                      cursor="pointer"
-                      _hover={{
-                        bgColor:
-                          conversation === currentConversationId
-                            ? theme.colors[colorMode].activeTabBg
-                            : theme.colors[colorMode].surfaceContainerHighest, 
-                        color:
-                          conversation === currentConversationId
-                            ? theme.colors[colorMode].activeTabText 
-                            : theme.colors[colorMode].onSurfaceContainerHover, 
-                      }}
-                      onClick={async () => {
-                        dispatch(setCurrentConversationId(conversation));
-                      }}
-                    >
-                      <Tooltip label={conversation} aria-label="Full conversation text" placement="top">
-                        <Text
-                          size="xs"
-                          fontWeight={500}
-                          overflow="hidden"
-                          textOverflow="ellipsis"
-                          whiteSpace="nowrap"
-                          css={{
-                            maxWidth: '100%', 
-                            borderRight: '2px solid transparent',
-                            animation: `${typing} ${conversation!.length / 10}s steps(${conversation!.length}, end), 
-                                        ${blinkCaret} .75s step-end infinite`,
-                            animationFillMode: 'forwards'
-                          }}
-                        >
-                          {conversation}
-                        </Text>
-                      </Tooltip>
-                      <Spacer />
-                      <Box
-                        color={theme.colors[colorMode].onSurface}
-                        _hover={{
-                          color: theme.colors[colorMode].primary,
-                        }}
-                      >
-                        <FaTrash 
-                          onClick={async () => {
-                            await deleteConversation(conversation!);
-                            await await fetchMessages();
-                          }}
-                        />
-                      </Box>
-                    </HStack>
-                  ))}
+
+                {conversations.map((conversation) => (
                   <HStack
+                    key={conversation}
                     w="100%"
-                    borderStyle="dashed"
-                    borderWidth={1}
-                    borderRadius={8}
+                    borderWidth="1px"
+                    borderColor={
+                      conversation === currentConversationId
+                        ? theme.colors[colorMode].primary
+                        : theme.colors[colorMode].surfaceContainerHigh
+                    }
+                    borderRadius="lg"
                     px={4}
                     py={3}
                     cursor="pointer"
-                    onClick={async () => {
-                      const newConversationId = await startConversation(
-                        currentUser!.uid,
-                        activeProjectId!
-                      );
-                      await fetchMessages();
-                      dispatch(setCurrentConversationId(newConversationId));
-                    }}
                     _hover={{
-                      bgColor: theme.colors[colorMode].surfaceContainerHigh,
+                      bgColor:
+                        conversation === currentConversationId
+                          ? theme.colors[colorMode].activeTabBg
+                          : theme.colors[colorMode].surfaceContainerHighest,
+                      color:
+                        conversation === currentConversationId
+                          ? theme.colors[colorMode].activeTabText
+                          : theme.colors[colorMode].onSurfaceContainerHover,
+                    }}
+                    onClick={async () => {
+                      dispatch(setCurrentConversationId(conversation));
                     }}
                   >
-                    <Heading size="sm" fontWeight={500}>
-                      New chat
-                    </Heading>
+                    <Tooltip
+                      label={conversation}
+                      aria-label="Full conversation text"
+                      placement="top"
+                    >
+                      <Text
+                        size="xs"
+                        fontWeight={500}
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                        css={{
+                          maxWidth: "100%",
+                          borderRight: "2px solid transparent",
+                          animation: `${typing} ${
+                            conversation!.length / 10
+                          }s steps(${conversation!.length}, end),
+                                        ${blinkCaret} .75s step-end infinite`,
+                          animationFillMode: "forwards",
+                        }}
+                      >
+                        {conversation}
+                      </Text>
+                    </Tooltip>
                     <Spacer />
                     <Box
                       color={theme.colors[colorMode].onSurface}
@@ -507,10 +483,48 @@ const Workspace = () => {
                         color: theme.colors[colorMode].primary,
                       }}
                     >
-                      <FaPlus />
+                      <FaTrash
+                        onClick={async () => {
+                          await deleteConversation(conversation!);
+                          await fetchMessages();
+                        }}
+                      />
                     </Box>
                   </HStack>
-                </>
+                ))}
+                <HStack
+                  w="100%"
+                  borderStyle="dashed"
+                  borderWidth={1}
+                  borderRadius={8}
+                  px={4}
+                  py={3}
+                  cursor="pointer"
+                  onClick={async () => {
+                    const newConversationId = await startConversation(
+                      currentUser!.uid,
+                      activeProjectId!
+                    );
+                    await fetchMessages();
+                    dispatch(setCurrentConversationId(newConversationId));
+                  }}
+                  _hover={{
+                    bgColor: theme.colors[colorMode].surfaceContainerHigh,
+                  }}
+                >
+                  <Heading size="sm" fontWeight={500}>
+                    New chat
+                  </Heading>
+                  <Spacer />
+                  <Box
+                    color={theme.colors[colorMode].onSurface}
+                    _hover={{
+                      color: theme.colors[colorMode].primary,
+                    }}
+                  >
+                    <FaPlus />
+                  </Box>
+                </HStack>
               </VStack>
             )}
           <Spacer />
