@@ -18,9 +18,18 @@ import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
-import { FaPlus } from "react-icons/fa";
+import {
+  FaArrowRight,
+  FaCircle,
+  FaCommentDots,
+  FaOptinMonster,
+  FaPen,
+  FaPlus,
+} from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
+import { ArrowRightIcon, ArrowUpDownIcon, CopyIcon } from "@chakra-ui/icons";
+import { MdCallToAction, MdSettings } from "react-icons/md";
 
 interface SystemMessageProps {
   message: string;
@@ -58,9 +67,9 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       <Box
         color={textColor}
         bgColor={bgColor}
-        pr={variant === "agent" ? 0 : 4}
-        pl={variant === "agent" ? 8 : 4}
-        py={0.5}
+        pr={variant === "agent" ? 0 : 3}
+        pl={3}
+        py={1}
         rounded={8}
         gap={0}
         w="fit-content"
@@ -79,9 +88,9 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
               <MenuButton
                 as={IconButton}
                 aria-label="Options"
-                icon={<FaPlus />}
+                icon={<CopyIcon />}
                 variant="ghost"
-                size="sm"
+                size="xs"
                 color={theme.colors[colorMode].onSecondary}
               />
               <MenuList>
