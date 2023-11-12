@@ -86,16 +86,12 @@ export const postStreamingRAGPrompt = async (
   res: Response,
   next: NextFunction
 ) => {
-  const prompt = req.body.prompt;
-  const conversationHistory = req.body.history;
-  const files = req.body.files;
-  const userId = req.body.userId;
-
   res.writeHead(200, {
     "Content-Type": "text/plain",
     "Transfer-Encoding": "chunked",
   });
 
+  const prompt = req.body.prompt;
   let stream;
 
   if (req.body.regenerate) {
@@ -107,9 +103,9 @@ export const postStreamingRAGPrompt = async (
 
     stream = await retrievalAugmentedGenerator(
       prompt,
-      conversationHistory,
-      files,
-      userId
+      req.body.history,
+      req.body.files,
+      req.body.userId
     );
   }
 
