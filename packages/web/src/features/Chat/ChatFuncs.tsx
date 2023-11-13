@@ -14,6 +14,7 @@ import {
 import { db } from "../../app/config/firebase";
 import { Conversation } from "@shared/interfaces/firebase/Conversation";
 import { Message } from "@shared/interfaces/firebase/Message";
+import { setCurrentConversationId } from "../Chat/chatSlice";
 
 export const conversationsCollection = collection(db, "conversations");
 export const messagesCollection = collection(db, "messages");
@@ -40,9 +41,28 @@ export const startConversation = async (
   }
 };
 
-export const deleteConversation = async (conversationId: string) => {
+export const deleteConversation = async (
+    conversationId: string, 
+    userId: string, 
+    projectId: string, 
+    dispatch: any
+  ) => {
   try {
-    await deleteDoc(doc(conversationsCollection, conversationId));
+    const conversationQuery = query(
+      conversationsCollection,
+      where("userId", "==", userId),
+      where("projectId", "==", projectId)
+    );
+
+    const snapshot = await getDocs(conversationQuery);
+    const numberOfDocs = snapshot.docs.length;
+
+    if (numberOfDocs === 1) {
+      await deleteDoc(doc(conversationsCollection, conversationId));
+      dispatch(setCurrentConversationId(null));
+    } else if (numberOfDocs > 1) {
+      await deleteDoc(doc(conversationsCollection, conversationId));
+    }
   } catch (error) {
     console.error("Error removing document: ", error);
   }

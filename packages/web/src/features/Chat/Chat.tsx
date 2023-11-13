@@ -30,10 +30,11 @@ import {
   addMessageToCollection,
   updateConversationDate,
   fetchConversationId,
+  fetchMessagesForConversation,
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
-import { pushMessage } from "./messageStackSlice";
-import { pushAnswer, replaceLastAnswer } from "./answerStackSlice";
+import { clearMessages, pushMessage, setMessages } from "./messageStackSlice";
+import { clearAnswers, pushAnswer, replaceLastAnswer, setAnswers } from "./answerStackSlice";
 import { setCurrentConversationId, setLoading } from "./chatSlice";
 import { config } from "../../app/config/config";
 
@@ -68,24 +69,49 @@ const Chat = () => {
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    console.log("Current conversationId: ", currentConversationId)
+  }, [currentConversationId]);
+
+  useEffect(() => {
+    const initializeMessages = async () => {
+      if (currentConversationId) {
+        const messages = await fetchMessagesForConversation(currentConversationId!);
+        const userMessages = messages
+          .filter((msg) => msg.variant === "user")
+          .map((msg) => msg.messageBody);
+        const agentMessages = messages
+          .filter((msg) => msg.variant === "agent")
+          .map((msg) => msg.messageBody);
+  
+        dispatch(setMessages(userMessages));
+        dispatch(setAnswers(agentMessages));
+      } else {
+        dispatch(clearMessages());         
+        dispatch(clearAnswers()); 
+      }
+    };
+    initializeMessages();
+  }, [currentConversationId]);
+
   // DEBUG LOGS: uncomment if necessary, delete when stable
   //
-  useEffect(() => {
-    console.log("start of debug block");
-    console.log(answerStream);
-    console.log(`answer stack length: ${answerStack.length}`);
-    console.log(`message stack length: ${messageStack.length}`);
+  // useEffect(() => {
+  //   console.log("start of debug block");
+  //   console.log(answerStream);
+  //   console.log(`answer stack length: ${answerStack.length}`);
+  //   console.log(`message stack length: ${messageStack.length}`);
 
-    console.log(answerStack[answerStack.length - 1]);
+  //   console.log(answerStack[answerStack.length - 1]);
 
-    console.log("Start answer stack");
-    console.log(answerStack);
-    console.log("end answer stack");
+  //   console.log("Start answer stack");
+  //   console.log(answerStack);
+  //   console.log("end answer stack");
 
-    console.log("Start message stack");
-    console.log(messageStack);
-    console.log("end message stack");
-  }, [answerStream, answerStack, messageStack]);
+  //   console.log("Start message stack");
+  //   console.log(messageStack);
+  //   console.log("end message stack");
+  // }, [answerStream, answerStack, messageStack]);
 
   useEffect(() => {
     if (isProcessing) return;

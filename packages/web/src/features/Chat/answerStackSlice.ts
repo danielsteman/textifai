@@ -19,9 +19,12 @@ const answerStackSlice = createSlice({
       newState[newState.length - 1] = action.payload;
       return newState;
     },
+    clearAnswers: (state) => {
+      return []; 
+    },
   },
 });
 
-export const { pushAnswer, setAnswers, replaceLastAnswer } =
+export const { pushAnswer, setAnswers, replaceLastAnswer, clearAnswers } =
   answerStackSlice.actions;
 export default answerStackSlice.reducer;

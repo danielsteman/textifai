@@ -72,7 +72,7 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { startConversation, deleteConversation } from "../Chat/ChatFuncs";
 import { setCurrentConversationId } from "../Chat/chatSlice";
@@ -178,18 +178,22 @@ const Workspace = () => {
     }
   };
 
-  const fetchMessages = async () => {
+  const fetchMessages = () => {
     try {
       const q = query(
         collection(db, "conversations"),
         where("userId", "==", currentUser!.uid),
         where("projectId", "==", activeProjectId)
       );
-      const querySnapshot = await getDocs(q);
-      const fetchedConversationIds = querySnapshot.docs.map((doc) => doc.id);
-      setConversations(fetchedConversationIds);
+  
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const fetchedConversationIds = querySnapshot.docs.map((doc) => doc.id);
+        setConversations(fetchedConversationIds);
+      });
+  
+      return unsubscribe;
     } catch (error) {
-      console.error("Error fetching messages: ", error);
+      console.error("Error fetching conversationId: ", error);
     }
   };
 
@@ -457,7 +461,11 @@ const Workspace = () => {
                     >
                       <FaTrash
                         onClick={async () => {
-                          await deleteConversation(conversation!);
+                          await deleteConversation(
+                            conversation!, 
+                            currentUser!.uid, 
+                            activeProjectId!, 
+                            dispatch);
                           await fetchMessages();
                         }}
                       />
