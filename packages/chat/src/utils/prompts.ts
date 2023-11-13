@@ -164,7 +164,7 @@ const templates = {
         Process the following information to create the title:
 
         --------
-        User Prompt: {userPromt}
+        User Prompt: {userPrompt}
         --------
 
         Generated Title:
