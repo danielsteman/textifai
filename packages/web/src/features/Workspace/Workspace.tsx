@@ -281,22 +281,22 @@ const Workspace = () => {
                 <MenuDivider />
                 {userProjects.map((project) => (
                 <Box
-                  key={project.name}
+                  key={project.uid}
                   onClick={() => handleProjectClick(project)}
                   cursor="pointer"
                 >
                   <HStack justifyContent="space-between" width="100%" p={2}>
-                    {editMode && activeProjectName === project.name ? (
+                    {editMode && activeProjectId === project.uid ? (
                       <Input
                         value={editedName}
                         onChange={(e) => setEditedName(e.target.value)}
                         onBlur={() => {
-                          handleEditProjectName(activeProjectId!, editedName);
+                          handleEditProjectName(project.uid!, editedName);
                           setEditMode(false);
                         }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
-                            handleEditProjectName(activeProjectId!, editedName);
+                            handleEditProjectName(project.uid!, editedName);
                             dispatch(setProjectName(editedName))
                             setEditMode(false);
                           }
