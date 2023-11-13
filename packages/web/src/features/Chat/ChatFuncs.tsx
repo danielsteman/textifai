@@ -203,3 +203,13 @@ export const fetchConversationId = async (
     console.error("Error fetching conversation ID:", error);
   }
 };
+
+export const firstMessageInConversation = async (conversationId: string): Promise<boolean> => {
+  const q = query(
+    messagesCollection,
+    where("conversationId", "==", conversationId),
+    orderBy("creationDate", "asc")
+  );
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.empty;
+};
