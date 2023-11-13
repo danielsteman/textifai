@@ -128,7 +128,7 @@ const MegaLibrary = () => {
   );
 
   const handleOpenDocumentInTab = async (uploadName: string) => {
-    const storageLocation = `users/${currentUser?.uid}/uploads/${uploadName}`;
+    const storageLocation = `projects/${activeProjectId}/uploads/${uploadName}`//`users/${currentUser?.uid}/uploads/${uploadName}`;
     const fileRef = ref(storage, storageLocation);
 
     const tab: ITab = {
@@ -812,14 +812,16 @@ const MegaLibrary = () => {
                           />
                         </Td>
                         <Td onContextMenu={(e) => handleRightClick(e, doc)}>
-                          <Button
-                            variant="link"
-                            onClick={() =>
-                              handleOpenDocumentInTab(doc.uploadName)
-                            }
-                          >
-                            {doc.fileName}
-                          </Button>
+                          <Tooltip label="Click to open or right-click to edit the file name">
+                            <Button
+                              variant="link"
+                              onClick={() =>
+                                handleOpenDocumentInTab(doc.uploadName)
+                              }
+                            >
+                              {doc.fileName}
+                            </Button>
+                          </Tooltip>
                         </Td>
                         <Td>{doc.author}</Td>
                         <Td isNumeric>
