@@ -42,6 +42,10 @@ const Chat = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const lastProcessedTextRef = useRef<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+  const [answerStreamComplete, setAnswerStreamComplete] =
+    useState<boolean>(true);
+
   const [answerStream, setAnswerStream] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
@@ -67,6 +71,7 @@ const Chat = () => {
   // DEBUG LOGS: uncomment if necessary, delete when stable
   //
   useEffect(() => {
+    console.log("start of debug block");
     console.log(answerStream);
     console.log(`answer stack length: ${answerStack.length}`);
     console.log(`message stack length: ${messageStack.length}`);
@@ -76,7 +81,11 @@ const Chat = () => {
     console.log("Start answer stack");
     console.log(answerStack);
     console.log("end answer stack");
-  }, [answerStream, answerStack]);
+
+    console.log("Start message stack");
+    console.log(messageStack);
+    console.log("end message stack");
+  }, [answerStream, answerStack, messageStack]);
 
   useEffect(() => {
     if (isProcessing) return;
@@ -197,21 +206,27 @@ const Chat = () => {
         const reader = response.body.getReader();
 
         dispatch(setLoading(false));
+        setAnswerStreamComplete(false);
+
+        let accumulatedAnswerStream = "";
 
         while (true) {
           const { done, value } = await reader.read();
 
           if (done) {
             console.log(`Dispatching this answer: ${answerStream}`);
-            dispatch(pushAnswer(answerStream));
             break;
           }
 
           const text = new TextDecoder().decode(value);
           setAnswerStream((prev): string => `${prev}${text}`);
+          accumulatedAnswerStream += text;
         }
 
         scrollToBottom();
+
+        dispatch(pushAnswer(accumulatedAnswerStream));
+        setAnswerStreamComplete(true);
 
         await addMessageToCollection(
           message,
@@ -268,7 +283,12 @@ const Chat = () => {
               <>
                 {index === messageStack.length - 1 ? (
                   <>
-                    <SystemMessage message={answerStream} variant="agent" />
+                    <SystemMessage
+                      message={
+                        answerStreamComplete ? answerStack[index] : answerStream
+                      }
+                      variant="agent"
+                    />
                     <Flex justifyContent="center" alignItems="center" py={4}>
                       <Button
                         rounded={8}
@@ -281,7 +301,12 @@ const Chat = () => {
                     </Flex>
                   </>
                 ) : (
-                  <SystemMessage message={answerStack[index]} variant="agent" />
+                  <>
+                    <SystemMessage
+                      message={answerStack[index]}
+                      variant="agent"
+                    />
+                  </>
                 )}
               </>
             )}
