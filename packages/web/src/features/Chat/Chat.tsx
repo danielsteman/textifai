@@ -15,6 +15,7 @@ import {
   useContext,
   ChangeEvent,
   useLayoutEffect,
+  useMemo,
 } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
@@ -43,6 +44,7 @@ const Chat = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const lastProcessedTextRef = useRef<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [showExampleQuestions, setShowExampleQuestions] = useState(true);
 
   const [answerStreamComplete, setAnswerStreamComplete] =
     useState<boolean>(true);
@@ -69,9 +71,9 @@ const Chat = () => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    console.log("Current conversationId: ", currentConversationId)
-  }, [currentConversationId]);
+  const memoizedExampleQuestions = useMemo(() => {
+    return <ExampleQuestions />;
+  }, [currentUser, activeProjectId, currentConversationId]);
 
   useEffect(() => {
     const initializeMessages = async () => {
@@ -320,7 +322,7 @@ const Chat = () => {
         ))}
         <Box ref={messagesEndRef} />
       </Box>
-      {messageStack.length === 0 && <ExampleQuestions />}
+      {messageStack.length === 0 && memoizedExampleQuestions}
       <form onSubmit={handleSubmit}>
         <InputGroup>
           <Input
