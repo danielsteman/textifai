@@ -280,52 +280,64 @@ const Workspace = () => {
               <MenuGroup title="All projects">
                 <MenuDivider />
                 {userProjects.map((project) => (
-                  <Box
-                    key={project.name}
-                    onClick={() => handleProjectClick(project)}
-                    cursor="pointer"
-                  >
-                    <HStack justifyContent="space-between" width="100%" p={2}>
-                      {editMode && activeProjectName === project.name ? (
-                        <Input
-                          value={editedName}
-                          onChange={(e) => setEditedName(e.target.value)}
+                <Box
+                  key={project.name}
+                  onClick={() => handleProjectClick(project)}
+                  cursor="pointer"
+                >
+                  <HStack justifyContent="space-between" width="100%" p={2}>
+                    {editMode && activeProjectName === project.name ? (
+                      <Input
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        onBlur={() => {
+                          handleEditProjectName(activeProjectId!, editedName);
+                          setEditMode(false);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleEditProjectName(activeProjectId!, editedName);
+                            dispatch(setProjectName(editedName))
+                            setEditMode(false);
+                          }
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <Text isTruncated>{project.name}</Text>
+                    )}
+                    <HStack spacing={0}>
+                      <Tooltip label="Edit project name">
+                        <IconButton
+                          icon={<FaPen />}
+                          aria-label="Edit"
+                          size="sm"
+                          variant="ghost"
+                          _hover={{ color: theme.colors[colorMode].primary }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditMode(true);
+                            setEditedName(project.name);
+                          }}
                         />
-                      ) : (
-                        <Text isTruncated>{project.name}</Text>
-                      )}
-                      <HStack spacing={0}>
-                        <Tooltip label="Edit project name">
-                          <IconButton
-                            icon={<FaPen />}
-                            aria-label="Edit"
-                            size="sm"
-                            variant="ghost"
-                            _hover={{ color: theme.colors[colorMode].primary }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditMode(true);
-                              setEditedName(project.name);
-                            }}
-                          />
-                        </Tooltip>
-                        <Tooltip label="Delete project">
-                          <IconButton
-                            icon={<FaTrash />}
-                            aria-label="Delete"
-                            size="sm"
-                            variant="ghost"
-                            _hover={{ color: theme.colors[colorMode].primary }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteProject(activeProjectId!, currentUser!.uid);
-                            }}
-                          />
-                        </Tooltip>
-                      </HStack>
+                      </Tooltip>
+                      <Tooltip label="Delete project">
+                        <IconButton
+                          icon={<FaTrash />}
+                          aria-label="Delete"
+                          size="sm"
+                          variant="ghost"
+                          _hover={{ color: theme.colors[colorMode].primary }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteProject(activeProjectId!, currentUser!.uid);
+                          }}
+                        />
+                      </Tooltip>
                     </HStack>
-                  </Box>
-                ))}
+                  </HStack>
+                </Box>
+              ))}
                 <MenuDivider />
                 <MenuItem onClick={handleAddNewProject}>+ New project</MenuItem>
               </MenuGroup>
