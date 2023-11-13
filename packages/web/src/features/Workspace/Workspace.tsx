@@ -276,39 +276,17 @@ const Workspace = () => {
               <MenuGroup title="All projects">
                 <MenuDivider />
                 {userProjects.map((project) => (
-                  <MenuItem
+                  <Box
                     key={project.name}
                     onClick={() => handleProjectClick(project)}
+                    cursor="pointer"
                   >
-                    <HStack justifyContent="space-between" width="100%">
+                    <HStack justifyContent="space-between" width="100%" p={2}>
                       {editMode && activeProjectName === project.name ? (
-                        <Box onClick={(e) => e.stopPropagation()}>
-                          <Input
-                            value={editedName}
-                            onChange={(e) => setEditedName(e.target.value)}
-                            onBlur={() => {
-                              setEditMode(false);
-                              handleEditProjectName(
-                                activeProjectId!,
-                                editedName
-                              );
-                              dispatch(setProjectName(editedName));
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                setEditMode(false);
-                                handleEditProjectName(
-                                  activeProjectId!,
-                                  editedName
-                                );
-                                dispatch(setProjectName(editedName));
-                              } else if (e.key === " ") {
-                                e.stopPropagation();
-                              }
-                            }}
-                            autoFocus
-                          />
-                        </Box>
+                        <Input
+                          value={editedName}
+                          onChange={(e) => setEditedName(e.target.value)}
+                        />
                       ) : (
                         <Text isTruncated>{project.name}</Text>
                       )}
@@ -319,15 +297,11 @@ const Workspace = () => {
                             aria-label="Edit"
                             size="sm"
                             variant="ghost"
-                            _hover={{
-                              color: theme.colors[colorMode].primary,
-                            }}
+                            _hover={{ color: theme.colors[colorMode].primary }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (activeProjectName === project.name) {
-                                setEditMode(true);
-                                setEditedName(project.name);
-                              }
+                              setEditMode(true);
+                              setEditedName(project.name);
                             }}
                           />
                         </Tooltip>
@@ -337,9 +311,7 @@ const Workspace = () => {
                             aria-label="Delete"
                             size="sm"
                             variant="ghost"
-                            _hover={{
-                              color: theme.colors[colorMode].primary,
-                            }}
+                            _hover={{ color: theme.colors[colorMode].primary }}
                             onClick={(e) => {
                               e.stopPropagation();
                               deleteProject(activeProjectId!, currentUser!.uid);
@@ -348,7 +320,7 @@ const Workspace = () => {
                         </Tooltip>
                       </HStack>
                     </HStack>
-                  </MenuItem>
+                  </Box>
                 ))}
                 <MenuDivider />
                 <MenuItem onClick={handleAddNewProject}>+ New project</MenuItem>
