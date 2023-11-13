@@ -207,8 +207,7 @@ export const fetchConversationId = async (
 export const firstMessageInConversation = async (conversationId: string): Promise<boolean> => {
   const q = query(
     messagesCollection,
-    where("conversationId", "==", conversationId),
-    orderBy("creationDate", "asc")
+    where("conversationId", "==", conversationId)
   );
   const querySnapshot = await getDocs(q);
   return querySnapshot.empty;
