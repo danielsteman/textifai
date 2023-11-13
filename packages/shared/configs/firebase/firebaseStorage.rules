@@ -4,5 +4,8 @@ service firebase.storage {
     match /users/{userId}/uploads/{allPaths=**} {
       allow read, write, delete: if request.auth != null && request.auth.uid == userId;
     }
+    match /projects/{projectId}/uploads/{allPaths=**} {
+      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }

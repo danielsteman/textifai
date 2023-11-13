@@ -120,7 +120,8 @@ const UploadForm: React.FC<UploadFormProps> = ({
   const handleFileUpload = async (file: any) => {
     const fileRef = ref(
       storage,
-      `users/${currentUser?.uid}/uploads/${file.name}`
+      `projects/${activeProjectId}/uploads/${file.name}`
+      //`users/${currentUser?.uid}/uploads/${file.name}`
     );
     const exists = await getDownloadURL(fileRef)
       .then(() => true)
@@ -193,7 +194,6 @@ const UploadForm: React.FC<UploadFormProps> = ({
       return;
     }
 
-    // Set initial progress for each file
     const initialProgress = files.reduce<{ [key: string]: number }>(
       (acc, file) => {
         acc[file.name] = 0;
