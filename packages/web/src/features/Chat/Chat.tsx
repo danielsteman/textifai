@@ -235,7 +235,7 @@ const Chat = () => {
           null
         );
         await addMessageToCollection(
-          answerStream,
+          accumulatedAnswerStream,
           "agent",
           currentConversationId,
           null
