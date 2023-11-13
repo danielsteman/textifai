@@ -94,25 +94,6 @@ const Chat = () => {
     initializeMessages();
   }, [currentConversationId]);
 
-  // DEBUG LOGS: uncomment if necessary, delete when stable
-  //
-  // useEffect(() => {
-  //   console.log("start of debug block");
-  //   console.log(answerStream);
-  //   console.log(`answer stack length: ${answerStack.length}`);
-  //   console.log(`message stack length: ${messageStack.length}`);
-
-  //   console.log(answerStack[answerStack.length - 1]);
-
-  //   console.log("Start answer stack");
-  //   console.log(answerStack);
-  //   console.log("end answer stack");
-
-  //   console.log("Start message stack");
-  //   console.log(messageStack);
-  //   console.log("end message stack");
-  // }, [answerStream, answerStack, messageStack]);
-
   useEffect(() => {
     if (isProcessing) return;
 
@@ -240,7 +221,6 @@ const Chat = () => {
           const { done, value } = await reader.read();
 
           if (done) {
-            console.log(`Dispatching this answer: ${answerStream}`);
             break;
           }
 
