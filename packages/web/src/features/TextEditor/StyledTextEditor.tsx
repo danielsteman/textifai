@@ -9,7 +9,7 @@ const StyledQuillEditor = styled(ReactQuill)<{
 }>`
   .ql-container {
     height: calc(100% - 42px);
-    padding: 24px 36px;
+    padding: 60px 72px;
     font-size: 15px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;

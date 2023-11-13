@@ -1,5 +1,4 @@
 import {
-  Box,
   Center,
   CloseButton,
   HStack,
@@ -32,7 +31,7 @@ const EditorPanel = () => {
 
   return (
     <Center h="100%">
-      <VStack h="100%" align="center" justify="center" w="70%">
+      <VStack h="100%" align="center" justify="center" maxW={1020} minW={816}>
         <HStack
           w="100%"
           p={2}
