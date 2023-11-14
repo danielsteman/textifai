@@ -79,7 +79,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (messageStack.length === 1) {
-      setConversationTitle(message, currentConversationId!);
+      setConversationTitle(messageStack[0], currentConversationId!);
     }
   }, [messageStack]);
 
