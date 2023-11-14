@@ -6,6 +6,16 @@ const templates = {
         to answer the question. Do not make up any answers if the context does not have relevant information. Use markdown formatting, such as bullet points, lists, paragraphs,
         and text styling, as appropriate.
 
+        Markdown styling: 
+            Header 1: #
+            Header 2: ##
+            Header 3: ###
+            Italic: *text*
+            Bold: **text**
+            Strong: __text__
+            Ordered list: 1. text
+            Unorderder list: - text
+
         Your answer should only be based on the context and should not include the words "context" or "conversation log". However, you should use the context to generate the answer.
         If you encounter a context formatted in a table, use a table in your response. Always prefer the result with the highest "score" value.
         If you don't know the answer, simply state that you don't know and avoid making anything up.
@@ -25,37 +35,40 @@ const templates = {
         Follow Up Input: {userPrompt}
         Standalone question:
         `,
-  regenerateTemplate: `Paraphrase the text in the CONTENT. You should follow the following rules when paraphrasing the CONTENT:
-        - Any code found in the CONTENT should ALWAYS be preserved in the paraphrase, unchanged.
-        - Any tables found in the CONTENT should ALWAYS be preserved in the paraphrase, unchanged.
-        - Code will be surrounded by backticks (\`) or triple backticks (\`\`\`).
-        - Paraphrase should include code examples when they are present in the original content. Do not make up any code examples on your own.
-        - The paraphrase should maintain the original intent and meaning of the CONTENT.
-        - Avoid changing technical terms or specific jargon, but aim to make the text more concise or clearer if possible.
-        - You should ALWAYS return your paraphrased answer in markdown.
+  regenerateTemplate: `
+      Paraphrase the given text, preserving any code or tables that are present. Your paraphrase should maintain the original intent and 
+      meaning of the text, while also aiming to improve clarity and conciseness where possible. Please provide your paraphrased answer in markdown format.
 
-        CONTENT: {document}
-
-        Final answer:
+      CONTENT: {document}
+      
+      Your paraphrased answer should be provided below:
         `,
-  pdfTemplate: `Answer the question based on the context below. You should follow ALL the following rules when generating and answer:
-              - You are a chatbot and SHOULD ALWAYS answer in a conversational manner.
-              - There will be a CONTEXT.
-              - NEVER mention the word CONTEXT in your final answer.
-              - Make the final answer concise, without loosing its original CONTEXT.
-              - If you are asked to SUMMARISE, never use more than 5 sentences.
-              - If you are asked to SHOW KEY THE KEY POINTS, return your FINAL ANSWER USING BULLET POINTS. USE 3 TO 5 BULLETS.
-              - If you are asked to EXPLAIN, NEVER use jargon and use EASY TO UNDERSTANDS words.
-              - The final answer should maintain the original intent and meaning of the CONTEXT.
-              - If the final answer includes any lists, always return a markdown list.
-              - Use bullet points, lists, paragraphs and text styling to present the answer in markdown.
-              - If you encouter CONTEXT that is formatted in a table, use a table in your repsonse to.
-              - The answer should only be based on the CONTEXT. Do not use any external sources. Do not generate the answer based on the QUESTION without clear reference to the CONTEXT.
-              - If you encouter CONTEXT that has any page number references or other references, NEVER include any page number references or other references in your answer.
+  pdfTemplate: `
+      Based on the given context, you are a chatbot tasked with answering questions in a conversational manner while following specific rules. 
+      Your answers should be concise, maintaining the original context, and avoiding the mention of the word "context". 
+      If asked to summarize, use no more than five sentences. If asked to show key points, use three to five bullet points. 
+      If asked to explain, use easy-to-understand language without jargon. Your final answer should be based solely on the given 
+      context and should not reference any external sources or use page number references. 
 
-              CONTEXT: {context}
+      The final answer should be tailored to each prompt, ensuring a unique and clear structure that aids the user's understanding
+      and should be formatted using react-markdown styling.
 
-              Final Answer: `,
+      Header 1: #
+      Header 2: ##
+      Header 3: ###
+      Italic: *text*
+      Bold: **text**
+      Strong: __text__
+      Ordered list: 1. text
+      Unorderder list: - text
+
+      --------
+      Context: {context}
+      --------
+
+      Final answer:
+  
+  `,
   stepBackTemplate: `
         Given the detailed and complex nature of the task at hand, formulate a step-back question that abstracts away from the specifics to focus on the underlying principles or higher-level concepts relevant to the original question. This step-back question should aim to simplify the task by eliciting general knowledge that will aid in deducing the specific answer required."
 
