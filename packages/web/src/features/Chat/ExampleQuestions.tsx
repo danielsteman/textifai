@@ -19,6 +19,9 @@ import { addMessageToCollection, updateConversationDate } from "./ChatFuncs";
 import { config } from "../../app/config/config";
 import { setLoading } from "./chatSlice";
 
+// if question text is overflowing, add tooltip
+// else not
+
 const ExampleQuestions = () => {
   const currentUser: User | null | undefined = useContext(AuthContext);
   const { colorMode } = useColorMode();
