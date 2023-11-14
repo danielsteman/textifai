@@ -210,6 +210,7 @@ const Chat = () => {
         dispatch(pushAnswer(answer));
       } else if (regenerate) {
         console.log("Handling Regenerate Chain...");
+
         const lastSystemMessage = answerStack[answerStack.length - 1];
 
         const requestPayload = {
