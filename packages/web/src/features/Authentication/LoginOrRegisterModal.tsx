@@ -33,8 +33,9 @@ import { auth, db } from "../../app/config/firebase";
 import Socials from "./Socials";
 import AuthError from "./AuthError";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { Timestamp, doc, setDoc } from "firebase/firestore";
+import { Timestamp, collection, doc, setDoc } from "firebase/firestore";
 import { User } from "@shared/interfaces/firebase/User";
+import { Project } from "@shared/interfaces/firebase/Project";
 import theme from "../../app/themes/theme";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -117,7 +118,6 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
             if (userCredential.user) {
               sendEmailVerification(userCredential.user);
-              //console.log("Verification email sent.");
             }
 
             const userData: User = {
@@ -131,10 +131,22 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               updatedDate: Timestamp.fromDate(new Date()),
               language: "english",
               isActive: true,
-              projects: [],
             };
-
-            await setDoc(doc(db, "users", userCredential.user.uid), userData);
+        
+            const userDocRef = doc(db, "users", userCredential.user.uid);
+            await setDoc(userDocRef, userData);
+        
+            const projectData: Project = {
+              name: "My Project",
+              description: "This is my first project.",
+              industry: "",
+              users: [userCredential.user.uid],
+              creationDate: Timestamp.fromDate(new Date())
+            };
+        
+            const projectDocRef = doc(collection(db, "projects"));
+        
+            await setDoc(projectDocRef, projectData);
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
             });

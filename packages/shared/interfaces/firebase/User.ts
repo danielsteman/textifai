@@ -11,6 +11,5 @@ export interface User {
   updatedDate: Timestamp;
   language: string;
   isActive: boolean;
-  projects: string[];
   activeProject?: string;
 }

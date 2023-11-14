@@ -33,6 +33,7 @@ import {
   VStack,
   useColorMode,
   useDisclosure,
+  Center,
 } from "@chakra-ui/react";
 import { db, storage } from "../../app/config/firebase";
 import { deleteObject, ref } from "firebase/storage";
@@ -65,19 +66,22 @@ import { Document } from "@shared/interfaces/firebase/Document";
 import ChatPanel from "../Workspace/panels/ChatPanel";
 import TagInput from "../../common/components/CollectionTags";
 import { openTab } from "../Workspace/tabsSlice";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { setProjectId, setProjectName } from "../Workspace/projectSlice";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
-import { setCurrentConversationId } from "../Chat/chatSlice";
-import { fetchConversationId, fetchMessagesForConversation } from "../Chat/ChatFuncs";
-import { 
-  addCollectionToDocument, 
-  deleteCollectionFromDocument, 
-  parseTopics, 
-  toggleFavourite, 
-  handleUploadComplete,
-  parseSampleQuestions
+import { setCurrentConversationId, setExtractedText } from "../Chat/chatSlice";
+import {
+  fetchConversationId,
+  fetchMessagesForConversation,
+} from "../Chat/ChatFuncs";
+import {
+  addCollectionToDocument,
+  deleteCollectionFromDocument,
+  parseTopics,
+  toggleFavourite,
+  parseSampleQuestions,
+  updateFilename,
 } from "./libraryFuncs";
 import { setAnswers } from "../Chat/answerStackSlice";
 import { setMessages } from "../Chat/messageStackSlice";
@@ -91,6 +95,7 @@ const MegaLibrary = () => {
   const [documentQuery, setDocumentQuery] = useState<string>("");
   const [yearFilter, setYearFilter] = useState<number | null>(null);
   const [documentLoading, setDocumentLoading] = useState(true);
+  const [fileUpdated, setFileUpdated] = useState(false);
 
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
   const [onlyFavoritesFilter, setOnlyFavoritesFilter] =
@@ -108,16 +113,22 @@ const MegaLibrary = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);  
-  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
-  const currentConversationId = useSelector((state: RootState) => state.chat.currentConversationId);
+  const activeProjectName = useSelector(
+    (state: RootState) => state.activeProject.projectName
+  );
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
+  const currentConversationId = useSelector(
+    (state: RootState) => state.chat.currentConversationId
+  );
 
   const allCollections = Array.from(
     new Set(documents.flatMap((doc) => doc.tags))
   );
 
   const handleOpenDocumentInTab = async (uploadName: string) => {
-    const storageLocation = `users/${currentUser?.uid}/uploads/${uploadName}`;
+    const storageLocation = `projects/${activeProjectId}/uploads/${uploadName}`//`users/${currentUser?.uid}/uploads/${uploadName}`;
     const fileRef = ref(storage, storageLocation);
 
     const tab: ITab = {
@@ -206,7 +217,9 @@ const MegaLibrary = () => {
   useEffect(() => {
     const initializeMessages = async () => {
       if (currentConversationId) {
-        const messages = await fetchMessagesForConversation(currentConversationId!);
+        const messages = await fetchMessagesForConversation(
+          currentConversationId!
+        );
         const userMessages = messages
           .filter((msg) => msg.variant === "user")
           .map((msg) => msg.messageBody);
@@ -223,15 +236,18 @@ const MegaLibrary = () => {
 
   useEffect(() => {
     if (currentUser) {
-        const fetchAndSetProjectUid = async () => {
-            const projectId = await fetchProjectUid(currentUser.uid, activeProjectName!);
-            dispatch(setProjectId(projectId!));
-            setDocumentLoading(false);
-        };
-
-        fetchAndSetProjectUid();
-    } else {
+      const fetchAndSetProjectUid = async () => {
+        const projectId = await fetchProjectUid(
+          currentUser.uid,
+          activeProjectName!
+        );
+        dispatch(setProjectId(projectId!));
         setDocumentLoading(false);
+      };
+
+      fetchAndSetProjectUid();
+    } else {
+      setDocumentLoading(false);
     }
   }, [currentUser, activeProjectName]);
 
@@ -278,9 +294,18 @@ const MegaLibrary = () => {
     });
 
     return () => unsubscribe();
-  }, [currentUser, activeProjectId, documentLoading]);
+  }, [currentUser, activeProjectId, documentLoading, fileUpdated]);
 
-  useEffect(() => {  
+  const handleUploadComplete = () => {
+    console.log("Upload complete!");
+    
+    setTimeout(() => {
+      console.log("Closing the modal after 5 seconds...");
+      onUploadFileClose(); 
+    }, 5000);
+  };
+
+  useEffect(() => {
     if (!activeProjectId || !currentUser || documentLoading) return;
 
     const documentsCollection = collection(db, "uploads");
@@ -297,10 +322,14 @@ const MegaLibrary = () => {
         const documentData = doc.data();
 
         if (selectedDocuments.includes(documentData.uploadName)) {
-          if (documentData.sampleQuestions && typeof documentData.sampleQuestions === 'string') {
-            const parsedQuestions = parseSampleQuestions(documentData.sampleQuestions);
+          if (
+            documentData.sampleQuestions &&
+            typeof documentData.sampleQuestions === "string"
+          ) {
+            const parsedQuestions = parseSampleQuestions(
+              documentData.sampleQuestions
+            );
             if (parsedQuestions.length > 0) {
-              console.log("Sample questions: ", parsedQuestions);
               fetchedSampleQuestions.push(parsedQuestions);
             }
           }
@@ -310,29 +339,69 @@ const MegaLibrary = () => {
     });
 
     return () => unsubscribe();
-  }, [currentUser, activeProjectId, documentLoading, selectedDocuments]); 
+  }, [currentUser, activeProjectId, documentLoading, selectedDocuments]);
 
   useEffect(() => {
-    if (documents.length === 0 && !documentLoading) {
-        const timeout = setTimeout(() => {
-            onUploadFileOpen();
-        }, 750);
-        return () => clearTimeout(timeout);
-    }
-  }, [documents, documentLoading]);
+    if (!activeProjectId || !currentUser || documentLoading) return;
+
+    const documentsCollection = collection(db, "uploads");
+    const q = query(
+      documentsCollection,
+      where("uploadedBy", "==", currentUser.uid),
+      where("projectId", "==", activeProjectId)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      let concatenatedExtractedText = "";
+
+      snapshot.forEach((doc) => {
+        const documentData = doc.data();
+
+        if (selectedDocuments.includes(documentData.uploadName)) {
+          concatenatedExtractedText += documentData.extractedText || "";
+        }
+      });
+      dispatch(setExtractedText(concatenatedExtractedText));
+    });
+
+    return () => unsubscribe();
+  }, [currentUser, activeProjectId, documentLoading, selectedDocuments]);
 
   useEffect(() => {
     const getConversationId = async () => {
       if (currentUser && activeProjectId) {
-        const conversationId = await fetchConversationId(currentUser.uid, activeProjectId);
+        const conversationId = await fetchConversationId(
+          currentUser.uid,
+          activeProjectId
+        );
         if (conversationId) {
           dispatch(setCurrentConversationId(conversationId));
         }
       }
     };
-  
+
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
+
+  const handleRightClick = (event: any, doc: any) => {
+    event.preventDefault();
+
+    const newFileName = prompt("Enter the new file name", doc.fileName);
+    if (newFileName && newFileName !== doc.fileName) {
+      updateFilename(
+        currentUser!.uid,
+        activeProjectId!,
+        doc.uploadName,
+        newFileName
+      )
+        .then(() => {
+          setFileUpdated((prevFlag) => !prevFlag);
+        })
+        .catch((error) => {
+          console.error("Failed to update file name:", error);
+        });
+    }
+  };
 
   return (
     <Grid
@@ -378,7 +447,9 @@ const MegaLibrary = () => {
           textColor={theme.colors[colorMode].onSurface}
           h="100%"
         >
-          <Heading size="xs">Filters</Heading>
+          <Heading size="sm" pl={2}>
+            Filters
+          </Heading>
           <Button
             bgColor={
               yearFilter === null &&
@@ -388,7 +459,7 @@ const MegaLibrary = () => {
                 : undefined
             }
             variant="ghost"
-            size="xs"
+            size="sm"
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setYearFilter(null);
@@ -405,7 +476,7 @@ const MegaLibrary = () => {
                 : undefined
             }
             variant="ghost"
-            size="xs"
+            size="sm"
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setIsCustomRangeSelected(false);
@@ -421,7 +492,7 @@ const MegaLibrary = () => {
                 : undefined
             }
             variant="ghost"
-            size="xs"
+            size="sm"
             textColor={theme.colors[colorMode].onSurface}
             onClick={() => {
               setIsCustomRangeSelected(false);
@@ -438,7 +509,7 @@ const MegaLibrary = () => {
             }
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
-            size="xs"
+            size="sm"
             onClick={() => {
               setYearFilter(2021);
               setIsCustomRangeSelected(false);
@@ -454,7 +525,7 @@ const MegaLibrary = () => {
             }
             textColor={theme.colors[colorMode].onSurface}
             variant="ghost"
-            size="xs"
+            size="sm"
             onClick={() => {
               setIsCustomRangeSelected(true);
               setYearFilter(null);
@@ -466,7 +537,7 @@ const MegaLibrary = () => {
             <HStack spacing={2}>
               <Input
                 placeholder="Start"
-                size="xs"
+                size="sm"
                 type="number"
                 value={customYearStart || ""}
                 onChange={(e) => setCustomYearStart(Number(e.target.value))}
@@ -476,7 +547,7 @@ const MegaLibrary = () => {
               <Text>-</Text>
               <Input
                 placeholder="End"
-                size="xs"
+                size="sm"
                 type="number"
                 value={customYearEnd || ""}
                 onChange={(e) => setCustomYearEnd(Number(e.target.value))}
@@ -492,14 +563,16 @@ const MegaLibrary = () => {
                 : undefined
             }
             variant="ghost"
-            size="xs"
+            size="sm"
             textColor={theme.colors[colorMode].onSurface}
             onClick={handleToggleFavoritesFilter}
           >
             Only show favorites
           </Button>
           <Box h={4} />
-          <Heading size="xs">Collections</Heading>
+          <Heading size="sm" pl={2}>
+            Collections
+          </Heading>
           {allCollections
             .filter((collection) => collection && collection.trim() !== "")
             .map((collection, index) => (
@@ -511,7 +584,7 @@ const MegaLibrary = () => {
                     : undefined
                 }
                 variant="ghost"
-                size="xs"
+                size="sm"
                 textColor={theme.colors[colorMode].onSurface}
                 onClick={() => {
                   if (collectionFilter === collection) {
@@ -529,7 +602,7 @@ const MegaLibrary = () => {
           <Button
             textColor={theme.colors[colorMode].onTertiaryContainer}
             bgColor={theme.colors[colorMode].tertiaryContainer}
-            size="sm"
+            size="md"
             leftIcon={<FaRocket />}
             borderRadius={100}
             onClick={() => navigate("/features/onboarding")}
@@ -545,10 +618,12 @@ const MegaLibrary = () => {
           textColor={theme.colors[colorMode].onSurface}
           p={2}
         >
-          <Heading size="xs">Documents</Heading>
+          <Heading size="md" pl={4}>
+            Documents
+          </Heading>
           <Spacer />
           <Button
-            size="sm"
+            size="md"
             aria-label={"upload"}
             leftIcon={<MdUpload />}
             borderRadius={100}
@@ -572,7 +647,7 @@ const MegaLibrary = () => {
             </ModalContent>
           </Modal>
           <Button
-            size="sm"
+            size="md"
             aria-label={"ask tai"}
             leftIcon={<ChatIcon />}
             borderRadius={100}
@@ -596,16 +671,16 @@ const MegaLibrary = () => {
             Ask TAI
           </Button>
           <Button
-            size="sm"
+            size="md"
             borderRadius={100}
             bgColor={theme.colors[colorMode].tertiaryContainer}
             textColor={theme.colors[colorMode].onTertiaryContainer}
           >
             View selected documents
           </Button>
-          <Tooltip label="Select documents in the table below!">
+          <Tooltip label="Select documents in the table below">
             <IconButton
-              size="sm"
+              size="md"
               aria-label={"delete"}
               icon={<FaTrash />}
               onClick={onDeleteFileOpen}
@@ -649,131 +724,155 @@ const MegaLibrary = () => {
         </HStack>
       </GridItem>
       <GridItem rowSpan={1} colSpan={1} overflow="auto">
-        <TableContainer width="100%">
-          <Table size="sm">
-            <Thead>
-              <Tr>
-                <Th>
-                  <Checkbox
-                    isChecked={selectedDocuments.length === documents.length}
-                    onChange={toggleAllDocuments}
-                  />
-                </Th>
-                <Th>Title</Th>
-                <Th>Author(s)</Th>
-                <Th isNumeric>Year</Th>
-                <Th>Collection</Th>
-                <Th>Topics</Th>
-                <Th>Favorite</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {documents.length > 0 &&
-                documents
-                  .filter((doc) => {
-                    let matchesQuery = doc.uploadName.includes(documentQuery);
-                    let matchesYear =
-                      (!yearFilter && !isCustomRangeSelected) ||
-                      (yearFilter &&
-                        doc.creationDate.toDate().getFullYear() ===
-                          yearFilter) ||
-                      (isCustomRangeSelected &&
-                        customYearStart &&
-                        customYearEnd &&
-                        customYearStart <=
-                          doc.creationDate.toDate().getFullYear() &&
-                        doc.creationDate.toDate().getFullYear() <=
-                          customYearEnd);
-                    let matchesCollection =
-                      !collectionFilter ||
-                      (doc.tags && doc.tags.includes(collectionFilter));
-                    //let matchesProject = activeProject;
-                    let matchesFavorites = onlyFavoritesFilter
-                      ? !!doc.favoritedBy
-                      : true;
-                    return (
-                      matchesQuery &&
-                      matchesYear &&
-                      matchesCollection &&
-                      //matchesProject &&
-                      matchesFavorites
-                    );
-                  })
-                  .map((doc: Document) => (
-                    <Tr
-                      key={doc.uploadName}
-                      _hover={{
-                        bgColor:
-                          theme.colors[colorMode].surfaceContainerHighest,
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Td>
-                        <Checkbox
-                          isChecked={selectedDocuments.includes(doc.uploadName)}
-                          onChange={() =>
-                            handleDocumentCheckboxChange(doc.uploadName)
-                          }
-                        />
-                      </Td>
-                      <Td>
-                        <Button
-                          variant="link"
-                          onClick={() =>
-                            handleOpenDocumentInTab(doc.uploadName)
-                          }
-                        >
-                          {doc.uploadName}
-                        </Button>
-                      </Td>
-                      <Td>{doc.author}</Td>
-                      <Td isNumeric>
-                        {doc.creationDate.toDate().getFullYear()}
-                      </Td>
-                      <Td>
-                        <TagInput
-                          tags={doc.tags}
-                          onAddTag={(newTag) =>
-                            addCollectionToDocument(
-                              currentUser!.uid, 
-                              activeProjectId!,
-                              doc.uploadName, 
-                              newTag)
-                          }
-                          onDeleteTag={(tagToDelete) =>
-                            deleteCollectionFromDocument(
-                              currentUser!.uid, 
-                              activeProjectId!,
-                              doc.uploadName,
-                              tagToDelete
-                            )
-                          }
-                        />
-                      </Td>
-                      <Td>{parseTopics(doc.topics)}</Td>
-                      <Td textAlign="center">
-                        <Icon
-                          as={FaStar}
-                          color={
-                            doc.favoritedBy
-                              ? theme.colors[colorMode].primary
-                              : "none"
-                          }
-                          onClick={() =>
-                            toggleFavourite(
-                              currentUser!.uid, 
-                              activeProjectId!,
-                              doc.uploadName, 
-                              !doc.favoritedBy
-                            )
-                          }
-                        />
-                      </Td>
-                    </Tr>
-                  ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
+        {documents.length === 0 ? (
+          <>
+            <Center h="75%">
+              <VStack>
+                <Button
+                  size="lg"
+                  leftIcon={<MdUpload />}
+                  bgColor={theme.colors[colorMode].secondaryContainer}
+                  textColor={theme.colors[colorMode].onSecondaryContainer}
+                  onClick={onUploadFileOpen}
+                  borderRadius={100}
+                >
+                  Upload Documents
+                </Button>
+              </VStack>
+            </Center>
+          </>
+        ) : (
+          <TableContainer width="100%">
+            <Table size="sm">
+              <Thead>
+                <Tr>
+                  <Th>
+                    <Checkbox
+                      isChecked={selectedDocuments.length === documents.length}
+                      onChange={toggleAllDocuments}
+                    />
+                  </Th>
+                  <Th>Title</Th>
+                  <Th>Author(s)</Th>
+                  <Th isNumeric>Year</Th>
+                  <Th>Collection</Th>
+                  <Th>Topics</Th>
+                  <Th>Favorite</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {documents.length > 0 &&
+                  documents
+                    .filter((doc) => {
+                      let matchesQuery = doc.uploadName.includes(documentQuery);
+                      let matchesYear =
+                        (!yearFilter && !isCustomRangeSelected) ||
+                        (yearFilter &&
+                          doc.creationDate.toDate().getFullYear() ===
+                            yearFilter) ||
+                        (isCustomRangeSelected &&
+                          customYearStart &&
+                          customYearEnd &&
+                          customYearStart <=
+                            doc.creationDate.toDate().getFullYear() &&
+                          doc.creationDate.toDate().getFullYear() <=
+                            customYearEnd);
+                      let matchesCollection =
+                        !collectionFilter ||
+                        (doc.tags && doc.tags.includes(collectionFilter));
+                      //let matchesProject = activeProject;
+                      let matchesFavorites = onlyFavoritesFilter
+                        ? !!doc.favoritedBy
+                        : true;
+                      return (
+                        matchesQuery &&
+                        matchesYear &&
+                        matchesCollection &&
+                        //matchesProject &&
+                        matchesFavorites
+                      );
+                    })
+                    .map((doc: Document) => (
+                      <Tr
+                        key={doc.uploadName}
+                        _hover={{
+                          bgColor:
+                            theme.colors[colorMode].surfaceContainerHighest,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Td>
+                          <Checkbox
+                            isChecked={selectedDocuments.includes(
+                              doc.uploadName
+                            )}
+                            onChange={() =>
+                              handleDocumentCheckboxChange(doc.uploadName)
+                            }
+                          />
+                        </Td>
+                        <Td onContextMenu={(e) => handleRightClick(e, doc)}>
+                          <Tooltip label="Click to open or right-click to edit the file name">
+                            <Button
+                              variant="link"
+                              onClick={() =>
+                                handleOpenDocumentInTab(doc.uploadName)
+                              }
+                            >
+                              {doc.fileName}
+                            </Button>
+                          </Tooltip>
+                        </Td>
+                        <Td>{doc.author}</Td>
+                        <Td isNumeric>
+                          {doc.creationDate.toDate().getFullYear()}
+                        </Td>
+                        <Td>
+                          <TagInput
+                            tags={doc.tags}
+                            onAddTag={(newTag) =>
+                              addCollectionToDocument(
+                                currentUser!.uid,
+                                activeProjectId!,
+                                doc.uploadName,
+                                newTag
+                              )
+                            }
+                            onDeleteTag={(tagToDelete) =>
+                              deleteCollectionFromDocument(
+                                currentUser!.uid,
+                                activeProjectId!,
+                                doc.uploadName,
+                                tagToDelete
+                              )
+                            }
+                          />
+                        </Td>
+                        <Td>{parseTopics(doc.topics)}</Td>
+                        <Td textAlign="center">
+                          <Icon
+                            as={FaStar}
+                            color={
+                              doc.favoritedBy
+                                ? theme.colors[colorMode].primary
+                                : "none"
+                            }
+                            onClick={() =>
+                              toggleFavourite(
+                                currentUser!.uid,
+                                activeProjectId!,
+                                doc.uploadName,
+                                !doc.favoritedBy
+                              )
+                            }
+                          />
+                        </Td>
+                      </Tr>
+                    ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        )}
       </GridItem>
     </Grid>
   );

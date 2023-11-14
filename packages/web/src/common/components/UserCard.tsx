@@ -1,31 +1,42 @@
-import { useContext } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import {
   Box,
   IconButton,
   useColorMode,
   Avatar,
   HStack,
-  VStack,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverBody,
   Heading,
+  Button,
+  VStack,
   Text,
+  Spacer,
 } from "@chakra-ui/react";
 import { SettingsIcon, UpDownIcon } from "@chakra-ui/icons";
+import { MdLogout } from "react-icons/md";
 import { auth } from "../../app/config/firebase";
-import ColorModeSwitcher from "./ColorModeSwitcher";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import theme from "../../app/themes/theme";
 import { shortenString } from "../utils/shortenString";
-import { MdLogout } from "react-icons/md";
+import ColorModeSwitcher from "./ColorModeSwitcher";
 
 const UserCard = () => {
   const currentUser = useContext(AuthContext);
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const [popoverWidth, setPopoverWidth] = useState(0);
+
+  useEffect(() => {
+    if (triggerRef.current) {
+      setPopoverWidth(triggerRef.current.offsetWidth);
+    }
+  }, []);
 
   return (
     <Box
@@ -35,57 +46,68 @@ const UserCard = () => {
       bgColor={theme.colors[colorMode].secondaryContainer}
       borderRadius="md"
     >
-      <VStack align="start" spacing={2}>
-        <HStack gap={2}>
-          <Avatar size="sm" />
-          <Heading
-            size="xs"
-            color={theme.colors[colorMode].onSecondaryContainer}
-            whiteSpace="nowrap"
+      <Popover placement="top-start">
+        <PopoverTrigger>
+          <HStack
+            ref={triggerRef}
+            display="flex"
+            alignItems="center"
+            gap="2"
+            cursor="pointer"
+            w="full"
           >
-            {currentUser?.displayName &&
-              shortenString(currentUser?.displayName, 14)}
-          </Heading>
-          <Menu>
-            <MenuButton
-              as={IconButton}
+            <Avatar size="sm" />
+            <Heading
+              size="xs"
+              color={theme.colors[colorMode].onSecondaryContainer}
+              whiteSpace="nowrap"
+            >
+              {currentUser?.displayName &&
+                shortenString(currentUser?.displayName, 14)}
+            </Heading>
+            <Spacer />
+            <IconButton
               icon={<UpDownIcon />}
               size="sm"
               variant="ghost"
+              aria-label="User options"
             />
-            <MenuList minW="0" w="fit-content">
-              <MenuItem
-                w="fit-content"
-                pr={6}
-                rounded={8}
-                onClick={() => {
-                  navigate("/settings");
-                }}
+          </HStack>
+        </PopoverTrigger>
+        <PopoverContent
+          width={popoverWidth}
+          maxW="none"
+          bgColor={theme.colors[colorMode].secondaryContainer}
+          borderColor={theme.colors[colorMode].border}
+          borderRadius="md"
+          boxShadow="sm"
+        >
+          <PopoverBody>
+            <VStack align="start">
+              <Button
+                w="full"
+                justifyContent="start"
+                onClick={() => navigate("/settings")}
               >
-                <HStack gap={4}>
-                  <SettingsIcon />
-                  <Text>Settings</Text>
-                </HStack>
-              </MenuItem>
-              <MenuItem
-                w="fit-content"
-                pr={6}
-                rounded={8}
+                <SettingsIcon mr={2} />
+                <Text ml={0}>Settings</Text>
+              </Button>
+              <Button
+                w="full"
+                justifyContent="start"
                 onClick={() => {
                   auth.signOut();
                   navigate("/");
                 }}
               >
-                <HStack gap={4}>
-                  <MdLogout />
-                  <Text>Sign out</Text>
-                </HStack>
-              </MenuItem>
+                <MdLogout />
+                <Text ml={2}>Sign out</Text>
+              </Button>
               <ColorModeSwitcher />
-            </MenuList>
-          </Menu>
-        </HStack>
-      </VStack>
+            </VStack>
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
     </Box>
   );
 };

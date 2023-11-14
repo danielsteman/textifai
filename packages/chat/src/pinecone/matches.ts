@@ -44,6 +44,7 @@ const getMatchesFromEmbeddings = async (
         ...match,
         metadata: match.metadata as Metadata,
       })) || []
+
     );
   } catch (e) {
     console.log("Error querying embeddings: ", e);

@@ -10,17 +10,26 @@ import {
   useColorMode,
   Spacer,
   Text,
+  Heading,
 } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import theme from "../../app/themes/theme";
 import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
-// import { fetchProjectId } from "../../common/utils/getCurrentProjectId";
-import { FaPlus } from "react-icons/fa";
+import {
+  FaArrowRight,
+  FaCircle,
+  FaCommentDots,
+  FaOptinMonster,
+  FaPen,
+  FaPlus,
+} from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
+import { ArrowRightIcon, ArrowUpDownIcon, CopyIcon } from "@chakra-ui/icons";
+import { MdCallToAction, MdSettings } from "react-icons/md";
 
 interface SystemMessageProps {
   message: string;
@@ -46,33 +55,42 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
     setMenuClicked(true);
   };
 
+  const markdownComponentMapping = {
+    h1: ({ ...props }) => <Heading size="lg">{props.children}</Heading>,
+    h2: ({ ...props }) => <Heading size="md">{props.children}</Heading>,
+    h3: ({ ...props }) => <Heading size="sm">{props.children}</Heading>,
+  };
+
   return (
-    <HStack mb={2}>
+    <HStack m={2}>
       {variant === "user" && <Spacer />}
       <Box
-        textColor={textColor}
+        color={textColor}
         bgColor={bgColor}
-        pr={variant === "agent" ? 0 : 4}
-        pl={4}
-        py={0.5}
+        pr={variant === "agent" ? 0 : 3}
+        pl={3}
+        py={1}
         rounded={8}
         gap={0}
         w="fit-content"
+        maxW="80%"
         minH={8}
-        alignItems="center"
+        alignItems="start"
       >
         <HStack spacing={2}>
-          <VStack spacing={0} flex="1">
-            <ReactMarkdown>{message}</ReactMarkdown>
+          <VStack spacing={0} flex="1" alignItems="start">
+            <ReactMarkdown components={markdownComponentMapping}>
+              {message}
+            </ReactMarkdown>
           </VStack>
           {!menuClicked && variant === "agent" && (
             <Menu>
               <MenuButton
                 as={IconButton}
                 aria-label="Options"
-                icon={<FaPlus />}
+                icon={<CopyIcon />}
                 variant="ghost"
-                size="sm"
+                size="xs"
                 color={theme.colors[colorMode].onSecondary}
               />
               <MenuList>

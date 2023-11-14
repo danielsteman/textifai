@@ -32,12 +32,22 @@ import {
   ModalHeader,
   ModalOverlay,
   MenuDivider,
+  Heading,
+  Input,
 } from "@chakra-ui/react";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import ColorModeSwitcher from "../../common/components/ColorModeSwitcher";
 import UserCard from "../../common/components/UserCard";
 import EditorPanel from "../../features/Workspace/panels/EditorPanel";
-import { FaBook, FaBookOpen, FaEdit, FaRegFilePdf } from "react-icons/fa";
+import {
+  FaBook,
+  FaBookOpen,
+  FaEdit,
+  FaPlus,
+  FaRegFilePdf,
+  FaTrash,
+  FaPen,
+} from "react-icons/fa";
 import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
@@ -47,7 +57,6 @@ import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { setActiveProjectForUser } from "../Projects/updateActiveProject";
-import { isEmailVerified } from "../Authentication/fetchVerificationStatus";
 import { resendVerificationEmail } from "../Authentication/resendVerificationMail";
 import {
   activateTab,
@@ -63,6 +72,19 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom";
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../../app/config/firebase";
+import { startConversation, deleteConversation } from "../Chat/ChatFuncs";
+import { setCurrentConversationId } from "../Chat/chatSlice";
+import { deleteProject } from "../Projects/deleteProject";
+import { handleEditProjectName } from "../Projects/changeProjectName";
+import { keyframes } from "@emotion/react";
 
 export type ITab = {
   name: string;
@@ -73,11 +95,22 @@ export type ITab = {
   isActive?: boolean;
 };
 
+const typing = keyframes`
+  from { width: 0; }
+  to { width: 100%; }
+`;
+
+const blinkCaret = keyframes`
+  50% { border-color: transparent; }
+`;
+
 const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-  const [emailVerified, setEmailVerified] = useState<boolean>(false);
   const [mailResent, setMailResent] = useState(false);
+  const [conversations, setConversations] = useState<string[]>([]);
+  const [editedName, setEditedName] = useState("");
+  const [editMode, setEditMode] = useState(false);
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
@@ -86,11 +119,17 @@ const Workspace = () => {
 
   const dispatch = useDispatch();
   const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+  const currentConversationId = useSelector(
+    (state: RootState) => state.chat.currentConversationId
+  );
   const activeTabIndex = useSelector(
     (state: RootState) => state.tabs.activeTabIndex
   );
   const activeProjectName = useSelector(
     (state: RootState) => state.activeProject.projectName
+  );
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
   );
 
   const toggleMenu = () => {
@@ -132,21 +171,6 @@ const Workspace = () => {
     dispatch(openTab(defaultTab));
   }, []);
 
-  useEffect(() => {
-    const checkEmailVerification = async () => {
-      if (currentUser && currentUser.uid) {
-        try {
-          const verified = await isEmailVerified(currentUser);
-          setEmailVerified(verified);
-        } catch (error) {}
-      } else {
-        setEmailVerified(false);
-      }
-    };
-
-    checkEmailVerification();
-  }, [currentUser]);
-
   const handleProjectClick = async (project: Project) => {
     await setActiveProjectForUser(project.name, currentUser!.uid);
 
@@ -160,10 +184,38 @@ const Workspace = () => {
     }
   };
 
+  const fetchMessages = () => {
+    try {
+      const q = query(
+        collection(db, "conversations"),
+        where("userId", "==", currentUser!.uid),
+        where("projectId", "==", activeProjectId)
+      );
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const fetchedConversationIds = querySnapshot.docs.map((doc) => doc.id);
+        setConversations(fetchedConversationIds);
+      });
+
+      return unsubscribe;
+    } catch (error) {
+      console.error("Error fetching conversationId: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, [activeProjectId, currentUser, dispatch]);
+
   return (
     <HStack h="100%">
-      {!emailVerified && (
-        <Modal isOpen={!emailVerified} onClose={() => {}} isCentered size="md">
+      {!currentUser?.emailVerified && (
+        <Modal
+          isOpen={!currentUser?.emailVerified}
+          onClose={() => {}}
+          isCentered
+          size="md"
+        >
           <ModalOverlay />
           <ModalContent
             bgColor={theme.colors[colorMode].secondaryContainer}
@@ -206,7 +258,9 @@ const Workspace = () => {
         <VStack
           bgColor={theme.colors[colorMode].surfaceContainer}
           h="100%"
+          w="17.5em"
           p={2}
+          overflowY="auto"
         >
           <Flex justifyContent="flex-end" w="100%">
             <IconButton
@@ -222,7 +276,7 @@ const Workspace = () => {
               mb={2}
               w="100%"
               as={Button}
-              size="sm"
+              size="md"
               variant="ghost"
               rightIcon={<ChevronDownIcon />}
             >
@@ -232,14 +286,66 @@ const Workspace = () => {
               <MenuGroup title="All projects">
                 <MenuDivider />
                 {userProjects.map((project) => (
-                  <MenuItem
-                    key={project.name}
-                    onClick={() => {
-                      handleProjectClick(project);
+                  <Box
+                    key={project.uid}
+                    onClick={() => handleProjectClick(project)}
+                    cursor="pointer"
+                    _hover={{
+                      bgColor: theme.colors[colorMode].surfaceContainerHighest,
                     }}
                   >
-                    {project.name}
-                  </MenuItem>
+                    <HStack justifyContent="space-between" width="100%" p={2}>
+                      {editMode && activeProjectId === project.uid ? (
+                        <Input
+                          value={editedName}
+                          onChange={(e) => setEditedName(e.target.value)}
+                          onBlur={() => {
+                            handleEditProjectName(project.uid!, editedName);
+                            setEditMode(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              handleEditProjectName(project.uid!, editedName);
+                              dispatch(setProjectName(editedName));
+                              setEditMode(false);
+                            }
+                          }}
+                          autoFocus
+                        />
+                      ) : (
+                        <Text isTruncated>{project.name}</Text>
+                      )}
+                      <HStack spacing={0}>
+                        <Tooltip label="Edit project name">
+                          <IconButton
+                            icon={<FaPen />}
+                            aria-label="Edit"
+                            size="sm"
+                            variant="ghost"
+                            _hover={{ color: theme.colors[colorMode].primary }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditMode(true);
+                              setEditedName(project.name);
+                            }}
+                          />
+                        </Tooltip>
+                        <Tooltip label="Delete project">
+                          <IconButton
+                            icon={<FaTrash />}
+                            aria-label="Delete"
+                            size="sm"
+                            variant="ghost"
+                            _hover={{ color: theme.colors[colorMode].primary }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteProject(activeProjectId!, currentUser!.uid);
+                            }}
+                          />
+                        </Tooltip>
+                      </HStack>
+                    </HStack>
+                  </Box>
                 ))}
                 <MenuDivider />
                 <MenuItem onClick={handleAddNewProject}>+ New project</MenuItem>
@@ -306,6 +412,123 @@ const Workspace = () => {
           >
             Library
           </Button>
+          <Divider />
+          {openTabs &&
+            activeTabIndex &&
+            openTabs[activeTabIndex].name === "Chat" && (
+              <VStack w="100%" overflowY="scroll">
+                <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
+                  Conversations
+                </Heading>
+
+                {conversations.map((conversation) => (
+                  <HStack
+                    key={conversation}
+                    w="100%"
+                    borderWidth="1px"
+                    borderColor={
+                      conversation === currentConversationId
+                        ? theme.colors[colorMode].primary
+                        : theme.colors[colorMode].surfaceContainerHigh
+                    }
+                    borderRadius="lg"
+                    px={4}
+                    py={3}
+                    cursor="pointer"
+                    _hover={{
+                      bgColor:
+                        conversation === currentConversationId
+                          ? theme.colors[colorMode].activeTabBg
+                          : theme.colors[colorMode].surfaceContainerHighest,
+                      color:
+                        conversation === currentConversationId
+                          ? theme.colors[colorMode].activeTabText
+                          : theme.colors[colorMode].onSurfaceContainerHover,
+                    }}
+                    onClick={async () => {
+                      dispatch(setCurrentConversationId(conversation));
+                    }}
+                  >
+                    <Tooltip
+                      label={conversation}
+                      aria-label="Full conversation text"
+                      placement="top"
+                    >
+                      <Text
+                        size="xs"
+                        fontWeight={500}
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                        css={{
+                          maxWidth: "100%",
+                          borderRight: "2px solid transparent",
+                          animation: `${typing} ${
+                            conversation!.length / 10
+                          }s steps(${conversation!.length}, end),
+                                        ${blinkCaret} .75s step-end infinite`,
+                          animationFillMode: "forwards",
+                        }}
+                      >
+                        {conversation}
+                      </Text>
+                    </Tooltip>
+                    <Spacer />
+                    <Box
+                      color={theme.colors[colorMode].onSurface}
+                      _hover={{
+                        color: theme.colors[colorMode].primary,
+                      }}
+                    >
+                      <FaTrash
+                        onClick={async () => {
+                          await deleteConversation(
+                            conversation!,
+                            currentUser!.uid,
+                            activeProjectId!,
+                            dispatch
+                          );
+                          await fetchMessages();
+                        }}
+                      />
+                    </Box>
+                  </HStack>
+                ))}
+                <HStack
+                  w="100%"
+                  borderStyle="dashed"
+                  borderWidth={1}
+                  borderRadius={8}
+                  px={4}
+                  py={3}
+                  cursor="pointer"
+                  onClick={async () => {
+                    const newConversationId = await startConversation(
+                      currentUser!.uid,
+                      activeProjectId!
+                    );
+                    await fetchMessages();
+                    dispatch(setCurrentConversationId(newConversationId));
+                  }}
+                  _hover={{
+                    bgColor: theme.colors[colorMode].surfaceContainerHigh,
+                  }}
+                >
+                  <Heading size="sm" fontWeight={500}>
+                    New chat
+                  </Heading>
+                  <Spacer />
+                  <Box
+                    color={theme.colors[colorMode].onSurface}
+                    _hover={{
+                      color: theme.colors[colorMode].primary,
+                    }}
+                  >
+                    <FaPlus />
+                  </Box>
+                </HStack>
+              </VStack>
+            )}
           <Spacer />
           <Divider />
           <UserCard />
@@ -321,6 +544,7 @@ const Workspace = () => {
           spacing={4}
           pb={3}
           pt={3}
+          px={8}
         >
           <IconButton
             aria-label="Open Menu"
@@ -386,15 +610,25 @@ const Workspace = () => {
           flexDirection="column"
         >
           <Flex direction="row" p={2}>
-            <TabList>
+            <TabList gap={2}>
               {openTabs.map((tab) => {
+                const defaultProps = {
+                  borderRadius: "8px",
+                };
                 const activeProps =
                   tab.name === openTabs[activeTabIndex].name
                     ? {
-                        borderBottom: "2px",
-                        borderColor: theme.colors[colorMode].primary,
+                        ...defaultProps,
+                        backgroundColor:
+                          theme.colors[colorMode].surfaceContainerHigh,
                       }
-                    : {};
+                    : {
+                        _hover: {
+                          ...defaultProps,
+                          backgroundColor:
+                            theme.colors[colorMode].surfaceContainer,
+                        },
+                      };
                 return (
                   <Box
                     key={tab.name}
@@ -406,15 +640,16 @@ const Workspace = () => {
                       px={12}
                       onClick={() => dispatch(activateTab(tab))}
                       whiteSpace="nowrap"
+                      borderRadius="lg"
                     >
                       {tab.name}
                     </Tab>
                     <IconButton
                       position={"absolute"}
-                      right={0.5}
+                      right={2}
                       variant="ghost"
-                      borderRadius={16}
-                      top={1.5}
+                      borderRadius={4}
+                      top={2}
                       size="xs"
                       aria-label={"close"}
                       icon={<SmallCloseIcon />}

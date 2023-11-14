@@ -24,9 +24,9 @@ export const router = createBrowserRouter([
     path: "/features/workspace",
     element: (
       <PrivateRoute>
-        <ProjectRoute>
+        {/* <ProjectRoute> */}
           <WorkspacePage />
-        </ProjectRoute>
+        {/* </ProjectRoute> */}
       </PrivateRoute>
     ),
   },

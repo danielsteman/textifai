@@ -1,9 +1,11 @@
 import {
+  Box,
   Button,
   Center,
   FormControl,
   FormLabel,
   Input,
+  Textarea,
   VStack,
   useColorMode,
 } from "@chakra-ui/react";
@@ -41,10 +43,7 @@ const CreateProject = () => {
   const [error, setError] = useState<string | null>(null);
   const currentUser = useContext(AuthContext);
 
-  const onChange = (
-    field: keyof FormData,
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
+  const onChange = (field: keyof FormData, e: any) => {
     const updatedFormData = { ...formData };
     updatedFormData[field] = e.target.value;
     setFormData(updatedFormData);
@@ -107,7 +106,7 @@ const CreateProject = () => {
     >
       <Button
         variant="ghost"
-        size="sm"
+        size="md"
         position="absolute"
         top={"2em"}
         right={"2em"}
@@ -115,6 +114,7 @@ const CreateProject = () => {
       >
         Cancel
       </Button>
+
       <form>
         {error && (
           <div style={{ color: "red", marginBottom: "16px" }}>{error}</div>
@@ -125,14 +125,7 @@ const CreateProject = () => {
             type="text"
             placeholder="Project name"
             onChange={(e) => onChange("name", e)}
-          />
-        </FormControl>
-        <FormControl mb={gap} w={"fit-content"}>
-          <FormLabel>Project description</FormLabel>
-          <Input
-            type="text"
-            placeholder="Project description"
-            onChange={(e) => onChange("description", e)}
+            size="lg"
           />
         </FormControl>
         <FormControl mb={gap} w={"fit-content"}>
@@ -141,10 +134,19 @@ const CreateProject = () => {
             type="text"
             placeholder="Industry"
             onChange={(e) => onChange("industry", e)}
+            size="lg"
+          />
+        </FormControl>
+        <FormControl mb={gap} w={"fit-content"}>
+          <FormLabel>Project description</FormLabel>
+          <Textarea
+            placeholder="Project description"
+            onChange={(e) => onChange("description", e)}
+            size="lg"
           />
         </FormControl>
         <Center>
-          <Button mt={4} type="submit" onClick={handleSubmit}>
+          <Button mt={4} type="submit" onClick={handleSubmit} size="lg">
             Create project
           </Button>
         </Center>

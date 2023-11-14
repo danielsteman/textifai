@@ -51,7 +51,6 @@ const SocialLoginButton: React.FC<SocialLoginButtonProps> = (props) => {
             updatedDate: Timestamp.fromDate(new Date()),
             language: "english",
             isActive: true,
-            projects: [],
           };
 
           await setDoc(userRef, userData);

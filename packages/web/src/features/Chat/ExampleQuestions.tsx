@@ -1,4 +1,11 @@
-import { Flex, HStack, Button, useColorMode, Box } from "@chakra-ui/react";
+import {
+  Flex,
+  HStack,
+  Button,
+  useColorMode,
+  Box,
+  Tooltip,
+} from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import theme from "../../app/themes/theme";
@@ -11,6 +18,9 @@ import axios from "axios";
 import { addMessageToCollection, updateConversationDate } from "./ChatFuncs";
 import { config } from "../../app/config/config";
 import { setLoading } from "./chatSlice";
+
+// if question text is overflowing, add tooltip
+// else not
 
 const ExampleQuestions = () => {
   const currentUser: User | null | undefined = useContext(AuthContext);
@@ -85,50 +95,34 @@ const ExampleQuestions = () => {
     >
       <HStack gap={2}>
         {randomQuestions.slice(0, 2).map((question, index) => (
-          <Button
-            size="sm"
-            width="30vw"
-            height="2vw"
-            onClick={() => handleSubmit(question)}
-            key={index}
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            textColor={theme.colors[colorMode].onSecondaryContainer}
-          >
-            <Box
-              as="span"
-              display="block"
-              overflow="hidden"
-              textOverflow="ellipsis"
-              whiteSpace="nowrap"
-              w="100%"
+          <Tooltip label={question} placement="top" hasArrow>
+            <Button
+              size="md"
+              width="30vw"
+              onClick={() => handleSubmit(question)}
+              key={index}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
             >
               {question}
-            </Box>
-          </Button>
+            </Button>
+          </Tooltip>
         ))}
       </HStack>
       <HStack gap={2}>
         {randomQuestions.slice(2, 4).map((question, index) => (
-          <Button
-            size="sm"
-            width="30vw"
-            height="2vw"
-            onClick={() => handleSubmit(question)}
-            key={index}
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            textColor={theme.colors[colorMode].onSecondaryContainer}
-          >
-            <Box
-              as="span"
-              display="block"
-              overflow="hidden"
-              textOverflow="ellipsis"
-              whiteSpace="nowrap"
-              w="100%"
+          <Tooltip label={question} placement="top" hasArrow>
+            <Button
+              size="md"
+              width="30vw"
+              onClick={() => handleSubmit(question)}
+              key={index}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
             >
               {question}
-            </Box>
-          </Button>
+            </Button>
+          </Tooltip>
         ))}
       </HStack>
     </Flex>

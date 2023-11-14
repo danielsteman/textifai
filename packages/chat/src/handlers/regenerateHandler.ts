@@ -1,14 +1,14 @@
 import { LLMChain } from "langchain/chains";
 import { PromptTemplate } from "langchain/prompts";
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { templates } from "../langchain/prompts";
+import { templates } from "../utils/prompts";
 
 // initialize Paraphrasing Chain
 let regenerateChain: LLMChain<string, ChatOpenAI>;
 const initializedRegenerateChain = async () => {
   const llm = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo",
-    temperature: 0.3,
+    modelName: "gpt-4-1106-preview",
+    temperature: 1,
     topP: 1,
     verbose: false,
   });

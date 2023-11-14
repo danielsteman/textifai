@@ -15,6 +15,7 @@ import {
   useContext,
   ChangeEvent,
   useLayoutEffect,
+  useMemo,
 } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
@@ -30,19 +31,29 @@ import {
   addMessageToCollection,
   updateConversationDate,
   fetchConversationId,
+  fetchMessagesForConversation,
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
-import { pushMessage } from "./messageStackSlice";
-import { pushAnswer, replaceLastAnswer } from "./answerStackSlice";
+import { clearMessages, pushMessage, setMessages } from "./messageStackSlice";
+import {
+  clearAnswers,
+  pushAnswer,
+  replaceLastAnswer,
+  setAnswers,
+} from "./answerStackSlice";
 import { setCurrentConversationId, setLoading } from "./chatSlice";
 import { config } from "../../app/config/config";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const [conversationHistory, setConversationHistory] = useState<string>("");
   const lastProcessedTextRef = useRef<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+  const [answerStreamComplete, setAnswerStreamComplete] =
+    useState<boolean>(true);
+
+  const [answerStream, setAnswerStream] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
 
@@ -58,8 +69,42 @@ const Chat = () => {
     (state: RootState) => state.activeProject.projectId
   );
   const loading = useSelector((state: RootState) => state.chat.loading);
+  const extractedText = useSelector(
+    (state: RootState) => state.chat.extractedText
+  );
 
   const dispatch = useDispatch();
+
+  const memoizedExampleQuestions = useMemo(() => {
+    return <ExampleQuestions />;
+  }, [currentUser, activeProjectId, currentConversationId]);
+
+  useEffect(() => {
+    console.log(answerStack);
+  }, [answerStack]);
+
+  useEffect(() => {
+    const initializeMessages = async () => {
+      if (currentConversationId) {
+        const messages = await fetchMessagesForConversation(
+          currentConversationId!
+        );
+        const userMessages = messages
+          .filter((msg) => msg.variant === "user")
+          .map((msg) => msg.messageBody);
+        const agentMessages = messages
+          .filter((msg) => msg.variant === "agent")
+          .map((msg) => msg.messageBody);
+
+        dispatch(setMessages(userMessages));
+        dispatch(setAnswers(agentMessages));
+      } else {
+        dispatch(clearMessages());
+        dispatch(clearAnswers());
+      }
+    };
+    initializeMessages();
+  }, [currentConversationId]);
 
   useEffect(() => {
     if (isProcessing) return;
@@ -96,91 +141,111 @@ const Chat = () => {
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
 
+  const handleStreamingAnswer = async (requestPayload: any) => {
+    setMessage("");
+    setAnswerStream("");
+
+    const response = await fetch(`${config.chat.url}/api/chat/rag`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestPayload),
+    });
+
+    if (!response.ok || !response.body) {
+      throw new Error(
+        `Error fetching response from RAG chain, HTTP code: ${response.status}`
+      );
+    }
+
+    const reader = response.body.getReader();
+
+    dispatch(setLoading(false));
+    setAnswerStreamComplete(false);
+
+    let accumulatedAnswerStream = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      const text = new TextDecoder().decode(value);
+      setAnswerStream((prev): string => `${prev}${text}`);
+      accumulatedAnswerStream += text;
+    }
+
+    scrollToBottom();
+    setAnswerStreamComplete(true);
+
+    await addMessageToCollection(message, "user", currentConversationId, null);
+    await addMessageToCollection(
+      accumulatedAnswerStream,
+      "agent",
+      currentConversationId,
+      null
+    );
+    await updateConversationDate(currentConversationId!);
+
+    return accumulatedAnswerStream;
+  };
+
   const handleChatAction = async (regenerate = false, pdfText?: string) => {
     try {
       dispatch(setLoading(true));
 
-      let requestPayload;
       if (pdfText) {
         console.log("Handling PdfQa Chain...");
-        dispatch(pushMessage(pdfText));
-        setMessage("");
-        requestPayload = {
-          prompt: pdfText,
-          files: selectedDocuments,
-          option: "pdfQa",
+
+        dispatch(pushMessage(message));
+
+        const requestPayload = {
+          promptFromExtract: pdfText,
         };
+
+        const answer = await handleStreamingAnswer(requestPayload);
+        dispatch(pushAnswer(answer));
       } else if (regenerate) {
         console.log("Handling Regenerate Chain...");
+
         const lastSystemMessage = answerStack[answerStack.length - 1];
-        requestPayload = {
+
+        const requestPayload = {
           prompt: lastSystemMessage,
-          option: "regenerate",
+          regenerate: true,
         };
+
+        const answer = await handleStreamingAnswer(requestPayload);
+
+        console.log(`Regenerated answer: ${answer}`);
+
+        dispatch(replaceLastAnswer(answer));
       } else {
         console.log("Handling Regular Chain...");
+
         dispatch(pushMessage(message));
-        setMessage("");
 
         const updatedConversationHistory = await getConversation(
           currentConversationId!
         );
-        setConversationHistory(updatedConversationHistory);
 
-        requestPayload = {
+        const requestPayload = {
           prompt: message,
-          history: conversationHistory,
-          option: "GeneralQa",
+          history: updatedConversationHistory,
           files: selectedDocuments,
           userId: currentUser!.uid,
         };
-      }
 
-      const res = await axios.post(
-        `${config.chat.url}/api/chat/ask`,
-        requestPayload
-      );
-
-      if (pdfText) {
-        dispatch(pushAnswer(res.data.answer));
-        scrollToBottom();
-
-        await addMessageToCollection(
-          pdfText,
-          "user",
-          currentConversationId,
-          null
-        );
-        await addMessageToCollection(
-          res.data.answer,
-          "agent",
-          currentConversationId,
-          null
-        );
-        await updateConversationDate(currentConversationId!);
-      } else if (regenerate) {
-        dispatch(replaceLastAnswer(res.data.answer));
-      } else {
-        dispatch(pushAnswer(res.data.answer));
-        scrollToBottom();
-
-        await addMessageToCollection(
-          message,
-          "user",
-          currentConversationId,
-          null
-        );
-        await addMessageToCollection(
-          res.data.answer,
-          "agent",
-          currentConversationId,
-          null
-        );
-        await updateConversationDate(currentConversationId!);
+        const answer = await handleStreamingAnswer(requestPayload);
+        dispatch(pushAnswer(answer));
       }
 
       dispatch(setLoading(false));
     } catch (error) {
+      dispatch(setLoading(false));
       console.error("Error in handleChatAction:", error);
     }
   };
@@ -217,9 +282,14 @@ const Chat = () => {
               <MessageLoadingIndicator />
             ) : (
               <>
-                <SystemMessage message={answerStack[index]} variant="agent" />
-                {index === answerStack.length - 1 &&
-                  messageStack.length === answerStack.length && (
+                {index === messageStack.length - 1 ? (
+                  <>
+                    <SystemMessage
+                      message={
+                        answerStreamComplete ? answerStack[index] : answerStream
+                      }
+                      variant="agent"
+                    />
                     <Flex justifyContent="center" alignItems="center" py={4}>
                       <Button
                         rounded={8}
@@ -230,14 +300,22 @@ const Chat = () => {
                         Regenerate
                       </Button>
                     </Flex>
-                  )}
+                  </>
+                ) : (
+                  <>
+                    <SystemMessage
+                      message={answerStack[index]}
+                      variant="agent"
+                    />
+                  </>
+                )}
               </>
             )}
           </Box>
         ))}
         <Box ref={messagesEndRef} />
       </Box>
-      {messageStack.length === 0 && <ExampleQuestions />}
+      {messageStack.length === 0 && memoizedExampleQuestions}
       <form onSubmit={handleSubmit}>
         <InputGroup>
           <Input

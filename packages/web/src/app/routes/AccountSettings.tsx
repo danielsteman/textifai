@@ -1,51 +1,41 @@
 import {
   Box,
-  Flex,
   Heading,
   Input,
   Button,
   Avatar,
   Icon,
-  IconButton,
   VStack,
   useColorMode,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
+  FormControl,
+  InputGroup,
+  FormErrorMessage,
+  Tooltip,
   HStack,
+  FormLabel,
 } from "@chakra-ui/react";
-import {
-  AiOutlineArrowUp,
-  AiFillExclamationCircle,
-  AiOutlineWarning,
-} from "react-icons/ai";
-import { getAuth, sendEmailVerification, deleteUser } from "firebase/auth";
-import React, { useState } from "react";
+import { AiFillExclamationCircle } from "react-icons/ai";
+import { deleteUser } from "firebase/auth";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import theme from "../../app/themes/theme";
-
-interface ModalTemplateProps {
-  title: string;
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}
+import { User } from "@shared/interfaces/firebase/User";
+import { AuthContext } from "../providers/AuthProvider";
+import { getUser, updateUser } from "../../common/firestoreHelpers/users";
 
 const AccountSettings = () => {
-  const user = {
-    avatarUrl: "URL_OF_USER_AVATAR",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    emailVerified: false,
-  };
+  const [user, setUser] = useState<User | undefined>();
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [attempts, setAttempts] = useState<number>(0);
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const currentUser = useContext(AuthContext);
+
+  useEffect(() => {
+    getUser(currentUser!.uid).then((userObject) => setUser(userObject));
+  }, []);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -54,107 +44,78 @@ const AccountSettings = () => {
     }
   };
 
-  const [message, setMessage] = useState("");
-  const { colorMode } = useColorMode();
-  const {
-    isOpen: isNameModalOpen,
-    onOpen: onNameModalOpen,
-    onClose: onNameModalClose,
-  } = useDisclosure();
-  const {
-    isOpen: isEmailModalOpen,
-    onOpen: onEmailModalOpen,
-    onClose: onEmailModalClose,
-  } = useDisclosure();
-  const {
-    isOpen: isPasswordModalOpen,
-    onOpen: onPasswordModalOpen,
-    onClose: onPasswordModalClose,
-  } = useDisclosure();
-
-  const ModalTemplate: React.FC<ModalTemplateProps> = ({
-    title,
-    isOpen,
-    onClose,
-    children,
-  }) => (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>{title}</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>{children}</ModalBody>
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
-            Save Changes
-          </Button>
-          <Button variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
-
-  const sendVerificationEmail = () => {
-    const auth = getAuth();
-
-    if (auth.currentUser) {
-      sendEmailVerification(auth.currentUser)
-        .then(() => {
-          setMessage("Verification email sent successfully!");
-        })
-        .catch((error) => {
-          setMessage(`Error sending verification email: ${error.message}`);
-        });
-    } else {
-      setMessage("Current user not found.");
-    }
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    setAttempts(attempts + 1);
+    await updateUser(currentUser?.uid!, { firstName, lastName });
+    getUser(currentUser!.uid).then((userObject) => setUser(userObject));
   };
 
-  const navigate = useNavigate();
-  const handleDeleteAccount = () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
+  const { colorMode } = useColorMode();
 
-    if (user) {
-      deleteUser(user)
+  const navigate = useNavigate();
+
+  const handleDeleteAccount = () => {
+    if (currentUser) {
+      deleteUser(currentUser)
         .then(() => {
           navigate("/");
         })
         .catch((error) => {
-          // Handle error during user deletion
+          console.warn("Failed to delete account!");
+          console.error(error);
         });
     } else {
-      // Handle scenario where current user is not found
+      console.warn("User not found!");
     }
   };
 
+  const missingFirstName = firstName === "" && attempts >= 1;
+  const missingLastName = lastName === "" && attempts >= 1;
+
   return (
-    <Box
+    <VStack
+      align="flex-start"
+      justify="flex-start"
       p={6}
-      boxShadow="base"
-      borderRadius="md"
-      bgColor={theme.colors[colorMode].container}
-      w="50%"
+      bgColor={theme.colors[colorMode].surfaceContainer}
+      borderRadius={8}
       m="auto"
+      gap={4}
     >
+      <Button
+        variant="ghost"
+        size="sm"
+        position="absolute"
+        top={"2em"}
+        right={"2em"}
+        onClick={() => navigate("/features/workspace")}
+      >
+        Cancel
+      </Button>
       <Heading fontSize="2xl" mb={4}>
         Account settings
       </Heading>
 
-      {/* Profile Section */}
-      <Heading fontSize="xl" mb={4}>
-        Profile
-      </Heading>
-
-      <VStack spacing={4} alignItems="start" mb={4}>
+      <HStack gap={8}>
         <Box position="relative">
-          <Avatar
-            size="2xl"
-            name={`${user.firstName} ${user.lastName}`}
-            src={user.avatarUrl}
-          />
+          {user && (
+            <Tooltip label="Click to upload an avatar">
+              <Avatar
+                size="2xl"
+                name={`${user!.firstName} ${user!.lastName}`}
+                src={user!.avatarUrl}
+                bgColor={theme.colors[colorMode].primary}
+                onClick={() => fileInputRef.current?.click()}
+                cursor="pointer"
+                _hover={{
+                  bgColor: theme.colors[colorMode].primaryFixed,
+                  transitionDuration: "0.5s",
+                  transitionTimingFunction: "ease-in-out",
+                }}
+              />
+            </Tooltip>
+          )}
           <input
             ref={fileInputRef}
             type="file"
@@ -162,164 +123,64 @@ const AccountSettings = () => {
             onChange={handleFileChange}
             style={{ display: "none" }}
           />
-          <IconButton
-            icon={<Icon as={AiOutlineArrowUp} />}
-            position="absolute"
-            bottom={1}
-            right={1}
-            bgColor={theme.colors[colorMode].IconButton}
-            borderColor="black"
-            borderWidth="1px"
-            isRound
-            aria-label="Upload Image"
-            onClick={() => fileInputRef.current?.click()}
-          />
         </Box>
-      </VStack>
-
-      <HStack spacing={6} mb={6}>
-        {/* Name Modal */}
-        <Button onClick={onNameModalOpen}>Edit Name</Button>
-        <ModalTemplate
-          title="Edit Name"
-          isOpen={isNameModalOpen}
-          onClose={onNameModalClose}
-        >
-          <Flex direction="column">
-            <Heading mb={2} fontSize="l">
-              First name
-            </Heading>
-            <Input
-              variant="flushed"
-              borderRadius="sm"
-              placeholder={user.firstName}
-              w="60%"
-            />
-          </Flex>
-          <Flex direction="column">
-            <Heading mb={2} fontSize="l">
-              Last name
-            </Heading>
-            <Input
-              variant="flushed"
-              borderRadius="sm"
-              placeholder={user.lastName}
-              w="60%"
-            />
-          </Flex>
-        </ModalTemplate>
-
-        {/* Email and Phone Modal */}
-        <Button onClick={onEmailModalOpen}>Edit Email and Phone</Button>
-        <ModalTemplate
-          title="Email and Phone"
-          isOpen={isEmailModalOpen}
-          onClose={onEmailModalClose}
-        >
-          <VStack spacing={4} mb={4} align="start">
-            <Heading mb={2} fontSize="l">
-              Email
-            </Heading>
-            <Input
-              variant="flushed"
-              borderRadius="sm"
-              placeholder={user.email}
-              w="60%"
-            />
-            {!user.emailVerified ? (
-              <Button
-                leftIcon={<Icon as={AiOutlineWarning} />}
-                colorScheme="orange"
-                variant="outline"
-                mt={2}
-                onClick={sendVerificationEmail}
-              >
-                Send verification mail
-              </Button>
-            ) : (
-              <Button colorScheme="blue" variant="outline" mt={2}>
-                Update Email
-              </Button>
-            )}
-            <Heading mb={2} fontSize="l">
-              Phone Number
-            </Heading>
-            <Input
-              variant="flushed"
-              borderRadius="sm"
-              placeholder="Enter phone number"
-              w="60%"
-            />
-            <Button colorScheme="blue" mt={2}>
-              Update phone number
+        <form onSubmit={handleSubmit}>
+          <VStack gap={2} alignItems="start">
+            <FormControl isInvalid={missingFirstName}>
+              <FormLabel>First name</FormLabel>
+              <InputGroup size="md">
+                <Input
+                  value={firstName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setFirstName(e.target.value);
+                  }}
+                  placeholder={user?.firstName}
+                  bgColor={theme.colors[colorMode].surfaceContainerHigh}
+                  isRequired
+                />
+              </InputGroup>
+              {missingFirstName && (
+                <FormErrorMessage>First name is required.</FormErrorMessage>
+              )}
+            </FormControl>
+            <FormControl isInvalid={missingLastName}>
+              <FormLabel>Last name</FormLabel>
+              <InputGroup size="md">
+                <Input
+                  value={lastName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setLastName(e.target.value);
+                  }}
+                  placeholder={user?.lastName}
+                  bgColor={theme.colors[colorMode].surfaceContainerHigh}
+                  isRequired
+                />
+              </InputGroup>
+              {missingLastName && (
+                <FormErrorMessage>Last name is required.</FormErrorMessage>
+              )}
+            </FormControl>
+            <Button type="submit" mt={4}>
+              Save
             </Button>
+            <Tooltip
+              label="If you no longer want to use Textifai, you can permenantly delete your
+        account. You can't undo this action."
+            >
+              <Button
+                colorScheme="red"
+                variant="outline"
+                leftIcon={<Icon as={AiFillExclamationCircle} />}
+                onClick={handleDeleteAccount}
+                mt={8}
+              >
+                Delete Account
+              </Button>
+            </Tooltip>
           </VStack>
-        </ModalTemplate>
-
-        {/* Password Modal */}
-        <Button onClick={onPasswordModalOpen}>Change Password</Button>
-        <ModalTemplate
-          title="Change Password"
-          isOpen={isPasswordModalOpen}
-          onClose={onPasswordModalClose}
-        >
-          <Flex direction="column" mb={4}>
-            <Heading mb={2} fontSize="l">
-              Current password
-            </Heading>
-            <Input
-              variant="flushed"
-              type="password"
-              borderRadius="sm"
-              placeholder="******"
-              w="100%"
-            />
-          </Flex>
-          <Flex direction="column" mb={4}>
-            <Heading mb={2} fontSize="l">
-              New password
-            </Heading>
-            <Input
-              variant="flushed"
-              type="password"
-              borderRadius="sm"
-              placeholder="******"
-              w="100%"
-            />
-          </Flex>
-          <Flex direction="column" mb={4}>
-            <Heading mb={2} fontSize="l">
-              Confirm new password
-            </Heading>
-            <Input
-              variant="flushed"
-              type="password"
-              borderRadius="sm"
-              placeholder="******"
-              w="100%"
-            />
-          </Flex>
-        </ModalTemplate>
+        </form>
       </HStack>
-
-      {/* Delete Account Section */}
-      <Heading fontSize="xl" mb={4}>
-        Delete Account
-      </Heading>
-      <Heading fontSize="sm" mb={4}>
-        If you no longer want to use Textifai, you can permenantly delete your
-        account. You can't undo this action.
-      </Heading>
-      {/* Delete Account Section */}
-      <Button
-        colorScheme="red"
-        variant="outline"
-        leftIcon={<Icon as={AiFillExclamationCircle} />}
-        onClick={handleDeleteAccount}
-      >
-        Delete Account
-      </Button>
-    </Box>
+    </VStack>
   );
 };
 

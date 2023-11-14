@@ -43,7 +43,7 @@ const EmailVerification = () => {
       (async () => {
         const isSuccess = await handleOOBCode(oobCode);
         if (isSuccess) {
-          navigate("/features/onboarding");
+          navigate("/features/workspace");
         }
       })();
     }

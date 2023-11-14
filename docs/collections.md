@@ -25,7 +25,6 @@ interface User {
   language: string;
   isActive: boolean;
   adminForProjects: string[];
-  projects: string[];
 }
 ```
 

@@ -4,7 +4,7 @@ import {
   Center,
   Text,
   useColorMode,
-  Progress
+  Progress,
 } from "@chakra-ui/react";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -73,20 +73,29 @@ const UploadForm: React.FC<UploadFormProps> = ({
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadStatusMessage, setUploadStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
+  const [uploadProgress, setUploadProgress] = useState<{
+    [key: string]: number;
+  }>({});
 
   const dispatch = useDispatch();
-  const activeProjectName = useSelector((state: RootState) => state.activeProject.projectName);
-  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+  const activeProjectName = useSelector(
+    (state: RootState) => state.activeProject.projectName
+  );
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
 
   const onDrop = useCallback((acceptedFiles: any) => {
     console.log("Files dropped:", acceptedFiles);
     setFiles(acceptedFiles);
-    const initialProgress = acceptedFiles.reduce((acc: { [x: string]: number; }, file: { name: string | number; }) => {
+    const initialProgress = acceptedFiles.reduce(
+      (acc: { [x: string]: number }, file: { name: string | number }) => {
         acc[file.name] = 0;
         return acc;
-    }, {});
-    setUploadProgress(prev => ({ ...prev, ...initialProgress }));
+      },
+      {}
+    );
+    setUploadProgress((prev) => ({ ...prev, ...initialProgress }));
   }, []);
 
   const currentUser = useContext(AuthContext);
@@ -109,47 +118,66 @@ const UploadForm: React.FC<UploadFormProps> = ({
   });
 
   const handleFileUpload = async (file: any) => {
-    const fileRef = ref(storage, `users/${currentUser?.uid}/uploads/${file.name}`);
-    const exists = await getDownloadURL(fileRef).then(() => true).catch(() => false);
+    const fileRef = ref(
+      storage,
+      `projects/${activeProjectId}/uploads/${file.name}`
+      //`users/${currentUser?.uid}/uploads/${file.name}`
+    );
+    const exists = await getDownloadURL(fileRef)
+      .then(() => true)
+      .catch(() => false);
 
     if (exists) {
-        setUploadStatusMessage("A file with this name already exists! 📄");
-        return;
+      setUploadStatusMessage("A file with this name already exists! 📄");
+      return;
     }
 
     try {
-        const data = new FormData();
-        data.append("file", file);
-        data.append("userId", currentUser!.uid);
+      const data = new FormData();
+      data.append("file", file);
+      data.append("userId", currentUser!.uid);
 
-        const uploadTask = uploadBytesResumable(fileRef, file);
+      const uploadTask = uploadBytesResumable(fileRef, file);
 
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log(`${file.name} upload progress: ${progress}%`);
-                setUploadProgress((prev) => ({
-                    ...prev,
-                    [file.name]: progress,
-                }));
-            },
-            (error) => {
-                console.error(`An error occurred while uploading ${file.name}:`, error);
-            }
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`${file.name} upload progress: ${progress}%`);
+          setUploadProgress((prev) => ({
+            ...prev,
+            [file.name]: progress,
+          }));
+        },
+        (error) => {
+          console.error(
+            `An error occurred while uploading ${file.name}:`,
+            error
+          );
+        }
+      );
+
+      const res = await axios.post(
+        `${config.documents.url}/api/documents/upload`,
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      uploadTask.then(() => {
+        setUploadStatusMessage("Done! ✅ Want to upload more?");
+        const metadata: PdfMetadata = res.data.metadata;
+        uploadMetadataToFirestore(
+          metadata,
+          currentUser!.uid,
+          activeProjectId!,
+          uploadsCollection
         );
-
-        const res = await axios.post(`${config.documents.url}/api/documents/upload`, data, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        uploadTask.then(() => {
-            setUploadStatusMessage("Done! ✅ Want to upload more?");
-            const metadata: PdfMetadata = res.data.metadata;
-            uploadMetadataToFirestore(metadata, currentUser!.uid, activeProjectId!, uploadsCollection);
-        });
-
+      });
     } catch (error) {
-        console.error(`An error occurred while processing ${file.name}:`, error);
+      console.error(`An error occurred while processing ${file.name}:`, error);
     }
   };
 
@@ -166,12 +194,14 @@ const UploadForm: React.FC<UploadFormProps> = ({
       return;
     }
 
-    // Set initial progress for each file
-    const initialProgress = files.reduce<{ [key: string]: number }>((acc, file) => {
-      acc[file.name] = 0;
-      return acc;
-    }, {});  
-    setUploadProgress(prev => ({ ...prev, ...initialProgress }));
+    const initialProgress = files.reduce<{ [key: string]: number }>(
+      (acc, file) => {
+        acc[file.name] = 0;
+        return acc;
+      },
+      {}
+    );
+    setUploadProgress((prev) => ({ ...prev, ...initialProgress }));
 
     setLoading(true);
     await Promise.all(files.map((file) => handleFileUpload(file)));
@@ -179,39 +209,60 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
     onUploadComplete();
     setFiles(undefined);
-};
+  };
 
   const { colorMode } = useColorMode();
 
   return (
     <Box>
-        <Box {...getRootProps()} p={4} borderWidth={2} borderStyle="dashed" borderRadius="md" textAlign="center" borderColor={isDragActive ? theme.colors[colorMode].secondary : theme.colors[colorMode].primary} bg={isDragActive ? theme.colors[colorMode].surfaceContainer : theme.colors[colorMode].surfaceContainerLow} cursor="pointer">
-            <input {...getInputProps()} />
-            <Text mt={2}>
-                {isDragActive ? "Drop the files here ..." : dropZoneText}
-            </Text>
-        </Box>
-        <Box mt={4}>
-            {files?.map((file, index) => (
-                <Box key={index} mb={3}>
-                    <Text>{file.name}</Text>
-                    <Progress colorScheme="green" value={uploadProgress[file.name] || 0} />
-                </Box>
-            ))}
-        </Box>
-        <Center p={4}>
-            <Button
-                onClick={handleSubmit}
-                isDisabled={!files || files.length === 0}
-            >
-                Upload
-            </Button>
-        </Center>
-        <Center height="100%" width="100%" mt={4}>
-            {uploadStatusMessage}
-        </Center>
+      <Box
+        {...getRootProps()}
+        p={4}
+        borderWidth={2}
+        borderStyle="dashed"
+        borderRadius="md"
+        textAlign="center"
+        borderColor={
+          isDragActive
+            ? theme.colors[colorMode].secondary
+            : theme.colors[colorMode].primary
+        }
+        bg={
+          isDragActive
+            ? theme.colors[colorMode].surfaceContainer
+            : theme.colors[colorMode].surfaceContainerLow
+        }
+        cursor="pointer"
+      >
+        <input {...getInputProps()} />
+        <Text mt={2}>
+          {isDragActive ? "Drop the files here ..." : dropZoneText}
+        </Text>
+      </Box>
+      <Box mt={4}>
+        {files?.map((file, index) => (
+          <Box key={index} mb={3}>
+            <Text>{file.name}</Text>
+            <Progress
+              colorScheme="green"
+              value={uploadProgress[file.name] || 0}
+            />
+          </Box>
+        ))}
+      </Box>
+      <Center p={4}>
+        <Button
+          onClick={handleSubmit}
+          isDisabled={!files || files.length === 0}
+        >
+          Upload
+        </Button>
+      </Center>
+      <Center height="100%" width="100%" my={4}>
+        {uploadStatusMessage}
+      </Center>
     </Box>
   );
-}
+};
 
 export default UploadForm;

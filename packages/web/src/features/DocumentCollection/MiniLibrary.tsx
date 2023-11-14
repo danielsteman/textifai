@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useSelector, useDispatch } from "react-redux";
 import { db, storage } from "../../app/config/firebase";
-import { StorageReference, listAll, ref } from "firebase/storage";
+import { ref } from "firebase/storage";
 import { SearchIcon } from "@chakra-ui/icons";
 import { RootState } from "../../app/store";
 import { disableDocument, enableDocument } from "./librarySlice";
@@ -35,7 +35,9 @@ const MiniLibrary = () => {
 
   const dispatch = useDispatch();
 
-  const activeProjectId = useSelector((state: RootState) => state.activeProject.projectId);
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
 
   // useEffect(() => {
   //   listAll(listRef)
@@ -55,7 +57,7 @@ const MiniLibrary = () => {
       where("uploadedBy", "==", currentUser!.uid),
       where("projectId", "==", activeProjectId)
     );
-  
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedDocuments: Document[] = [];
       snapshot.forEach((doc) => {
@@ -63,7 +65,7 @@ const MiniLibrary = () => {
       });
       setDocuments(fetchedDocuments);
     });
-  
+
     return () => unsubscribe();
   }, [selectedDocuments, currentUser, activeProjectId]);
 
@@ -112,10 +114,10 @@ const MiniLibrary = () => {
               <Tr key={doc.uploadName}>
                 <Td>
                   <Checkbox
-                      isChecked={selectedDocuments.includes(doc.uploadName)}
-                      onChange={() =>
-                        handleDocumentCheckboxChange(doc.uploadName)
-                      }
+                    isChecked={selectedDocuments.includes(doc.uploadName)}
+                    onChange={() =>
+                      handleDocumentCheckboxChange(doc.uploadName)
+                    }
                   />
                 </Td>
                 <Td>{doc.uploadName}</Td>

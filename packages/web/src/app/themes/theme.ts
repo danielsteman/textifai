@@ -37,6 +37,13 @@ const config = {
     },
     Modal: modalTheme,
     Drawer: drawerTheme,
+    Progress: {
+      baseStyle: (props: StyleFunctionProps) => ({
+        filledTrack: {
+          bg: colors[props.colorMode].primary,
+        },
+      }),
+    },
   },
 };
 

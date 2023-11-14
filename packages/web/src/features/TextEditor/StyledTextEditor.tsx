@@ -7,13 +7,9 @@ const StyledQuillEditor = styled(ReactQuill)<{
   toolbarButtonIconColor?: string;
   textColor?: string;
 }>`
-  .react-quill {
-    height: calc(100% - 42px);
-  }
-
   .ql-container {
     height: calc(100% - 42px);
-    padding: 12px 24px;
+    padding: 60px 72px;
     font-size: 15px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -77,6 +73,22 @@ const StyledQuillEditor = styled(ReactQuill)<{
   .ql-active .ql-fill {
     fill: #3cdccf !important;
     stroke: none;
+  }
+
+  .thick-scrollbar::-webkit-scrollbar {
+    width: 20px; /* Width of the scrollbar */
+  }
+
+  .thick-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Track color */
+  }
+
+  .thick-scrollbar::-webkit-scrollbar-thumb {
+    background: #888; /* Handle color */
+  }
+
+  .thick-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Handle color on hover */
   }
 `;
 
