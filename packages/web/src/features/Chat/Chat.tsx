@@ -19,7 +19,6 @@ import {
 } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
 import { RootState } from "../../app/store";
@@ -32,6 +31,8 @@ import {
   updateConversationDate,
   fetchConversationId,
   fetchMessagesForConversation,
+  firstMessageInConversation,
+  setConversationTitle,
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
 import { clearMessages, pushMessage, setMessages } from "./messageStackSlice";
@@ -69,9 +70,6 @@ const Chat = () => {
     (state: RootState) => state.activeProject.projectId
   );
   const loading = useSelector((state: RootState) => state.chat.loading);
-  const extractedText = useSelector(
-    (state: RootState) => state.chat.extractedText
-  );
 
   const dispatch = useDispatch();
 
@@ -80,8 +78,10 @@ const Chat = () => {
   }, [currentUser, activeProjectId, currentConversationId]);
 
   useEffect(() => {
-    console.log(answerStack);
-  }, [answerStack]);
+    if (messageStack.length === 1) {
+      setConversationTitle(message, currentConversationId!);
+    }
+  }, [messageStack]);
 
   useEffect(() => {
     const initializeMessages = async () => {

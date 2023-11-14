@@ -9,12 +9,14 @@ import {
   doc,
   orderBy,
   limit,
-  deleteDoc
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { Conversation } from "@shared/interfaces/firebase/Conversation";
 import { Message } from "@shared/interfaces/firebase/Message";
 import { setCurrentConversationId } from "../Chat/chatSlice";
+import axios from "axios";
+import { config } from "../../app/config/config";
 
 export const conversationsCollection = collection(db, "conversations");
 export const messagesCollection = collection(db, "messages");
@@ -29,7 +31,7 @@ export const startConversation = async (
       projectId: currentProjectUid,
       creationDate: Timestamp.fromDate(new Date()),
       updatedDate: Timestamp.fromDate(new Date()),
-      title:""
+      title: "",
     };
     const conversationRef = await addDoc(
       conversationsCollection,
@@ -42,11 +44,11 @@ export const startConversation = async (
 };
 
 export const deleteConversation = async (
-    conversationId: string, 
-    userId: string, 
-    projectId: string, 
-    dispatch: any
-  ) => {
+  conversationId: string,
+  userId: string,
+  projectId: string,
+  dispatch: any
+) => {
   try {
     const conversationQuery = query(
       conversationsCollection,
@@ -180,8 +182,9 @@ export const appendToDocument = async (
 };
 
 export const fetchConversationId = async (
-  currentUserUid: string, 
-  currentProjectUid: string): Promise<string | void> => {
+  currentUserUid: string,
+  currentProjectUid: string
+): Promise<string | void> => {
   try {
     const conversationsCollection = collection(db, "conversations");
     const q = query(
@@ -196,7 +199,10 @@ export const fetchConversationId = async (
       const existingConversationId = querySnapshot.docs[0].id;
       return existingConversationId;
     } else {
-      const newConversationId = await startConversation(currentUserUid, currentProjectUid);
+      const newConversationId = await startConversation(
+        currentUserUid,
+        currentProjectUid
+      );
       return newConversationId;
     }
   } catch (error) {
@@ -204,11 +210,28 @@ export const fetchConversationId = async (
   }
 };
 
-export const firstMessageInConversation = async (conversationId: string): Promise<boolean> => {
+export const firstMessageInConversation = async (
+  conversationId: string
+): Promise<boolean> => {
   const q = query(
     messagesCollection,
     where("conversationId", "==", conversationId)
   );
   const querySnapshot = await getDocs(q);
   return querySnapshot.empty;
+};
+
+export const setConversationTitle = async (
+  conversationId: string,
+  firstMessage: string
+) => {
+  const title: string = await axios.post(`${config.chat.url}/api/chat/title`, {
+    prompt: firstMessage,
+  });
+
+  const conversationRef = doc(conversationsCollection, conversationId);
+  await updateDoc(conversationRef, {
+    updatedDate: Timestamp.fromDate(new Date()),
+    title: title,
+  });
 };

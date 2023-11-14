@@ -22,6 +22,8 @@ import { setLoading } from "./chatSlice";
 // if question text is overflowing, add tooltip
 // else not
 
+// fix button width for smaller screens or when support chat window is open
+
 const ExampleQuestions = () => {
   const currentUser: User | null | undefined = useContext(AuthContext);
   const { colorMode } = useColorMode();
@@ -95,12 +97,11 @@ const ExampleQuestions = () => {
     >
       <HStack gap={2}>
         {randomQuestions.slice(0, 2).map((question, index) => (
-          <Tooltip label={question} placement="top" hasArrow>
+          <Tooltip label={question} placement="top" hasArrow key={index}>
             <Button
               size="md"
               width="30vw"
               onClick={() => handleSubmit(question)}
-              key={index}
               bgColor={theme.colors[colorMode].secondaryContainer}
               textColor={theme.colors[colorMode].onSecondaryContainer}
             >
@@ -111,12 +112,11 @@ const ExampleQuestions = () => {
       </HStack>
       <HStack gap={2}>
         {randomQuestions.slice(2, 4).map((question, index) => (
-          <Tooltip label={question} placement="top" hasArrow>
+          <Tooltip label={question} placement="top" hasArrow key={index}>
             <Button
               size="md"
               width="30vw"
               onClick={() => handleSubmit(question)}
-              key={index}
               bgColor={theme.colors[colorMode].secondaryContainer}
               textColor={theme.colors[colorMode].onSecondaryContainer}
             >
