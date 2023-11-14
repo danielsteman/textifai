@@ -197,46 +197,22 @@ const Chat = () => {
     try {
       dispatch(setLoading(true));
 
-      let requestPayload;
-      let res;
-
       if (pdfText) {
         console.log("Handling PdfQa Chain...");
-        dispatch(pushMessage(pdfText));
-        setMessage("");
-        requestPayload = {
-          prompt: pdfText,
-          files: selectedDocuments,
-          extractedText: extractedText,
-          option: "pdfQa",
+
+        dispatch(pushMessage(message));
+
+        const requestPayload = {
+          promptFromExtract: pdfText,
         };
 
-        res = await axios.post(
-          `${config.chat.url}/api/chat/ask`,
-          requestPayload
-        );
-
-        dispatch(pushAnswer(res.data.answer));
-        scrollToBottom();
-
-        await addMessageToCollection(
-          pdfText,
-          "user",
-          currentConversationId,
-          null
-        );
-        await addMessageToCollection(
-          res.data.answer,
-          "agent",
-          currentConversationId,
-          null
-        );
-        await updateConversationDate(currentConversationId!);
+        const answer = await handleStreamingAnswer(requestPayload);
+        dispatch(pushAnswer(answer));
       } else if (regenerate) {
         console.log("Handling Regenerate Chain...");
         const lastSystemMessage = answerStack[answerStack.length - 1];
 
-        requestPayload = {
+        const requestPayload = {
           prompt: lastSystemMessage,
           regenerate: true,
         };
