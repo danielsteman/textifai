@@ -35,7 +35,12 @@ import {
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
 import { clearMessages, pushMessage, setMessages } from "./messageStackSlice";
-import { clearAnswers, pushAnswer, replaceLastAnswer, setAnswers } from "./answerStackSlice";
+import {
+  clearAnswers,
+  pushAnswer,
+  replaceLastAnswer,
+  setAnswers,
+} from "./answerStackSlice";
 import { setCurrentConversationId, setLoading } from "./chatSlice";
 import { config } from "../../app/config/config";
 
@@ -76,21 +81,27 @@ const Chat = () => {
   }, [currentUser, activeProjectId, currentConversationId]);
 
   useEffect(() => {
+    console.log(answerStack);
+  }, [answerStack]);
+
+  useEffect(() => {
     const initializeMessages = async () => {
       if (currentConversationId) {
-        const messages = await fetchMessagesForConversation(currentConversationId!);
+        const messages = await fetchMessagesForConversation(
+          currentConversationId!
+        );
         const userMessages = messages
           .filter((msg) => msg.variant === "user")
           .map((msg) => msg.messageBody);
         const agentMessages = messages
           .filter((msg) => msg.variant === "agent")
           .map((msg) => msg.messageBody);
-  
+
         dispatch(setMessages(userMessages));
         dispatch(setAnswers(agentMessages));
       } else {
-        dispatch(clearMessages());         
-        dispatch(clearAnswers()); 
+        dispatch(clearMessages());
+        dispatch(clearAnswers());
       }
     };
     initializeMessages();
@@ -130,6 +141,58 @@ const Chat = () => {
 
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
+
+  const handleStreamingAnswer = async (requestPayload: any) => {
+    setMessage("");
+    setAnswerStream("");
+
+    const response = await fetch(`${config.chat.url}/api/chat/rag`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestPayload),
+    });
+
+    if (!response.ok || !response.body) {
+      throw new Error(
+        `Error fetching response from RAG chain, HTTP code: ${response.status}`
+      );
+    }
+
+    const reader = response.body.getReader();
+
+    dispatch(setLoading(false));
+    setAnswerStreamComplete(false);
+
+    let accumulatedAnswerStream = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      const text = new TextDecoder().decode(value);
+      setAnswerStream((prev): string => `${prev}${text}`);
+      accumulatedAnswerStream += text;
+    }
+
+    scrollToBottom();
+    setAnswerStreamComplete(true);
+
+    await addMessageToCollection(message, "user", currentConversationId, null);
+    await addMessageToCollection(
+      accumulatedAnswerStream,
+      "agent",
+      currentConversationId,
+      null
+    );
+    await updateConversationDate(currentConversationId!);
+
+    return accumulatedAnswerStream;
+  };
 
   const handleChatAction = async (regenerate = false, pdfText?: string) => {
     try {
@@ -171,85 +234,42 @@ const Chat = () => {
       } else if (regenerate) {
         console.log("Handling Regenerate Chain...");
         const lastSystemMessage = answerStack[answerStack.length - 1];
+
         requestPayload = {
           prompt: lastSystemMessage,
-          option: "regenerate",
+          regenerate: true,
         };
-        res = await axios.post(
-          `${config.chat.url}/api/chat/ask`,
-          requestPayload
-        );
-        dispatch(replaceLastAnswer(res.data.answer));
+
+        // res = await axios.post(
+        //   `${config.chat.url}/api/chat/rag`,
+        //   requestPayload
+        // );
+
+        const answer = await handleStreamingAnswer(requestPayload);
+
+        console.log(`Regenerated answer: ${answer}`);
+
+        dispatch(replaceLastAnswer(answer));
       } else {
         console.log("Handling Regular Chain...");
 
         dispatch(pushMessage(message));
-        setMessage("");
-        setAnswerStream("");
 
         const updatedConversationHistory = await getConversation(
           currentConversationId!
         );
 
-        requestPayload = {
+        const requestPayload = {
           prompt: message,
           history: updatedConversationHistory,
           files: selectedDocuments,
           userId: currentUser!.uid,
         };
 
-        const response = await fetch(`${config.chat.url}/api/chat/rag`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestPayload),
-        });
-
-        if (!response.ok || !response.body) {
-          throw new Error(
-            `Error fetching response from RAG chain, HTTP code: ${response.status}`
-          );
-        }
-
-        const reader = response.body.getReader();
-
-        dispatch(setLoading(false));
-        setAnswerStreamComplete(false);
-
-        let accumulatedAnswerStream = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-
-          if (done) {
-            break;
-          }
-
-          const text = new TextDecoder().decode(value);
-          setAnswerStream((prev): string => `${prev}${text}`);
-          accumulatedAnswerStream += text;
-        }
-
-        scrollToBottom();
-
-        dispatch(pushAnswer(accumulatedAnswerStream));
-        setAnswerStreamComplete(true);
-
-        await addMessageToCollection(
-          message,
-          "user",
-          currentConversationId,
-          null
-        );
-        await addMessageToCollection(
-          accumulatedAnswerStream,
-          "agent",
-          currentConversationId,
-          null
-        );
-        await updateConversationDate(currentConversationId!);
+        const answer = await handleStreamingAnswer(requestPayload);
+        dispatch(pushAnswer(answer));
       }
+
       dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
