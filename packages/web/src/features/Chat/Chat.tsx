@@ -49,7 +49,6 @@ const Chat = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const lastProcessedTextRef = useRef<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [showExampleQuestions, setShowExampleQuestions] = useState(true);
 
   const [answerStreamComplete, setAnswerStreamComplete] =
     useState<boolean>(true);
@@ -211,10 +210,12 @@ const Chat = () => {
           extractedText: extractedText,
           option: "pdfQa",
         };
+
         res = await axios.post(
           `${config.chat.url}/api/chat/ask`,
           requestPayload
         );
+
         dispatch(pushAnswer(res.data.answer));
         scrollToBottom();
 
@@ -239,11 +240,6 @@ const Chat = () => {
           prompt: lastSystemMessage,
           regenerate: true,
         };
-
-        // res = await axios.post(
-        //   `${config.chat.url}/api/chat/rag`,
-        //   requestPayload
-        // );
 
         const answer = await handleStreamingAnswer(requestPayload);
 

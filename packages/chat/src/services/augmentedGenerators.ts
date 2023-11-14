@@ -96,7 +96,7 @@ export const retrievalAugmentedRegenerator = async (prompt: string) => {
   return stream;
 };
 
-export const pdfAugmentedGenerator = async (prompt: string) => {
+export const pdfAugmentedGenerator = async (pdfExtract: string) => {
   const llm = new ChatOpenAI({
     modelName: "gpt-4-1106-preview",
     temperature: 1,
@@ -107,7 +107,7 @@ export const pdfAugmentedGenerator = async (prompt: string) => {
 
   const runnable = promptTemplate.pipe(llm);
   const stream = await runnable.stream({
-    context: prompt,
+    context: pdfExtract,
   });
 
   return stream;

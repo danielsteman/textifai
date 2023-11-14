@@ -5,6 +5,7 @@ import pdfQaHandler from "../handlers/pdfQaHandler";
 import regenerateHandler from "../handlers/regenerateHandler";
 import summarizationHandler from "../handlers/summarizationHandler";
 import {
+  pdfAugmentedGenerator,
   retrievalAugmentedGenerator,
   retrievalAugmentedRegenerator,
 } from "../services/augmentedGenerators";
@@ -79,6 +80,7 @@ interface StreamingRAGPromptRequest {
   files: string[];
   userId: string;
   regenerate?: boolean;
+  promptFromExtract?: string;
 }
 
 export const postStreamingRAGPrompt = async (
@@ -98,6 +100,8 @@ export const postStreamingRAGPrompt = async (
     console.log("Pass prompt to retrievalAugmentedRegenerator");
 
     stream = await retrievalAugmentedRegenerator(prompt);
+  } else if (req.body.promptFromExtract) {
+    stream = await pdfAugmentedGenerator(req.body.promptFromExtract);
   } else {
     console.log("Pass prompt to retrievalAugmentedGenerator");
 
