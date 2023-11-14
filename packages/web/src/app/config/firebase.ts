@@ -10,6 +10,7 @@ export const app = initializeApp({
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGEBUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGINGSENDERID,
   appId: import.meta.env.VITE_FIREBASE_APPID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENTID,
 });
 
 export const auth = getAuth(app);
