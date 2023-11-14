@@ -72,7 +72,13 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { startConversation, deleteConversation } from "../Chat/ChatFuncs";
 import { setCurrentConversationId } from "../Chat/chatSlice";
@@ -185,12 +191,12 @@ const Workspace = () => {
         where("userId", "==", currentUser!.uid),
         where("projectId", "==", activeProjectId)
       );
-  
+
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const fetchedConversationIds = querySnapshot.docs.map((doc) => doc.id);
         setConversations(fetchedConversationIds);
       });
-  
+
       return unsubscribe;
     } catch (error) {
       console.error("Error fetching conversationId: ", error);
@@ -280,64 +286,67 @@ const Workspace = () => {
               <MenuGroup title="All projects">
                 <MenuDivider />
                 {userProjects.map((project) => (
-                <Box
-                  key={project.uid}
-                  onClick={() => handleProjectClick(project)}
-                  cursor="pointer"
-                >
-                  <HStack justifyContent="space-between" width="100%" p={2}>
-                    {editMode && activeProjectId === project.uid ? (
-                      <Input
-                        value={editedName}
-                        onChange={(e) => setEditedName(e.target.value)}
-                        onBlur={() => {
-                          handleEditProjectName(project.uid!, editedName);
-                          setEditMode(false);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                  <Box
+                    key={project.uid}
+                    onClick={() => handleProjectClick(project)}
+                    cursor="pointer"
+                    _hover={{
+                      bgColor: theme.colors[colorMode].surfaceContainerHighest,
+                    }}
+                  >
+                    <HStack justifyContent="space-between" width="100%" p={2}>
+                      {editMode && activeProjectId === project.uid ? (
+                        <Input
+                          value={editedName}
+                          onChange={(e) => setEditedName(e.target.value)}
+                          onBlur={() => {
                             handleEditProjectName(project.uid!, editedName);
-                            dispatch(setProjectName(editedName))
                             setEditMode(false);
-                          }
-                        }}
-                        autoFocus
-                      />
-                    ) : (
-                      <Text isTruncated>{project.name}</Text>
-                    )}
-                    <HStack spacing={0}>
-                      <Tooltip label="Edit project name">
-                        <IconButton
-                          icon={<FaPen />}
-                          aria-label="Edit"
-                          size="sm"
-                          variant="ghost"
-                          _hover={{ color: theme.colors[colorMode].primary }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditMode(true);
-                            setEditedName(project.name);
                           }}
-                        />
-                      </Tooltip>
-                      <Tooltip label="Delete project">
-                        <IconButton
-                          icon={<FaTrash />}
-                          aria-label="Delete"
-                          size="sm"
-                          variant="ghost"
-                          _hover={{ color: theme.colors[colorMode].primary }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteProject(activeProjectId!, currentUser!.uid);
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              handleEditProjectName(project.uid!, editedName);
+                              dispatch(setProjectName(editedName));
+                              setEditMode(false);
+                            }
                           }}
+                          autoFocus
                         />
-                      </Tooltip>
+                      ) : (
+                        <Text isTruncated>{project.name}</Text>
+                      )}
+                      <HStack spacing={0}>
+                        <Tooltip label="Edit project name">
+                          <IconButton
+                            icon={<FaPen />}
+                            aria-label="Edit"
+                            size="sm"
+                            variant="ghost"
+                            _hover={{ color: theme.colors[colorMode].primary }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditMode(true);
+                              setEditedName(project.name);
+                            }}
+                          />
+                        </Tooltip>
+                        <Tooltip label="Delete project">
+                          <IconButton
+                            icon={<FaTrash />}
+                            aria-label="Delete"
+                            size="sm"
+                            variant="ghost"
+                            _hover={{ color: theme.colors[colorMode].primary }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteProject(activeProjectId!, currentUser!.uid);
+                            }}
+                          />
+                        </Tooltip>
+                      </HStack>
                     </HStack>
-                  </HStack>
-                </Box>
-              ))}
+                  </Box>
+                ))}
                 <MenuDivider />
                 <MenuItem onClick={handleAddNewProject}>+ New project</MenuItem>
               </MenuGroup>
@@ -474,10 +483,11 @@ const Workspace = () => {
                       <FaTrash
                         onClick={async () => {
                           await deleteConversation(
-                            conversation!, 
-                            currentUser!.uid, 
-                            activeProjectId!, 
-                            dispatch);
+                            conversation!,
+                            currentUser!.uid,
+                            activeProjectId!,
+                            dispatch
+                          );
                           await fetchMessages();
                         }}
                       />
