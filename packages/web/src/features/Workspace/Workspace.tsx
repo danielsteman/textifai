@@ -73,6 +73,7 @@ import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom";
 import {
+  DocumentData,
   collection,
   getDocs,
   onSnapshot,
@@ -108,7 +109,7 @@ const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [mailResent, setMailResent] = useState(false);
-  const [conversations, setConversations] = useState<string[]>([]);
+  const [conversations, setConversations] = useState<DocumentData[]>([]);
   const [editedName, setEditedName] = useState("");
   const [editMode, setEditMode] = useState(false);
 
@@ -193,8 +194,8 @@ const Workspace = () => {
       );
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const fetchedConversationIds = querySnapshot.docs.map((doc) => doc.id);
-        setConversations(fetchedConversationIds);
+        const fetchedConversation = querySnapshot.docs;
+        setConversations(fetchedConversation);
       });
 
       return unsubscribe;
@@ -423,7 +424,7 @@ const Workspace = () => {
 
                 {conversations.map((conversation) => (
                   <HStack
-                    key={conversation}
+                    key={conversation.id}
                     w="100%"
                     borderWidth="1px"
                     borderColor={
@@ -450,7 +451,7 @@ const Workspace = () => {
                     }}
                   >
                     <Tooltip
-                      label={conversation}
+                      label={conversation.title}
                       aria-label="Full conversation text"
                       placement="top"
                     >
@@ -470,7 +471,7 @@ const Workspace = () => {
                           animationFillMode: "forwards",
                         }}
                       >
-                        {conversation}
+                        {conversation.title}
                       </Text>
                     </Tooltip>
                     <Spacer />
@@ -483,7 +484,7 @@ const Workspace = () => {
                       <FaTrash
                         onClick={async () => {
                           await deleteConversation(
-                            conversation!,
+                            conversation.id,
                             currentUser!.uid,
                             activeProjectId!,
                             dispatch

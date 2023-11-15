@@ -10,6 +10,7 @@ import {
   orderBy,
   limit,
   deleteDoc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../../app/config/firebase";
 import { Conversation } from "@shared/interfaces/firebase/Conversation";
@@ -222,16 +223,31 @@ export const firstMessageInConversation = async (
 };
 
 export const setConversationTitle = async (
-  conversationId: string,
-  firstMessage: string
-) => {
-  const title: string = await axios.post(`${config.chat.url}/api/chat/title`, {
-    prompt: firstMessage,
-  });
-
+  firstMessage: string,
+  conversationId: string
+): Promise<string | void> => {
   const conversationRef = doc(conversationsCollection, conversationId);
-  await updateDoc(conversationRef, {
-    updatedDate: Timestamp.fromDate(new Date()),
-    title: title,
-  });
+  const conversationSnapshot = await getDoc(conversationRef);
+  const conversation = conversationSnapshot.data() as Conversation;
+
+  if (!conversation.title && conversationId) {
+    const res = await axios.post(`${config.chat.url}/api/chat/title`, {
+      prompt: firstMessage,
+    });
+
+    if (!res.data) {
+      throw new Error(
+        "Couldn't generate title based on first message in conversation."
+      );
+    }
+
+    const title = res.data.text;
+
+    await updateDoc(conversationRef, {
+      updatedDate: Timestamp.fromDate(new Date()),
+      title,
+    });
+
+    return title;
+  }
 };

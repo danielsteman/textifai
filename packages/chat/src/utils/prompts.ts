@@ -6,7 +6,7 @@ const templates = {
         to answer the question. Do not make up any answers if the context does not have relevant information. Use markdown formatting, such as bullet points, lists, paragraphs,
         and text styling, as appropriate.
 
-        Markdown styling: 
+        Markdown styling:
             Header 1: #
             Header 2: ##
             Header 3: ###
@@ -36,19 +36,19 @@ const templates = {
         Standalone question:
         `,
   regenerateTemplate: `
-      Paraphrase the given text, preserving any code or tables that are present. Your paraphrase should maintain the original intent and 
+      Paraphrase the given text, preserving any code or tables that are present. Your paraphrase should maintain the original intent and
       meaning of the text, while also aiming to improve clarity and conciseness where possible. Please provide your paraphrased answer in markdown format.
 
       CONTENT: {document}
-      
+
       Your paraphrased answer should be provided below:
         `,
   pdfTemplate: `
-      Based on the given context, you are a chatbot tasked with answering questions in a conversational manner while following specific rules. 
-      Your answers should be concise, maintaining the original context, and avoiding the mention of the word "context". 
-      If asked to summarize, use no more than five sentences. If asked to show key points, use three to five bullet points. 
-      If asked to explain, use easy-to-understand language without jargon. Your final answer should be based solely on the given 
-      context and should not reference any external sources or use page number references. 
+      Based on the given context, you are a chatbot tasked with answering questions in a conversational manner while following specific rules.
+      Your answers should be concise, maintaining the original context, and avoiding the mention of the word "context".
+      If asked to summarize, use no more than five sentences. If asked to show key points, use three to five bullet points.
+      If asked to explain, use easy-to-understand language without jargon. Your final answer should be based solely on the given
+      context and should not reference any external sources or use page number references.
 
       The final answer should be tailored to each prompt, ensuring a unique and clear structure that aids the user's understanding
       and should be formatted using react-markdown styling.
@@ -67,7 +67,7 @@ const templates = {
       --------
 
       Final answer:
-  
+
   `,
   stepBackTemplate: `
         Given the detailed and complex nature of the task at hand, formulate a step-back question that abstracts away from the specifics to focus on the underlying principles or higher-level concepts relevant to the original question. This step-back question should aim to simplify the task by eliciting general knowledge that will aid in deducing the specific answer required."

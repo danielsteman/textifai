@@ -130,11 +130,6 @@ export const postTitleClassfierPrompt = async (
   res: Response,
   next: NextFunction
 ) => {
-  res.writeHead(200, {
-    "Content-Type": "text/plain",
-    "Transfer-Encoding": "chunked",
-  });
-
   const prompt = req.body.prompt;
 
   const title = await titleClassifier(prompt);

@@ -31,7 +31,6 @@ import {
   updateConversationDate,
   fetchConversationId,
   fetchMessagesForConversation,
-  firstMessageInConversation,
   setConversationTitle,
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
@@ -80,6 +79,8 @@ const Chat = () => {
   useEffect(() => {
     if (messageStack.length === 1) {
       setConversationTitle(messageStack[0], currentConversationId!);
+      console.log(`first message: ${messageStack[0]}`);
+      console.log(`conversationId: ${currentConversationId}`);
     }
   }, [messageStack]);
 
