@@ -54,6 +54,7 @@ import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
+import { ConversationContext, ConversationProvider } from "../../app/providers/ConversationProvider";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { setActiveProjectForUser } from "../Projects/updateActiveProject";
@@ -109,12 +110,14 @@ const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [mailResent, setMailResent] = useState(false);
-  const [conversations, setConversations] = useState<DocumentData[]>([]);
   const [editedName, setEditedName] = useState("");
   const [editMode, setEditMode] = useState(false);
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
+  const conversations = useContext(ConversationContext);
+
+  console.log(`Conversation provider: ${conversations}`)
 
   const navigate = useNavigate();
 
@@ -185,29 +188,10 @@ const Workspace = () => {
     }
   };
 
-  const fetchMessages = () => {
-    try {
-      const q = query(
-        collection(db, "conversations"),
-        where("userId", "==", currentUser!.uid),
-        where("projectId", "==", activeProjectId)
-      );
-
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const fetchedConversation = querySnapshot.docs;
-        setConversations(fetchedConversation);
-      });
-
-      return unsubscribe;
-    } catch (error) {
-      console.error("Error fetching conversationId: ", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchMessages();
-  }, [activeProjectId, currentUser, dispatch]);
-
+  const sortedConversations = [...conversations].sort((a, b) => {
+    return b.updatedDate.toDate().getTime() - a.updatedDate.toDate().getTime();
+  });
+  
   return (
     <HStack h="100%">
       {!currentUser?.emailVerified && (
@@ -422,13 +406,13 @@ const Workspace = () => {
                   Conversations
                 </Heading>
 
-                {conversations.map((conversation) => (
+                {sortedConversations.map((conversation) => (
                   <HStack
-                    key={conversation.id}
+                    key={conversation.uid}
                     w="100%"
                     borderWidth="1px"
                     borderColor={
-                      conversation === currentConversationId
+                      conversation.uid === currentConversationId
                         ? theme.colors[colorMode].primary
                         : theme.colors[colorMode].surfaceContainerHigh
                     }
@@ -447,7 +431,7 @@ const Workspace = () => {
                           : theme.colors[colorMode].onSurfaceContainerHover,
                     }}
                     onClick={async () => {
-                      dispatch(setCurrentConversationId(conversation));
+                      dispatch(setCurrentConversationId(conversation.uid));
                     }}
                   >
                     <Tooltip
@@ -456,23 +440,21 @@ const Workspace = () => {
                       placement="top"
                     >
                       <Text
-                        size="xs"
-                        fontWeight={500}
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        whiteSpace="nowrap"
-                        css={{
-                          maxWidth: "100%",
-                          borderRight: "2px solid transparent",
-                          animation: `${typing} ${
-                            conversation!.length / 10
-                          }s steps(${conversation!.length}, end),
-                                        ${blinkCaret} .75s step-end infinite`,
-                          animationFillMode: "forwards",
-                        }}
-                      >
-                        {conversation.title}
-                      </Text>
+                      fontSize="0.85rem"
+                      fontWeight={500}
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                      css={{
+                        maxWidth: "100%",
+                        borderRight: "2px solid transparent",
+                        animation: `${typing} ${conversation!.title.length / 10}s steps(${conversation!.title.length}, end), 
+                                    ${blinkCaret} .75s step-end infinite`,
+                        animationFillMode: "forwards",
+                      }}
+                    >
+                      {conversation.title}
+                    </Text>
                     </Tooltip>
                     <Spacer />
                     <Box
@@ -484,12 +466,12 @@ const Workspace = () => {
                       <FaTrash
                         onClick={async () => {
                           await deleteConversation(
-                            conversation.id,
+                            conversation.uid,
                             currentUser!.uid,
                             activeProjectId!,
                             dispatch
                           );
-                          await fetchMessages();
+                          //await fetchMessages();
                         }}
                       />
                     </Box>
@@ -508,7 +490,7 @@ const Workspace = () => {
                       currentUser!.uid,
                       activeProjectId!
                     );
-                    await fetchMessages();
+                    //wait fetchMessages();
                     dispatch(setCurrentConversationId(newConversationId));
                   }}
                   _hover={{

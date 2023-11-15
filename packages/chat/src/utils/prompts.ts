@@ -149,7 +149,6 @@ const templates = {
         Context: {context}
         --------
 
-
         Final answer:
         `,
   conversationTitleTemplate: `
