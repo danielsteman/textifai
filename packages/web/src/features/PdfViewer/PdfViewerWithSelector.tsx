@@ -14,6 +14,8 @@ import { Select, Box } from "@chakra-ui/react";
 // Importing required CSS files for react-pdf components
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 
 // Set the worker source for pdf.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -27,13 +29,16 @@ const getPdfUrl = async (doc: StorageReference) => {
 function PdfViewerWithSelector() {
   // Accessing the current user's context
   const currentUser = useContext(AuthContext);
+  const activeProjectId = useSelector(
+    (state: RootState) => state.activeProject.projectId
+  );
 
   // State variables
   const [selectedPdfUrl, setSelectedPdfUrl] = useState<string | null>(null);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [numPages, setNumPages] = useState<number>(0);
   const [scale, setScale] = useState<number>(1);
-  const listRef = ref(storage, `users/${currentUser?.uid}/uploads`);
+  const listRef = ref(storage, `projects/${activeProjectId}/uploads`);
   // Reference to the PDF viewer container
   const pdfRef = useRef<HTMLDivElement>(null);
 
