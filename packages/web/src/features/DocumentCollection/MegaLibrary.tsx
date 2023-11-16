@@ -146,7 +146,7 @@ const MegaLibrary = () => {
     selectedDocuments.map(async (fullPath) => {
       const documentRef = ref(
         storage,
-        `users/${currentUser?.uid}/uploads/${fullPath}`
+        `projects/${activeProjectId}/uploads/${fullPath}`
       );
 
       // Construct your Firestore query
@@ -690,7 +690,7 @@ const MegaLibrary = () => {
           <Modal
             isOpen={isDeleteFileOpen}
             onClose={onDeleteFileClose}
-            size="xs"
+            size="lg"
           >
             <ModalOverlay />
             <ModalContent>
@@ -699,7 +699,7 @@ const MegaLibrary = () => {
               </ModalHeader>
               <ModalBody>
                 <VStack>
-                  <Text>
+                  <Text fontWeight="bold">
                     Are you sure that you want to delete the selected document?
                   </Text>
                   {selectedDocuments.map((doc) => (
