@@ -67,8 +67,8 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       <Box
         color={textColor}
         bgColor={bgColor}
-        pr={variant === "agent" ? 0 : 3}
-        pl={3}
+        pr={variant === "agent" ? 0 : 6}
+        pl={variant === "agent" ? 6 : 4}
         py={1}
         rounded={8}
         gap={0}
