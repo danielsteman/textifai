@@ -11,25 +11,17 @@ import {
   Spacer,
   Text,
   Heading,
+  Tooltip,
 } from "@chakra-ui/react";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import theme from "../../app/themes/theme";
 import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
-import {
-  FaArrowRight,
-  FaCircle,
-  FaCommentDots,
-  FaOptinMonster,
-  FaPen,
-  FaPlus,
-} from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { ArrowRightIcon, ArrowUpDownIcon, CopyIcon } from "@chakra-ui/icons";
-import { MdCallToAction, MdSettings } from "react-icons/md";
+import { CopyIcon } from "@chakra-ui/icons";
 
 interface SystemMessageProps {
   message: string;
@@ -52,7 +44,6 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
 
   const handleMenuClick = () => {
     appendToDocument(currentUser!.uid, activeProjectId!, message);
-    setMenuClicked(true);
   };
 
   const markdownComponentMapping = {
@@ -75,6 +66,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
         w="fit-content"
         maxW="80%"
         minH={8}
+        mr={4}
         alignItems="start"
       >
         <HStack spacing={2}>
@@ -83,24 +75,19 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
               {message}
             </ReactMarkdown>
           </VStack>
-          {!menuClicked && variant === "agent" && (
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                aria-label="Options"
-                icon={<CopyIcon />}
-                variant="ghost"
-                size="xs"
-                color={theme.colors[colorMode].onSecondary}
-              />
-              <MenuList>
-                <MenuItem onClick={handleMenuClick}>
-                  <Text color={theme.colors[colorMode].secondary}>
-                    Copy to Working Document
-                  </Text>
-                </MenuItem>
-              </MenuList>
-            </Menu>
+          {variant === "agent" && (
+            <Box position="relative" alignSelf="flex-start">
+              <Tooltip label="Copy to Working Document" placement="top">
+                <IconButton
+                  aria-label="Options"
+                  icon={<CopyIcon />}
+                  variant="ghost"
+                  size="md"
+                  color={theme.colors[colorMode].onSecondary}
+                  onClick={handleMenuClick}
+                />
+              </Tooltip>
+            </Box>
           )}
         </HStack>
       </Box>
