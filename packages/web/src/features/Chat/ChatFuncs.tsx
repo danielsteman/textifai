@@ -32,7 +32,7 @@ export const startConversation = async (
       projectId: currentProjectUid,
       creationDate: Timestamp.fromDate(new Date()),
       updatedDate: Timestamp.fromDate(new Date()),
-      title: "New Chat",
+      title: "",
     };
     const conversationRef = await addDoc(
       conversationsCollection,
@@ -241,11 +241,11 @@ export const setConversationTitle = async (
       );
     }
 
-    const title = res.data.text.replace(/"/g, '').trim();;
+    const title = res.data.text.replace(/"/g, '').trim();
 
     await updateDoc(conversationRef, {
       updatedDate: Timestamp.fromDate(new Date()),
-      title,
+      title: title,
     });
 
     return title;

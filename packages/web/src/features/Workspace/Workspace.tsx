@@ -54,7 +54,7 @@ import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
-import { ConversationContext, ConversationProvider } from "../../app/providers/ConversationProvider";
+import { ConversationContext } from "../../app/providers/ConversationProvider";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { setActiveProjectForUser } from "../Projects/updateActiveProject";
@@ -73,15 +73,6 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom";
-import {
-  DocumentData,
-  collection,
-  getDocs,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "../../app/config/firebase";
 import { startConversation, deleteConversation } from "../Chat/ChatFuncs";
 import { setCurrentConversationId } from "../Chat/chatSlice";
 import { deleteProject } from "../Projects/deleteProject";
@@ -116,8 +107,6 @@ const Workspace = () => {
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
   const conversations = useContext(ConversationContext);
-
-  console.log(`Conversation provider: ${conversations}`)
 
   const navigate = useNavigate();
 
@@ -471,7 +460,6 @@ const Workspace = () => {
                             activeProjectId!,
                             dispatch
                           );
-                          //await fetchMessages();
                         }}
                       />
                     </Box>
@@ -490,7 +478,6 @@ const Workspace = () => {
                       currentUser!.uid,
                       activeProjectId!
                     );
-                    //wait fetchMessages();
                     dispatch(setCurrentConversationId(newConversationId));
                   }}
                   _hover={{
