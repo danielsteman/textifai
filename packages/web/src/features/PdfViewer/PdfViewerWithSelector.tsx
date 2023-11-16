@@ -11,39 +11,33 @@ import {
 } from "firebase/storage";
 import { Select, Box } from "@chakra-ui/react";
 
-// Importing required CSS files for react-pdf components
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 
-// Set the worker source for pdf.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-// Function to get PDF URL from storage
 const getPdfUrl = async (doc: StorageReference) => {
   const pdfURL = await getDownloadURL(doc);
   return pdfURL;
 };
 
 function PdfViewerWithSelector() {
-  // Accessing the current user's context
   const currentUser = useContext(AuthContext);
   const activeProjectId = useSelector(
     (state: RootState) => state.activeProject.projectId
   );
 
-  // State variables
   const [selectedPdfUrl, setSelectedPdfUrl] = useState<string | null>(null);
   const [documents, setDocuments] = useState<StorageReference[]>([]);
   const [numPages, setNumPages] = useState<number>(0);
   const [scale, setScale] = useState<number>(1);
   const listRef = ref(storage, `projects/${activeProjectId}/uploads`);
-  // Reference to the PDF viewer container
   const pdfRef = useRef<HTMLDivElement>(null);
 
-  // Fetch user's documents on component mount
   useEffect(() => {
+    setSelectedPdfUrl(null);
     listAll(listRef)
       .then((res) => {
         setDocuments(res.items);
@@ -52,7 +46,7 @@ function PdfViewerWithSelector() {
         console.warn("Something went wrong listing your files");
         console.error(error);
       });
-  }, [currentUser]);
+  }, [currentUser, activeProjectId]);
 
   return (
     <Box display="flex" flexDirection="column" height="100%" overflow="hidden">
