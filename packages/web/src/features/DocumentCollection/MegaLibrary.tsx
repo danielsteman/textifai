@@ -854,7 +854,7 @@ const MegaLibrary = () => {
                             as={FaStar}
                             color={
                               doc.favoritedBy
-                                ? theme.colors[colorMode].primary
+                                ? theme.colors[colorMode].secondaryContainer
                                 : "none"
                             }
                             onClick={() =>
