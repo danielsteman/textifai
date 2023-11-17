@@ -633,39 +633,65 @@ const Workspace = () => {
             </TabList>
             <Spacer />
             {openTabs[activeTabIndex].name === "Editor" && (
-              <>
-                <Tooltip label="Open mini library">
-                  <IconButton
-                    aria-label={"library-support"}
-                    icon={<FaBookOpen />}
-                    onClick={() => {
-                      dispatch(openMiniLibrary("Editor"));
-                    }}
-                  />
-                </Tooltip>
-                <Box w={2} />
-                <Tooltip label="Open support chat">
-                  <IconButton
-                    aria-label={"chat-support"}
-                    icon={<ChatIcon />}
-                    onClick={() => {
-                      dispatch(openChatSupport("Editor"));
-                    }}
-                  />
-                </Tooltip>
-                <Box w={2} />
-                <Tooltip label="Open PDF Viewer">
-                  <IconButton
-                    aria-label={"pdf-viewer"}
-                    icon={<FaRegFilePdf />}
-                    onClick={() => {
-                      dispatch(openPdfViewer("Editor"));
-                    }}
-                  />
-                </Tooltip>
-                <Box w={2} />
-              </>
-            )}
+            <>
+              <Tooltip label="Open mini library">
+                <IconButton
+                  aria-label={"library-support"}
+                  icon={<FaBookOpen />}
+                  onClick={() => {
+                    dispatch(openMiniLibrary("Editor"));
+                  }}
+                />
+              </Tooltip>
+              <Box w={2} />
+              <Tooltip label="Open support chat">
+                <IconButton
+                  aria-label={"chat-support"}
+                  icon={<ChatIcon />}
+                  onClick={() => {
+                    dispatch(openChatSupport("Editor"));
+                  }}
+                />
+              </Tooltip>
+              <Box w={2} />
+              <Tooltip label="Open PDF Viewer">
+                <IconButton
+                  aria-label={"pdf-viewer"}
+                  icon={<FaRegFilePdf />}
+                  onClick={() => {
+                    dispatch(openPdfViewer("Editor"));
+                  }}
+                />
+              </Tooltip>
+              <Box w={2} />
+            </>
+          )}
+          {openTabs[activeTabIndex].name === "Chat" && (
+            <>
+              <Tooltip label="Open mini library">
+                <IconButton
+                  aria-label={"mini-library"}
+                  icon={<FaBookOpen />}
+                  onClick={() => {
+                    dispatch(openMiniLibrary("Chat"));
+                  }}
+                />
+              </Tooltip>
+            </>
+          )}
+          {openTabs[activeTabIndex].name === "PdfViewer" && (
+            <>
+              <Tooltip label="Open support chat">
+                <IconButton
+                  aria-label={"chat-support"}
+                  icon={<ChatIcon />}
+                  onClick={() => {
+                    dispatch(openChatSupport("PdfViewer"));
+                  }}
+                />
+              </Tooltip>
+            </>
+          )}
           </Flex>
           <TabPanels
             flex="1"
