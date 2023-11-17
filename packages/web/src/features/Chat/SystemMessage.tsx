@@ -19,9 +19,11 @@ import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { CopyIcon } from "@chakra-ui/icons";
+import EditorPanel from "../Workspace/panels/EditorPanel";
+import { addTab } from "../Workspace/tabsSlice";
 
 interface SystemMessageProps {
   message: string;
@@ -32,6 +34,8 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   const [menuClicked, setMenuClicked] = useState(false);
   const { colorMode } = useColorMode();
   const { primary, tertiary, onPrimary, onTertiary } = theme.colors[colorMode];
+
+  const dispatch = useDispatch()
 
   const bgColor = variant === "agent" ? tertiary : primary;
   const textColor = variant === "agent" ? onTertiary : onPrimary;
@@ -44,6 +48,14 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
 
   const handleMenuClick = () => {
     appendToDocument(currentUser!.uid, activeProjectId!, message);
+    const tab = {
+      name: "Editor",
+      panel: <EditorPanel />,
+      openChatSupport: false,
+      openMiniLibrary: false,
+      openPdfViewer: false,
+    };
+    dispatch(addTab(tab));
   };
 
   const markdownComponentMapping = {
@@ -66,7 +78,9 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
         w="fit-content"
         maxW="80%"
         minH={8}
-        mr={4}
+        mx={10}
+        my={1}
+        // m={1}
         alignItems="start"
       >
         <HStack spacing={2}>

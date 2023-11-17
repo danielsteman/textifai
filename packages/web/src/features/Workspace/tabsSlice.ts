@@ -39,6 +39,14 @@ export const tabsSlice = createSlice({
         (tab) => tab.name === action.payload.name
       );
     },
+    addTab: (state, action: PayloadAction<ITab>) => {
+      const index = state.openTabs.findIndex(
+        (tab) => tab.name === action.payload.name
+      );
+      if (index === -1) {
+        state.openTabs = [...state.openTabs, action.payload];
+      }
+    },
     closeChatSupport: (state, action: PayloadAction<string>) => {
       state.openTabs = state.openTabs.map((tab: ITab) =>
         tab.name === action.payload
@@ -84,6 +92,7 @@ export const {
   openTab,
   closeTab,
   activateTab,
+  addTab,
   closeChatSupport,
   closeMiniLibrary,
   closePdfViewer,
