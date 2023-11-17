@@ -1,19 +1,14 @@
 import {
-  Menu,
-  MenuButton,
   IconButton,
-  MenuList,
-  MenuItem,
   HStack,
   VStack,
   Box,
   useColorMode,
   Spacer,
-  Text,
   Heading,
   Tooltip,
 } from "@chakra-ui/react";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import theme from "../../app/themes/theme";
 import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../app/providers/AuthProvider";
@@ -31,7 +26,6 @@ interface SystemMessageProps {
 }
 
 const SystemMessage = ({ message, variant }: SystemMessageProps) => {
-  const [menuClicked, setMenuClicked] = useState(false);
   const { colorMode } = useColorMode();
   const { primary, tertiary, onPrimary, onTertiary } = theme.colors[colorMode];
 
@@ -80,7 +74,6 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
         minH={8}
         mx={10}
         my={1}
-        // m={1}
         alignItems="start"
       >
         <HStack spacing={2}>
