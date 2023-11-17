@@ -103,6 +103,7 @@ const Workspace = () => {
   const [mailResent, setMailResent] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editMode, setEditMode] = useState(false);
+  const [prevTitle, setPrevTitle] = useState('');
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
@@ -135,6 +136,15 @@ const Workspace = () => {
   const handleAddNewProject = () => {
     navigate("/features/onboarding");
   };
+
+  useEffect(() => {
+    const activeConversation = conversations.find(conversation => conversation.uid === currentConversationId);
+  
+    if (activeConversation && activeConversation.title !== prevTitle) {
+      setPrevTitle(activeConversation.title);
+    }
+  }, [currentConversationId, conversations]);
+  
 
   useEffect(() => {
     const fetchProjectTitle = async () => {
@@ -431,7 +441,7 @@ const Workspace = () => {
                       aria-label="Full conversation text"
                       placement="top"
                     >
-                      <Text
+                    <Text
                       fontSize="0.85rem"
                       fontWeight={500}
                       overflow="hidden"
@@ -440,8 +450,10 @@ const Workspace = () => {
                       css={{
                         maxWidth: "100%",
                         borderRight: "2px solid transparent",
-                        animation: `${typing} ${conversation!.title.length / 10}s steps(${conversation!.title.length}, end), 
-                                    ${blinkCaret} .75s step-end infinite`,
+                        animation: conversation.uid === currentConversationId && conversation.title !== prevTitle
+                          ? `${typing} ${conversation.title.length / 10}s steps(${conversation.title.length}, end), 
+                            ${blinkCaret} .75s step-end infinite`
+                          : 'none',
                         animationFillMode: "forwards",
                       }}
                     >
@@ -487,7 +499,7 @@ const Workspace = () => {
                     bgColor: theme.colors[colorMode].surfaceContainerHigh,
                   }}
                 >
-                  <Heading size="sm" fontWeight={500}>
+                  <Heading size="sm" fontSize={"0.85rem"}>
                     New chat
                   </Heading>
                   <Spacer />

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Conversation } from "@shared/interfaces/firebase/Conversation"; // Update this import path based on your project structure
+import { Conversation } from "@shared/interfaces/firebase/Conversation";
 import { QueryDocumentSnapshot, collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { AuthContext } from "./AuthProvider";
