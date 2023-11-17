@@ -127,8 +127,7 @@ const Workspace = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-
-  console.log(`Selected documents: ${selectedDocuments}`)
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
