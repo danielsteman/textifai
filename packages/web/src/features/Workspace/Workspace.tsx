@@ -124,7 +124,11 @@ const Workspace = () => {
   const activeProjectId = useSelector(
     (state: RootState) => state.activeProject.projectId
   );
+  const selectedDocuments = useSelector(
+    (state: RootState) => state.library.selectedDocuments
+  );
 
+  console.log(`Selected documents: ${selectedDocuments}`)
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -679,14 +683,14 @@ const Workspace = () => {
               </Tooltip>
             </>
           )}
-          {openTabs[activeTabIndex].name === "PdfViewer" && (
+          {selectedDocuments.includes(openTabs[activeTabIndex]?.name) && (
             <>
               <Tooltip label="Open support chat">
                 <IconButton
                   aria-label={"chat-support"}
                   icon={<ChatIcon />}
                   onClick={() => {
-                    dispatch(openChatSupport("PdfViewer"));
+                    dispatch(openChatSupport(openTabs[activeTabIndex].name));
                   }}
                 />
               </Tooltip>
