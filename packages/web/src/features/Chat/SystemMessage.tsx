@@ -52,10 +52,31 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
     dispatch(addTab(tab));
   };
 
+  const UnorderedList = ({ ...props }) => (
+    <Box as="ul" pl={4} ml={2} style={{ listStyleType: 'disc' }}>
+      {props.children}
+    </Box>
+  );
+
+  const ListItem = ({ ...props }) => (
+    <Box as="li" pl={2}>
+      {props.children}
+    </Box>
+  );
+
+  const Paragraph = ({ ...props }) => (
+    <Box as="p" my={2}>
+      {props.children}
+    </Box>
+  );
+  
   const markdownComponentMapping = {
     h1: ({ ...props }) => <Heading size="lg">{props.children}</Heading>,
     h2: ({ ...props }) => <Heading size="md">{props.children}</Heading>,
     h3: ({ ...props }) => <Heading size="sm">{props.children}</Heading>,
+    ul: UnorderedList,
+    li: ListItem,
+    bpr: Paragraph,
   };
 
   return (

@@ -15,6 +15,7 @@ const templates = {
             Strong: __text__
             Ordered list: 1. text
             Unorderder list: - text
+            New line: \
 
         Your answer should only be based on the context and should not include the words "context" or "conversation log". However, you should use the context to generate the answer.
         If you encounter a context formatted in a table, use a table in your response. Always prefer the result with the highest "score" value.
@@ -61,6 +62,7 @@ const templates = {
       Strong: __text__
       Ordered list: 1. text
       Unorderder list: - text
+      New line: \
 
       --------
       Context: {context}
@@ -141,6 +143,7 @@ const templates = {
         Strong: __text__
         Ordered list: 1. text
         Unorderder list: - text
+        New line: \
         --------
         User Prompt: {userPrompt}
         --------
