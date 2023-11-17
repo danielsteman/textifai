@@ -86,6 +86,7 @@ import {
 import { setAnswers } from "../Chat/answerStackSlice";
 import { setMessages } from "../Chat/messageStackSlice";
 import { setQuestions } from "../Chat/questionSlice";
+import { shortenString } from "../../common/utils/shortenString";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -132,7 +133,7 @@ const MegaLibrary = () => {
     const fileRef = ref(storage, storageLocation);
 
     const tab: ITab = {
-      name: uploadName,
+      name: shortenString(uploadName, 10),
       panel: <PdfViewer document={fileRef} />,
       openChatSupport: false,
       openMiniLibrary: false,
