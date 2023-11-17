@@ -402,7 +402,9 @@ const Workspace = () => {
           <Divider />
           {openTabs &&
             activeTabIndex &&
-            openTabs[activeTabIndex].name === "Chat" && (
+            ((openTabs[activeTabIndex].name === "Chat") ||
+            (openTabs[activeTabIndex].name === "Editor" && openTabs[activeTabIndex].openChatSupport))
+           && (
               <VStack w="100%" overflowY="scroll">
                 <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
                   Conversations
