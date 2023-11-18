@@ -53,11 +53,14 @@ import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import { ProjectContext } from "../../app/providers/ProjectProvider";
+import {
+  ExtendedProject,
+  ProjectContext,
+} from "../../app/providers/ProjectProvider";
 import { ConversationContext } from "../../app/providers/ConversationProvider";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import fetchProjectUid from "../Projects/fetchProjectId";
-import { setActiveProjectForUser } from "../Projects/updateActiveProject";
+import { setActiveProjectForUser } from "../Projects/setActiveProjectForUser";
 import { resendVerificationEmail } from "../Authentication/resendVerificationMail";
 import {
   activateTab,
@@ -103,11 +106,11 @@ const Workspace = () => {
   const [mailResent, setMailResent] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editMode, setEditMode] = useState(false);
-  const [prevTitle, setPrevTitle] = useState('');
+  const [prevTitle, setPrevTitle] = useState("");
 
   const currentUser = useContext(AuthContext);
-  const userProjects = useContext(ProjectContext);
   const conversations = useContext(ConversationContext);
+  const projects = useContext(ProjectContext);
 
   const navigate = useNavigate();
 
@@ -128,7 +131,7 @@ const Workspace = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-  
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -138,13 +141,14 @@ const Workspace = () => {
   };
 
   useEffect(() => {
-    const activeConversation = conversations.find(conversation => conversation.uid === currentConversationId);
-  
+    const activeConversation = conversations.find(
+      (conversation) => conversation.uid === currentConversationId
+    );
+
     if (activeConversation && activeConversation.title !== prevTitle) {
       setPrevTitle(activeConversation.title);
     }
   }, [currentConversationId, conversations]);
-  
 
   useEffect(() => {
     const fetchProjectTitle = async () => {
@@ -193,7 +197,7 @@ const Workspace = () => {
   const sortedConversations = [...conversations].sort((a, b) => {
     return b.updatedDate.toDate().getTime() - a.updatedDate.toDate().getTime();
   });
-  
+
   return (
     <HStack h="100%">
       {!currentUser?.emailVerified && (
@@ -258,86 +262,129 @@ const Workspace = () => {
             />
           </Flex>
           <Menu>
-            <MenuButton
-              textAlign="left"
-              mb={2}
-              w="100%"
-              as={Button}
-              size="md"
-              variant="ghost"
-              rightIcon={<ChevronDownIcon />}
-            >
-              {activeProjectName}
-            </MenuButton>
-            <MenuList>
-              <MenuGroup title="All projects">
-                <MenuDivider />
-                {userProjects.map((project) => (
-                  <Box
-                    key={project.uid}
-                    onClick={() => handleProjectClick(project)}
-                    cursor="pointer"
-                    _hover={{
-                      bgColor: theme.colors[colorMode].surfaceContainerHighest,
-                    }}
-                  >
-                    <HStack justifyContent="space-between" width="100%" p={2}>
-                      {editMode && activeProjectId === project.uid ? (
-                        <Input
-                          value={editedName}
-                          onChange={(e) => setEditedName(e.target.value)}
-                          onBlur={() => {
-                            handleEditProjectName(project.uid!, editedName);
-                            setEditMode(false);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              handleEditProjectName(project.uid!, editedName);
-                              dispatch(setProjectName(editedName));
-                              setEditMode(false);
-                            }
-                          }}
-                          autoFocus
-                        />
-                      ) : (
-                        <Text isTruncated>{project.name}</Text>
-                      )}
-                      <HStack spacing={0}>
-                        <Tooltip label="Edit project name">
-                          <IconButton
-                            icon={<FaPen />}
-                            aria-label="Edit"
-                            size="sm"
-                            variant="ghost"
-                            _hover={{ color: theme.colors[colorMode].primary }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditMode(true);
-                              setEditedName(project.name);
-                            }}
-                          />
-                        </Tooltip>
-                        <Tooltip label="Delete project">
-                          <IconButton
-                            icon={<FaTrash />}
-                            aria-label="Delete"
-                            size="sm"
-                            variant="ghost"
-                            _hover={{ color: theme.colors[colorMode].primary }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteProject(activeProjectId!, currentUser!.uid);
-                            }}
-                          />
-                        </Tooltip>
-                      </HStack>
-                    </HStack>
-                  </Box>
-                ))}
-                <MenuDivider />
-                <MenuItem onClick={handleAddNewProject}>+ New project</MenuItem>
-              </MenuGroup>
-            </MenuList>
+            {({ onClose }) => (
+              <>
+                <MenuButton
+                  textAlign="left"
+                  mb={2}
+                  w="100%"
+                  as={Button}
+                  size="md"
+                  variant="ghost"
+                  rightIcon={<ChevronDownIcon />}
+                >
+                  {activeProjectName}
+                </MenuButton>
+                <MenuList>
+                  <MenuGroup title="All projects">
+                    <MenuDivider />
+                    {projects.map((project, index) => (
+                      <Box
+                        key={project.uid}
+                        onClick={() => handleProjectClick(project)}
+                        cursor="pointer"
+                        _hover={{
+                          bgColor:
+                            theme.colors[colorMode].surfaceContainerHighest,
+                        }}
+                      >
+                        <HStack
+                          justifyContent="space-between"
+                          width="100%"
+                          p={2}
+                        >
+                          {editMode && activeProjectId === project.uid ? (
+                            <Input
+                              value={editedName}
+                              onChange={(e) => setEditedName(e.target.value)}
+                              onBlur={() => {
+                                handleEditProjectName(project.uid!, editedName);
+                                setEditMode(false);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  handleEditProjectName(
+                                    project.uid!,
+                                    editedName
+                                  );
+                                  dispatch(setProjectName(editedName));
+                                  setEditMode(false);
+                                }
+                              }}
+                              autoFocus
+                            />
+                          ) : (
+                            <Text isTruncated>{project.name}</Text>
+                          )}
+                          <HStack spacing={0}>
+                            {/* <Tooltip label="Edit project name">
+                              <IconButton
+                                icon={<FaPen />}
+                                aria-label="Edit"
+                                size="sm"
+                                variant="ghost"
+                                _hover={{
+                                  color: theme.colors[colorMode].primary,
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditMode(true);
+                                  setEditedName(project.name);
+                                }}
+                              />
+                            </Tooltip> */}
+                            <Tooltip label="Delete project">
+                              <IconButton
+                                icon={<FaTrash />}
+                                aria-label="Delete"
+                                size="sm"
+                                variant="ghost"
+                                _hover={{
+                                  color: theme.colors[colorMode].primary,
+                                }}
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  await deleteProject(
+                                    project.uid,
+                                    currentUser!.uid
+                                  );
+
+                                  if (projects.length >= 2) {
+                                    let targetIndex;
+                                    if (index === 0) {
+                                      targetIndex = projects.length - 1;
+                                    } else {
+                                      targetIndex = 0;
+                                    }
+                                    await setActiveProjectForUser(
+                                      projects[targetIndex].name,
+                                      currentUser!.uid
+                                    );
+                                  } else {
+                                    await setActiveProjectForUser(
+                                      "",
+                                      currentUser!.uid
+                                    );
+                                    console.log("reset project");
+                                  }
+
+                                  onClose();
+                                  history.go(0);
+                                }}
+                              />
+                            </Tooltip>
+                          </HStack>
+                        </HStack>
+                      </Box>
+                    ))}
+                    <MenuDivider />
+                    <MenuItem onClick={handleAddNewProject}>
+                      + New project
+                    </MenuItem>
+                  </MenuGroup>
+                </MenuList>
+              </>
+            )}
           </Menu>
           <Button
             w="100%"
@@ -402,9 +449,9 @@ const Workspace = () => {
           <Divider />
           {openTabs &&
             activeTabIndex &&
-            ((openTabs[activeTabIndex].name === "Chat") ||
-            (openTabs[activeTabIndex].name === "Editor" && openTabs[activeTabIndex].openChatSupport))
-           && (
+            (openTabs[activeTabIndex].name === "Chat" ||
+              (openTabs[activeTabIndex].name === "Editor" &&
+                openTabs[activeTabIndex].openChatSupport)) && (
               <VStack w="100%" overflowY="scroll">
                 <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
                   Conversations
@@ -443,24 +490,28 @@ const Workspace = () => {
                       aria-label="Full conversation text"
                       placement="top"
                     >
-                    <Text
-                      fontSize="0.85rem"
-                      fontWeight={500}
-                      overflow="hidden"
-                      textOverflow="ellipsis"
-                      whiteSpace="nowrap"
-                      css={{
-                        maxWidth: "100%",
-                        borderRight: "2px solid transparent",
-                        animation: conversation.uid === currentConversationId && conversation.title !== prevTitle
-                          ? `${typing} ${conversation.title.length / 10}s steps(${conversation.title.length}, end), 
+                      <Text
+                        fontSize="0.85rem"
+                        fontWeight={500}
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                        css={{
+                          maxWidth: "100%",
+                          borderRight: "2px solid transparent",
+                          animation:
+                            conversation.uid === currentConversationId &&
+                            conversation.title !== prevTitle
+                              ? `${typing} ${
+                                  conversation.title.length / 10
+                                }s steps(${conversation.title.length}, end),
                             ${blinkCaret} .75s step-end infinite`
-                          : 'none',
-                        animationFillMode: "forwards",
-                      }}
-                    >
-                      {conversation.title}
-                    </Text>
+                              : "none",
+                          animationFillMode: "forwards",
+                        }}
+                      >
+                        {conversation.title}
+                      </Text>
                     </Tooltip>
                     <Spacer />
                     <Box
@@ -650,65 +701,65 @@ const Workspace = () => {
             </TabList>
             <Spacer />
             {openTabs[activeTabIndex].name === "Editor" && (
-            <>
-              <Tooltip label="Open mini library">
-                <IconButton
-                  aria-label={"library-support"}
-                  icon={<FaBookOpen />}
-                  onClick={() => {
-                    dispatch(openMiniLibrary("Editor"));
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-              <Tooltip label="Open support chat">
-                <IconButton
-                  aria-label={"chat-support"}
-                  icon={<ChatIcon />}
-                  onClick={() => {
-                    dispatch(openChatSupport("Editor"));
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-              <Tooltip label="Open PDF Viewer">
-                <IconButton
-                  aria-label={"pdf-viewer"}
-                  icon={<FaRegFilePdf />}
-                  onClick={() => {
-                    dispatch(openPdfViewer("Editor"));
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-            </>
-          )}
-          {openTabs[activeTabIndex].name === "Chat" && (
-            <>
-              <Tooltip label="Open mini library">
-                <IconButton
-                  aria-label={"mini-library"}
-                  icon={<FaBookOpen />}
-                  onClick={() => {
-                    dispatch(openMiniLibrary("Chat"));
-                  }}
-                />
-              </Tooltip>
-            </>
-          )}
-          {selectedDocuments.includes(openTabs[activeTabIndex]?.name) && (
-            <>
-              <Tooltip label="Open support chat">
-                <IconButton
-                  aria-label={"chat-support"}
-                  icon={<ChatIcon />}
-                  onClick={() => {
-                    dispatch(openChatSupport(openTabs[activeTabIndex].name));
-                  }}
-                />
-              </Tooltip>
-            </>
-          )}
+              <>
+                <Tooltip label="Open mini library">
+                  <IconButton
+                    aria-label={"library-support"}
+                    icon={<FaBookOpen />}
+                    onClick={() => {
+                      dispatch(openMiniLibrary("Editor"));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
+                <Tooltip label="Open support chat">
+                  <IconButton
+                    aria-label={"chat-support"}
+                    icon={<ChatIcon />}
+                    onClick={() => {
+                      dispatch(openChatSupport("Editor"));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
+                <Tooltip label="Open PDF Viewer">
+                  <IconButton
+                    aria-label={"pdf-viewer"}
+                    icon={<FaRegFilePdf />}
+                    onClick={() => {
+                      dispatch(openPdfViewer("Editor"));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
+              </>
+            )}
+            {openTabs[activeTabIndex].name === "Chat" && (
+              <>
+                <Tooltip label="Open mini library">
+                  <IconButton
+                    aria-label={"mini-library"}
+                    icon={<FaBookOpen />}
+                    onClick={() => {
+                      dispatch(openMiniLibrary("Chat"));
+                    }}
+                  />
+                </Tooltip>
+              </>
+            )}
+            {selectedDocuments.includes(openTabs[activeTabIndex]?.name) && (
+              <>
+                <Tooltip label="Open support chat">
+                  <IconButton
+                    aria-label={"chat-support"}
+                    icon={<ChatIcon />}
+                    onClick={() => {
+                      dispatch(openChatSupport(openTabs[activeTabIndex].name));
+                    }}
+                  />
+                </Tooltip>
+              </>
+            )}
           </Flex>
           <TabPanels
             flex="1"

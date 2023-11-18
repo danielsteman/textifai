@@ -8,7 +8,7 @@ basePath: /v1
 schemes:
   - https
 paths:
-  /ask:
+  /rag:
     post:
       summary: Send string that represents a question.
       parameters:
