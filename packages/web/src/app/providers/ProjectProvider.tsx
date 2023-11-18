@@ -15,7 +15,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-interface ExtendedProject extends Project {
+export interface ExtendedProject extends Project {
   uid: string;
 }
 

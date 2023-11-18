@@ -53,7 +53,10 @@ import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import { ProjectContext } from "../../app/providers/ProjectProvider";
+import {
+  ExtendedProject,
+  ProjectContext,
+} from "../../app/providers/ProjectProvider";
 import { ConversationContext } from "../../app/providers/ConversationProvider";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import fetchProjectUid from "../Projects/fetchProjectId";
@@ -259,93 +262,125 @@ const Workspace = () => {
             />
           </Flex>
           <Menu>
-            <MenuButton
-              textAlign="left"
-              mb={2}
-              w="100%"
-              as={Button}
-              size="md"
-              variant="ghost"
-              rightIcon={<ChevronDownIcon />}
-            >
-              {activeProjectName}
-            </MenuButton>
-            <MenuList>
-              <MenuGroup title="All projects">
-                <MenuDivider />
-                {userProjects.map((project, index) => (
-                  <Box
-                    key={project.uid}
-                    onClick={() => handleProjectClick(project)}
-                    cursor="pointer"
-                    _hover={{
-                      bgColor: theme.colors[colorMode].surfaceContainerHighest,
-                    }}
-                  >
-                    <HStack justifyContent="space-between" width="100%" p={2}>
-                      {editMode && activeProjectId === project.uid ? (
-                        <Input
-                          value={editedName}
-                          onChange={(e) => setEditedName(e.target.value)}
-                          onBlur={() => {
-                            handleEditProjectName(project.uid!, editedName);
-                            setEditMode(false);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              handleEditProjectName(project.uid!, editedName);
-                              dispatch(setProjectName(editedName));
-                              setEditMode(false);
-                            }
-                          }}
-                          autoFocus
-                        />
-                      ) : (
-                        <Text isTruncated>{project.name}</Text>
-                      )}
-                      <HStack spacing={0}>
-                        <Tooltip label="Edit project name">
-                          <IconButton
-                            icon={<FaPen />}
-                            aria-label="Edit"
-                            size="sm"
-                            variant="ghost"
-                            _hover={{ color: theme.colors[colorMode].primary }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditMode(true);
-                              setEditedName(project.name);
-                            }}
-                          />
-                        </Tooltip>
-                        <Tooltip label="Delete project">
-                          <IconButton
-                            icon={<FaTrash />}
-                            aria-label="Delete"
-                            size="sm"
-                            variant="ghost"
-                            _hover={{ color: theme.colors[colorMode].primary }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteProject(project.uid, currentUser!.uid);
-                              console.log(userProjects);
-                              userProjects.length >= 2
-                                ? setActiveProjectForUser(
-                                    userProjects[0].name,
-                                    currentUser!.uid
-                                  )
-                                : setActiveProjectForUser("", currentUser!.uid);
-                            }}
-                          />
-                        </Tooltip>
-                      </HStack>
-                    </HStack>
-                  </Box>
-                ))}
-                <MenuDivider />
-                <MenuItem onClick={handleAddNewProject}>+ New project</MenuItem>
-              </MenuGroup>
-            </MenuList>
+            {({ onClose }) => (
+              <>
+                <MenuButton
+                  textAlign="left"
+                  mb={2}
+                  w="100%"
+                  as={Button}
+                  size="md"
+                  variant="ghost"
+                  rightIcon={<ChevronDownIcon />}
+                >
+                  {activeProjectName}
+                </MenuButton>
+                <MenuList>
+                  <MenuGroup title="All projects">
+                    <MenuDivider />
+                    {userProjects.map((project, index) => (
+                      <Box
+                        key={project.uid}
+                        onClick={() => handleProjectClick(project)}
+                        cursor="pointer"
+                        _hover={{
+                          bgColor:
+                            theme.colors[colorMode].surfaceContainerHighest,
+                        }}
+                      >
+                        <HStack
+                          justifyContent="space-between"
+                          width="100%"
+                          p={2}
+                        >
+                          {editMode && activeProjectId === project.uid ? (
+                            <Input
+                              value={editedName}
+                              onChange={(e) => setEditedName(e.target.value)}
+                              onBlur={() => {
+                                handleEditProjectName(project.uid!, editedName);
+                                setEditMode(false);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  handleEditProjectName(
+                                    project.uid!,
+                                    editedName
+                                  );
+                                  dispatch(setProjectName(editedName));
+                                  setEditMode(false);
+                                }
+                              }}
+                              autoFocus
+                            />
+                          ) : (
+                            <Text isTruncated>{project.name}</Text>
+                          )}
+                          <HStack spacing={0}>
+                            <Tooltip label="Edit project name">
+                              <IconButton
+                                icon={<FaPen />}
+                                aria-label="Edit"
+                                size="sm"
+                                variant="ghost"
+                                _hover={{
+                                  color: theme.colors[colorMode].primary,
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditMode(true);
+                                  setEditedName(project.name);
+                                }}
+                              />
+                            </Tooltip>
+                            <Tooltip label="Delete project">
+                              <IconButton
+                                icon={<FaTrash />}
+                                aria-label="Delete"
+                                size="sm"
+                                variant="ghost"
+                                _hover={{
+                                  color: theme.colors[colorMode].primary,
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteProject(project.uid, currentUser!.uid);
+
+                                  if (userProjects.length >= 2) {
+                                    let targetIndex;
+                                    if (index === 0) {
+                                      targetIndex = userProjects.length - 1;
+                                    } else {
+                                      targetIndex = 0;
+                                    }
+                                    setActiveProjectForUser(
+                                      userProjects[targetIndex].name,
+                                      currentUser!.uid
+                                    );
+                                  } else {
+                                    setActiveProjectForUser(
+                                      "",
+                                      currentUser!.uid
+                                    );
+                                    console.log("reset project");
+                                  }
+
+                                  onClose();
+                                }}
+                              />
+                            </Tooltip>
+                          </HStack>
+                        </HStack>
+                      </Box>
+                    ))}
+                    <MenuDivider />
+                    <MenuItem onClick={handleAddNewProject}>
+                      + New project
+                    </MenuItem>
+                  </MenuGroup>
+                </MenuList>
+              </>
+            )}
           </Menu>
           <Button
             w="100%"
