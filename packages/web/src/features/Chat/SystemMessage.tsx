@@ -29,7 +29,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   const { colorMode } = useColorMode();
   const { primary, tertiary, onPrimary, onTertiary } = theme.colors[colorMode];
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const bgColor = variant === "agent" ? tertiary : primary;
   const textColor = variant === "agent" ? onTertiary : onPrimary;
@@ -53,7 +53,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   };
 
   const UnorderedList = ({ ...props }) => (
-    <Box as="ul" pl={4} ml={2} style={{ listStyleType: 'disc' }}>
+    <Box as="ul" pl={4} ml={2} style={{ listStyleType: "disc" }}>
       {props.children}
     </Box>
   );
@@ -69,7 +69,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       {props.children}
     </Box>
   );
-  
+
   const markdownComponentMapping = {
     h1: ({ ...props }) => <Heading size="lg">{props.children}</Heading>,
     h2: ({ ...props }) => <Heading size="md">{props.children}</Heading>,
@@ -80,20 +80,16 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   };
 
   return (
-    <HStack m={2}>
+    <HStack m={2} px={10}>
       {variant === "user" && <Spacer />}
       <Box
         color={textColor}
         bgColor={bgColor}
-        pr={variant === "agent" ? 0 : 6}
-        pl={variant === "agent" ? 6 : 4}
+        px={3}
         py={1}
         rounded={8}
         gap={0}
-        w="fit-content"
         maxW="80%"
-        minH={8}
-        mx={10}
         my={1}
         alignItems="start"
       >
@@ -103,22 +99,21 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
               {message}
             </ReactMarkdown>
           </VStack>
-          {variant === "agent" && (
-            <Box position="relative" alignSelf="flex-start">
-              <Tooltip label="Copy to Working Document" placement="top">
-                <IconButton
-                  aria-label="Options"
-                  icon={<CopyIcon />}
-                  variant="ghost"
-                  size="md"
-                  color={theme.colors[colorMode].onSecondary}
-                  onClick={handleMenuClick}
-                />
-              </Tooltip>
-            </Box>
-          )}
         </HStack>
       </Box>
+      {variant === "agent" && (
+        <Tooltip label="Copy to Working Document" placement="top">
+          <IconButton
+            top={0}
+            aria-label="Options"
+            icon={<CopyIcon />}
+            variant="ghost"
+            size="sm"
+            color={theme.colors[colorMode].secondary}
+            onClick={handleMenuClick}
+          />
+        </Tooltip>
+      )}
     </HStack>
   );
 };
