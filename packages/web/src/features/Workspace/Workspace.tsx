@@ -317,7 +317,7 @@ const Workspace = () => {
                             <Text isTruncated>{project.name}</Text>
                           )}
                           <HStack spacing={0}>
-                            <Tooltip label="Edit project name">
+                            {/* <Tooltip label="Edit project name">
                               <IconButton
                                 icon={<FaPen />}
                                 aria-label="Edit"
@@ -332,7 +332,7 @@ const Workspace = () => {
                                   setEditedName(project.name);
                                 }}
                               />
-                            </Tooltip>
+                            </Tooltip> */}
                             <Tooltip label="Delete project">
                               <IconButton
                                 icon={<FaTrash />}
