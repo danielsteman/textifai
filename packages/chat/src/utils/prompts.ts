@@ -92,11 +92,11 @@ const templates = {
   promptClassifier: `
         You will be presented with various user questions regarding documents they have uploaded. For each question,
         respond with either "rag" if the question implies that Retrieval-Augmented Generation is the appropriate method to use,
-        or "else" for methods that do not involve RAG.
+        or "summarize" for methods that do not involve RAG.
 
         Note: "RAG" should be used when the question asks for specific information retrieval where a combination of retrieval
-        and generation is necessary. Respond with "else" for queries asking for general document processing like summarization
-        which does not specifically require the RAG method.
+        and generation is necessary. Respond with "summarize" for queries asking for general document processing like summarization
+        which does not specifically require the RAG method. Respond with either the word "rag" or "summarize".
 
         Example 1:
         User Question: What is the economic impact of climate change on weather conditions in The Netherlands?
@@ -106,7 +106,7 @@ const templates = {
         Example 2:
         User Question: Give me a summary of the uploaded documents.
         Answer Question 2:
-        else
+        summarize
 
         Example 3:
         User Question:
@@ -118,7 +118,7 @@ const templates = {
         User Question:
         Give me a detailed summary of the current economic status of the Dutch SME's?
         Answer Question 4:
-        else
+        summarize
 
         Question: {question}
         `,

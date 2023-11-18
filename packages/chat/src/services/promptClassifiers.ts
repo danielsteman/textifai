@@ -3,30 +3,27 @@ import { PromptTemplate } from "langchain/prompts";
 import { templates } from "../utils/prompts";
 import { LLMChain } from "langchain/chains";
 
-export const promptClassifier = async (prompt: string) => {
-  const llm = new ChatOpenAI({
-    verbose: false,
-    modelName: "gpt-4-1106-preview",
-    temperature: 1,
-  });
+type PromptVariant = "rag" | "summarize";
 
-  const promptClassifierChain = new LLMChain({
+export const promptClassifier = async (
+  prompt: string
+): Promise<PromptVariant> => {
+  const classificationChain = new LLMChain({
     prompt: new PromptTemplate({
       template: templates.promptClassifier,
       inputVariables: ["question"],
     }),
-    llm: llm,
+    llm: new ChatOpenAI({
+      modelName: "gpt-4-1106-preview",
+      temperature: 1,
+      verbose: false,
+    }),
     verbose: false,
   });
 
-  const promptTemplate = PromptTemplate.fromTemplate(
-    templates.promptClassifier
-  );
-
-  const runnable = promptTemplate.pipe(promptClassifierChain);
-  const stream = await runnable.stream({
+  const result = await classificationChain.call({
     question: prompt,
   });
 
-  return stream;
+  return result.text;
 };

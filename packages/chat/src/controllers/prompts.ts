@@ -10,6 +10,8 @@ import {
   retrievalAugmentedRegenerator,
 } from "../services/augmentedGenerators";
 import { titleClassifier } from "../services/titleClassifier";
+import { promptClassifier } from "../services/promptClassifiers";
+import { summarizer } from "../services/summarizers";
 
 export const postPrompt = async (
   req: Request,
@@ -105,6 +107,23 @@ export const postStreamingRAGPrompt = async (
     stream = await pdfAugmentedGenerator(req.body.promptFromExtract);
   } else {
     console.log("Pass prompt to retrievalAugmentedGenerator");
+
+    const classification = await promptClassifier(prompt);
+    console.log(`Prompt is classified as ${classification}`);
+
+    // switch (classification) {
+    //   case "rag":
+    //     stream = await retrievalAugmentedGenerator(
+    //       prompt,
+    //       req.body.history,
+    //       req.body.files,
+    //       req.body.userId
+    //     );
+    //   case "summarize":
+    //     stream = summarizer(prompt, req.body.history, "");
+    //   default:
+    //     throw new Error("Couldn't classify prompt");
+    // }
 
     stream = await retrievalAugmentedGenerator(
       prompt,

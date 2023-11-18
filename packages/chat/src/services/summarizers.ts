@@ -16,7 +16,7 @@ export const summarizer = async (
   });
 
   const summarizationPromptTemplate = PromptTemplate.fromTemplate(
-    templates.regenerateTemplate
+    templates.summarizationTemplate
   );
 
   const summarizationChain = summarizationPromptTemplate.pipe(summarizationLLM);
