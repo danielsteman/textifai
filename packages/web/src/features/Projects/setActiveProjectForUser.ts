@@ -12,6 +12,15 @@ export const setActiveProjectForUser = async (
   projectName: string,
   userId: string
 ) => {
+  const userRef = doc(db, "users", userId);
+
+  if (!projectName) {
+    console.log("Reset activeProject for user");
+    await updateDoc(userRef, {
+      activeProject: "",
+    });
+  }
+
   const projectsRef = collection(db, "projects");
   const q = query(
     projectsRef,
@@ -22,7 +31,6 @@ export const setActiveProjectForUser = async (
   const querySnapshot = await getDocs(q);
 
   if (!querySnapshot.empty) {
-    const userRef = doc(db, "users", userId);
     await updateDoc(userRef, {
       activeProject: projectName,
     });
