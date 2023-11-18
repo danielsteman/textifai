@@ -54,6 +54,7 @@ import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { ProjectContext } from "../../app/providers/ProjectProvider";
+import { ConversationContext } from "../../app/providers/ConversationProvider";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import fetchProjectUid from "../Projects/fetchProjectId";
 import { setActiveProjectForUser } from "../Projects/updateActiveProject";
@@ -72,14 +73,6 @@ import { AuthContext } from "../../app/providers/AuthProvider";
 import { setProjectId, setProjectName } from "./projectSlice";
 import { Project } from "@shared/interfaces/firebase/Project";
 import { useNavigate } from "react-router-dom";
-import {
-  collection,
-  getDocs,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "../../app/config/firebase";
 import { startConversation, deleteConversation } from "../Chat/ChatFuncs";
 import { setCurrentConversationId } from "../Chat/chatSlice";
 import { deleteProject } from "../Projects/deleteProject";
@@ -108,12 +101,13 @@ const Workspace = () => {
   const { colorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [mailResent, setMailResent] = useState(false);
-  const [conversations, setConversations] = useState<string[]>([]);
   const [editedName, setEditedName] = useState("");
   const [editMode, setEditMode] = useState(false);
+  const [prevTitle, setPrevTitle] = useState('');
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
+  const conversations = useContext(ConversationContext);
 
   const navigate = useNavigate();
 
@@ -131,7 +125,10 @@ const Workspace = () => {
   const activeProjectId = useSelector(
     (state: RootState) => state.activeProject.projectId
   );
-
+  const selectedDocuments = useSelector(
+    (state: RootState) => state.library.selectedDocuments
+  );
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -139,6 +136,15 @@ const Workspace = () => {
   const handleAddNewProject = () => {
     navigate("/features/onboarding");
   };
+
+  useEffect(() => {
+    const activeConversation = conversations.find(conversation => conversation.uid === currentConversationId);
+  
+    if (activeConversation && activeConversation.title !== prevTitle) {
+      setPrevTitle(activeConversation.title);
+    }
+  }, [currentConversationId, conversations]);
+  
 
   useEffect(() => {
     const fetchProjectTitle = async () => {
@@ -184,29 +190,10 @@ const Workspace = () => {
     }
   };
 
-  const fetchMessages = () => {
-    try {
-      const q = query(
-        collection(db, "conversations"),
-        where("userId", "==", currentUser!.uid),
-        where("projectId", "==", activeProjectId)
-      );
-
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const fetchedConversationIds = querySnapshot.docs.map((doc) => doc.id);
-        setConversations(fetchedConversationIds);
-      });
-
-      return unsubscribe;
-    } catch (error) {
-      console.error("Error fetching conversationId: ", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchMessages();
-  }, [activeProjectId, currentUser, dispatch]);
-
+  const sortedConversations = [...conversations].sort((a, b) => {
+    return b.updatedDate.toDate().getTime() - a.updatedDate.toDate().getTime();
+  });
+  
   return (
     <HStack h="100%">
       {!currentUser?.emailVerified && (
@@ -415,19 +402,21 @@ const Workspace = () => {
           <Divider />
           {openTabs &&
             activeTabIndex &&
-            openTabs[activeTabIndex].name === "Chat" && (
+            ((openTabs[activeTabIndex].name === "Chat") ||
+            (openTabs[activeTabIndex].name === "Editor" && openTabs[activeTabIndex].openChatSupport))
+           && (
               <VStack w="100%" overflowY="scroll">
                 <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
                   Conversations
                 </Heading>
 
-                {conversations.map((conversation) => (
+                {sortedConversations.map((conversation) => (
                   <HStack
-                    key={conversation}
+                    key={conversation.uid}
                     w="100%"
                     borderWidth="1px"
                     borderColor={
-                      conversation === currentConversationId
+                      conversation.uid === currentConversationId
                         ? theme.colors[colorMode].primary
                         : theme.colors[colorMode].surfaceContainerHigh
                     }
@@ -446,32 +435,32 @@ const Workspace = () => {
                           : theme.colors[colorMode].onSurfaceContainerHover,
                     }}
                     onClick={async () => {
-                      dispatch(setCurrentConversationId(conversation));
+                      dispatch(setCurrentConversationId(conversation.uid));
                     }}
                   >
                     <Tooltip
-                      label={conversation}
+                      label={conversation.title}
                       aria-label="Full conversation text"
                       placement="top"
                     >
-                      <Text
-                        size="xs"
-                        fontWeight={500}
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        whiteSpace="nowrap"
-                        css={{
-                          maxWidth: "100%",
-                          borderRight: "2px solid transparent",
-                          animation: `${typing} ${
-                            conversation!.length / 10
-                          }s steps(${conversation!.length}, end),
-                                        ${blinkCaret} .75s step-end infinite`,
-                          animationFillMode: "forwards",
-                        }}
-                      >
-                        {conversation}
-                      </Text>
+                    <Text
+                      fontSize="0.85rem"
+                      fontWeight={500}
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                      css={{
+                        maxWidth: "100%",
+                        borderRight: "2px solid transparent",
+                        animation: conversation.uid === currentConversationId && conversation.title !== prevTitle
+                          ? `${typing} ${conversation.title.length / 10}s steps(${conversation.title.length}, end), 
+                            ${blinkCaret} .75s step-end infinite`
+                          : 'none',
+                        animationFillMode: "forwards",
+                      }}
+                    >
+                      {conversation.title}
+                    </Text>
                     </Tooltip>
                     <Spacer />
                     <Box
@@ -483,12 +472,11 @@ const Workspace = () => {
                       <FaTrash
                         onClick={async () => {
                           await deleteConversation(
-                            conversation!,
+                            conversation.uid,
                             currentUser!.uid,
                             activeProjectId!,
                             dispatch
                           );
-                          await fetchMessages();
                         }}
                       />
                     </Box>
@@ -507,14 +495,13 @@ const Workspace = () => {
                       currentUser!.uid,
                       activeProjectId!
                     );
-                    await fetchMessages();
                     dispatch(setCurrentConversationId(newConversationId));
                   }}
                   _hover={{
                     bgColor: theme.colors[colorMode].surfaceContainerHigh,
                   }}
                 >
-                  <Heading size="sm" fontWeight={500}>
+                  <Heading size="sm" fontSize={"0.85rem"}>
                     New chat
                   </Heading>
                   <Spacer />
@@ -663,39 +650,65 @@ const Workspace = () => {
             </TabList>
             <Spacer />
             {openTabs[activeTabIndex].name === "Editor" && (
-              <>
-                <Tooltip label="Open mini library">
-                  <IconButton
-                    aria-label={"library-support"}
-                    icon={<FaBookOpen />}
-                    onClick={() => {
-                      dispatch(openMiniLibrary("Editor"));
-                    }}
-                  />
-                </Tooltip>
-                <Box w={2} />
-                <Tooltip label="Open support chat">
-                  <IconButton
-                    aria-label={"chat-support"}
-                    icon={<ChatIcon />}
-                    onClick={() => {
-                      dispatch(openChatSupport("Editor"));
-                    }}
-                  />
-                </Tooltip>
-                <Box w={2} />
-                <Tooltip label="Open PDF Viewer">
-                  <IconButton
-                    aria-label={"pdf-viewer"}
-                    icon={<FaRegFilePdf />}
-                    onClick={() => {
-                      dispatch(openPdfViewer("Editor"));
-                    }}
-                  />
-                </Tooltip>
-                <Box w={2} />
-              </>
-            )}
+            <>
+              <Tooltip label="Open mini library">
+                <IconButton
+                  aria-label={"library-support"}
+                  icon={<FaBookOpen />}
+                  onClick={() => {
+                    dispatch(openMiniLibrary("Editor"));
+                  }}
+                />
+              </Tooltip>
+              <Box w={2} />
+              <Tooltip label="Open support chat">
+                <IconButton
+                  aria-label={"chat-support"}
+                  icon={<ChatIcon />}
+                  onClick={() => {
+                    dispatch(openChatSupport("Editor"));
+                  }}
+                />
+              </Tooltip>
+              <Box w={2} />
+              <Tooltip label="Open PDF Viewer">
+                <IconButton
+                  aria-label={"pdf-viewer"}
+                  icon={<FaRegFilePdf />}
+                  onClick={() => {
+                    dispatch(openPdfViewer("Editor"));
+                  }}
+                />
+              </Tooltip>
+              <Box w={2} />
+            </>
+          )}
+          {openTabs[activeTabIndex].name === "Chat" && (
+            <>
+              <Tooltip label="Open mini library">
+                <IconButton
+                  aria-label={"mini-library"}
+                  icon={<FaBookOpen />}
+                  onClick={() => {
+                    dispatch(openMiniLibrary("Chat"));
+                  }}
+                />
+              </Tooltip>
+            </>
+          )}
+          {selectedDocuments.includes(openTabs[activeTabIndex]?.name) && (
+            <>
+              <Tooltip label="Open support chat">
+                <IconButton
+                  aria-label={"chat-support"}
+                  icon={<ChatIcon />}
+                  onClick={() => {
+                    dispatch(openChatSupport(openTabs[activeTabIndex].name));
+                  }}
+                />
+              </Tooltip>
+            </>
+          )}
           </Flex>
           <TabPanels
             flex="1"

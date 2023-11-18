@@ -2,10 +2,13 @@ import {
   Box,
   Button,
   Flex,
+  HStack,
   IconButton,
   Input,
   InputGroup,
   InputRightElement,
+  Tooltip,
+  useColorMode,
 } from "@chakra-ui/react";
 import { RepeatIcon } from "@chakra-ui/icons";
 import {
@@ -15,23 +18,21 @@ import {
   useContext,
   ChangeEvent,
   useLayoutEffect,
-  useMemo,
 } from "react";
 import { MdSend } from "react-icons/md";
 import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
 import { AuthContext } from "../../app/providers/AuthProvider";
 import { User } from "firebase/auth";
 import { RootState } from "../../app/store";
 import SystemMessage from "./SystemMessage";
 import MessageLoadingIndicator from "./MessageLoadingIndicator";
-import ExampleQuestions from "./ExampleQuestions";
 import {
   getConversation,
   addMessageToCollection,
   updateConversationDate,
   fetchConversationId,
   fetchMessagesForConversation,
+  setConversationTitle,
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
 import { clearMessages, pushMessage, setMessages } from "./messageStackSlice";
@@ -43,12 +44,14 @@ import {
 } from "./answerStackSlice";
 import { setCurrentConversationId, setLoading } from "./chatSlice";
 import { config } from "../../app/config/config";
+import theme from "../../app/themes/theme";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const lastProcessedTextRef = useRef<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [randomQuestions, setRandomQuestions] = useState<string[]>([]);
 
   const [answerStreamComplete, setAnswerStreamComplete] =
     useState<boolean>(true);
@@ -56,6 +59,7 @@ const Chat = () => {
   const [answerStream, setAnswerStream] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
+  const { colorMode } = useColorMode();
 
   const messageStack = useSelector((state: RootState) => state.messages);
   const answerStack = useSelector((state: RootState) => state.answers);
@@ -69,19 +73,14 @@ const Chat = () => {
     (state: RootState) => state.activeProject.projectId
   );
   const loading = useSelector((state: RootState) => state.chat.loading);
-  const extractedText = useSelector(
-    (state: RootState) => state.chat.extractedText
-  );
 
   const dispatch = useDispatch();
 
-  const memoizedExampleQuestions = useMemo(() => {
-    return <ExampleQuestions />;
-  }, [currentUser, activeProjectId, currentConversationId]);
-
   useEffect(() => {
-    console.log(answerStack);
-  }, [answerStack]);
+    if (messageStack.length === 1) {
+      setConversationTitle(messageStack[0], currentConversationId!);
+    }
+  }, [messageStack]);
 
   useEffect(() => {
     const initializeMessages = async () => {
@@ -193,7 +192,11 @@ const Chat = () => {
     return accumulatedAnswerStream;
   };
 
-  const handleChatAction = async (regenerate = false, pdfText?: string) => {
+  const handleChatAction = async (
+    regenerate = false,
+    pdfText?: string,
+    exampleQuestion?: string
+  ) => {
     try {
       dispatch(setLoading(true));
 
@@ -223,6 +226,17 @@ const Chat = () => {
         console.log(`Regenerated answer: ${answer}`);
 
         dispatch(replaceLastAnswer(answer));
+      } else if (exampleQuestion) {
+        dispatch(pushMessage(exampleQuestion));
+        const requestPayload = {
+          prompt: exampleQuestion,
+          history: "",
+          files: selectedDocuments,
+          userId: currentUser!.uid,
+        };
+
+        const answer = await handleStreamingAnswer(requestPayload);
+        dispatch(pushAnswer(answer));
       } else {
         console.log("Handling Regular Chain...");
 
@@ -272,6 +286,22 @@ const Chat = () => {
     setMessage(event.target.value);
   }
 
+  const pickRandomQuestions = (
+    questions: string[],
+    count: number | undefined
+  ) => {
+    const shuffled = [...questions].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+
+  const allSampleQuestions = useSelector(
+    (state: RootState) => state.sampleQuestions
+  );
+
+  useEffect(() => {
+    setRandomQuestions(pickRandomQuestions(allSampleQuestions, 4));
+  }, []);
+
   return (
     <Flex flexDir="column" flex={1} p={2} overflowY="hidden" h="100%" gap={4}>
       <Box mb={4} overflowY="scroll" overflowX="hidden" h="100%">
@@ -315,7 +345,46 @@ const Chat = () => {
         ))}
         <Box ref={messagesEndRef} />
       </Box>
-      {messageStack.length === 0 && memoizedExampleQuestions}
+      {messageStack.length === 0 && (
+        <Flex
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          pb={2}
+          gap={2}
+        >
+          <HStack gap={2}>
+            {randomQuestions.slice(0, 2).map((question, index) => (
+              <Tooltip label={question} placement="top" hasArrow key={index}>
+                <Button
+                  size="md"
+                  width="30vw"
+                  onClick={() => handleChatAction(false, undefined, question)}
+                  bgColor={theme.colors[colorMode].secondaryContainer}
+                  textColor={theme.colors[colorMode].onSecondaryContainer}
+                >
+                  {question}
+                </Button>
+              </Tooltip>
+            ))}
+          </HStack>
+          <HStack gap={2}>
+            {randomQuestions.slice(2, 4).map((question, index) => (
+              <Tooltip label={question} placement="top" hasArrow key={index}>
+                <Button
+                  size="md"
+                  width="30vw"
+                  onClick={() => handleChatAction(false, undefined, question)}
+                  bgColor={theme.colors[colorMode].secondaryContainer}
+                  textColor={theme.colors[colorMode].onSecondaryContainer}
+                >
+                  {question}
+                </Button>
+              </Tooltip>
+            ))}
+          </HStack>
+        </Flex>
+      )}
       <form onSubmit={handleSubmit}>
         <InputGroup>
           <Input

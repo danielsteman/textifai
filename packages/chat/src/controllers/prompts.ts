@@ -9,6 +9,7 @@ import {
   retrievalAugmentedGenerator,
   retrievalAugmentedRegenerator,
 } from "../services/augmentedGenerators";
+import { titleClassifier } from "../services/titleClassifier";
 
 export const postPrompt = async (
   req: Request,
@@ -118,4 +119,20 @@ export const postStreamingRAGPrompt = async (
   }
 
   res.status(200).end();
+};
+
+interface titleClassifierPromptRequest {
+  prompt: string;
+}
+
+export const postTitleClassfierPrompt = async (
+  req: Request<{}, {}, titleClassifierPromptRequest>,
+  res: Response,
+  next: NextFunction
+) => {
+  const prompt = req.body.prompt;
+
+  const title = await titleClassifier(prompt);
+
+  res.status(200).send(title);
 };

@@ -6,6 +6,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./themes/theme";
 import { router } from "./router";
 import { ProjectProvider } from "./providers/ProjectProvider";
+import { ConversationProvider } from "./providers/ConversationProvider";
 import { Provider } from "react-redux";
 import { store } from "./store";
 
@@ -20,7 +21,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <ChakraProvider theme={theme}>
       <AuthProvider>
         <ProjectProvider>
-          <RouterProvider router={router} />
+          <ConversationProvider>
+            <RouterProvider router={router} />
+          </ConversationProvider>
         </ProjectProvider>
       </AuthProvider>
     </ChakraProvider>

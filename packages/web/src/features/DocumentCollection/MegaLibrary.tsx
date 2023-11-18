@@ -86,6 +86,7 @@ import {
 import { setAnswers } from "../Chat/answerStackSlice";
 import { setMessages } from "../Chat/messageStackSlice";
 import { setQuestions } from "../Chat/questionSlice";
+import { shortenString } from "../../common/utils/shortenString";
 
 const MegaLibrary = () => {
   const { colorMode } = useColorMode();
@@ -132,7 +133,7 @@ const MegaLibrary = () => {
     const fileRef = ref(storage, storageLocation);
 
     const tab: ITab = {
-      name: uploadName,
+      name: shortenString(uploadName, 10),
       panel: <PdfViewer document={fileRef} />,
       openChatSupport: false,
       openMiniLibrary: false,
@@ -146,7 +147,7 @@ const MegaLibrary = () => {
     selectedDocuments.map(async (fullPath) => {
       const documentRef = ref(
         storage,
-        `users/${currentUser?.uid}/uploads/${fullPath}`
+        `projects/${activeProjectId}/uploads/${fullPath}`
       );
 
       // Construct your Firestore query
@@ -690,7 +691,7 @@ const MegaLibrary = () => {
           <Modal
             isOpen={isDeleteFileOpen}
             onClose={onDeleteFileClose}
-            size="xs"
+            size="lg"
           >
             <ModalOverlay />
             <ModalContent>
@@ -699,7 +700,7 @@ const MegaLibrary = () => {
               </ModalHeader>
               <ModalBody>
                 <VStack>
-                  <Text>
+                  <Text fontWeight="bold">
                     Are you sure that you want to delete the selected document?
                   </Text>
                   {selectedDocuments.map((doc) => (
@@ -854,7 +855,7 @@ const MegaLibrary = () => {
                             as={FaStar}
                             color={
                               doc.favoritedBy
-                                ? theme.colors[colorMode].primary
+                                ? theme.colors[colorMode].secondaryContainer
                                 : "none"
                             }
                             onClick={() =>
