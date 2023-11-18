@@ -109,8 +109,8 @@ const Workspace = () => {
   const [prevTitle, setPrevTitle] = useState("");
 
   const currentUser = useContext(AuthContext);
-  const userProjects = useContext(ProjectContext);
   const conversations = useContext(ConversationContext);
+  const projects = useContext(ProjectContext);
 
   const navigate = useNavigate();
 
@@ -278,7 +278,7 @@ const Workspace = () => {
                 <MenuList>
                   <MenuGroup title="All projects">
                     <MenuDivider />
-                    {userProjects.map((project, index) => (
+                    {projects.map((project, index) => (
                       <Box
                         key={project.uid}
                         onClick={() => handleProjectClick(project)}
@@ -342,23 +342,26 @@ const Workspace = () => {
                                 _hover={{
                                   color: theme.colors[colorMode].primary,
                                 }}
-                                onClick={(e) => {
+                                onClick={async (e) => {
                                   e.stopPropagation();
-                                  deleteProject(project.uid, currentUser!.uid);
+                                  await deleteProject(
+                                    project.uid,
+                                    currentUser!.uid
+                                  );
 
-                                  if (userProjects.length >= 2) {
+                                  if (projects.length >= 2) {
                                     let targetIndex;
                                     if (index === 0) {
-                                      targetIndex = userProjects.length - 1;
+                                      targetIndex = projects.length - 1;
                                     } else {
                                       targetIndex = 0;
                                     }
-                                    setActiveProjectForUser(
-                                      userProjects[targetIndex].name,
+                                    await setActiveProjectForUser(
+                                      projects[targetIndex].name,
                                       currentUser!.uid
                                     );
                                   } else {
-                                    setActiveProjectForUser(
+                                    await setActiveProjectForUser(
                                       "",
                                       currentUser!.uid
                                     );
@@ -366,6 +369,7 @@ const Workspace = () => {
                                   }
 
                                   onClose();
+                                  history.go(0);
                                 }}
                               />
                             </Tooltip>
