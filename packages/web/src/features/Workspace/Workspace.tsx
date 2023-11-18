@@ -57,7 +57,7 @@ import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { ConversationContext } from "../../app/providers/ConversationProvider";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import fetchProjectUid from "../Projects/fetchProjectId";
-import { setActiveProjectForUser } from "../Projects/updateActiveProject";
+import { setActiveProjectForUser } from "../Projects/setActiveProjectForUser";
 import { resendVerificationEmail } from "../Authentication/resendVerificationMail";
 import {
   activateTab,
@@ -103,7 +103,7 @@ const Workspace = () => {
   const [mailResent, setMailResent] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editMode, setEditMode] = useState(false);
-  const [prevTitle, setPrevTitle] = useState('');
+  const [prevTitle, setPrevTitle] = useState("");
 
   const currentUser = useContext(AuthContext);
   const userProjects = useContext(ProjectContext);
@@ -128,7 +128,7 @@ const Workspace = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-  
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -138,13 +138,14 @@ const Workspace = () => {
   };
 
   useEffect(() => {
-    const activeConversation = conversations.find(conversation => conversation.uid === currentConversationId);
-  
+    const activeConversation = conversations.find(
+      (conversation) => conversation.uid === currentConversationId
+    );
+
     if (activeConversation && activeConversation.title !== prevTitle) {
       setPrevTitle(activeConversation.title);
     }
   }, [currentConversationId, conversations]);
-  
 
   useEffect(() => {
     const fetchProjectTitle = async () => {
@@ -193,7 +194,7 @@ const Workspace = () => {
   const sortedConversations = [...conversations].sort((a, b) => {
     return b.updatedDate.toDate().getTime() - a.updatedDate.toDate().getTime();
   });
-  
+
   return (
     <HStack h="100%">
       {!currentUser?.emailVerified && (
@@ -272,7 +273,7 @@ const Workspace = () => {
             <MenuList>
               <MenuGroup title="All projects">
                 <MenuDivider />
-                {userProjects.map((project) => (
+                {userProjects.map((project, index) => (
                   <Box
                     key={project.uid}
                     onClick={() => handleProjectClick(project)}
@@ -326,7 +327,14 @@ const Workspace = () => {
                             _hover={{ color: theme.colors[colorMode].primary }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              deleteProject(activeProjectId!, currentUser!.uid);
+                              deleteProject(project.uid, currentUser!.uid);
+                              console.log(userProjects);
+                              userProjects.length >= 2
+                                ? setActiveProjectForUser(
+                                    userProjects[0].name,
+                                    currentUser!.uid
+                                  )
+                                : setActiveProjectForUser("", currentUser!.uid);
                             }}
                           />
                         </Tooltip>
@@ -402,9 +410,9 @@ const Workspace = () => {
           <Divider />
           {openTabs &&
             activeTabIndex &&
-            ((openTabs[activeTabIndex].name === "Chat") ||
-            (openTabs[activeTabIndex].name === "Editor" && openTabs[activeTabIndex].openChatSupport))
-           && (
+            (openTabs[activeTabIndex].name === "Chat" ||
+              (openTabs[activeTabIndex].name === "Editor" &&
+                openTabs[activeTabIndex].openChatSupport)) && (
               <VStack w="100%" overflowY="scroll">
                 <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
                   Conversations
@@ -443,24 +451,28 @@ const Workspace = () => {
                       aria-label="Full conversation text"
                       placement="top"
                     >
-                    <Text
-                      fontSize="0.85rem"
-                      fontWeight={500}
-                      overflow="hidden"
-                      textOverflow="ellipsis"
-                      whiteSpace="nowrap"
-                      css={{
-                        maxWidth: "100%",
-                        borderRight: "2px solid transparent",
-                        animation: conversation.uid === currentConversationId && conversation.title !== prevTitle
-                          ? `${typing} ${conversation.title.length / 10}s steps(${conversation.title.length}, end), 
+                      <Text
+                        fontSize="0.85rem"
+                        fontWeight={500}
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                        css={{
+                          maxWidth: "100%",
+                          borderRight: "2px solid transparent",
+                          animation:
+                            conversation.uid === currentConversationId &&
+                            conversation.title !== prevTitle
+                              ? `${typing} ${
+                                  conversation.title.length / 10
+                                }s steps(${conversation.title.length}, end),
                             ${blinkCaret} .75s step-end infinite`
-                          : 'none',
-                        animationFillMode: "forwards",
-                      }}
-                    >
-                      {conversation.title}
-                    </Text>
+                              : "none",
+                          animationFillMode: "forwards",
+                        }}
+                      >
+                        {conversation.title}
+                      </Text>
                     </Tooltip>
                     <Spacer />
                     <Box
@@ -650,65 +662,65 @@ const Workspace = () => {
             </TabList>
             <Spacer />
             {openTabs[activeTabIndex].name === "Editor" && (
-            <>
-              <Tooltip label="Open mini library">
-                <IconButton
-                  aria-label={"library-support"}
-                  icon={<FaBookOpen />}
-                  onClick={() => {
-                    dispatch(openMiniLibrary("Editor"));
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-              <Tooltip label="Open support chat">
-                <IconButton
-                  aria-label={"chat-support"}
-                  icon={<ChatIcon />}
-                  onClick={() => {
-                    dispatch(openChatSupport("Editor"));
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-              <Tooltip label="Open PDF Viewer">
-                <IconButton
-                  aria-label={"pdf-viewer"}
-                  icon={<FaRegFilePdf />}
-                  onClick={() => {
-                    dispatch(openPdfViewer("Editor"));
-                  }}
-                />
-              </Tooltip>
-              <Box w={2} />
-            </>
-          )}
-          {openTabs[activeTabIndex].name === "Chat" && (
-            <>
-              <Tooltip label="Open mini library">
-                <IconButton
-                  aria-label={"mini-library"}
-                  icon={<FaBookOpen />}
-                  onClick={() => {
-                    dispatch(openMiniLibrary("Chat"));
-                  }}
-                />
-              </Tooltip>
-            </>
-          )}
-          {selectedDocuments.includes(openTabs[activeTabIndex]?.name) && (
-            <>
-              <Tooltip label="Open support chat">
-                <IconButton
-                  aria-label={"chat-support"}
-                  icon={<ChatIcon />}
-                  onClick={() => {
-                    dispatch(openChatSupport(openTabs[activeTabIndex].name));
-                  }}
-                />
-              </Tooltip>
-            </>
-          )}
+              <>
+                <Tooltip label="Open mini library">
+                  <IconButton
+                    aria-label={"library-support"}
+                    icon={<FaBookOpen />}
+                    onClick={() => {
+                      dispatch(openMiniLibrary("Editor"));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
+                <Tooltip label="Open support chat">
+                  <IconButton
+                    aria-label={"chat-support"}
+                    icon={<ChatIcon />}
+                    onClick={() => {
+                      dispatch(openChatSupport("Editor"));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
+                <Tooltip label="Open PDF Viewer">
+                  <IconButton
+                    aria-label={"pdf-viewer"}
+                    icon={<FaRegFilePdf />}
+                    onClick={() => {
+                      dispatch(openPdfViewer("Editor"));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
+              </>
+            )}
+            {openTabs[activeTabIndex].name === "Chat" && (
+              <>
+                <Tooltip label="Open mini library">
+                  <IconButton
+                    aria-label={"mini-library"}
+                    icon={<FaBookOpen />}
+                    onClick={() => {
+                      dispatch(openMiniLibrary("Chat"));
+                    }}
+                  />
+                </Tooltip>
+              </>
+            )}
+            {selectedDocuments.includes(openTabs[activeTabIndex]?.name) && (
+              <>
+                <Tooltip label="Open support chat">
+                  <IconButton
+                    aria-label={"chat-support"}
+                    icon={<ChatIcon />}
+                    onClick={() => {
+                      dispatch(openChatSupport(openTabs[activeTabIndex].name));
+                    }}
+                  />
+                </Tooltip>
+              </>
+            )}
           </Flex>
           <TabPanels
             flex="1"

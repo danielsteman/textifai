@@ -1,6 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Project } from "@shared/interfaces/firebase/Project";
-import { QueryDocumentSnapshot, collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  QueryDocumentSnapshot,
+  collection,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../config/firebase";
 import { AuthContext } from "./AuthProvider";
 import LoadingScreen from "../../common/components/LoadingScreen";
