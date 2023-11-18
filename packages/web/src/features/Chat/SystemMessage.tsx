@@ -16,9 +16,14 @@ import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { CopyIcon } from "@chakra-ui/icons";
+import { CopyIcon, SearchIcon } from "@chakra-ui/icons";
 import EditorPanel from "../Workspace/panels/EditorPanel";
-import { addTab } from "../Workspace/tabsSlice";
+import { addTab, openTab } from "../Workspace/tabsSlice";
+import { db, storage } from "../../app/config/firebase";
+import { ITab } from "../Workspace/Workspace";
+import { ref } from "firebase/storage";
+import { shortenString } from "../../common/utils/shortenString";
+import PdfViewer from "../PdfViewer/PdfViewer";
 
 interface SystemMessageProps {
   message: string;
@@ -40,7 +45,7 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
     (state: RootState) => state.activeProject.projectId
   );
 
-  const handleMenuClick = () => {
+  const handleCopyClick = () => {
     appendToDocument(currentUser!.uid, activeProjectId!, message);
     const tab = {
       name: "Editor",
@@ -51,6 +56,22 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
     };
     dispatch(addTab(tab));
   };
+
+  const handleAnswer = (uploadNames: string[]) => {
+    uploadNames.forEach(uploadName => {
+      const storageLocation = `projects/Rw3IBKnRSacdLuTbmxce/uploads/${uploadName}`;
+      const fileRef = ref(storage, storageLocation);
+  
+      const tab: ITab = {
+        name: shortenString(uploadName, 10),
+        panel: <PdfViewer document={fileRef} />,
+        openChatSupport: false,
+        openMiniLibrary: false,
+        openPdfViewer: false,
+      };
+      dispatch(openTab(tab));
+    });
+  };  
 
   const UnorderedList = ({ ...props }) => (
     <Box as="ul" pl={4} ml={2} style={{ listStyleType: "disc" }}>
@@ -102,17 +123,28 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
         </HStack>
       </Box>
       {variant === "agent" && (
-        <Tooltip label="Copy to Working Document" placement="top">
-          <IconButton
-            top={0}
-            aria-label="Options"
-            icon={<CopyIcon />}
-            variant="ghost"
-            size="sm"
-            color={theme.colors[colorMode].secondary}
-            onClick={handleMenuClick}
-          />
-        </Tooltip>
+        <VStack>
+          <Tooltip label="Copy to Working Document" placement="top">
+            <IconButton
+              aria-label="Copy to Document"
+              icon={<CopyIcon />}
+              variant="ghost"
+              size="sm"
+              color={theme.colors[colorMode].secondary}
+              onClick={handleCopyClick}
+            />
+          </Tooltip>
+          <Tooltip label="Show answer in Document" placement="top">
+            <IconButton
+              aria-label="Search in Document"
+              icon={<SearchIcon />}
+              variant="ghost"
+              size="sm"
+              color={theme.colors[colorMode].secondary}
+              onClick={() => handleAnswer(["230911_BIC_Investor_Update_Press_Release_2bcbdaff3c.pdf"])}
+            />
+          </Tooltip>
+        </VStack>
       )}
     </HStack>
   );
