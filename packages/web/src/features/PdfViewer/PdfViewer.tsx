@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Flex, Input } from "@chakra-ui/react";
-import { Document, Page } from "react-pdf";
+import { Document, Page, pdfjs } from "react-pdf";
 import { getDownloadURL, StorageReference } from "firebase/storage";
 import { useDispatch } from "react-redux";
 import { setSelectedText } from "./pdfSlice";
@@ -8,6 +8,10 @@ import { openChatSupport } from "../Workspace/tabsSlice";
 
 interface Props {
   document: StorageReference;
+}
+
+function highlightPattern(text: string, pattern: string) {
+  return text.replace(pattern, (value) => `<mark>${value}</mark>`);
 }
 
 const PdfViewer: React.FC<Props> = ({ document }) => {
@@ -24,6 +28,45 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pdfContainerRef = useRef<HTMLDivElement | null>(null);
+
+  const searchString = `\(7\.0% net sales growth\) m arket`; 
+  
+  const textRenderer = useCallback(
+    (textItem: any) => highlightPattern(textItem.str, searchString),
+    [searchString]
+  );
+
+  useEffect(() => {
+    const fetchTextCoordinates = async () => {
+      if (!pdfURL) {
+        console.log("PDF URL not set");
+        return;
+      }
+  
+      console.log("PDF URL:", pdfURL);
+  
+      const loadingTask = pdfjs.getDocument(pdfURL);
+      const pdf = await loadingTask.promise;
+    
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        //console.log("Processing page:", pageNum);
+  
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        console.log("Text found: ",textContent)
+  
+        const pageText = textContent.items.map(item => 'str' in item ? item.str : '').join(" ").replace(/\s+/g, " ");
+  
+        if (pageText.includes(searchString.replace(/\s+/g, " "))) {
+          console.log(`Found text on page ${pageNum}`);
+
+        }
+      }
+    };
+  
+    fetchTextCoordinates();
+  }, [pdfURL, searchString]);
+  
 
   useEffect(() => {
     if (!document) return;
@@ -266,7 +309,11 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
                   borderBottom="1px solid black"
                   marginBottom="1rem"
                 >
-                  <Page pageNumber={index + 1} scale={scale} />
+                  <Page 
+                    pageNumber={index + 1} 
+                    scale={scale} 
+                    customTextRenderer={textRenderer}  
+                  />
                 </Box>
               ))}
             </Document>
