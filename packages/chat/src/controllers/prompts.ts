@@ -5,6 +5,9 @@ import {
   retrievalAugmentedRegenerator,
 } from "../services/augmentedGenerators";
 import { titleClassifier } from "../services/titleClassifier";
+import { promptClassifier } from "../services/promptClassifiers";
+import { summarizer } from "../services/summarizers";
+import { openAiLLM } from "../services/llms";
 
 interface StreamingRAGPromptRequest {
   prompt: string;
@@ -36,6 +39,29 @@ export const postStreamingRAGPrompt = async (
     stream = await pdfAugmentedGenerator(req.body.promptFromExtract);
   } else {
     console.log("Pass prompt to retrievalAugmentedGenerator");
+
+    const classification = await promptClassifier(prompt);
+    console.log(`Prompt is classified as ${classification}`);
+
+    switch (classification) {
+      case "rag":
+        stream = await retrievalAugmentedGenerator(
+          prompt,
+          req.body.history,
+          req.body.files,
+          req.body.userId
+        );
+        break;
+      case "summarize":
+        stream = summarizer(prompt, req.body.history, "");
+        break;
+      case "vanilla":
+        stream = openAiLLM(prompt);
+        break;
+      default:
+        console.warn("Couldn't classify prompt");
+        break;
+    }
 
     stream = await retrievalAugmentedGenerator(
       prompt,
