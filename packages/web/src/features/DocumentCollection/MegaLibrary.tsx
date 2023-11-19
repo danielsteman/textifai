@@ -647,30 +647,32 @@ const MegaLibrary = () => {
               </ModalBody>
             </ModalContent>
           </Modal>
-          <Button
-            size="md"
-            aria-label={"ask tai"}
-            leftIcon={<ChatIcon />}
-            borderRadius={100}
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            textColor={theme.colors[colorMode].onSecondaryContainer}
-            onClick={() => {
-              const chatTab: ITab = {
-                name: "Chat",
-                panel: <ChatPanel />,
-                openChatSupport: false,
-                openMiniLibrary: false,
-                openPdfViewer: false,
-              };
+          <Tooltip label="Chat with AI on selected documents">
+            <Button
+              size="md"
+              aria-label={"ask tai"}
+              leftIcon={<ChatIcon />}
+              borderRadius={100}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
+              onClick={() => {
+                const chatTab: ITab = {
+                  name: "Chat",
+                  panel: <ChatPanel />,
+                  openChatSupport: false,
+                  openMiniLibrary: false,
+                  openPdfViewer: false,
+                };
 
-              const existingTab = openTabs.find((t) => t.name === chatTab.name);
-              if (!existingTab) {
-                dispatch(openTab(chatTab));
-              }
-            }}
-          >
-            Ask TAI
-          </Button>
+                const existingTab = openTabs.find((t) => t.name === chatTab.name);
+                if (!existingTab) {
+                  dispatch(openTab(chatTab));
+                }
+              }}
+            >
+              Ask TAI
+            </Button>
+          </Tooltip>
           <Button
             size="md"
             borderRadius={100}
@@ -679,7 +681,7 @@ const MegaLibrary = () => {
           >
             View selected documents
           </Button>
-          <Tooltip label="Select documents in the table below">
+          <Tooltip label="Select documents to delete">
             <IconButton
               size="md"
               aria-label={"delete"}
