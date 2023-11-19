@@ -1,10 +1,10 @@
-# Enables Firebase services for the new project created above.
 resource "google_firebase_project" "default" {
-  provider = google-beta
-  project  = google_project.default.project_id
+  for_each = var.environment_id
 
-  # Waits for the required APIs to be enabled.
+  provider = google-beta
+  project  = google_project.default[each.key].project_id
+
   depends_on = [
-    google_project_service.default
+    google_project_service.default[each.key]
   ]
 }
