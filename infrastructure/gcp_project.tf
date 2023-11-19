@@ -17,7 +17,7 @@ resource "google_project" "default" {
 }
 
 # Enables required APIs.
-resource "google_project_service" "default" {
+resource "google_project_service" "prod" {
   provider = google-beta
   project  = google_project.default["prod"].project_id
   for_each = toset([
@@ -37,7 +37,7 @@ resource "google_project_service" "default" {
 }
 
 # Enables required APIs.
-resource "google_project_service" "default" {
+resource "google_project_service" "dev" {
   provider = google-beta
   project  = google_project.default["dev"].project_id
   for_each = toset([

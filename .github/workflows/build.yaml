@@ -54,7 +54,7 @@ jobs:
           password: ${{ secrets.GAR_SA_KEY }}
 
       - id: docker-push-web-tagged
-        name: Tag textifai/web image and push to GAR
+        name: Tag textifai/web image
         uses: docker/build-push-action@v5
         with:
           file: packages/web/Dockerfile
@@ -88,7 +88,7 @@ jobs:
           password: ${{ secrets.GAR_SA_KEY }}
 
       - id: docker-push-documents-tagged
-        name: Tag textifai/documents image and push to GAR
+        name: Tag textifai/documents image
         uses: docker/build-push-action@v5
         with:
           file: packages/documents/Dockerfile
@@ -120,7 +120,7 @@ jobs:
           password: ${{ secrets.GAR_SA_KEY }}
 
       - id: docker-push-chat-tagged
-        name: Tag textifai/chat image and push to GAR
+        name: Tag textifai/chat image
         uses: docker/build-push-action@v5
         with:
           file: packages/chat/Dockerfile
