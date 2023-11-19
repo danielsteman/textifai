@@ -3,7 +3,7 @@ import { PromptTemplate } from "langchain/prompts";
 import { templates } from "../utils/prompts";
 import { LLMChain } from "langchain/chains";
 
-type PromptVariant = "rag" | "summarize";
+type PromptVariant = "rag" | "summarize" | "vanilla";
 
 export const promptClassifier = async (
   prompt: string

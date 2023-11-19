@@ -92,11 +92,12 @@ const templates = {
   promptClassifier: `
         You will be presented with various user questions regarding documents they have uploaded. For each question,
         respond with either "rag" if the question implies that Retrieval-Augmented Generation is the appropriate method to use,
-        or "summarize" for methods that do not involve RAG.
+        "summarize" questions regarding summarization of (parts of) documents or "vanilla" for methods that do not involve RAG or summarization.
 
-        Note: "RAG" should be used when the question asks for specific information retrieval where a combination of retrieval
-        and generation is necessary. Respond with "summarize" for queries asking for general document processing like summarization
-        which does not specifically require the RAG method. Respond with either the word "rag" or "summarize".
+        Note: "rag" should be used when the question asks for specific information retrieval where a combination of retrieval
+        and generation is necessary. Respond with "summarize" for queries asking summarization which does not specifically require the RAG method.
+        If the question is neither regarding "rag" or "summarize", respond with "vanilla".
+        This always applies: respond with either the word "rag", "summarize" or "vanilla.
 
         Example 1:
         User Question: What is the economic impact of climate change on weather conditions in The Netherlands?
@@ -119,6 +120,18 @@ const templates = {
         Give me a detailed summary of the current economic status of the Dutch SME's?
         Answer Question 4:
         summarize
+
+        Example 5:
+        User Question:
+        How are you today?
+        Answer Question 5:
+        vanilla
+
+        Example 6:
+        User Question:
+        What is one plus one?
+        Answer Question 5:
+        vanilla
 
         Question: {question}
         `,
