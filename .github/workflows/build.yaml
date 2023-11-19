@@ -36,7 +36,7 @@ jobs:
       - name: Test all packages
         run: yarn workspaces run test
 
-  build:
+  build-web:
     runs-on: ubuntu-latest
     needs: test
 
@@ -70,6 +70,23 @@ jobs:
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
 
+  build-documents:
+    runs-on: ubuntu-latest
+    needs: test
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Login to GAR
+        id: auth
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west4-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_SA_KEY }}
+
       - id: docker-push-documents-tagged
         name: Tag textifai/documents image and push to GAR
         uses: docker/build-push-action@v5
@@ -84,6 +101,23 @@ jobs:
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
+
+  build-chat:
+    runs-on: ubuntu-latest
+    needs: test
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Login to GAR
+        id: auth
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west4-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_SA_KEY }}
 
       - id: docker-push-chat-tagged
         name: Tag textifai/chat image and push to GAR
@@ -103,7 +137,10 @@ jobs:
   terraform:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build-web
+      - build-documents
+      - build-chat
     permissions:
       contents: read
       pull-requests: write
