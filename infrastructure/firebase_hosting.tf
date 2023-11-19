@@ -1,8 +1,8 @@
 resource "google_firebase_hosting_site" "default" {
   provider = google-beta
-  project  = google_project.default.project_id
-  site_id = "${google_project.default.project_id}-site"
-  app_id = google_firebase_web_app.default.app_id
+  project  = google_project.default["prod"].project_id
+  site_id  = "${google_project.default["prod"].project_id}-site"
+  app_id   = google_firebase_web_app.default.app_id
 }
 
 resource "google_firebase_hosting_version" "default" {
@@ -13,7 +13,7 @@ resource "google_firebase_hosting_version" "default" {
       glob = "/api/documents/**"
       run {
         service_id = google_cloud_run_v2_service.service["documents"].name
-        region = google_cloud_run_v2_service.service["documents"].location
+        region     = google_cloud_run_v2_service.service["documents"].location
       }
     }
 
@@ -21,7 +21,7 @@ resource "google_firebase_hosting_version" "default" {
       glob = "/api/chat/**"
       run {
         service_id = google_cloud_run_v2_service.service["chat"].name
-        region = google_cloud_run_v2_service.service["chat"].location
+        region     = google_cloud_run_v2_service.service["chat"].location
       }
     }
 
@@ -29,7 +29,7 @@ resource "google_firebase_hosting_version" "default" {
       glob = "/**"
       run {
         service_id = google_cloud_run_v2_service.service["web"].name
-        region = google_cloud_run_v2_service.service["web"].location
+        region     = google_cloud_run_v2_service.service["web"].location
       }
     }
   }
