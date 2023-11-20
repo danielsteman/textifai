@@ -300,8 +300,11 @@ const Chat = () => {
   );
 
   useEffect(() => {
+    if (selectedDocuments.length === 0) {
+      return;
+    }
     setRandomQuestions(pickRandomQuestions(allSampleQuestions, 4));
-  }, []);
+  }, [selectedDocuments]);
 
   return (
     <Flex flexDir="column" flex={1} p={2} overflowY="hidden" h="100%" gap={4}>

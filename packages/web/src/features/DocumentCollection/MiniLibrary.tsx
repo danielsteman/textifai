@@ -33,6 +33,8 @@ const MiniLibrary = () => {
     (state: RootState) => state.library.selectedDocuments
   );
 
+  console.log(`Selected documents: ${selectedDocuments}`);
+
   const dispatch = useDispatch();
 
   const activeProjectId = useSelector(
