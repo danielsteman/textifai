@@ -29,7 +29,7 @@ resource "google_project_iam_binding" "artifact_reader_dev" {
 }
 
 resource "google_project_iam_binding" "artifact_writer" {
-  project = google_project.dev.project_id
+  project = google_project.default.project_id
   role    = "roles/artifactregistry.writer"
 
   members = [
