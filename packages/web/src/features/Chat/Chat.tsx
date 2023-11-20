@@ -77,6 +77,8 @@ const Chat = () => {
 
   const dispatch = useDispatch();
 
+  console.log(`Messages sent: ${messageStack}`);
+
   useEffect(() => {
     if (messageStack.length === 1) {
       setConversationTitle(messageStack[0], currentConversationId!);
@@ -142,7 +144,6 @@ const Chat = () => {
   }, [currentUser, activeProjectId, dispatch]);
 
   const handleStreamingAnswer = async (requestPayload: any) => {
-    setMessage("");
     setAnswerStream("");
 
     const response = await fetch(`${config.chat.url}/api/chat/rag`, {
@@ -205,7 +206,7 @@ const Chat = () => {
         console.log("Handling PdfQa Chain...");
 
         dispatch(pushMessage(message));
-
+        setMessage("");
         const requestPayload = {
           promptFromExtract: pdfText,
         };
@@ -242,7 +243,7 @@ const Chat = () => {
         console.log("Handling Regular Chain...");
 
         dispatch(pushMessage(message));
-
+        setMessage("");
         const updatedConversationHistory = await getConversation(
           currentConversationId!
         );
@@ -257,7 +258,7 @@ const Chat = () => {
         const answer = await handleStreamingAnswer(requestPayload);
         dispatch(pushAnswer(answer));
       }
-
+      // setMessage("");
       dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
