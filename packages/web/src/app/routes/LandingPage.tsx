@@ -9,6 +9,7 @@ import {
   useColorMode,
   VStack,
   HStack,
+  Image,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
@@ -17,15 +18,17 @@ import { AuthContext } from "../providers/AuthProvider";
 import { useDispatch } from "react-redux";
 import { openSignUpModal } from "../../features/Authentication/loginOrRegisterModalSlice";
 
-const PlaceHolder = () => {
+interface Props {
+  imageSrc: string;
+}
+
+const PlaceHolder: React.FC<Props> = ({ imageSrc }) => {
   const { colorMode } = useColorMode();
   return (
     <Center>
-      <Box
-        h={500}
-        w={600}
-        backgroundColor={theme.colors[colorMode].surfaceContainerHigh}
-      ></Box>
+      <Box>
+        <Image src={imageSrc} />
+      </Box>
     </Center>
   );
 };
@@ -80,7 +83,7 @@ const LandingPage = () => {
       justifyContent="center"
       mx="auto"
     >
-      <GridItem>
+      <GridItem colSpan={2} py={24}>
         <Paragraph
           heading={
             "Supercharge your analysis with TAI: your personal AI research assistant"
@@ -104,20 +107,17 @@ const LandingPage = () => {
             </HStack>
           }
         >
-          <Text>
+          <Heading size="lg" fontWeight={400}>
             Textifai is your all-in-one research companion, streamlining search,
             organisation, analysis, and helping you produce faster. <br />
             <br />
             Don't just keep pace in the digital realm; lead the way. Dive in and
             realise why, with Textifai, every discovery feels groundbreaking.
-          </Text>
+          </Heading>
         </Paragraph>
       </GridItem>
       <GridItem>
-        <PlaceHolder />
-      </GridItem>
-      <GridItem>
-        <PlaceHolder />
+        <PlaceHolder imageSrc="images/landingpage/Chat_Revolutioniseyourresearch.png" />
       </GridItem>
       <GridItem>
         <Paragraph heading="From fragmentation to unity: your research hub">
@@ -152,10 +152,10 @@ const LandingPage = () => {
         </Paragraph>
       </GridItem>
       <GridItem>
-        <PlaceHolder />
+        <PlaceHolder imageSrc="images/landingpage/Editor_craftcollaborate.png" />
       </GridItem>
       <GridItem>
-        <PlaceHolder />
+        <PlaceHolder imageSrc="images/landingpage/Library_yourresearchhub.png" />
       </GridItem>
       <GridItem>
         <Paragraph heading="Craft, collaborate, and conclude in one space">
@@ -191,7 +191,7 @@ const LandingPage = () => {
         </Paragraph>
       </GridItem>
       <GridItem>
-        <PlaceHolder />
+        <PlaceHolder imageSrc="images/landingpage/PDFViewer_Chat_Textifaiforthecurious.png" />
       </GridItem>
       <GridItem colSpan={2} pb={12} px={12}>
         <Center>

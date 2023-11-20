@@ -2,10 +2,10 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Text,
   Textarea,
   Button,
   Heading,
+  VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 
@@ -30,10 +30,11 @@ const Support = () => {
   };
 
   return (
-    <>
-      <Text>
-        Do you experience any inconveniences with your product? Let us know!
-      </Text>
+    <VStack alignItems="center" py={20} gap={4}>
+      <Heading size="md">
+        Do you experience any inconveniences with your product?
+      </Heading>
+      <Heading size="md">Let us know!</Heading>
       <form onSubmit={handleSubmit}>
         <FormControl>
           <FormLabel>Subject</FormLabel>
@@ -51,11 +52,11 @@ const Support = () => {
             isRequired
           />
         </FormControl>
-        <Button type="submit" mt={2}>
+        <Button type="submit" mt={4}>
           Send
         </Button>
       </form>
-    </>
+    </VStack>
   );
 };
 
