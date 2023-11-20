@@ -4,7 +4,7 @@ resource "google_firestore_database" "database_prod" {
   location_id = "eur3"
   type        = "FIRESTORE_NATIVE"
 
-  depends_on = [google_project_service["prod"].default]
+  depends_on = [google_project_service.prod]
 }
 
 resource "google_firestore_database" "database_dev" {
@@ -13,5 +13,5 @@ resource "google_firestore_database" "database_dev" {
   location_id = "eur3"
   type        = "FIRESTORE_NATIVE"
 
-  depends_on = [google_project_service["dev"].default]
+  depends_on = [google_project_service.dev]
 }

@@ -15,7 +15,7 @@ resource "google_project_iam_binding" "artifact_reader_prod" {
   role    = "roles/artifactregistry.reader"
 
   members = [
-    google_service_account.github["prod"].member
+    google_service_account.github_prod.member
   ]
 }
 
@@ -24,7 +24,7 @@ resource "google_project_iam_binding" "artifact_writer_dev" {
   role    = "roles/artifactregistry.writer"
 
   members = [
-    google_service_account.github["dev"].member
+    google_service_account.github_dev.member
   ]
 }
 
@@ -33,7 +33,7 @@ resource "google_project_iam_binding" "token_creator_prod" {
   role    = "roles/iam.serviceAccountTokenCreator"
 
   members = [
-    google_service_account.github["prod"].member
+    google_service_account.github_prod.member
   ]
 }
 
@@ -42,6 +42,6 @@ resource "google_project_iam_binding" "token_creator_dev" {
   role    = "roles/iam.serviceAccountTokenCreator"
 
   members = [
-    google_service_account.github["dev"].member
+    google_service_account.github_dev.member
   ]
 }
