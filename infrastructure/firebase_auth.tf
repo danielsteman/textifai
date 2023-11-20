@@ -1,21 +1,21 @@
 # Creates an Identity Platform config.
 # Also enables Firebase Authentication with Identity Platform in the project if not.
-resource "google_identity_platform_config" "prod" {
+resource "google_identity_platform_config" "default" {
   provider = google-beta
-  project  = google_project.default["prod"].project_id
+  project  = google_project.default.project_id
 
   # For example, you can configure to auto-delete Anonymous users.
   autodelete_anonymous_users = true
 
   # Wait for identitytoolkit.googleapis.com to be enabled before initializing Authentication.
   depends_on = [
-    google_project_service.prod,
+    google_project_service.default,
   ]
 }
 
 resource "google_identity_platform_config" "dev" {
   provider = google-beta
-  project  = google_project.default["dev"].project_id
+  project  = google_project.dev.project_id
 
   # For example, you can configure to auto-delete Anonymous users.
   autodelete_anonymous_users = true
@@ -26,9 +26,9 @@ resource "google_identity_platform_config" "dev" {
   ]
 }
 
-resource "google_identity_platform_project_default_config" "prod" {
+resource "google_identity_platform_project_default_config" "default" {
   provider = google-beta
-  project  = google_project.default["prod"].project_id
+  project  = google_project.default.project_id
   sign_in {
     allow_duplicate_emails = false
 
@@ -44,13 +44,13 @@ resource "google_identity_platform_project_default_config" "prod" {
 
   # Wait for Authentication to be initialized before enabling email/password.
   depends_on = [
-    google_identity_platform_config.prod
+    google_identity_platform_config.default
   ]
 }
 
 resource "google_identity_platform_project_default_config" "dev" {
   provider = google-beta
-  project  = google_project.default["dev"].project_id
+  project  = google_project.dev.project_id
   sign_in {
     allow_duplicate_emails = false
 
@@ -70,7 +70,7 @@ resource "google_identity_platform_project_default_config" "dev" {
   ]
 }
 
-resource "google_firebase_web_app" "prod" {
+resource "google_firebase_web_app" "default" {
   provider = google-beta
 
   project         = google_firebase_project.default.project
@@ -86,7 +86,7 @@ resource "google_firebase_web_app" "dev" {
   deletion_policy = "DELETE"
 }
 
-resource "google_identity_platform_default_supported_idp_config" "google_sign_in_prod" {
+resource "google_identity_platform_default_supported_idp_config" "google_sign_in" {
   provider = google-beta
   project  = google_firebase_project.default.project
 
@@ -96,7 +96,7 @@ resource "google_identity_platform_default_supported_idp_config" "google_sign_in
   client_secret = var.oauth_client_secret
 
   depends_on = [
-    google_identity_platform_config.prod
+    google_identity_platform_config.default
   ]
 }
 

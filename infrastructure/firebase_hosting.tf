@@ -1,8 +1,8 @@
 resource "google_firebase_hosting_site" "default" {
   provider = google-beta
-  project  = google_project.default["prod"].project_id
-  site_id  = "${google_project.default["prod"].project_id}-site"
-  app_id   = google_firebase_web_app.prod.app_id
+  project  = google_project.default.project_id
+  site_id  = "${google_project.default.project_id}-site"
+  app_id   = google_firebase_web_app.default.app_id
 }
 
 resource "google_firebase_hosting_version" "default" {

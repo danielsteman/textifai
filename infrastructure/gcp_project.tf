@@ -1,11 +1,25 @@
 # Creates a new Google Cloud project.
 resource "google_project" "default" {
-  for_each = var.environment_id
-
   provider = google-beta
 
-  project_id = "${var.project_name}-${each.value}"
-  name       = "${var.project_name}-${each.value}"
+  project_id = "${var.project_name}-${var.environment_id["prod"]}"
+  name       = "${var.project_name}-${var.environment_id["prod"]}"
+  # Required for any service that requires the Blaze pricing plan
+  # (like Firebase Authentication with GCIP)
+  billing_account = var.billing_account
+
+  # Required for the project to display in any list of Firebase projects.
+  labels = {
+    "firebase" = "enabled"
+  }
+}
+
+# Creates a new Google Cloud project.
+resource "google_project" "dev" {
+  provider = google-beta
+
+  project_id = "${var.project_name}-${var.environment_id["dev"]}"
+  name       = "${var.project_name}-${var.environment_id["dev"]}"
   # Required for any service that requires the Blaze pricing plan
   # (like Firebase Authentication with GCIP)
   billing_account = var.billing_account
@@ -17,9 +31,9 @@ resource "google_project" "default" {
 }
 
 # Enables required APIs.
-resource "google_project_service" "prod" {
+resource "google_project_service" "default" {
   provider = google-beta
-  project  = google_project.default["prod"].project_id
+  project  = google_project.default.project_id
   for_each = toset([
     "cloudbilling.googleapis.com",
     "cloudresourcemanager.googleapis.com",
@@ -39,7 +53,7 @@ resource "google_project_service" "prod" {
 # Enables required APIs.
 resource "google_project_service" "dev" {
   provider = google-beta
-  project  = google_project.default["dev"].project_id
+  project  = google_project.dev.project_id
   for_each = toset([
     "cloudbilling.googleapis.com",
     "cloudresourcemanager.googleapis.com",
