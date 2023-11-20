@@ -1,4 +1,4 @@
-resource "google_firebase_project" "default" {
+resource "google_firebase_project" "prod" {
   provider = google-beta
   project  = google_project.default["prod"].project_id
 
@@ -7,7 +7,7 @@ resource "google_firebase_project" "default" {
   ]
 }
 
-resource "google_firebase_project" "default" {
+resource "google_firebase_project" "dev" {
   provider = google-beta
   project  = google_project.default["dev"].project_id
 
