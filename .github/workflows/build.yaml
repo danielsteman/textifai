@@ -1,9 +1,49 @@
-nameneeds: test
-  #
+name: Build
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  # test:
+  #   runs-on: ubuntu-latest
+
   #   strategy:
   #     matrix:
   #       node-version: [18.x]
-  #
+
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
+
+  #     - name: Install dependencies in shared package
+  #       run: yarn install
+  #       working-directory: packages/shared
+
+  #     - name: Build shared package
+  #       run: yarn build
+  #       working-directory: packages/shared
+
+  #     - name: Install dependencies of all packages
+  #       run: yarn install
+
+  #     - name: Build all packages
+  #       run: yarn workspaces run build
+
+  #     - name: Test all packages
+  #       run: yarn workspaces run test
+
+  # build-web:
+  #   runs-on: ubuntu-latest
+  #   needs: test
+
+  #   strategy:
+  #     matrix:
+  #       node-version: [18.x]
+
   #   steps:
   #     - name: Login to GAR
   #       id: auth
@@ -12,7 +52,7 @@ nameneeds: test
   #         registry: europe-west4-docker.pkg.dev
   #         username: _json_key
   #         password: ${{ secrets.GAR_SA_KEY }}
-  #
+
   #     - id: docker-push-web-tagged
   #       name: Tag textifai/web image
   #       uses: docker/build-push-action@v5
@@ -29,15 +69,15 @@ nameneeds: test
   #         tags: |
   #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
   #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
-  #
+
   # build-documents:
   #   runs-on: ubuntu-latest
   #   needs: test
-  #
+
   #   strategy:
   #     matrix:
   #       node-version: [18.x]
-  #
+
   #   steps:
   #     - name: Login to GAR
   #       id: auth
@@ -46,7 +86,7 @@ nameneeds: test
   #         registry: europe-west4-docker.pkg.dev
   #         username: _json_key
   #         password: ${{ secrets.GAR_SA_KEY }}
-  #
+
   #     - id: docker-push-documents-tagged
   #       name: Tag textifai/documents image
   #       uses: docker/build-push-action@v5
@@ -61,15 +101,15 @@ nameneeds: test
   #         tags: |
   #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
   #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
-  #
+
   # build-chat:
   #   runs-on: ubuntu-latest
   #   needs: test
-  #
+
   #   strategy:
   #     matrix:
   #       node-version: [18.x]
-  #
+
   #   steps:
   #     - name: Login to GAR
   #       id: auth
@@ -78,7 +118,7 @@ nameneeds: test
   #         registry: europe-west4-docker.pkg.dev
   #         username: _json_key
   #         password: ${{ secrets.GAR_SA_KEY }}
-  #
+
   #     - id: docker-push-chat-tagged
   #       name: Tag textifai/chat image
   #       uses: docker/build-push-action@v5
@@ -93,7 +133,6 @@ nameneeds: test
   #         tags: |
   #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
   #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
-
   terraform:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
