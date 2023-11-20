@@ -40,6 +40,14 @@ variable "unique_identifier" {
   default = "g5njdml004"
 }
 
+variable "environment_id" {
+  type = map(any)
+  default = {
+    dev  = "f6bc5ff9e7"
+    prod = "g5njdml004"
+  }
+}
+
 variable "organisation_id" {
   type    = string
   default = ""
