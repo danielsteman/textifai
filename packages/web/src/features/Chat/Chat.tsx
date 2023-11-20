@@ -33,6 +33,7 @@ import {
   fetchConversationId,
   fetchMessagesForConversation,
   setConversationTitle,
+  startConversation,
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
 import { clearMessages, pushMessage, setMessages } from "./messageStackSlice";
@@ -46,6 +47,7 @@ import { setCurrentConversationId, setLoading } from "./chatSlice";
 import { config } from "../../app/config/config";
 import theme from "../../app/themes/theme";
 import { shortenString } from "../../common/utils/shortenString";
+import { ConversationContext } from "../../app/providers/ConversationProvider";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -60,6 +62,8 @@ const Chat = () => {
   const [answerStream, setAnswerStream] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
+  const conversations = useContext(ConversationContext);
+
   const { colorMode } = useColorMode();
 
   const messageStack = useSelector((state: RootState) => state.messages);
@@ -284,8 +288,25 @@ const Chat = () => {
     handleChatAction(true);
   };
 
-  function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
+  async function handleMessageChange(
+    event: ChangeEvent<HTMLInputElement>
+  ): Promise<void> {
     setMessage(event.target.value);
+
+    if (conversations.length === 0) {
+      // Since startConversation is an async function, we should await its result
+      await startConversation(currentUser!.uid, activeProjectId!);
+
+      // Now fetch the conversation ID, which should await the result
+      const conversationId = await fetchConversationId(
+        currentUser!.uid,
+        activeProjectId!
+      );
+
+      // Dispatch setCurrentConversationId or handle the conversationId as needed
+      dispatch(setCurrentConversationId(conversationId));
+      console.log(`fetched conv id: ${conversationId}`);
+    }
   }
 
   const pickRandomQuestions = (

@@ -241,7 +241,7 @@ export const setConversationTitle = async (
       );
     }
 
-    const title = res.data.text.replace(/"/g, '').trim();
+    const title = res.data.text.replace(/"/g, "").trim();
 
     await updateDoc(conversationRef, {
       updatedDate: Timestamp.fromDate(new Date()),
