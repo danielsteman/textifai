@@ -19,6 +19,24 @@ resource "google_project_iam_binding" "artifact_reader" {
   ]
 }
 
+resource "google_project_iam_binding" "artifact_reader_dev" {
+  project = google_project.dev.project_id
+  role    = "roles/artifactregistry.reader"
+
+  members = [
+    google_service_account.github_dev.member
+  ]
+}
+
+resource "google_project_iam_binding" "artifact_writer" {
+  project = google_project.dev.project_id
+  role    = "roles/artifactregistry.writer"
+
+  members = [
+    google_service_account.github_dev.member
+  ]
+}
+
 resource "google_project_iam_binding" "artifact_writer_dev" {
   project = google_project.dev.project_id
   role    = "roles/artifactregistry.writer"
