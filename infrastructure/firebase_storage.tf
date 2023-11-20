@@ -1,4 +1,4 @@
-resource "google_firestore_database" "database" {
+resource "google_firestore_database" "database_prod" {
   project     = google_project.default["prod"].project_id
   name        = var.project_name
   location_id = "eur3"
@@ -7,7 +7,7 @@ resource "google_firestore_database" "database" {
   depends_on = [google_project_service["prod"].default]
 }
 
-resource "google_firestore_database" "database" {
+resource "google_firestore_database" "database_dev" {
   project     = google_project.default["dev"].project_id
   name        = var.project_name
   location_id = "eur3"
