@@ -294,18 +294,14 @@ const Chat = () => {
     setMessage(event.target.value);
 
     if (conversations.length === 0) {
-      // Since startConversation is an async function, we should await its result
       await startConversation(currentUser!.uid, activeProjectId!);
 
-      // Now fetch the conversation ID, which should await the result
       const conversationId = await fetchConversationId(
         currentUser!.uid,
         activeProjectId!
       );
 
-      // Dispatch setCurrentConversationId or handle the conversationId as needed
       dispatch(setCurrentConversationId(conversationId));
-      console.log(`fetched conv id: ${conversationId}`);
     }
   }
 

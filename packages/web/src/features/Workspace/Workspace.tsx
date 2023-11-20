@@ -194,14 +194,6 @@ const Workspace = () => {
     }
   };
 
-  console.log(`Current conversation id: ${currentConversationId}`);
-
-  // useEffect(() => {
-  //   if (conversations.length === 0) {
-  //     startConversation(currentUser!.uid, activeProjectId!);
-  //   }
-  // }, [conversations]);
-
   const sortedConversations = [...conversations].sort((a, b) => {
     return b.updatedDate.toDate().getTime() - a.updatedDate.toDate().getTime();
   });
