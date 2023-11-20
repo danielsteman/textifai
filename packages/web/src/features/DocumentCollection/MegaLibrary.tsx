@@ -140,7 +140,7 @@ const MegaLibrary = () => {
       openPdfViewer: false,
     };
     dispatch(openTab(tab));
-    dispatch(initializeSelectedDocuments([tab.name]));
+    dispatch(initializeSelectedDocuments([uploadName]));
   };
 
   const viewSelectedDocs = async (
