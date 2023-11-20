@@ -1,6 +1,6 @@
 # Creates an Identity Platform config.
 # Also enables Firebase Authentication with Identity Platform in the project if not.
-resource "google_identity_platform_config" "default" {
+resource "google_identity_platform_config" "prod" {
   provider = google-beta
   project  = google_project.default["prod"].project_id
 
@@ -13,7 +13,7 @@ resource "google_identity_platform_config" "default" {
   ]
 }
 
-resource "google_identity_platform_config" "default" {
+resource "google_identity_platform_config" "dev" {
   provider = google-beta
   project  = google_project.default["dev"].project_id
 
@@ -26,7 +26,7 @@ resource "google_identity_platform_config" "default" {
   ]
 }
 
-resource "google_identity_platform_project_default_config" "default" {
+resource "google_identity_platform_project_default_config" "prod" {
   provider = google-beta
   project  = google_project.default["prod"].project_id
   sign_in {
@@ -48,7 +48,7 @@ resource "google_identity_platform_project_default_config" "default" {
   ]
 }
 
-resource "google_identity_platform_project_default_config" "default" {
+resource "google_identity_platform_project_default_config" "dev" {
   provider = google-beta
   project  = google_project.default["dev"].project_id
   sign_in {
@@ -70,7 +70,7 @@ resource "google_identity_platform_project_default_config" "default" {
   ]
 }
 
-resource "google_firebase_web_app" "default" {
+resource "google_firebase_web_app" "prod" {
   provider = google-beta
 
   project         = google_firebase_project.default["prod"].project
@@ -78,7 +78,7 @@ resource "google_firebase_web_app" "default" {
   deletion_policy = "DELETE"
 }
 
-resource "google_firebase_web_app" "default" {
+resource "google_firebase_web_app" "dev" {
   provider = google-beta
 
   project         = google_firebase_project.default["dev"].project
@@ -86,7 +86,7 @@ resource "google_firebase_web_app" "default" {
   deletion_policy = "DELETE"
 }
 
-resource "google_identity_platform_default_supported_idp_config" "google_sign_in" {
+resource "google_identity_platform_default_supported_idp_config" "google_sign_in_prod" {
   provider = google-beta
   project  = google_firebase_project.default["prod"].project
 
@@ -101,7 +101,7 @@ resource "google_identity_platform_default_supported_idp_config" "google_sign_in
 }
 
 
-resource "google_identity_platform_default_supported_idp_config" "google_sign_in" {
+resource "google_identity_platform_default_supported_idp_config" "google_sign_in_dev" {
   provider = google-beta
   project  = google_firebase_project.default["dev"].project
 
