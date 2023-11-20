@@ -73,7 +73,7 @@ resource "google_identity_platform_project_default_config" "dev" {
 resource "google_firebase_web_app" "prod" {
   provider = google-beta
 
-  project         = google_firebase_project.prod.project
+  project         = google_firebase_project.default.project
   display_name    = var.web_app_display_name
   deletion_policy = "DELETE"
 }
@@ -88,7 +88,7 @@ resource "google_firebase_web_app" "dev" {
 
 resource "google_identity_platform_default_supported_idp_config" "google_sign_in_prod" {
   provider = google-beta
-  project  = google_firebase_project.prod.project
+  project  = google_firebase_project.default.project
 
   enabled       = true
   idp_id        = "google.com"
