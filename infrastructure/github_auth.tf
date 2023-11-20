@@ -33,7 +33,7 @@ resource "google_project_iam_binding" "artifact_writer" {
   role    = "roles/artifactregistry.writer"
 
   members = [
-    google_service_account.github_dev.member
+    google_service_account.github.member
   ]
 }
 
