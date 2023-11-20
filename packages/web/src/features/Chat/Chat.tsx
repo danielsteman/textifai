@@ -45,6 +45,7 @@ import {
 import { setCurrentConversationId, setLoading } from "./chatSlice";
 import { config } from "../../app/config/config";
 import theme from "../../app/themes/theme";
+import { shortenString } from "../../common/utils/shortenString";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -362,8 +363,9 @@ const Chat = () => {
                   onClick={() => handleChatAction(false, undefined, question)}
                   bgColor={theme.colors[colorMode].secondaryContainer}
                   textColor={theme.colors[colorMode].onSecondaryContainer}
+                  textAlign="left"
                 >
-                  {question}
+                  {shortenString(question, 70)}
                 </Button>
               </Tooltip>
             ))}
@@ -377,8 +379,9 @@ const Chat = () => {
                   onClick={() => handleChatAction(false, undefined, question)}
                   bgColor={theme.colors[colorMode].secondaryContainer}
                   textColor={theme.colors[colorMode].onSecondaryContainer}
+                  textAlign="left"
                 >
-                  {question}
+                  {shortenString(question, 70)}
                 </Button>
               </Tooltip>
             ))}
