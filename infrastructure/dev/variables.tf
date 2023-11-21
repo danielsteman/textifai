@@ -54,7 +54,6 @@ variable "oauth_client_secret" {
   type        = string
   description = "OAuth client secret. In a real app, you should use a secret manager service."
   sensitive   = true
-  default     = ""
 }
 
 variable "image_tag" {

@@ -40,7 +40,7 @@ gcloud auth application-default revoke
 - VITE_FIREBASE_MESSAGINGSENDERID
 - VITE_FIREBASE_APPID
 
-These can be found in `project settings > general > your apps` in the code snippet at the bottom of the page. Copy + paste them in `/packages/web/.env.local` as `${KEY}=${VALUE}`.
+These can be found in `project settings > general > your apps` in the code snippet at the bottom of the page. Copy + paste them in `/.vscode/.env` as `${KEY}=${VALUE}`.
 
 ### Global node dependencies:
 
