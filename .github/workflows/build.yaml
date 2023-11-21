@@ -152,6 +152,12 @@ jobs:
       TF_WORKSPACE: "textifai"
       CONFIG_DIRECTORY: "./infrastructure/${{ github.event.pull_request.base.ref }}"
     steps:
+      - name: Set environment variables
+        run: |
+          if [ "${{ github.event.pull_request.base.ref }}" == "dev" ]; then
+            echo "TF_WORKSPACE=textifai" >> $GITHUB_ENV
+          else
+            echo "TF_WORKSPACE=textifai-dev" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v3
 
