@@ -71,10 +71,9 @@ When the project is deployed for the first time, some manual steps are required 
 
 Pass the `oauth_client_secret` variable in Terraform Cloud.
 
-Explore:
+Caveats:
 
-- Firebase hosting
-- In combination with cloud run
+- The projects are not under an organization and therefor it's not allowed to create a new project in Google Cloud using Terraform. You can create a project manually and import it in Terraform state using the CLI. Once you've done that it's probably needed to enable a couple of API's. The real solution would be to move all projects to an organization and give the service principal admin rights on that organization. But then again, how often do you deploy environments?
 
 ## CI
 
