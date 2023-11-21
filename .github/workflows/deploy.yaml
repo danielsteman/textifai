@@ -84,8 +84,8 @@ jobs:
     steps:
       - name: Extract branch name
         run: |
-          echo "CONFIG_DIRECTORY=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          echo "ENVIRONMENT=./infrastructure/${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "ENVIRONMENT=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "CONFIG_DIRECTORY=./infrastructure/${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
       - name: Set environment variables
         run: |
