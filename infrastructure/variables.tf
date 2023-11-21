@@ -48,11 +48,6 @@ variable "environment_id" {
   }
 }
 
-variable "organisation_id" {
-  type    = string
-  default = ""
-}
-
 variable "GOOGLE_CREDENTIALS" {
   type      = string
   sensitive = true
