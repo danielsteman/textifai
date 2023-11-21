@@ -2,13 +2,12 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [dev, prod]
 
 env:
   TF_CLOUD_ORGANIZATION: "textifai"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-  TF_WORKSPACE: "textifai"
-  CONFIG_DIRECTORY: "./infrastructure"
+  CONFIG_DIRECTORY: "./infrastructure/${{ github.event.pull_request.base.ref }}"
 
 jobs:
   build:
@@ -20,6 +19,14 @@ jobs:
       - name: Set Git SHA
         id: SetVar
         run: echo "TF_VAR_image_tag=\"$(echo $GITHUB_SHA | cut -c 1-6)\"" >> $GITHUB_ENV
+
+      - name: Set environment variables
+        run: |
+          if [ "${{ github.event.pull_request.base.ref }}" == "prod" ]; then
+            echo "TF_WORKSPACE=textifai" >> $GITHUB_ENV
+          else
+            echo "TF_WORKSPACE=textifai-dev" >> $GITHUB_ENV
+          fi
 
       - name: Login to GAR
         id: auth
