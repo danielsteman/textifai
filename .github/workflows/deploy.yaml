@@ -90,6 +90,11 @@ jobs:
             echo "TF_WORKSPACE=textifai-dev" >> $GITHUB_ENV
           fi
 
+      - name: Print env vars
+        run: |
+          echo $CONFIG_DIRECTORY
+          echo $TF_WORKSPACE
+
       - name: Checkout
         uses: actions/checkout@v3
 
