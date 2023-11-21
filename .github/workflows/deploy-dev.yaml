@@ -27,7 +27,7 @@ jobs:
         with:
           registry: europe-west4-docker.pkg.dev
           username: _json_key
-          password: ${{ secrets.GAR_SA_KEY }}
+          password: ${{ secrets.GAR_SA_KEY_DEV }}
 
       - id: docker-push-web-tagged
         name: Tag textifai/web image and push to GAR
@@ -62,7 +62,7 @@ jobs:
         with:
           registry: europe-west4-docker.pkg.dev
           username: _json_key
-          password: ${{ secrets.GAR_SA_KEY }}
+          password: ${{ secrets.GAR_SA_KEY_DEV }}
 
       - id: docker-push-documents-tagged
         name: Tag textifai/documents image and push to GAR
