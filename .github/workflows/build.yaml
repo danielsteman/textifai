@@ -158,6 +158,7 @@ jobs:
             echo "TF_WORKSPACE=textifai" >> $GITHUB_ENV
           else
             echo "TF_WORKSPACE=textifai-dev" >> $GITHUB_ENV
+          fi
       - name: Checkout
         uses: actions/checkout@v3
 
