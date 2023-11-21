@@ -161,6 +161,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Print env vars
+        run: |
+          echo $CONFIG_DIRECTORY
+          echo $TF_WORKSPACE
+
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
         id: plan-upload
