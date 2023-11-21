@@ -43,16 +43,16 @@ resource "google_firebase_web_app" "dev" {
   deletion_policy = "DELETE"
 }
 
-resource "google_identity_platform_default_supported_idp_config" "google_sign_in_dev" {
-  provider = google-beta
-  project  = google_firebase_project.dev.project
+# resource "google_identity_platform_default_supported_idp_config" "google_sign_in_dev" {
+#   provider = google-beta
+#   project  = google_firebase_project.dev.project
 
-  enabled       = true
-  idp_id        = "google.com"
-  client_id     = "352224501567-lrc9dt4ckpegdb9tcvg0vgrbde2skor0.apps.googleusercontent.com"
-  client_secret = var.oauth_client_secret
+#   enabled       = true
+#   idp_id        = "google.com"
+#   client_id     = "352224501567-lrc9dt4ckpegdb9tcvg0vgrbde2skor0.apps.googleusercontent.com"
+#   client_secret = var.oauth_client_secret
 
-  depends_on = [
-    google_identity_platform_config.dev
-  ]
-}
+#   depends_on = [
+#     google_identity_platform_config.dev
+#   ]
+# }
