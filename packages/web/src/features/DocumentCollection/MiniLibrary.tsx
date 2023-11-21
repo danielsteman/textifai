@@ -33,6 +33,8 @@ const MiniLibrary = () => {
     (state: RootState) => state.library.selectedDocuments
   );
 
+  console.log(`Selected documents: ${selectedDocuments}`);
+
   const dispatch = useDispatch();
 
   const activeProjectId = useSelector(
@@ -108,10 +110,10 @@ const MiniLibrary = () => {
         <Tbody>
           {documents
             .filter((doc) =>
-              doc.uploadName.toLowerCase().includes(documentQuery.toLowerCase())
+              doc.fileName.toLowerCase().includes(documentQuery.toLowerCase())
             )
             .map((doc: Document) => (
-              <Tr key={doc.uploadName}>
+              <Tr key={doc.fileName}>
                 <Td>
                   <Checkbox
                     isChecked={selectedDocuments.includes(doc.uploadName)}
@@ -120,7 +122,7 @@ const MiniLibrary = () => {
                     }
                   />
                 </Td>
-                <Td>{doc.uploadName}</Td>
+                <Td>{doc.fileName}</Td>
               </Tr>
             ))}
         </Tbody>

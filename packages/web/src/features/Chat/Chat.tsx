@@ -33,6 +33,7 @@ import {
   fetchConversationId,
   fetchMessagesForConversation,
   setConversationTitle,
+  startConversation,
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
 import { clearMessages, pushMessage, setMessages } from "./messageStackSlice";
@@ -45,6 +46,8 @@ import {
 import { setCurrentConversationId, setLoading } from "./chatSlice";
 import { config } from "../../app/config/config";
 import theme from "../../app/themes/theme";
+import { shortenString } from "../../common/utils/shortenString";
+import { ConversationContext } from "../../app/providers/ConversationProvider";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -59,6 +62,8 @@ const Chat = () => {
   const [answerStream, setAnswerStream] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
+  const conversations = useContext(ConversationContext);
+
   const { colorMode } = useColorMode();
 
   const messageStack = useSelector((state: RootState) => state.messages);
@@ -75,6 +80,8 @@ const Chat = () => {
   const loading = useSelector((state: RootState) => state.chat.loading);
 
   const dispatch = useDispatch();
+
+  console.log(`Messages sent: ${messageStack}`);
 
   useEffect(() => {
     if (messageStack.length === 1) {
@@ -141,7 +148,6 @@ const Chat = () => {
   }, [currentUser, activeProjectId, dispatch]);
 
   const handleStreamingAnswer = async (requestPayload: any) => {
-    setMessage("");
     setAnswerStream("");
 
     const response = await fetch(`${config.chat.url}/api/chat/rag`, {
@@ -204,7 +210,7 @@ const Chat = () => {
         console.log("Handling PdfQa Chain...");
 
         dispatch(pushMessage(message));
-
+        setMessage("");
         const requestPayload = {
           promptFromExtract: pdfText,
         };
@@ -241,7 +247,7 @@ const Chat = () => {
         console.log("Handling Regular Chain...");
 
         dispatch(pushMessage(message));
-
+        setMessage("");
         const updatedConversationHistory = await getConversation(
           currentConversationId!
         );
@@ -256,7 +262,7 @@ const Chat = () => {
         const answer = await handleStreamingAnswer(requestPayload);
         dispatch(pushAnswer(answer));
       }
-
+      // setMessage("");
       dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
@@ -282,8 +288,21 @@ const Chat = () => {
     handleChatAction(true);
   };
 
-  function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
+  async function handleMessageChange(
+    event: ChangeEvent<HTMLInputElement>
+  ): Promise<void> {
     setMessage(event.target.value);
+
+    if (conversations.length === 0) {
+      await startConversation(currentUser!.uid, activeProjectId!);
+
+      const conversationId = await fetchConversationId(
+        currentUser!.uid,
+        activeProjectId!
+      );
+
+      dispatch(setCurrentConversationId(conversationId));
+    }
   }
 
   const pickRandomQuestions = (
@@ -299,8 +318,11 @@ const Chat = () => {
   );
 
   useEffect(() => {
+    if (selectedDocuments.length === 0) {
+      return;
+    }
     setRandomQuestions(pickRandomQuestions(allSampleQuestions, 4));
-  }, []);
+  }, [selectedDocuments]);
 
   return (
     <Flex flexDir="column" flex={1} p={2} overflowY="hidden" h="100%" gap={4}>
@@ -362,8 +384,9 @@ const Chat = () => {
                   onClick={() => handleChatAction(false, undefined, question)}
                   bgColor={theme.colors[colorMode].secondaryContainer}
                   textColor={theme.colors[colorMode].onSecondaryContainer}
+                  textAlign="left"
                 >
-                  {question}
+                  {shortenString(question, 70)}
                 </Button>
               </Tooltip>
             ))}
@@ -377,8 +400,9 @@ const Chat = () => {
                   onClick={() => handleChatAction(false, undefined, question)}
                   bgColor={theme.colors[colorMode].secondaryContainer}
                   textColor={theme.colors[colorMode].onSecondaryContainer}
+                  textAlign="left"
                 >
-                  {question}
+                  {shortenString(question, 70)}
                 </Button>
               </Tooltip>
             ))}
