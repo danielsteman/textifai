@@ -149,7 +149,6 @@ jobs:
     env:
       TF_CLOUD_ORGANIZATION: "textifai"
       TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-      TF_WORKSPACE: "textifai"
       CONFIG_DIRECTORY: "./infrastructure/${{ github.event.pull_request.base.ref }}"
     steps:
       - name: Set environment variables
@@ -166,7 +165,7 @@ jobs:
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
         id: plan-upload
         with:
-          directory: ./
+          directory: ${{ env.CONFIG_DIRECTORY}}
           workspace: ${{ env.TF_WORKSPACE }}
           speculative: true
 
