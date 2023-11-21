@@ -7,6 +7,7 @@ on:
 env:
   TF_CLOUD_ORGANIZATION: "textifai"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+  CONFIG_DIRECTORY: "./infrastructure/${GITHUB_REF#refs/heads/}"
 
 jobs:
   # build:
@@ -83,7 +84,7 @@ jobs:
     steps:
       - name: Set environment variables
         run: |
-          if [ "${{ github.event.pull_request.base.ref }}" == "prod" ]; then
+          if [ ${GITHUB_REF#refs/heads/} == "prod" ]; then
             echo "TF_WORKSPACE=textifai" >> $GITHUB_ENV
           else
             echo "TF_WORKSPACE=textifai-dev" >> $GITHUB_ENV
@@ -96,9 +97,6 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Print variables
-        run: echo $TF_VAR_image_tag
 
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
