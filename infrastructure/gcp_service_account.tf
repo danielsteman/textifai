@@ -24,6 +24,6 @@ resource "google_project_iam_binding" "owner_dev" {
   role    = "roles/owner"
 
   members = [
-    google_service_account.tfc-dev.member
+    google_service_account.tfc_dev.member
   ]
 }
