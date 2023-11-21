@@ -20,14 +20,6 @@ jobs:
         id: SetVar
         run: echo "TF_VAR_image_tag=\"$(echo $GITHUB_SHA | cut -c 1-6)\"" >> $GITHUB_ENV
 
-      - name: Set environment variables
-        run: |
-          if [ "${{ github.event.pull_request.base.ref }}" == "prod" ]; then
-            echo "TF_WORKSPACE=textifai" >> $GITHUB_ENV
-          else
-            echo "TF_WORKSPACE=textifai-dev" >> $GITHUB_ENV
-          fi
-
       - name: Login to GAR
         id: auth
         uses: docker/login-action@v3
@@ -90,6 +82,14 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Set environment variables
+        run: |
+          if [ "${{ github.event.pull_request.base.ref }}" == "prod" ]; then
+            echo "TF_WORKSPACE=textifai" >> $GITHUB_ENV
+          else
+            echo "TF_WORKSPACE=textifai-dev" >> $GITHUB_ENV
+          fi
+
       - name: Checkout
         uses: actions/checkout@v3
 
