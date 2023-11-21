@@ -37,20 +37,7 @@ variable "billing_account" {
 
 variable "unique_identifier" {
   type    = string
-  default = "g5njdml004"
-}
-
-variable "environment_id" {
-  type = map(any)
-  default = {
-    dev  = "f6bc5ff9e7"
-    prod = "g5njdml004"
-  }
-}
-
-variable "organisation_id" {
-  type    = string
-  default = ""
+  default = "f6bc5ff9e7"
 }
 
 variable "GOOGLE_CREDENTIALS" {
@@ -67,6 +54,7 @@ variable "oauth_client_secret" {
   type        = string
   description = "OAuth client secret. In a real app, you should use a secret manager service."
   sensitive   = true
+  default     = ""
 }
 
 variable "image_tag" {
