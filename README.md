@@ -65,7 +65,7 @@ Documents (just PDF for now, later support for more file types) uploaded by user
 
 ## Deployment
 
-Deployments are done with Terraform Cloud, which receives GCP credentials through `GOOGLE_CREDENTIALS` environment variable, which should be set to the json key of a (manually created) service account without newlines. The json key can be retrieved through the GCP console and can be transformed to a single line using `cat ~/Downloads/keyfile.json| tr -s '\n' ' '`.
+Deployments are done with Terraform Cloud, which receives GCP credentials through `GOOGLE_CREDENTIALS` environment variable, which should be set to the json key of a (manually created) service account without newlines. The json key can be retrieved through the GCP console and can be transformed to a single line using `cat ~/Downloads/keyfile.json | tr -s '\n' ' '`.
 
 When the project is deployed for the first time, some manual steps are required to bootstrap the project. After deploying `google_firebase_web_app`, go to the console and go through the "OAuth consent screen page" steps. Then, go to the credentials page and add a web application. Make sure that `https://{PROJECT_ID}.firebaseapp.com` is in "Authorized JavaScript origins" and `https://{PROJECT_ID}.firebaseapp.com/__/auth/handler` in "Authorized redirect URIs".
 

@@ -95,7 +95,7 @@ jobs:
         with:
           registry: europe-west4-docker.pkg.dev
           username: _json_key
-          password: ${{ secrets.GAR_SA_KEY }}
+          password: ${{ secrets.GAR_SA_KEY_DEV }}
 
       - id: docker-push-chat-tagged
         name: Tag textifai/chat image and push to GAR
