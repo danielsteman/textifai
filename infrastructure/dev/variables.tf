@@ -1,15 +1,15 @@
 variable "package_names" {
   default = {
     web = {
-      name = "textifai-web"
+      name = "textifai-web-dev"
       port = 54321
     }
     chat = {
-      name = "textifai-chat"
+      name = "textifai-chat-dev"
       port = 54322
     }
     documents = {
-      name = "textifai-documents"
+      name = "textifai-documents-dev"
       port = 54323
     }
   }
