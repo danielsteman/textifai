@@ -1,13 +1,13 @@
-resource "google_firebase_hosting_site" "default" {
+resource "google_firebase_hosting_site" "dev" {
   provider = google-beta
-  project  = google_project.default.project_id
-  site_id  = "${google_project.default.project_id}-site"
-  app_id   = google_firebase_web_app.default.app_id
+  project  = google_project.dev.project_id
+  site_id  = "${google_project.dev.project_id}-site"
+  app_id   = google_firebase_web_app.dev.app_id
 }
 
-resource "google_firebase_hosting_version" "default" {
+resource "google_firebase_hosting_version" "dev" {
   provider = google-beta
-  site_id  = google_firebase_hosting_site.default.site_id
+  site_id  = google_firebase_hosting_site.dev.site_id
   config {
     rewrites {
       glob = "/api/documents/**"
@@ -35,9 +35,9 @@ resource "google_firebase_hosting_version" "default" {
   }
 }
 
-resource "google_firebase_hosting_release" "default" {
+resource "google_firebase_hosting_release" "dev" {
   provider     = google-beta
-  site_id      = google_firebase_hosting_site.default.site_id
-  version_name = google_firebase_hosting_version.default.name
+  site_id      = google_firebase_hosting_site.dev.site_id
+  version_name = google_firebase_hosting_version.dev.name
   message      = "Cloud Run Integration"
 }
