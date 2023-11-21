@@ -9,73 +9,73 @@ env:
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x]
-    steps:
-      - name: Set Git SHA
-        id: SetVar
-        run: echo "TF_VAR_image_tag=\"$(echo $GITHUB_SHA | cut -c 1-6)\"" >> $GITHUB_ENV
+  # build:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       node-version: [18.x]
+  #   steps:
+  #     - name: Set Git SHA
+  #       id: SetVar
+  #       run: echo "TF_VAR_image_tag=\"$(echo $GITHUB_SHA | cut -c 1-6)\"" >> $GITHUB_ENV
 
-      - name: Login to GAR
-        id: auth
-        uses: docker/login-action@v3
-        with:
-          registry: europe-west4-docker.pkg.dev
-          username: _json_key
-          password: ${{ secrets.GAR_SA_KEY }}
+  #     - name: Login to GAR
+  #       id: auth
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: europe-west4-docker.pkg.dev
+  #         username: _json_key
+  #         password: ${{ secrets.GAR_SA_KEY }}
 
-      - id: docker-push-web-tagged
-        name: Tag textifai/web image and push to GAR
-        uses: docker/build-push-action@v5
-        with:
-          file: packages/web/Dockerfile
-          push: true
-          build-args: |
-            FIREBASE_APIKEY=${{ secrets.FIREBASE_APIKEY }}
-            FIREBASE_AUTHDOMAIN=${{ secrets.FIREBASE_AUTHDOMAIN }}
-            FIREBASE_PROJECTID=${{ secrets.FIREBASE_PROJECTID }}
-            FIREBASE_STORAGEBUCKET=${{ secrets.FIREBASE_STORAGEBUCKET }}
-            FIREBASE_MESSAGINGSENDERID=${{ secrets.FIREBASE_MESSAGINGSENDERID }}
-            FIREBASE_APPID=${{ secrets.FIREBASE_APPID }}
-          tags: |
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
+  #     - id: docker-push-web-tagged
+  #       name: Tag textifai/web image and push to GAR
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         file: packages/web/Dockerfile
+  #         push: true
+  #         build-args: |
+  #           FIREBASE_APIKEY=${{ secrets.FIREBASE_APIKEY }}
+  #           FIREBASE_AUTHDOMAIN=${{ secrets.FIREBASE_AUTHDOMAIN }}
+  #           FIREBASE_PROJECTID=${{ secrets.FIREBASE_PROJECTID }}
+  #           FIREBASE_STORAGEBUCKET=${{ secrets.FIREBASE_STORAGEBUCKET }}
+  #           FIREBASE_MESSAGINGSENDERID=${{ secrets.FIREBASE_MESSAGINGSENDERID }}
+  #           FIREBASE_APPID=${{ secrets.FIREBASE_APPID }}
+  #         tags: |
+  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
+  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
 
-      - id: docker-push-documents-tagged
-        name: Tag textifai/documents image and push to GAR
-        uses: docker/build-push-action@v5
-        with:
-          file: packages/documents/Dockerfile
-          push: true
-          build-args: |
-            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-            PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
-            PINECONE_ENV=${{ secrets.PINECONE_ENV }}
-            PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
-          tags: |
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
+  #     - id: docker-push-documents-tagged
+  #       name: Tag textifai/documents image and push to GAR
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         file: packages/documents/Dockerfile
+  #         push: true
+  #         build-args: |
+  #           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+  #           PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
+  #           PINECONE_ENV=${{ secrets.PINECONE_ENV }}
+  #           PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
+  #         tags: |
+  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
+  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
 
-      - id: docker-push-chat-tagged
-        name: Tag textifai/chat image and push to GAR
-        uses: docker/build-push-action@v5
-        with:
-          file: packages/chat/Dockerfile
-          push: true
-          build-args: |
-            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-            PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
-            PINECONE_ENV=${{ secrets.PINECONE_ENV }}
-            PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
-          tags: |
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
+  #     - id: docker-push-chat-tagged
+  #       name: Tag textifai/chat image and push to GAR
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         file: packages/chat/Dockerfile
+  #         push: true
+  #         build-args: |
+  #           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+  #           PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}
+  #           PINECONE_ENV=${{ secrets.PINECONE_ENV }}
+  #           PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
+  #         tags: |
+  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
+  #           europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
 
   terraform:
-    needs: build
+    # needs: build
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     permissions:
