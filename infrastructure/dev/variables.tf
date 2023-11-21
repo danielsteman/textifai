@@ -32,7 +32,7 @@ variable "location" {
 
 variable "billing_account" {
   type    = string
-  default = "01C220-00DCED-92B0FE"
+  default = "01A79B-F9A7B4-E236C3"
 }
 
 variable "unique_identifier" {
