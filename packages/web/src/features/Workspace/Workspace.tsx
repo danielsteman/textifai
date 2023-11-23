@@ -46,17 +46,13 @@ import {
   FaPlus,
   FaRegFilePdf,
   FaTrash,
-  FaPen,
 } from "react-icons/fa";
 import ChatPanel from "./panels/ChatPanel";
 import PanelWrapper from "../../features/Workspace/PanelWrapper";
 import MegaLibraryPanel from "./panels/MegaLibraryPanel";
 import theme from "../../app/themes/theme";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import {
-  ExtendedProject,
-  ProjectContext,
-} from "../../app/providers/ProjectProvider";
+import { ProjectContext } from "../../app/providers/ProjectProvider";
 import { ConversationContext } from "../../app/providers/ConversationProvider";
 import { getCurrentProjectTitle } from "../Projects/getCurrentProjectTitle";
 import fetchProjectUid from "../Projects/fetchProjectId";
@@ -132,7 +128,6 @@ const Workspace = () => {
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
   );
-
   const isActiveTabSelected = selectedDocuments.some(
     (doc) => shortenString(doc, 10) === openTabs[activeTabIndex]?.name
   );
@@ -774,9 +769,17 @@ const Workspace = () => {
             pb={2}
             maxH="calc(100% - 58px)"
           >
-            {openTabs.map((tab) => (
-              <PanelWrapper key={tab.name} tab={tab} />
-            ))}
+            {openTabs.map((tab, index) => {
+              const isActiveTab = index === activeTabIndex;
+              console.log(`Current tab: ${tab.name} is active: ${isActiveTab}`);
+              return (
+                <PanelWrapper
+                  key={tab.name}
+                  tab={tab}
+                  isActiveTab={isActiveTab}
+                />
+              );
+            })}
           </TabPanels>
         </Tabs>
       )}
