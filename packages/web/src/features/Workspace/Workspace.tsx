@@ -771,7 +771,6 @@ const Workspace = () => {
           >
             {openTabs.map((tab, index) => {
               const isActiveTab = index === activeTabIndex;
-              console.log(`Current tab: ${tab.name} is active: ${isActiveTab}`);
               return (
                 <PanelWrapper
                   key={tab.name}

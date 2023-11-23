@@ -34,6 +34,7 @@ import {
   fetchMessagesForConversation,
   setConversationTitle,
   startConversation,
+  replaceLastAgentMessage,
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
 import { clearMessages, pushMessage, setMessages } from "./messageStackSlice";
@@ -145,7 +146,10 @@ const Chat = () => {
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
 
-  const handleStreamingAnswer = async (requestPayload: any) => {
+  const handleStreamingAnswer = async (
+    requestPayload: any,
+    message: string | null
+  ) => {
     setAnswerStream("");
 
     const response = await fetch(`${config.chat.url}/api/chat/rag`, {
@@ -184,7 +188,14 @@ const Chat = () => {
     scrollToBottom();
     setAnswerStreamComplete(true);
 
-    await addMessageToCollection(message, "user", currentConversationId, null);
+    if (message !== null) {
+      await addMessageToCollection(
+        message,
+        "user",
+        currentConversationId,
+        null
+      );
+    }
     await addMessageToCollection(
       accumulatedAnswerStream,
       "agent",
@@ -207,13 +218,17 @@ const Chat = () => {
       if (pdfText) {
         console.log("Handling PdfQa Chain...");
 
+        const currentMessage = message;
         dispatch(pushMessage(message));
         setMessage("");
         const requestPayload = {
           promptFromExtract: pdfText,
         };
 
-        const answer = await handleStreamingAnswer(requestPayload);
+        const answer = await handleStreamingAnswer(
+          requestPayload,
+          currentMessage
+        );
         dispatch(pushAnswer(answer));
       } else if (regenerate) {
         console.log("Handling Regenerate Chain...");
@@ -225,12 +240,14 @@ const Chat = () => {
           regenerate: true,
         };
 
-        const answer = await handleStreamingAnswer(requestPayload);
+        const answer = await handleStreamingAnswer(requestPayload, null);
 
         console.log(`Regenerated answer: ${answer}`);
 
         dispatch(replaceLastAnswer(answer));
+        await replaceLastAgentMessage(answer, currentConversationId!);
       } else if (exampleQuestion) {
+        const currentMessage = exampleQuestion;
         dispatch(pushMessage(exampleQuestion));
         const requestPayload = {
           prompt: exampleQuestion,
@@ -239,11 +256,15 @@ const Chat = () => {
           userId: currentUser!.uid,
         };
 
-        const answer = await handleStreamingAnswer(requestPayload);
+        const answer = await handleStreamingAnswer(
+          requestPayload,
+          currentMessage
+        );
         dispatch(pushAnswer(answer));
       } else {
         console.log("Handling Regular Chain...");
 
+        const currentMessage = message;
         dispatch(pushMessage(message));
         setMessage("");
         const updatedConversationHistory = await getConversation(
@@ -257,7 +278,10 @@ const Chat = () => {
           userId: currentUser!.uid,
         };
 
-        const answer = await handleStreamingAnswer(requestPayload);
+        const answer = await handleStreamingAnswer(
+          requestPayload,
+          currentMessage
+        );
         dispatch(pushAnswer(answer));
       }
       // setMessage("");
