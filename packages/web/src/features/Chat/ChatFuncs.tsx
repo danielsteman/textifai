@@ -241,7 +241,7 @@ export const setConversationTitle = async (
       );
     }
 
-    const title = res.data.text.replace(/"/g, '').trim();
+    const title = res.data.text.replace(/"/g, "").trim();
 
     await updateDoc(conversationRef, {
       updatedDate: Timestamp.fromDate(new Date()),
@@ -249,5 +249,36 @@ export const setConversationTitle = async (
     });
 
     return title;
+  }
+};
+
+export const replaceLastAgentMessage = async (
+  newAnswer: string,
+  currentConversationId: string
+) => {
+  try {
+    const messagesQuery = query(
+      messagesCollection,
+      where("conversationId", "==", currentConversationId),
+      where("variant", "==", "agent"),
+      orderBy("creationDate", "desc"),
+      limit(1)
+    );
+
+    const querySnapshot = await getDocs(messagesQuery);
+
+    if (!querySnapshot.empty) {
+      const lastMessageDoc = querySnapshot.docs[0];
+      const lastMessageRef = doc(db, "messages", lastMessageDoc.id);
+      console.log(`Found message id: ${lastMessageRef}`);
+
+      await updateDoc(lastMessageRef, {
+        messageBody: newAnswer,
+      });
+    } else {
+      console.log("No agent message found in the current conversation.");
+    }
+  } catch (error) {
+    console.error("Error replacing the last agent message:", error);
   }
 };
