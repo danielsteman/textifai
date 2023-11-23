@@ -81,6 +81,7 @@ import { setCurrentConversationId } from "../Chat/chatSlice";
 import { deleteProject } from "../Projects/deleteProject";
 import { handleEditProjectName } from "../Projects/changeProjectName";
 import { keyframes } from "@emotion/react";
+import { shortenString } from "../../common/utils/shortenString";
 
 export type ITab = {
   name: string;
@@ -130,6 +131,10 @@ const Workspace = () => {
   );
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
+  );
+
+  const isActiveTabSelected = selectedDocuments.some(
+    (doc) => shortenString(doc, 10) === openTabs[activeTabIndex]?.name
   );
 
   const toggleMenu = () => {
@@ -747,7 +752,7 @@ const Workspace = () => {
                 </Tooltip>
               </>
             )}
-            {selectedDocuments.includes(openTabs[activeTabIndex]?.name) && (
+            {isActiveTabSelected && (
               <>
                 <Tooltip label="Open support chat">
                   <IconButton

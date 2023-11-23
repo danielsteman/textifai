@@ -81,8 +81,6 @@ const Chat = () => {
 
   const dispatch = useDispatch();
 
-  console.log(`Messages sent: ${messageStack}`);
-
   useEffect(() => {
     if (messageStack.length === 1) {
       setConversationTitle(messageStack[0], currentConversationId!);
