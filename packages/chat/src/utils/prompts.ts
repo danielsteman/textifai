@@ -38,7 +38,19 @@ const templates = {
         `,
   regenerateTemplate: `
       Paraphrase the given text, preserving any code or tables that are present. Your paraphrase should maintain the original intent and
-      meaning of the text, while also aiming to improve clarity and conciseness where possible. Please provide your paraphrased answer in markdown format.
+      meaning of the text, while also aiming to improve clarity and conciseness where possible. 
+      
+      Your paraphrased answer should be formatted using react-markdown styling.
+
+      Header 1: #
+      Header 2: ##
+      Header 3: ###
+      Italic: *text*
+      Bold: **text**
+      Strong: __text__
+      Ordered list: 1. text
+      Unorderder list: - text
+      New line: \
 
       CONTENT: {document}
 
