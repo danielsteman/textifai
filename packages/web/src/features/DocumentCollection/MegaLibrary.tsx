@@ -129,7 +129,7 @@ const MegaLibrary = () => {
   );
 
   const handleOpenDocumentInTab = async (uploadName: string) => {
-    const storageLocation = `projects/${activeProjectId}/uploads/${uploadName}`//`users/${currentUser?.uid}/uploads/${uploadName}`;
+    const storageLocation = `projects/${activeProjectId}/uploads/${uploadName}`;
     const fileRef = ref(storage, storageLocation);
 
     const tab: ITab = {
@@ -140,7 +140,17 @@ const MegaLibrary = () => {
       openPdfViewer: false,
     };
     dispatch(openTab(tab));
-    dispatch(initializeSelectedDocuments([tab.name]));
+    dispatch(initializeSelectedDocuments([uploadName]));
+  };
+
+  const viewSelectedDocs = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    selectedDocuments: string[]
+  ) => {
+    event.preventDefault();
+    selectedDocuments.forEach((documentName) => {
+      handleOpenDocumentInTab(documentName);
+    });
   };
 
   const handleDeleteDocument = async () => {
@@ -299,10 +309,10 @@ const MegaLibrary = () => {
 
   const handleUploadComplete = () => {
     console.log("Upload complete!");
-    
+
     setTimeout(() => {
       console.log("Closing the modal after 5 seconds...");
-      onUploadFileClose(); 
+      onUploadFileClose();
     }, 5000);
   };
 
@@ -647,39 +657,46 @@ const MegaLibrary = () => {
               </ModalBody>
             </ModalContent>
           </Modal>
-          <Button
-            size="md"
-            aria-label={"ask tai"}
-            leftIcon={<ChatIcon />}
-            borderRadius={100}
-            bgColor={theme.colors[colorMode].secondaryContainer}
-            textColor={theme.colors[colorMode].onSecondaryContainer}
-            onClick={() => {
-              const chatTab: ITab = {
-                name: "Chat",
-                panel: <ChatPanel />,
-                openChatSupport: false,
-                openMiniLibrary: false,
-                openPdfViewer: false,
-              };
+          <Tooltip label="Chat with AI on selected documents">
+            <Button
+              size="md"
+              aria-label={"ask tai"}
+              leftIcon={<ChatIcon />}
+              borderRadius={100}
+              bgColor={theme.colors[colorMode].secondaryContainer}
+              textColor={theme.colors[colorMode].onSecondaryContainer}
+              onClick={() => {
+                const chatTab: ITab = {
+                  name: "Chat",
+                  panel: <ChatPanel />,
+                  openChatSupport: false,
+                  openMiniLibrary: false,
+                  openPdfViewer: false,
+                };
 
-              const existingTab = openTabs.find((t) => t.name === chatTab.name);
-              if (!existingTab) {
-                dispatch(openTab(chatTab));
-              }
-            }}
-          >
-            Ask TAI
-          </Button>
-          <Button
-            size="md"
-            borderRadius={100}
-            bgColor={theme.colors[colorMode].tertiaryContainer}
-            textColor={theme.colors[colorMode].onTertiaryContainer}
-          >
-            View selected documents
-          </Button>
-          <Tooltip label="Select documents in the table below">
+                const existingTab = openTabs.find(
+                  (t) => t.name === chatTab.name
+                );
+                if (!existingTab) {
+                  dispatch(openTab(chatTab));
+                }
+              }}
+            >
+              Ask TAI
+            </Button>
+          </Tooltip>
+          <Tooltip label="Click to read selected documents">
+            <Button
+              size="md"
+              borderRadius={100}
+              bgColor={theme.colors[colorMode].tertiaryContainer}
+              textColor={theme.colors[colorMode].onTertiaryContainer}
+              onClick={(event) => viewSelectedDocs(event, selectedDocuments)}
+            >
+              View selected documents
+            </Button>
+          </Tooltip>
+          <Tooltip label="Select documents to delete">
             <IconButton
               size="md"
               aria-label={"delete"}

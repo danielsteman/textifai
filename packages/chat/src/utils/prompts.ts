@@ -38,7 +38,19 @@ const templates = {
         `,
   regenerateTemplate: `
       Paraphrase the given text, preserving any code or tables that are present. Your paraphrase should maintain the original intent and
-      meaning of the text, while also aiming to improve clarity and conciseness where possible. Please provide your paraphrased answer in markdown format.
+      meaning of the text, while also aiming to improve clarity and conciseness where possible. 
+      
+      Your paraphrased answer should be formatted using react-markdown styling.
+
+      Header 1: #
+      Header 2: ##
+      Header 3: ###
+      Italic: *text*
+      Bold: **text**
+      Strong: __text__
+      Ordered list: 1. text
+      Unorderder list: - text
+      New line: \
 
       CONTENT: {document}
 
@@ -92,11 +104,12 @@ const templates = {
   promptClassifier: `
         You will be presented with various user questions regarding documents they have uploaded. For each question,
         respond with either "rag" if the question implies that Retrieval-Augmented Generation is the appropriate method to use,
-        or "else" for methods that do not involve RAG.
+        "summarize" questions regarding summarization of (parts of) documents or "vanilla" for methods that do not involve RAG or summarization.
 
-        Note: "RAG" should be used when the question asks for specific information retrieval where a combination of retrieval
-        and generation is necessary. Respond with "else" for queries asking for general document processing like summarization
-        which does not specifically require the RAG method.
+        Note: "rag" should be used when the question asks for specific information retrieval where a combination of retrieval
+        and generation is necessary. Respond with "summarize" for queries asking summarization which does not specifically require the RAG method.
+        If the question is neither regarding "rag" or "summarize", respond with "vanilla".
+        This always applies: respond with either the word "rag", "summarize" or "vanilla.
 
         Example 1:
         User Question: What is the economic impact of climate change on weather conditions in The Netherlands?
@@ -106,7 +119,7 @@ const templates = {
         Example 2:
         User Question: Give me a summary of the uploaded documents.
         Answer Question 2:
-        else
+        summarize
 
         Example 3:
         User Question:
@@ -118,7 +131,19 @@ const templates = {
         User Question:
         Give me a detailed summary of the current economic status of the Dutch SME's?
         Answer Question 4:
-        else
+        summarize
+
+        Example 5:
+        User Question:
+        How are you today?
+        Answer Question 5:
+        vanilla
+
+        Example 6:
+        User Question:
+        What is one plus one?
+        Answer Question 5:
+        vanilla
 
         Question: {question}
         `,

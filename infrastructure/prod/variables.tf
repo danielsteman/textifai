@@ -40,11 +40,6 @@ variable "unique_identifier" {
   default = "g5njdml004"
 }
 
-variable "organisation_id" {
-  type    = string
-  default = ""
-}
-
 variable "GOOGLE_CREDENTIALS" {
   type      = string
   sensitive = true

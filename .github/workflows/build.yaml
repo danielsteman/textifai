@@ -2,7 +2,7 @@ name: Build
 
 on:
   pull_request:
-    branches: [main]
+    branches: [prod, dev]
 
 jobs:
   test:
@@ -18,6 +18,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Check target branch
+        run: echo ${{ github.event.pull_request.base.ref }}
 
       - name: Install dependencies in shared package
         run: yarn install
@@ -36,7 +39,7 @@ jobs:
       - name: Test all packages
         run: yarn workspaces run test
 
-  build:
+  build-web:
     runs-on: ubuntu-latest
     needs: test
 
@@ -54,7 +57,7 @@ jobs:
           password: ${{ secrets.GAR_SA_KEY }}
 
       - id: docker-push-web-tagged
-        name: Tag textifai/web image and push to GAR
+        name: Tag textifai/web image
         uses: docker/build-push-action@v5
         with:
           file: packages/web/Dockerfile
@@ -70,8 +73,25 @@ jobs:
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
 
+  build-documents:
+    runs-on: ubuntu-latest
+    needs: test
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Login to GAR
+        id: auth
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west4-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_SA_KEY }}
+
       - id: docker-push-documents-tagged
-        name: Tag textifai/documents image and push to GAR
+        name: Tag textifai/documents image
         uses: docker/build-push-action@v5
         with:
           file: packages/documents/Dockerfile
@@ -85,8 +105,25 @@ jobs:
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
 
+  build-chat:
+    runs-on: ubuntu-latest
+    needs: test
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Login to GAR
+        id: auth
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west4-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_SA_KEY }}
+
       - id: docker-push-chat-tagged
-        name: Tag textifai/chat image and push to GAR
+        name: Tag textifai/chat image
         uses: docker/build-push-action@v5
         with:
           file: packages/chat/Dockerfile
@@ -99,28 +136,41 @@ jobs:
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
-
   terraform:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build-web
+      - build-documents
+      - build-chat
     permissions:
       contents: read
       pull-requests: write
     env:
       TF_CLOUD_ORGANIZATION: "textifai"
       TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-      TF_WORKSPACE: "textifai"
-      CONFIG_DIRECTORY: "./infrastructure"
+      CONFIG_DIRECTORY: "./infrastructure/${{ github.event.pull_request.base.ref }}"
     steps:
+      - name: Set environment variables
+        run: |
+          if [ "${{ github.event.pull_request.base.ref }}" == "prod" ]; then
+            echo "TF_WORKSPACE=textifai" >> $GITHUB_ENV
+          else
+            echo "TF_WORKSPACE=textifai-dev" >> $GITHUB_ENV
+          fi
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Print env vars
+        run: |
+          echo $CONFIG_DIRECTORY
+          echo $TF_WORKSPACE
 
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
         id: plan-upload
         with:
-          directory: ./
+          directory: ${{ env.CONFIG_DIRECTORY}}
           workspace: ${{ env.TF_WORKSPACE }}
           speculative: true
 
