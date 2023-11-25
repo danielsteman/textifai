@@ -5,7 +5,6 @@ import { getDownloadURL, StorageReference } from "firebase/storage";
 import { useDispatch } from "react-redux";
 import { setSelectedText } from "./pdfSlice";
 import { openChatSupport } from "../Workspace/tabsSlice";
-import { TextItem } from "pdfjs-dist/types/src/display/api";
 
 interface Props {
   document: StorageReference;
@@ -44,45 +43,56 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pdfContainerRef = useRef<HTMLDivElement | null>(null);
-  const [textItems, setTextItems] = useState();
+  const [textItems, setTextItems] = useState({});
 
-  const searchString = `Drawing upon new institutional theory, we developed and tested a model on how digital transformational leadership and organizational agility influence digital transformation with digital strategy as a moderator.`;
+  const searchString = `Drawing upon new institutional theory, we developed and tested a model on how digital transformational.`;
 
-  const onPageLoadSuccess = useCallback(
-    async (page: { getTextContent: () => any }) => {
-      const textContent = await page.getTextContent();
-      setTextItems(textContent.items);
-    },
-    []
-  );
+  // const onPageLoadSuccess = useCallback(
+  //   async (pageData: any, pageNumber: any) => {
+  //     console.log("Page data:", pageData);
+  //     console.log("Page number:", pageNumber);
 
-  useEffect(() => {
-    const fetchTextCoordinates = async () => {
-      if (!pdfURL) {
-        console.log("PDF URL not set");
-      }
-      console.log("PDF URL:", pdfURL);
+  //     // Call getTextContent() on the pageData object, not pageNumber
+  //     const textContent = await pageData.getTextContent();
 
-      const loadingTask = pdfjs.getDocument(pdfURL!);
-      const pdf = await loadingTask.promise;
+  //     setTextItems((prevItems) => {
+  //       const updatedItems = { ...prevItems, [pageNumber]: textContent.items };
+  //       console.log("Updated text items for page " + pageNumber, updatedItems);
+  //       return updatedItems;
+  //     });
+  //   },
+  //   []
+  // );
 
-      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum);
-        const textContent = await page.getTextContent();
-        console.log("Text found: ", textContent);
+  // useEffect(() => {
+  //   const fetchTextCoordinates = async () => {
+  //     if (!pdfURL) {
+  //       console.log("PDF URL not set");
+  //     }
+  //     console.log("PDF URL:", pdfURL);
 
-        const pageText = textContent.items
-          .map((item) => ("str" in item ? item.str : ""))
-          .join(" ")
-          .replace(/\s+/g, " ");
+  //     const loadingTask = pdfjs.getDocument(pdfURL!);
+  //     const pdf = await loadingTask.promise;
 
-        if (pageText.includes(searchString.replace(/\s+/g, " "))) {
-          console.log(`Found text on page ${pageNum}`);
-        }
-      }
-    };
-    fetchTextCoordinates();
-  }, [pdfURL, searchString]);
+  //     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+  //       const page = await pdf.getPage(pageNum);
+  //       const textContent = await page.getTextContent();
+  //       console.log("Text found: ", textContent);
+
+  //       const pageText = textContent.items
+  //         .map((item) => ("str" in item ? item.str : ""))
+  //         .join(" ")
+  //         .replace(/\s+/g, " ");
+
+  //       if (pageText.includes(searchString.replace(/\s+/g, " "))) {
+  //         console.log(`Found text on page ${pageNum}`);
+  //       }
+  //     }
+  //   };
+  //   fetchTextCoordinates();
+  // }, [pdfURL, searchString]);
+
+  console.log(`text items: ${textItems}`);
 
   const customTextRenderer = useCallback(
     (textItem: { str?: any; itemIndex?: any }) => {
@@ -390,6 +400,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
               file={pdfURL}
               onLoadSuccess={({ numPages }) => setNumPages(numPages)}
               onContextMenu={showContextMenu}
+              renderMode="canvas"
             >
               {Array.from({ length: numPages }, (_, index) => (
                 <Box
@@ -398,9 +409,13 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
                   marginBottom="1rem"
                 >
                   <Page
+                    key={index + 1}
                     pageNumber={index + 1}
                     scale={scale}
-                    onLoadSuccess={onPageLoadSuccess}
+                    renderTextLayer={true}
+                    // onLoadSuccess={(pageData) =>
+                    //   onPageLoadSuccess(pageData, index + 1)
+                    // }
                     customTextRenderer={customTextRenderer}
                   />
                 </Box>
