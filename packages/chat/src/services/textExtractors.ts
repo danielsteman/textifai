@@ -5,33 +5,47 @@ import {
 } from "../db/getFirebaseReference";
 
 export const textExtractor = async (
-  userId: string
-): Promise<DocumentData[]> => {
-  const db = getFirestoreReference();
-  const uploadedDocumentsRef = db.collection("uploads");
-  const snapshot = await uploadedDocumentsRef
-    .select("extractedText")
-    .where("uploadedBy", "==", userId)
-    .get();
+  userId: string,
+  uploadNames: string[]
+): Promise<string> => {
+  try {
+    const db = getFirestoreReference();
+    const uploadedDocumentsRef = db.collection("uploads");
 
-  if (snapshot.empty) {
-    console.log(`No documents found for ${userId}.`);
-    return [];
+    let combinedText = "";
+
+    for (const uploadName of uploadNames) {
+      const snapshot = await uploadedDocumentsRef
+        .where("uploadedBy", "==", userId)
+        .where("uploadName", "==", uploadName)
+        .get();
+
+      if (!snapshot.empty) {
+        snapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          if (data.extractedText) {
+            combinedText += data.extractedText + "\n";
+          }
+        });
+      }
+    }
+
+    if (combinedText === "") {
+      throw new Error(
+        `No documents found for ${userId} with specified upload names.`
+      );
+    }
+
+    return combinedText;
+  } catch (error) {
+    console.error(`Error retrieving documents: ${error}`);
+    throw error;
   }
-
-  const documents: DocumentData[] = [];
-
-  snapshot.forEach((doc) => {
-    const data = doc.data();
-    documents.push(data);
-  });
-
-  return documents;
 };
 
 export const listDocumentNames = async (userId: string) => {
   const db = getStorageReference();
-  const users = db.bucket("textifai-g5njdml004.appspot.com");
+  const users = (await db).bucket("textifai-g5njdml004.appspot.com");
 
   const uploads = await users.getFiles({
     prefix: `users/${userId}/uploads`,
