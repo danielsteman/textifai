@@ -2,5 +2,8 @@
   "private": true,
   "workspaces": [
     "packages/!(shared)/**"
-  ]
+  ],
+  "devDependencies": {
+    "husky": "^8.0.3"
+  }
 }
