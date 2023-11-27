@@ -4,6 +4,12 @@
     "packages/!(shared)/**"
   ],
   "devDependencies": {
-    "husky": "^8.0.3"
+    "husky": "^8.0.3",
+    "semantic-release": "^22.0.8"
+  },
+  "release": {
+    "branches": [
+      "prod"
+    ]
   }
 }
