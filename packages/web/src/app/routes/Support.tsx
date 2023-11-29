@@ -31,10 +31,7 @@ const Support = () => {
 
   return (
     <VStack alignItems="center" py={20} gap={4}>
-      <Heading size="md">
-        Do you experience any inconveniences with your product?
-      </Heading>
-      <Heading size="md">Let us know!</Heading>
+      <Heading size="md">Let's get in touch!</Heading>
       <form onSubmit={handleSubmit}>
         <FormControl>
           <FormLabel>Subject</FormLabel>

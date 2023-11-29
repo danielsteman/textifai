@@ -58,6 +58,24 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
     </Box>
   );
 
+  const NestedUnorderedList = ({ ...props }) => (
+    <Box as="ul" pl={4} style={{ listStyleType: "circle" }}>
+      {props.children}
+    </Box>
+  );
+
+  const OrderedList = ({ ...props }) => (
+    <Box as="ol" pl={4} ml={2} style={{ listStyleType: "decimal" }}>
+      {props.children}
+    </Box>
+  );
+
+  const NestedOrderedList = ({ ...props }) => (
+    <Box as="ol" pl={4} style={{ listStyleType: "lower-alpha" }}>
+      {props.children}
+    </Box>
+  );
+
   const ListItem = ({ ...props }) => (
     <Box as="li" pl={2}>
       {props.children}
@@ -75,6 +93,9 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
     h2: ({ ...props }) => <Heading size="md">{props.children}</Heading>,
     h3: ({ ...props }) => <Heading size="sm">{props.children}</Heading>,
     ul: UnorderedList,
+    nestedUl: NestedUnorderedList,
+    ol: OrderedList,
+    nestedOl: NestedOrderedList,
     li: ListItem,
     bpr: Paragraph,
   };

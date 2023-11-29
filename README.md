@@ -40,7 +40,7 @@ gcloud auth application-default revoke
 - VITE_FIREBASE_MESSAGINGSENDERID
 - VITE_FIREBASE_APPID
 
-These can be found in `project settings > general > your apps` in the code snippet at the bottom of the page. Copy + paste them in `/packages/web/.env.local` as `${KEY}=${VALUE}`.
+These can be found in `project settings > general > your apps` in the code snippet at the bottom of the page. Copy + paste them in `/.vscode/.env` as `${KEY}=${VALUE}`.
 
 ### Global node dependencies:
 
@@ -65,16 +65,15 @@ Documents (just PDF for now, later support for more file types) uploaded by user
 
 ## Deployment
 
-Deployments are done with Terraform Cloud, which receives GCP credentials through `GOOGLE_CREDENTIALS` environment variable, which should be set to the json key of a (manually created) service account without newlines. The json key can be retrieved through the GCP console and can be transformed to a single line using `cat ~/Downloads/keyfile.json| tr -s '\n' ' '`.
+Deployments are done with Terraform Cloud, which receives GCP credentials through `GOOGLE_CREDENTIALS` environment variable, which should be set to the json key of a (manually created) service account without newlines. The json key can be retrieved through the GCP console and can be transformed to a single line using `cat ~/Downloads/keyfile.json | tr -s '\n' ' '`.
 
 When the project is deployed for the first time, some manual steps are required to bootstrap the project. After deploying `google_firebase_web_app`, go to the console and go through the "OAuth consent screen page" steps. Then, go to the credentials page and add a web application. Make sure that `https://{PROJECT_ID}.firebaseapp.com` is in "Authorized JavaScript origins" and `https://{PROJECT_ID}.firebaseapp.com/__/auth/handler` in "Authorized redirect URIs".
 
 Pass the `oauth_client_secret` variable in Terraform Cloud.
 
-Explore:
+Caveats:
 
-- Firebase hosting
-- In combination with cloud run
+- The projects are not under an organization and therefor it's not allowed to create a new project in Google Cloud using Terraform. You can create a project manually and import it in Terraform state using the CLI. Once you've done that it's probably needed to enable a couple of API's. The real solution would be to move all projects to an organization and give the service principal admin rights on that organization. But then again, how often do you deploy environments?
 
 ## CI
 

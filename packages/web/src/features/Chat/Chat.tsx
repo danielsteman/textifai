@@ -33,6 +33,8 @@ import {
   fetchConversationId,
   fetchMessagesForConversation,
   setConversationTitle,
+  startConversation,
+  replaceLastAgentMessage,
 } from "./ChatFuncs";
 import { useSelector, useDispatch } from "react-redux";
 import { clearMessages, pushMessage, setMessages } from "./messageStackSlice";
@@ -45,6 +47,8 @@ import {
 import { setCurrentConversationId, setLoading } from "./chatSlice";
 import { config } from "../../app/config/config";
 import theme from "../../app/themes/theme";
+import { shortenString } from "../../common/utils/shortenString";
+import { ConversationContext } from "../../app/providers/ConversationProvider";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -59,6 +63,8 @@ const Chat = () => {
   const [answerStream, setAnswerStream] = useState<string>("");
 
   const currentUser: User | null | undefined = useContext(AuthContext);
+  const conversations = useContext(ConversationContext);
+
   const { colorMode } = useColorMode();
 
   const messageStack = useSelector((state: RootState) => state.messages);
@@ -140,8 +146,10 @@ const Chat = () => {
     getConversationId();
   }, [currentUser, activeProjectId, dispatch]);
 
-  const handleStreamingAnswer = async (requestPayload: any) => {
-    setMessage("");
+  const handleStreamingAnswer = async (
+    requestPayload: any,
+    message: string | null
+  ) => {
     setAnswerStream("");
 
     const response = await fetch(`${config.chat.url}/api/chat/rag`, {
@@ -180,7 +188,14 @@ const Chat = () => {
     scrollToBottom();
     setAnswerStreamComplete(true);
 
-    await addMessageToCollection(message, "user", currentConversationId, null);
+    if (message !== null) {
+      await addMessageToCollection(
+        message,
+        "user",
+        currentConversationId,
+        null
+      );
+    }
     await addMessageToCollection(
       accumulatedAnswerStream,
       "agent",
@@ -203,13 +218,17 @@ const Chat = () => {
       if (pdfText) {
         console.log("Handling PdfQa Chain...");
 
+        const currentMessage = message;
         dispatch(pushMessage(message));
-
+        setMessage("");
         const requestPayload = {
           promptFromExtract: pdfText,
         };
 
-        const answer = await handleStreamingAnswer(requestPayload);
+        const answer = await handleStreamingAnswer(
+          requestPayload,
+          currentMessage
+        );
         dispatch(pushAnswer(answer));
       } else if (regenerate) {
         console.log("Handling Regenerate Chain...");
@@ -221,12 +240,14 @@ const Chat = () => {
           regenerate: true,
         };
 
-        const answer = await handleStreamingAnswer(requestPayload);
+        const answer = await handleStreamingAnswer(requestPayload, null);
 
         console.log(`Regenerated answer: ${answer}`);
 
         dispatch(replaceLastAnswer(answer));
+        await replaceLastAgentMessage(answer, currentConversationId!);
       } else if (exampleQuestion) {
+        const currentMessage = exampleQuestion;
         dispatch(pushMessage(exampleQuestion));
         const requestPayload = {
           prompt: exampleQuestion,
@@ -235,13 +256,17 @@ const Chat = () => {
           userId: currentUser!.uid,
         };
 
-        const answer = await handleStreamingAnswer(requestPayload);
+        const answer = await handleStreamingAnswer(
+          requestPayload,
+          currentMessage
+        );
         dispatch(pushAnswer(answer));
       } else {
         console.log("Handling Regular Chain...");
 
+        const currentMessage = message;
         dispatch(pushMessage(message));
-
+        setMessage("");
         const updatedConversationHistory = await getConversation(
           currentConversationId!
         );
@@ -253,10 +278,13 @@ const Chat = () => {
           userId: currentUser!.uid,
         };
 
-        const answer = await handleStreamingAnswer(requestPayload);
+        const answer = await handleStreamingAnswer(
+          requestPayload,
+          currentMessage
+        );
         dispatch(pushAnswer(answer));
       }
-
+      // setMessage("");
       dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
@@ -282,8 +310,21 @@ const Chat = () => {
     handleChatAction(true);
   };
 
-  function handleMessageChange(event: ChangeEvent<HTMLInputElement>): void {
+  async function handleMessageChange(
+    event: ChangeEvent<HTMLInputElement>
+  ): Promise<void> {
     setMessage(event.target.value);
+
+    if (conversations.length === 0) {
+      await startConversation(currentUser!.uid, activeProjectId!);
+
+      const conversationId = await fetchConversationId(
+        currentUser!.uid,
+        activeProjectId!
+      );
+
+      dispatch(setCurrentConversationId(conversationId));
+    }
   }
 
   const pickRandomQuestions = (
@@ -299,8 +340,11 @@ const Chat = () => {
   );
 
   useEffect(() => {
+    if (selectedDocuments.length === 0) {
+      return;
+    }
     setRandomQuestions(pickRandomQuestions(allSampleQuestions, 4));
-  }, []);
+  }, [selectedDocuments]);
 
   return (
     <Flex flexDir="column" flex={1} p={2} overflowY="hidden" h="100%" gap={4}>
@@ -362,8 +406,9 @@ const Chat = () => {
                   onClick={() => handleChatAction(false, undefined, question)}
                   bgColor={theme.colors[colorMode].secondaryContainer}
                   textColor={theme.colors[colorMode].onSecondaryContainer}
+                  textAlign="left"
                 >
-                  {question}
+                  {shortenString(question, 70)}
                 </Button>
               </Tooltip>
             ))}
@@ -377,8 +422,9 @@ const Chat = () => {
                   onClick={() => handleChatAction(false, undefined, question)}
                   bgColor={theme.colors[colorMode].secondaryContainer}
                   textColor={theme.colors[colorMode].onSecondaryContainer}
+                  textAlign="left"
                 >
-                  {question}
+                  {shortenString(question, 70)}
                 </Button>
               </Tooltip>
             ))}
