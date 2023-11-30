@@ -8,6 +8,7 @@ import { titleClassifier } from "../services/titleClassifier";
 import { promptClassifier } from "../services/promptClassifiers";
 import { summarizer } from "../services/summarizers";
 import { openAiLLM } from "../services/llms";
+import { textExtractor } from "../services/textExtractors";
 
 interface StreamingRAGPromptRequest {
   prompt: string;
@@ -53,7 +54,11 @@ export const postStreamingRAGPrompt = async (
         );
         break;
       case "summarize":
-        stream = summarizer(prompt, req.body.history, "");
+        const articleText = await textExtractor(
+          req.body.userId,
+          req.body.files
+        );
+        stream = summarizer(prompt, req.body.history, articleText);
         break;
       case "vanilla":
         stream = openAiLLM(prompt);
