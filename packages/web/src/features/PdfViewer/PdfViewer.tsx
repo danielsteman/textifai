@@ -5,6 +5,7 @@ import { getDownloadURL, StorageReference } from "firebase/storage";
 import { useDispatch } from "react-redux";
 import { setSelectedText } from "./pdfSlice";
 import { openChatSupport } from "../Workspace/tabsSlice";
+import { shortenString } from "../../common/utils/shortenString";
 
 interface Props {
   document: StorageReference;
@@ -27,7 +28,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   useEffect(() => {
     if (!document) return;
-    
+
     const fetchDocumentUrl = async () => {
       try {
         const pdfDownloadURL = await getDownloadURL(document);
@@ -36,7 +37,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
         console.error("Error fetching PDF URL", error);
       }
     };
-    
+
     fetchDocumentUrl();
   }, [document]);
 
@@ -59,30 +60,26 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      // Check if Ctrl or Cmd key is pressed during the scroll
       if (e.ctrlKey || e.metaKey) {
-        e.preventDefault(); // prevent the default zooming behavior of some browsers
+        e.preventDefault();
 
-        // Determine zoom direction: + for zoom in, - for zoom out
         const direction = e.deltaY < 0 ? 0.1 : -0.1;
 
-        setScale(prev => {
+        setScale((prev) => {
           const newScale = prev + direction;
-          return newScale < 0.5 ? 0.5 : newScale > 3 ? 3 : newScale; // Make sure to stay within your min and max scale boundaries
+          return newScale < 0.5 ? 0.5 : newScale > 3 ? 3 : newScale;
         });
       }
     };
 
-    // Add event listener to the container
     const container = pdfContainerRef.current;
     if (container) {
-      container.addEventListener('wheel', handleWheel);
+      container.addEventListener("wheel", handleWheel);
     }
 
-    // Cleanup event listener on unmount
     return () => {
       if (container) {
-        container.removeEventListener('wheel', handleWheel);
+        container.removeEventListener("wheel", handleWheel);
       }
     };
   }, []);
@@ -90,9 +87,9 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
   const showContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
     const selection = window.getSelection();
-    
+
     if (!selection || selection.toString().trim() === "") return;
-    
+
     setMenuPosition({
       x: (event.clientX + window.scrollX) / scale,
       y: (event.clientY + window.scrollY) / scale,
@@ -107,40 +104,43 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
     }
   };
 
-  const handleContextMenuOption = (option: string, e: React.MouseEvent<HTMLDivElement>) => {
+  const handleContextMenuOption = (
+    option: string,
+    e: React.MouseEvent<HTMLDivElement>
+  ) => {
     e.stopPropagation();
     const selection = window.getSelection();
     if (!selection) return;
 
     const text = selection.toString();
-    let message = '';
+    let message = "";
 
     switch (option) {
-      case 'summarise':
+      case "summarise":
         message = `Summarise the following piece of text: ${text}`;
         break;
-      case 'key':
+      case "key":
         message = `Show the key points of the following piece of text: ${text}`;
         break;
-      case 'explain':
+      case "explain":
         message = `Explain the following piece of text: ${text}`;
         break;
       default:
-        console.error('Invalid option');
+        console.error("Invalid option");
         return;
     }
 
     dispatch(setSelectedText(message));
-    dispatch(openChatSupport(document.name));
+    dispatch(openChatSupport(shortenString(document.name, 10)));
     setMenuVisible(false);
   };
 
   const handleSubmitQuestion = () => {
-    const selectedText = savedSelection ? savedSelection.toString() : '';
+    const selectedText = savedSelection ? savedSelection.toString() : "";
     const message = `${userQuestion} ${selectedText}`;
-    
+
     dispatch(setSelectedText(message));
-    dispatch(openChatSupport(document.name));
+    dispatch(openChatSupport(shortenString(document.name, 10)));
     setMenuVisible(false);
     setIsCustomHovered(false);
     setUserQuestion("");
@@ -148,10 +148,21 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
 
   return (
     <Flex width="100%" height="100%" direction="column">
-      <Box position="sticky" top="0" zIndex={1} p="0.5rem" display="flex" justifyContent="center">
-        <button onClick={() => setScale((prev) => Math.max(prev - 0.1, 0.5))}>-</button>
+      <Box
+        position="sticky"
+        top="0"
+        zIndex={1}
+        p="0.5rem"
+        display="flex"
+        justifyContent="center"
+      >
+        <button onClick={() => setScale((prev) => Math.max(prev - 0.1, 0.5))}>
+          -
+        </button>
         <span style={{ margin: "0 1rem" }}>{Math.round(scale * 100)}%</span>
-        <button onClick={() => setScale((prev) => Math.min(prev + 0.1, 3))}>+</button>
+        <button onClick={() => setScale((prev) => Math.min(prev + 0.1, 3))}>
+          +
+        </button>
       </Box>
 
       <Box flex="1" position="relative" overflowY="auto">
@@ -171,7 +182,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
               display="block"
               p="1rem"
               color="black"
-              onClick={(e: any) => handleContextMenuOption('summarise', e)}
+              onClick={(e: any) => handleContextMenuOption("summarise", e)}
             >
               Summarise
             </Box>
@@ -180,7 +191,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
               display="block"
               p="1rem"
               color="black"
-              onClick={(e: any) => handleContextMenuOption('key', e)}
+              onClick={(e: any) => handleContextMenuOption("key", e)}
             >
               Show key points
             </Box>
@@ -189,7 +200,7 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
               display="block"
               p="1rem"
               color="black"
-              onClick={(e: any) => handleContextMenuOption('explain', e)}
+              onClick={(e: any) => handleContextMenuOption("explain", e)}
             >
               Explain
             </Box>
@@ -212,14 +223,14 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
             >
               <Box>Your own question...</Box>
               {isCustomHovered && (
-                <Input 
+                <Input
                   size="sm"
                   ref={inputRef}
                   value={userQuestion}
                   autoFocus
                   height="100%"
-                  paddingY="0" 
-                  backgroundColor="white" 
+                  paddingY="0"
+                  backgroundColor="white"
                   border="1px solid #E2E8F0"
                   placeholder="Type your question and hit Enter"
                   onChange={(e) => setUserQuestion(e.target.value)}
@@ -231,15 +242,15 @@ const PdfViewer: React.FC<Props> = ({ document }) => {
                       setSavedSelection(null);
                       if (!userQuestion) setIsCustomHovered(false);
                     }
-                  }}                  
+                  }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       handleSubmitQuestion();
                     }
                   }}
-                  position="absolute"  
-                  top="50%"  
-                  left="100%"  
+                  position="absolute"
+                  top="50%"
+                  left="100%"
                   transform="translateY(-50%)"
                 />
               )}
