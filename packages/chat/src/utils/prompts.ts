@@ -61,7 +61,8 @@ const templates = {
       Your answers should be concise, maintaining the original context, and avoiding the mention of the word "context".
       If asked to summarize, use no more than five sentences. If asked to show key points, use three to five bullet points.
       If asked to explain, use easy-to-understand language without jargon. Your final answer should be based solely on the given
-      context and should not reference any external sources or use page number references.
+      context and should not reference any external sources or use page number references. Don't use a heading stating what 
+      you are doing.
 
       The final answer should be tailored to each prompt, ensuring a unique and clear structure that aids the user's understanding
       and should be formatted using react-markdown styling.

@@ -218,8 +218,9 @@ const Chat = () => {
       if (pdfText) {
         console.log("Handling PdfQa Chain...");
 
-        const currentMessage = message;
-        dispatch(pushMessage(message));
+        const currentMessage = pdfText;
+        console.log(`Pdf message sent: ${currentMessage}`);
+        dispatch(pushMessage(currentMessage));
         setMessage("");
         const requestPayload = {
           promptFromExtract: pdfText,
