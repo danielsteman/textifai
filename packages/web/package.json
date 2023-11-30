@@ -29,6 +29,7 @@
     "firebase": "^10.4.0",
     "framer-motion": "^10.2.3",
     "langchain": "^0.0.118",
+    "marked": "^11.0.0",
     "openai": "^3.3.0",
     "pdf-parse": "^1.1.1",
     "pdfjs": "^2.5.2",

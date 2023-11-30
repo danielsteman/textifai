@@ -53,7 +53,6 @@ import { ConversationContext } from "../../app/providers/ConversationProvider";
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const lastProcessedTextRef = useRef<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [randomQuestions, setRandomQuestions] = useState<string[]>([]);
 
@@ -78,9 +77,13 @@ const Chat = () => {
   const activeProjectId = useSelector(
     (state: RootState) => state.activeProject.projectId
   );
+
   const loading = useSelector((state: RootState) => state.chat.loading);
 
   const dispatch = useDispatch();
+
+  // Milliseconds
+  const DEBOUNCE_DELAY = 500;
 
   useEffect(() => {
     if (messageStack.length === 1) {
@@ -114,11 +117,20 @@ const Chat = () => {
   useEffect(() => {
     if (isProcessing) return;
 
-    if (selectedText && selectedText !== lastProcessedTextRef.current) {
-      setIsProcessing(true);
-      handleSubmit({ preventDefault: () => {} });
+    if (
+      selectedText &&
+      selectedText !== messageStack[messageStack.length - 1]
+    ) {
+      const handler = setTimeout(() => {
+        setIsProcessing(true);
+        handleSubmit({ preventDefault: () => {} });
+      }, DEBOUNCE_DELAY);
+
+      return () => {
+        clearTimeout(handler);
+      };
     }
-  }, [selectedText, isProcessing]);
+  }, [selectedText, messageStack, isProcessing]);
 
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
@@ -218,8 +230,11 @@ const Chat = () => {
       if (pdfText) {
         console.log("Handling PdfQa Chain...");
 
-        const currentMessage = message;
-        dispatch(pushMessage(message));
+        const currentMessage = pdfText;
+        console.log(
+          `Last message sent: ${messageStack[messageStack.length - 1]}`
+        );
+        dispatch(pushMessage(currentMessage));
         setMessage("");
         const requestPayload = {
           promptFromExtract: pdfText,
@@ -296,13 +311,14 @@ const Chat = () => {
     console.log("handleSubmit called");
     e.preventDefault();
 
-    if (selectedText && selectedText !== lastProcessedTextRef.current) {
+    if (
+      selectedText &&
+      selectedText !== messageStack[messageStack.length - 1]
+    ) {
       await handleChatAction(false, selectedText);
-      lastProcessedTextRef.current = selectedText;
     } else {
       await handleChatAction();
     }
-
     setIsProcessing(false);
   };
 

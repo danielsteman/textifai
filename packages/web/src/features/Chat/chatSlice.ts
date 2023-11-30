@@ -1,11 +1,12 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const chatSlice = createSlice({
-  name: 'chat',
+  name: "chat",
   initialState: {
     currentConversationId: null,
     loading: false,
-    extractedText: '',
+    extractedText: "",
+    processedText: "",
   },
   reducers: {
     setCurrentConversationId: (state, action) => {
@@ -20,6 +21,7 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setCurrentConversationId, setLoading, setExtractedText } = chatSlice.actions;
+export const { setCurrentConversationId, setLoading, setExtractedText } =
+  chatSlice.actions;
 
 export default chatSlice.reducer;
