@@ -1,38 +1,27 @@
 import { App, initializeApp } from "firebase-admin/app";
-import { credential } from "firebase-admin";
 import { Storage, getStorage } from "firebase-admin/storage";
 import { Firestore, getFirestore } from "firebase-admin/firestore";
-import dotenv from "dotenv";
-import path from "path";
-
-// Loading environment variables
-const envPath = path.resolve(__dirname, "../../.env.local");
-dotenv.config({ path: envPath });
 
 let app: App | null = null;
-let storage: Storage | null = null;
-let db: Firestore | null = null;
 
 export const getFirebaseReference = () => {
   if (app === null) {
-    app = initializeApp({
-      credential: credential.cert({
-        projectId: process.env.FIREBASE_PROJECTID!,
-        clientEmail: process.env.FIREBASE_CLIENTMAIL!,
-        privateKey: process.env.FIREBASE_PRIVATEKEY!.replace(/\\n/g, "\n"),
-      }),
-    });
+    app = initializeApp();
   }
   return app;
 };
 
-export const getStorageReference = async () => {
+let storage: Storage | null = null;
+
+export const getStorageReference = () => {
   if (storage === null) {
-    const app = await getFirebaseReference();
+    const app = getFirebaseReference();
     storage = getStorage(app);
   }
   return storage;
 };
+
+let db: Firestore | null = null;
 
 export const getFirestoreReference = () => {
   if (db === null) {
