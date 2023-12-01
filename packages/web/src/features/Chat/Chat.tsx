@@ -8,6 +8,7 @@ import {
   InputGroup,
   InputRightElement,
   Tooltip,
+  VStack,
   useColorMode,
 } from "@chakra-ui/react";
 import { RepeatIcon } from "@chakra-ui/icons";
@@ -82,6 +83,10 @@ const Chat = () => {
     (state: RootState) => state.pdf.processedText
   );
   const loading = useSelector((state: RootState) => state.chat.loading);
+  const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+  const activeTabIndex = useSelector(
+    (state: RootState) => state.tabs.activeTabIndex
+  );
 
   const dispatch = useDispatch();
 
@@ -404,48 +409,74 @@ const Chat = () => {
         ))}
         <Box ref={messagesEndRef} />
       </Box>
-      {messageStack.length === 0 && (
-        <Flex
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          pb={2}
-          gap={2}
-        >
-          <HStack gap={2}>
-            {randomQuestions.slice(0, 2).map((question, index) => (
-              <Tooltip label={question} placement="top" hasArrow key={index}>
-                <Button
-                  size="md"
-                  width="30vw"
-                  onClick={() => handleChatAction(false, undefined, question)}
-                  bgColor={theme.colors[colorMode].secondaryContainer}
-                  textColor={theme.colors[colorMode].onSecondaryContainer}
-                  textAlign="left"
-                >
-                  {shortenString(question, 70)}
-                </Button>
-              </Tooltip>
-            ))}
-          </HStack>
-          <HStack gap={2}>
-            {randomQuestions.slice(2, 4).map((question, index) => (
-              <Tooltip label={question} placement="top" hasArrow key={index}>
-                <Button
-                  size="md"
-                  width="30vw"
-                  onClick={() => handleChatAction(false, undefined, question)}
-                  bgColor={theme.colors[colorMode].secondaryContainer}
-                  textColor={theme.colors[colorMode].onSecondaryContainer}
-                  textAlign="left"
-                >
-                  {shortenString(question, 70)}
-                </Button>
-              </Tooltip>
-            ))}
-          </HStack>
-        </Flex>
-      )}
+      {messageStack.length === 0 ? (
+        openTabs[activeTabIndex].name === "Chat" ? (
+          // If the active tab is "Chat", show the questions in a Flex layout
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            pb={2}
+            gap={2}
+          >
+            <HStack gap={2}>
+              {randomQuestions.slice(0, 2).map((question, index) => (
+                <Tooltip label={question} placement="top" hasArrow key={index}>
+                  <Button
+                    size="md"
+                    width="30vw"
+                    onClick={() => handleChatAction(false, undefined, question)}
+                    bgColor={theme.colors[colorMode].secondaryContainer}
+                    textColor={theme.colors[colorMode].onSecondaryContainer}
+                    textAlign="left"
+                  >
+                    {shortenString(question, 70)}
+                  </Button>
+                </Tooltip>
+              ))}
+            </HStack>
+            <HStack gap={2}>
+              {randomQuestions.slice(2, 4).map((question, index) => (
+                <Tooltip label={question} placement="top" hasArrow key={index}>
+                  <Button
+                    size="md"
+                    width="30vw"
+                    onClick={() => handleChatAction(false, undefined, question)}
+                    bgColor={theme.colors[colorMode].secondaryContainer}
+                    textColor={theme.colors[colorMode].onSecondaryContainer}
+                    textAlign="left"
+                  >
+                    {shortenString(question, 70)}
+                  </Button>
+                </Tooltip>
+              ))}
+            </HStack>
+          </Flex>
+        ) : (
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <VStack spacing={4} align="center" width="100%">
+              {randomQuestions.map((question, index) => (
+                <Tooltip label={question} placement="top" hasArrow key={index}>
+                  <Button
+                    size="md"
+                    width="75%"
+                    onClick={() => handleChatAction(false, undefined, question)}
+                    bgColor={theme.colors[colorMode].secondaryContainer}
+                    textColor={theme.colors[colorMode].onSecondaryContainer}
+                    textAlign="left"
+                  >
+                    {shortenString(question, 70)}
+                  </Button>
+                </Tooltip>
+              ))}
+            </VStack>
+          </Flex>
+        )
+      ) : null}
       <form onSubmit={handleSubmit}>
         <InputGroup>
           <Input
