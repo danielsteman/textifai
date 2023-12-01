@@ -459,7 +459,7 @@ const Workspace = () => {
           {openTabs &&
             activeTabIndex &&
             (openTabs[activeTabIndex].name === "Chat" ||
-              (openTabs[activeTabIndex].name === "Editor" &&
+              (openTabs[activeTabIndex].name !== "Library" &&
                 openTabs[activeTabIndex].openChatSupport)) && (
               <VStack w="100%" overflowY="scroll">
                 <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
