@@ -6,7 +6,6 @@ const chatSlice = createSlice({
     currentConversationId: null,
     loading: false,
     extractedText: "",
-    processedText: "",
   },
   reducers: {
     setCurrentConversationId: (state, action) => {

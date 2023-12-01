@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface PdfState {
   selectedText: string;
+  processedText: string;
 }
 
 const initialState: PdfState = {
-  selectedText: ""
+  selectedText: "",
+  processedText: "",
 };
 
 const pdfSlice = createSlice({
@@ -15,12 +17,16 @@ const pdfSlice = createSlice({
     setSelectedText: (state, action: PayloadAction<string>) => {
       state.selectedText = action.payload;
     },
+    setProcessedText: (state, action: PayloadAction<string>) => {
+      state.processedText = action.payload;
+    },
     clearSelectedText: (state) => {
       state.selectedText = "";
-    }
-  }
+    },
+  },
 });
 
-export const { setSelectedText, clearSelectedText } = pdfSlice.actions;
+export const { setSelectedText, setProcessedText, clearSelectedText } =
+  pdfSlice.actions;
 
 export default pdfSlice.reducer;

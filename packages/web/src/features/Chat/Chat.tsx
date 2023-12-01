@@ -49,6 +49,7 @@ import { config } from "../../app/config/config";
 import theme from "../../app/themes/theme";
 import { shortenString } from "../../common/utils/shortenString";
 import { ConversationContext } from "../../app/providers/ConversationProvider";
+import { setProcessedText } from "../PdfViewer/pdfSlice";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
@@ -77,7 +78,9 @@ const Chat = () => {
   const activeProjectId = useSelector(
     (state: RootState) => state.activeProject.projectId
   );
-
+  const processedtext = useSelector(
+    (state: RootState) => state.pdf.processedText
+  );
   const loading = useSelector((state: RootState) => state.chat.loading);
 
   const dispatch = useDispatch();
@@ -115,22 +118,22 @@ const Chat = () => {
   }, [currentConversationId]);
 
   useEffect(() => {
-    if (isProcessing) return;
-
-    if (
-      selectedText &&
-      selectedText !== messageStack[messageStack.length - 1]
-    ) {
-      const handler = setTimeout(() => {
-        setIsProcessing(true);
-        handleSubmit({ preventDefault: () => {} });
-      }, DEBOUNCE_DELAY);
-
-      return () => {
-        clearTimeout(handler);
-      };
+    if (isProcessing || selectedText === processedtext) {
+      console.log(
+        "No processing needed or already processing. Submission prevented."
+      );
+      return;
     }
-  }, [selectedText, messageStack, isProcessing]);
+
+    const handler = setTimeout(() => {
+      setIsProcessing(true);
+      handleSubmit({ preventDefault: () => {} });
+    }, DEBOUNCE_DELAY);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [selectedText]);
 
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
@@ -231,9 +234,6 @@ const Chat = () => {
         console.log("Handling PdfQa Chain...");
 
         const currentMessage = pdfText;
-        console.log(
-          `Last message sent: ${messageStack[messageStack.length - 1]}`
-        );
         dispatch(pushMessage(currentMessage));
         setMessage("");
         const requestPayload = {
@@ -311,14 +311,13 @@ const Chat = () => {
     console.log("handleSubmit called");
     e.preventDefault();
 
-    if (
-      selectedText &&
-      selectedText !== messageStack[messageStack.length - 1]
-    ) {
+    if (selectedText && selectedText !== processedtext) {
       await handleChatAction(false, selectedText);
+      dispatch(setProcessedText(selectedText));
     } else {
       await handleChatAction();
     }
+
     setIsProcessing(false);
   };
 
