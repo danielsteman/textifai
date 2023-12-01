@@ -78,6 +78,7 @@ import { deleteProject } from "../Projects/deleteProject";
 import { handleEditProjectName } from "../Projects/changeProjectName";
 import { keyframes } from "@emotion/react";
 import { shortenString } from "../../common/utils/shortenString";
+import { initializeSelectedDocuments } from "../DocumentCollection/librarySlice";
 
 export type ITab = {
   name: string;
@@ -86,6 +87,7 @@ export type ITab = {
   openMiniLibrary: boolean;
   openPdfViewer: boolean;
   isActive?: boolean;
+  uploadName?: string;
 };
 
 const typing = keyframes`
@@ -138,6 +140,13 @@ const Workspace = () => {
 
   const handleAddNewProject = () => {
     navigate("/features/onboarding");
+  };
+
+  const setActivateTab = (tab: any) => {
+    if (tab.panel.type.name === "PdfViewer") {
+      dispatch(initializeSelectedDocuments([tab.uploadName]));
+    }
+    dispatch(activateTab(tab));
   };
 
   useEffect(() => {
@@ -638,7 +647,7 @@ const Workspace = () => {
       {openTabs && openTabs.length > 0 && (
         <Tabs
           index={activeTabIndex}
-          onChange={(index) => dispatch(activateTab(openTabs[index]))}
+          onChange={(index) => setActivateTab(openTabs[index])}
           w="100%"
           h="100%"
           maxH="100%"
@@ -676,7 +685,7 @@ const Workspace = () => {
                   >
                     <Tab
                       px={12}
-                      onClick={() => dispatch(activateTab(tab))}
+                      onClick={() => setActivateTab(tab)}
                       whiteSpace="nowrap"
                       borderRadius="lg"
                     >

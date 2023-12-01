@@ -138,6 +138,7 @@ const MegaLibrary = () => {
       openChatSupport: false,
       openMiniLibrary: false,
       openPdfViewer: false,
+      uploadName: uploadName,
     };
     dispatch(openTab(tab));
     dispatch(initializeSelectedDocuments([uploadName]));
