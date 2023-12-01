@@ -530,13 +530,23 @@ const Workspace = () => {
                       }}
                     >
                       <FaTrash
-                        onClick={async () => {
+                        onClick={async (e) => {
+                          e.stopPropagation();
                           await deleteConversation(
                             conversation.uid,
                             currentUser!.uid,
                             activeProjectId!,
                             dispatch
                           );
+                          if (sortedConversations.length > 1) {
+                            const nextConversationId =
+                              sortedConversations[0].uid === conversation.uid
+                                ? sortedConversations[1].uid
+                                : sortedConversations[0].uid;
+                            dispatch(
+                              setCurrentConversationId(nextConversationId)
+                            );
+                          }
                         }}
                       />
                     </Box>

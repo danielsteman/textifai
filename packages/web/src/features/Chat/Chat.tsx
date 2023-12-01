@@ -469,7 +469,7 @@ const Chat = () => {
                     textColor={theme.colors[colorMode].onSecondaryContainer}
                     textAlign="left"
                   >
-                    {shortenString(question, 70)}
+                    {shortenString(question, 75)}
                   </Button>
                 </Tooltip>
               ))}
