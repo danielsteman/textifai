@@ -755,6 +755,7 @@ const Workspace = () => {
             )}
             {openTabs[activeTabIndex].name === "Chat" && (
               <>
+                <Box w={2} />
                 <Tooltip label="Open mini library">
                   <IconButton
                     aria-label={"mini-library"}
@@ -764,10 +765,12 @@ const Workspace = () => {
                     }}
                   />
                 </Tooltip>
+                <Box w={2} />
               </>
             )}
             {isActiveTabSelected && (
               <>
+                <Box w={2} />
                 <Tooltip label="Open support chat">
                   <IconButton
                     aria-label={"chat-support"}
@@ -777,6 +780,17 @@ const Workspace = () => {
                     }}
                   />
                 </Tooltip>
+                <Box w={2} />
+                <Tooltip label="Open mini library">
+                  <IconButton
+                    aria-label={"library-support"}
+                    icon={<FaBookOpen />}
+                    onClick={() => {
+                      dispatch(openMiniLibrary(openTabs[activeTabIndex].name));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
               </>
             )}
           </Flex>
