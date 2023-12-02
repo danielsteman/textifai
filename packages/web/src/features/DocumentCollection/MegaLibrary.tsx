@@ -39,7 +39,7 @@ import { db, storage } from "../../app/config/firebase";
 import { deleteObject, ref } from "firebase/storage";
 import { ChatIcon, SearchIcon } from "@chakra-ui/icons";
 import { MdUpload } from "react-icons/md";
-import { FaRocket, FaStar, FaTrash } from "react-icons/fa";
+import { FaRegStar, FaRocket, FaStar, FaTrash } from "react-icons/fa";
 import theme from "../../app/themes/theme";
 import UploadForm from "../UploadForm/UploadForm";
 import { ITab } from "../Workspace/Workspace";
@@ -771,12 +771,12 @@ const MegaLibrary = () => {
                       onChange={toggleAllDocuments}
                     />
                   </Th>
+                  <Th>Favourite</Th>
                   <Th>Title</Th>
                   <Th>Author(s)</Th>
                   <Th isNumeric>Year</Th>
                   <Th>Collection</Th>
                   <Th>Topics</Th>
-                  <Th>Favorite</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -830,6 +830,35 @@ const MegaLibrary = () => {
                             }
                           />
                         </Td>
+                        <Td textAlign="center">
+                          {doc.favoritedBy ? (
+                            <Icon
+                              as={FaStar}  // Filled star when favorited
+                              color={theme.colors[colorMode].primary}
+                              onClick={() =>
+                                toggleFavourite(
+                                  currentUser!.uid,
+                                  activeProjectId!,
+                                  doc.uploadName,
+                                  !doc.favoritedBy
+                                )
+                              }
+                            />
+                          ) : (
+                            <Icon
+                              as={FaRegStar}  // Star outline when not favorited
+                              color={theme.colors[colorMode].onSurface}
+                              onClick={() =>
+                                toggleFavourite(
+                                  currentUser!.uid,
+                                  activeProjectId!,
+                                  doc.uploadName,
+                                  !doc.favoritedBy
+                                )
+                              }
+                            />
+                          )}
+                        </Td>
                         <Td onContextMenu={(e) => handleRightClick(e, doc)}>
                           <Tooltip label="Click to open or right-click to edit the file name">
                             <Button
@@ -868,24 +897,6 @@ const MegaLibrary = () => {
                           />
                         </Td>
                         <Td>{parseTopics(doc.topics)}</Td>
-                        <Td textAlign="center">
-                          <Icon
-                            as={FaStar}
-                            color={
-                              doc.favoritedBy
-                                ? theme.colors[colorMode].secondaryContainer
-                                : "none"
-                            }
-                            onClick={() =>
-                              toggleFavourite(
-                                currentUser!.uid,
-                                activeProjectId!,
-                                doc.uploadName,
-                                !doc.favoritedBy
-                              )
-                            }
-                          />
-                        </Td>
                       </Tr>
                     ))}
               </Tbody>
