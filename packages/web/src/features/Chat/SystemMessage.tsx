@@ -16,9 +16,10 @@ import { appendToDocument } from "./ChatFuncs";
 import { User } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { CopyIcon } from "@chakra-ui/icons";
+import { CopyIcon, CheckIcon } from "@chakra-ui/icons";
 import EditorPanel from "../Workspace/panels/EditorPanel";
 import { addTab } from "../Workspace/tabsSlice";
+import { useState } from "react";
 
 interface SystemMessageProps {
   message: string;
@@ -27,6 +28,7 @@ interface SystemMessageProps {
 
 const SystemMessage = ({ message, variant }: SystemMessageProps) => {
   const { colorMode } = useColorMode();
+  const [isCopied, setIsCopied] = useState(false);
   const { primary, tertiary, onPrimary, onTertiary } = theme.colors[colorMode];
 
   const dispatch = useDispatch();
@@ -50,6 +52,12 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       openPdfViewer: false,
     };
     dispatch(addTab(tab));
+
+    setIsCopied(true);
+
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 5000);
   };
 
   const UnorderedList = ({ ...props }) => (
@@ -106,8 +114,8 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       <Box
         color={textColor}
         bgColor={bgColor}
-        px={3}
-        py={1}
+        px={6}
+        py={4}
         rounded={8}
         gap={0}
         maxW="80%"
@@ -126,8 +134,8 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
         <Tooltip label="Copy to Working Document" placement="top">
           <IconButton
             top={0}
-            aria-label="Options"
-            icon={<CopyIcon />}
+            aria-label="Copy"
+            icon={isCopied ? <CheckIcon /> : <CopyIcon />}
             variant="ghost"
             size="sm"
             color={theme.colors[colorMode].secondary}

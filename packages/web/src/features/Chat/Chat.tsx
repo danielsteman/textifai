@@ -8,6 +8,7 @@ import {
   InputGroup,
   InputRightElement,
   Tooltip,
+  VStack,
   useColorMode,
 } from "@chakra-ui/react";
 import { RepeatIcon } from "@chakra-ui/icons";
@@ -49,11 +50,11 @@ import { config } from "../../app/config/config";
 import theme from "../../app/themes/theme";
 import { shortenString } from "../../common/utils/shortenString";
 import { ConversationContext } from "../../app/providers/ConversationProvider";
+import { setProcessedText } from "../PdfViewer/pdfSlice";
 
 const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const lastProcessedTextRef = useRef<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [randomQuestions, setRandomQuestions] = useState<string[]>([]);
 
@@ -78,9 +79,19 @@ const Chat = () => {
   const activeProjectId = useSelector(
     (state: RootState) => state.activeProject.projectId
   );
+  const processedtext = useSelector(
+    (state: RootState) => state.pdf.processedText
+  );
   const loading = useSelector((state: RootState) => state.chat.loading);
+  const openTabs = useSelector((state: RootState) => state.tabs.openTabs);
+  const activeTabIndex = useSelector(
+    (state: RootState) => state.tabs.activeTabIndex
+  );
 
   const dispatch = useDispatch();
+
+  // Milliseconds
+  const DEBOUNCE_DELAY = 500;
 
   useEffect(() => {
     if (messageStack.length === 1) {
@@ -112,13 +123,22 @@ const Chat = () => {
   }, [currentConversationId]);
 
   useEffect(() => {
-    if (isProcessing) return;
+    if (isProcessing || selectedText === processedtext) {
+      console.log(
+        "No processing needed or already processing. Submission prevented."
+      );
+      return;
+    }
 
-    if (selectedText && selectedText !== lastProcessedTextRef.current) {
+    const handler = setTimeout(() => {
       setIsProcessing(true);
       handleSubmit({ preventDefault: () => {} });
-    }
-  }, [selectedText, isProcessing]);
+    }, DEBOUNCE_DELAY);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [selectedText]);
 
   const selectedDocuments = useSelector(
     (state: RootState) => state.library.selectedDocuments
@@ -218,8 +238,8 @@ const Chat = () => {
       if (pdfText) {
         console.log("Handling PdfQa Chain...");
 
-        const currentMessage = message;
-        dispatch(pushMessage(message));
+        const currentMessage = pdfText;
+        dispatch(pushMessage(currentMessage));
         setMessage("");
         const requestPayload = {
           promptFromExtract: pdfText,
@@ -296,9 +316,9 @@ const Chat = () => {
     console.log("handleSubmit called");
     e.preventDefault();
 
-    if (selectedText && selectedText !== lastProcessedTextRef.current) {
+    if (selectedText && selectedText !== processedtext) {
       await handleChatAction(false, selectedText);
-      lastProcessedTextRef.current = selectedText;
+      dispatch(setProcessedText(selectedText));
     } else {
       await handleChatAction();
     }
@@ -389,48 +409,74 @@ const Chat = () => {
         ))}
         <Box ref={messagesEndRef} />
       </Box>
-      {messageStack.length === 0 && (
-        <Flex
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          pb={2}
-          gap={2}
-        >
-          <HStack gap={2}>
-            {randomQuestions.slice(0, 2).map((question, index) => (
-              <Tooltip label={question} placement="top" hasArrow key={index}>
-                <Button
-                  size="md"
-                  width="30vw"
-                  onClick={() => handleChatAction(false, undefined, question)}
-                  bgColor={theme.colors[colorMode].secondaryContainer}
-                  textColor={theme.colors[colorMode].onSecondaryContainer}
-                  textAlign="left"
-                >
-                  {shortenString(question, 70)}
-                </Button>
-              </Tooltip>
-            ))}
-          </HStack>
-          <HStack gap={2}>
-            {randomQuestions.slice(2, 4).map((question, index) => (
-              <Tooltip label={question} placement="top" hasArrow key={index}>
-                <Button
-                  size="md"
-                  width="30vw"
-                  onClick={() => handleChatAction(false, undefined, question)}
-                  bgColor={theme.colors[colorMode].secondaryContainer}
-                  textColor={theme.colors[colorMode].onSecondaryContainer}
-                  textAlign="left"
-                >
-                  {shortenString(question, 70)}
-                </Button>
-              </Tooltip>
-            ))}
-          </HStack>
-        </Flex>
-      )}
+      {messageStack.length === 0 ? (
+        openTabs[activeTabIndex].name === "Chat" ? (
+          // If the active tab is "Chat", show the questions in a Flex layout
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            pb={2}
+            gap={2}
+          >
+            <HStack gap={2}>
+              {randomQuestions.slice(0, 2).map((question, index) => (
+                <Tooltip label={question} placement="top" hasArrow key={index}>
+                  <Button
+                    size="md"
+                    width="30vw"
+                    onClick={() => handleChatAction(false, undefined, question)}
+                    bgColor={theme.colors[colorMode].secondaryContainer}
+                    textColor={theme.colors[colorMode].onSecondaryContainer}
+                    textAlign="left"
+                  >
+                    {shortenString(question, 70)}
+                  </Button>
+                </Tooltip>
+              ))}
+            </HStack>
+            <HStack gap={2}>
+              {randomQuestions.slice(2, 4).map((question, index) => (
+                <Tooltip label={question} placement="top" hasArrow key={index}>
+                  <Button
+                    size="md"
+                    width="30vw"
+                    onClick={() => handleChatAction(false, undefined, question)}
+                    bgColor={theme.colors[colorMode].secondaryContainer}
+                    textColor={theme.colors[colorMode].onSecondaryContainer}
+                    textAlign="left"
+                  >
+                    {shortenString(question, 70)}
+                  </Button>
+                </Tooltip>
+              ))}
+            </HStack>
+          </Flex>
+        ) : (
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <VStack spacing={4} align="center" width="100%">
+              {randomQuestions.map((question, index) => (
+                <Tooltip label={question} placement="top" hasArrow key={index}>
+                  <Button
+                    size="md"
+                    width="75%"
+                    onClick={() => handleChatAction(false, undefined, question)}
+                    bgColor={theme.colors[colorMode].secondaryContainer}
+                    textColor={theme.colors[colorMode].onSecondaryContainer}
+                    textAlign="left"
+                  >
+                    {shortenString(question, 75)}
+                  </Button>
+                </Tooltip>
+              ))}
+            </VStack>
+          </Flex>
+        )
+      ) : null}
       <form onSubmit={handleSubmit}>
         <InputGroup>
           <Input

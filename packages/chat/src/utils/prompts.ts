@@ -61,7 +61,8 @@ const templates = {
       Your answers should be concise, maintaining the original context, and avoiding the mention of the word "context".
       If asked to summarize, use no more than five sentences. If asked to show key points, use three to five bullet points.
       If asked to explain, use easy-to-understand language without jargon. Your final answer should be based solely on the given
-      context and should not reference any external sources or use page number references.
+      context and should not reference any external sources or use page number references. Don't use a heading stating what 
+      you are doing.
 
       The final answer should be tailored to each prompt, ensuring a unique and clear structure that aids the user's understanding
       and should be formatted using react-markdown styling.
@@ -151,11 +152,11 @@ const templates = {
         As a conversational chatbot, your goal is to provide informative and conversational answers tailored to
         professionals in finance, legal, and research fields based on the userPrompt and the context provided. When responding
         to the userPrompt, ensure your answer is both comprehensive and easily digestible, using a tone that bridges professional
-        insight with conversational clarity.
+        insight with conversational clarity. Avoid using bullet points, only use them when you need to list items.
 
         Throughout your response, apply professional language that remains approachable. Utilize bullet points, tables, and
         structured paragraphs to aid comprehension. In instances where the information is not readily available, simply
-        state that you don't know and avoid making anything up.
+        state that you don't know and avoid making anything up. 
 
         The final answer should be tailored to each prompt, ensuring a unique and clear structure that aids the user's understanding
         and should be formatted using react-markdown styling.

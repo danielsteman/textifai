@@ -78,6 +78,7 @@ import { deleteProject } from "../Projects/deleteProject";
 import { handleEditProjectName } from "../Projects/changeProjectName";
 import { keyframes } from "@emotion/react";
 import { shortenString } from "../../common/utils/shortenString";
+import { initializeSelectedDocuments } from "../DocumentCollection/librarySlice";
 
 export type ITab = {
   name: string;
@@ -86,6 +87,7 @@ export type ITab = {
   openMiniLibrary: boolean;
   openPdfViewer: boolean;
   isActive?: boolean;
+  uploadName?: string;
 };
 
 const typing = keyframes`
@@ -138,6 +140,13 @@ const Workspace = () => {
 
   const handleAddNewProject = () => {
     navigate("/features/onboarding");
+  };
+
+  const setActivateTab = (tab: any) => {
+    if (tab.panel.type.name === "PdfViewer") {
+      dispatch(initializeSelectedDocuments([tab.uploadName]));
+    }
+    dispatch(activateTab(tab));
   };
 
   useEffect(() => {
@@ -450,7 +459,7 @@ const Workspace = () => {
           {openTabs &&
             activeTabIndex &&
             (openTabs[activeTabIndex].name === "Chat" ||
-              (openTabs[activeTabIndex].name === "Editor" &&
+              (openTabs[activeTabIndex].name !== "Library" &&
                 openTabs[activeTabIndex].openChatSupport)) && (
               <VStack w="100%" overflowY="scroll">
                 <Heading size="sm" py={2} alignSelf="flex-start" px={4}>
@@ -521,13 +530,23 @@ const Workspace = () => {
                       }}
                     >
                       <FaTrash
-                        onClick={async () => {
+                        onClick={async (e) => {
+                          e.stopPropagation();
                           await deleteConversation(
                             conversation.uid,
                             currentUser!.uid,
                             activeProjectId!,
                             dispatch
                           );
+                          if (sortedConversations.length > 1) {
+                            const nextConversationId =
+                              sortedConversations[0].uid === conversation.uid
+                                ? sortedConversations[1].uid
+                                : sortedConversations[0].uid;
+                            dispatch(
+                              setCurrentConversationId(nextConversationId)
+                            );
+                          }
                         }}
                       />
                     </Box>
@@ -638,7 +657,7 @@ const Workspace = () => {
       {openTabs && openTabs.length > 0 && (
         <Tabs
           index={activeTabIndex}
-          onChange={(index) => dispatch(activateTab(openTabs[index]))}
+          onChange={(index) => setActivateTab(openTabs[index])}
           w="100%"
           h="100%"
           maxH="100%"
@@ -676,7 +695,7 @@ const Workspace = () => {
                   >
                     <Tab
                       px={12}
-                      onClick={() => dispatch(activateTab(tab))}
+                      onClick={() => setActivateTab(tab)}
                       whiteSpace="nowrap"
                       borderRadius="lg"
                     >
@@ -736,6 +755,7 @@ const Workspace = () => {
             )}
             {openTabs[activeTabIndex].name === "Chat" && (
               <>
+                <Box w={2} />
                 <Tooltip label="Open mini library">
                   <IconButton
                     aria-label={"mini-library"}
@@ -745,10 +765,12 @@ const Workspace = () => {
                     }}
                   />
                 </Tooltip>
+                <Box w={2} />
               </>
             )}
             {isActiveTabSelected && (
               <>
+                <Box w={2} />
                 <Tooltip label="Open support chat">
                   <IconButton
                     aria-label={"chat-support"}
@@ -758,6 +780,17 @@ const Workspace = () => {
                     }}
                   />
                 </Tooltip>
+                <Box w={2} />
+                <Tooltip label="Open mini library">
+                  <IconButton
+                    aria-label={"library-support"}
+                    icon={<FaBookOpen />}
+                    onClick={() => {
+                      dispatch(openMiniLibrary(openTabs[activeTabIndex].name));
+                    }}
+                  />
+                </Tooltip>
+                <Box w={2} />
               </>
             )}
           </Flex>

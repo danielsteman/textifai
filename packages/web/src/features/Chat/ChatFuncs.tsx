@@ -18,6 +18,7 @@ import { Message } from "@shared/interfaces/firebase/Message";
 import { setCurrentConversationId } from "../Chat/chatSlice";
 import axios from "axios";
 import { config } from "../../app/config/config";
+import { marked } from "marked";
 
 export const conversationsCollection = collection(db, "conversations");
 export const messagesCollection = collection(db, "messages");
@@ -157,12 +158,14 @@ export const appendToDocument = async (
 
     const querySnapshot = await getDocs(q);
 
+    const htmlMessage = marked(message);
+
     if (!querySnapshot.empty) {
       // Existing document found
       const docRef = doc(db, "workingdocuments", querySnapshot.docs[0].id);
       const currentContent = querySnapshot.docs[0].data().content || "";
       await updateDoc(docRef, {
-        content: currentContent + "\n\n" + message,
+        content: currentContent + "\n\n" + htmlMessage,
       });
     } else {
       // No document found, create a new one
@@ -172,7 +175,7 @@ export const appendToDocument = async (
         creationDate: Timestamp.fromDate(new Date()),
         users: [currentUserUid],
         modifiedDate: Timestamp.fromDate(new Date()),
-        content: message,
+        content: htmlMessage,
       };
 
       await addDoc(workingDocsCollection, newDocument);

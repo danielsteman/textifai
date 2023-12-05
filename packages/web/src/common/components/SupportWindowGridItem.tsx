@@ -65,6 +65,7 @@ const SupportWindowGridItem: React.FC<SupportWindowGridItemProps> = ({
       colSpan={1}
       bgColor={theme.colors[colorMode].surfaceContainer}
       h="100%"
+      w="100%"
       pb={2}
       borderRadius={8}
     >
