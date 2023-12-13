@@ -124,9 +124,11 @@ const LandingPage = () => {
       </GridItem>
       <GridItem>
         <Box
-          // position="absolute"
-          // bottom="50%"
-          // transform="translateY(70%);"
+          position="absolute"
+          bottom="50%"
+          transform="translateY(70%);"
+          w="calc(55px + 50vw)"
+          cursor="pointer"
           as="video"
           controls
           src="https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
