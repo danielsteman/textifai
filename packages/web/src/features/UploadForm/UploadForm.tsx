@@ -147,10 +147,11 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
           }));
         },
         (error) => {
-          console.error(
-            `An error occurred while uploading ${file.name}:`,
-            error
+          const errorMessage = `An error occurred while uploading ${file.name}`;
+          setUploadStatusMessage(
+            `${errorMessage}. Try again later or contact support if this problem persists.`
           );
+          console.error(`${errorMessage}:`, error);
         }
       );
 
