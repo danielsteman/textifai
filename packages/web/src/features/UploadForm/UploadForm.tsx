@@ -203,8 +203,6 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
     setLoading(true);
     await Promise.all(files.map((file) => handleFileUpload(file)));
     setLoading(false);
-
-    setFiles(undefined);
   };
 
   const { colorMode } = useColorMode();
