@@ -38,7 +38,6 @@ interface PdfMetadata {
 }
 
 interface UploadFormProps {
-  onUploadComplete: () => void;
   dropZoneText?: string;
 }
 
@@ -66,10 +65,7 @@ const uploadMetadataToFirestore = async (
   }
 };
 
-const UploadForm: React.FC<UploadFormProps> = ({
-  onUploadComplete,
-  dropZoneText,
-}) => {
+const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadStatusMessage, setUploadStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -207,7 +203,6 @@ const UploadForm: React.FC<UploadFormProps> = ({
     await Promise.all(files.map((file) => handleFileUpload(file)));
     setLoading(false);
 
-    onUploadComplete();
     setFiles(undefined);
   };
 
