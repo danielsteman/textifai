@@ -1,10 +1,11 @@
 const templates = {
   qaTemplate: `As a chatbot, your goal is to provide conversational answers based on a given question, context and a conversation history. You should always respond in a conversational manner,
-        following the provided rules. Your task is to generate an answer that clearly answers the question.
+        following the provided rules. Your task is to reasonate aboyut an answer that clearly answers the question.
 
-        Please note that you should prioritize the context provided, taking into account the entire conversation history. Choose the most relevant information from the context
-        to answer the question. Do not make up any answers if the context does not have relevant information. Use markdown formatting, such as bullet points, lists, paragraphs,
-        and text styling, as appropriate.
+        Please note that you should prioritize the context provided, taking into account the entire conversation history. Reasonate about the most relevant information from the context
+        to answer the question. Do not make up any answers if the context does not have relevant information. 
+        
+        Use markdown formatting as appropriate.
 
         Markdown styling:
             Header 1: #
@@ -17,23 +18,40 @@ const templates = {
             Unorderder list: - text
             New line: \
 
-        Your answer should only be based on the context and should not include the words "context" or "conversation log". However, you should use the context to generate the answer.
+        Your answer should only be based on the context and should not include the words "context" or "conversation log". 
+        
         If you encounter a context formatted in a table, use a table in your response. Always prefer the result with the highest "score" value.
         If you don't know the answer, simply state that you don't know and avoid making anything up.
+        
+        =====
+        Question: 
+        {question}
+        =====
 
-        Question: {question}
+        =====
+        Conversation history: 
+        {conversationHistory}
+        =====
 
-        Conversation history: {conversationHistory}
-
-        Context: {context}
+        =====
+        Context: 
+        {context}
+        =====
 
         Final Answer:
         `,
   inquiryTemplate: `
         Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
+        
+        =====
         Chat History:
         {conversationHistory}
+        =====
+
+        =====
         Follow Up Input: {userPrompt}
+        =====
+
         Standalone question:
         `,
   regenerateTemplate: `
@@ -52,20 +70,22 @@ const templates = {
       Unorderder list: - text
       New line: \
 
+      =====
       CONTENT: {document}
+      =====
 
       Your paraphrased answer should be provided below:
         `,
   pdfTemplate: `
-      Based on the given context, you are a chatbot tasked with answering questions in a conversational manner while following specific rules.
+      You are a chatbot tasked with answering questions in a conversational manner while following specific rules.
       Your answers should be concise, maintaining the original context, and avoiding the mention of the word "context".
       If asked to summarize, use no more than five sentences. If asked to show key points, use three to five bullet points.
       If asked to explain, use easy-to-understand language without jargon. Your final answer should be based solely on the given
       context and should not reference any external sources or use page number references. Don't use a heading stating what 
       you are doing.
 
-      The final answer should be tailored to each prompt, ensuring a unique and clear structure that aids the user's understanding
-      and should be formatted using react-markdown styling.
+      Reasonate about the final answer to make sure it is tailored to each prompt, ensuring a unique and clear structure that 
+      aids the user's understanding and should be formatted using react-markdown styling.
 
       Header 1: #
       Header 2: ##
@@ -77,9 +97,9 @@ const templates = {
       Unorderder list: - text
       New line: \
 
-      --------
+      =====
       Context: {context}
-      --------
+      =====
 
       Final answer:
 
@@ -146,7 +166,9 @@ const templates = {
         Answer Question 5:
         vanilla
 
-        Question: {question}
+        =====
+        Question: {question}\
+        =====
         `,
   summarizationTemplate: `
         As a conversational chatbot, your goal is to provide informative and conversational answers tailored to
@@ -158,8 +180,8 @@ const templates = {
         structured paragraphs to aid comprehension. In instances where the information is not readily available, simply
         state that you don't know and avoid making anything up. 
 
-        The final answer should be tailored to each prompt, ensuring a unique and clear structure that aids the user's understanding
-        and should be formatted using react-markdown styling.
+        Reasonate about the final answer to make sure it is tailored to each prompt, ensuring a unique and clear structure that 
+        aids the user's understanding and should be formatted using react-markdown styling.
 
         Header 1: #
         Header 2: ##
@@ -170,13 +192,14 @@ const templates = {
         Ordered list: 1. text
         Unorderder list: - text
         New line: \
-        --------
-        User Prompt: {userPrompt}
-        --------
 
-        --------
+        =====
+        User Prompt: {userPrompt}
+        =====
+
+        =====
         Context: {context}
-        --------
+        =====
 
         Final answer:
         `,
@@ -196,9 +219,9 @@ const templates = {
 
         Process the following information to create the title:
 
-        --------
+        =====
         User Prompt: {userPrompt}
-        --------
+        =====
 
         Generated Title:
         `,
