@@ -74,6 +74,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
   const [uploadProgress, setUploadProgress] = useState<{
     [key: string]: number;
   }>({});
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const activeProjectName = useSelector(
@@ -116,6 +117,11 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
   });
 
   const handleFileUpload = async (file: any) => {
+    setLoading(true);
+    setUploadStatusMessage(
+      `Preparing document${files!.length > 1 ? "s" : ""} ⚙️...`
+    );
+
     const fileRef = ref(
       storage,
       `projects/${activeProjectId}/uploads/${file.name}`
@@ -125,8 +131,8 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
       .catch(() => false);
 
     if (exists) {
-      setUploadStatusMessage("A file with this name already exists! 📄");
-      return;
+      setUploadStatusMessage("A file with this name already exists 📄");
+      throw new Error("A file with this name already exists");
     }
 
     const data = new FormData();
@@ -157,6 +163,10 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
     uploadTask.on(
       "state_changed",
       (snapshot) => {
+        setUploadStatusMessage(
+          `Uploading document${files!.length > 1 ? "s" : ""} ⬆️`
+        );
+        setLoading(false);
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log(`${file.name} upload progress: ${progress}%`);
@@ -175,7 +185,6 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
       },
       async () => {
         uploadTask.then(() => {
-          setUploadStatusMessage("Done! ✅ Want to upload more?");
           const metadata: PdfMetadata = response.data.metadata;
           uploadMetadataToFirestore(
             metadata,
@@ -184,6 +193,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
             uploadsCollection
           );
         });
+        setUploadStatusMessage("Done! ✅ Want to upload more?");
       }
     );
   };
@@ -210,7 +220,13 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
     );
     setUploadProgress((prev) => ({ ...prev, ...initialProgress }));
 
-    await Promise.all(files.map((file) => handleFileUpload(file)));
+    try {
+      await Promise.all(files.map((file) => handleFileUpload(file)));
+      console.log("All files uploaded");
+    } catch (error) {
+      setLoading(false);
+      console.error("Error uploading files: ", error);
+    }
   };
 
   const { colorMode } = useColorMode();
@@ -246,6 +262,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
           <Box key={index} mb={3}>
             <Text>{file.name}</Text>
             <Progress
+              isIndeterminate={loading}
               colorScheme="green"
               value={uploadProgress[file.name] || 0}
             />
