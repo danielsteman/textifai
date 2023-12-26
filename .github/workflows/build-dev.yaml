@@ -71,7 +71,7 @@ jobs:
             FIREBASE_APPID=${{ secrets.FIREBASE_APPID }}
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:dev
 
   build-documents:
     runs-on: ubuntu-latest
@@ -103,7 +103,7 @@ jobs:
             PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:dev
 
   build-chat:
     runs-on: ubuntu-latest
@@ -135,7 +135,7 @@ jobs:
             PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
           tags: |
             europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
+            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:dev
   terraform:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
