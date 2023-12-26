@@ -19,7 +19,7 @@ import {
   Timestamp,
   CollectionReference,
 } from "firebase/firestore";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { config } from "../../app/config/config";
 import theme from "../../app/themes/theme";
 import { setProjectId } from "../Workspace/projectSlice";
@@ -29,12 +29,15 @@ import { RootState } from "../../app/store";
 
 interface PdfMetadata {
   fileName: string;
+  uploadName: string;
+  fileType: string;
   author: string;
   creationDate: Date;
   fileSize: number;
   extractedText: string;
   topicText: string;
   wordCount: number;
+  favoritedBy: Boolean;
 }
 
 interface UploadFormProps {
@@ -126,67 +129,63 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
       return;
     }
 
+    const data = new FormData();
+    data.append("file", file);
+    data.append("userId", currentUser!.uid);
+
+    let response: AxiosResponse<any>;
+
     try {
-      const data = new FormData();
-      data.append("file", file);
-      data.append("userId", currentUser!.uid);
-
-      const uploadTask = uploadBytesResumable(fileRef, file);
-
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`${file.name} upload progress: ${progress}%`);
-          setUploadProgress((prev) => ({
-            ...prev,
-            [file.name]: progress,
-          }));
-        },
-        (error) => {
-          uploadTask.cancel();
-          const errorMessage = `An error occurred while uploading ${file.name}`;
-          setUploadStatusMessage(
-            `${errorMessage}. Try again later or contact support if this problem persists.`
-          );
-          console.error(`${errorMessage}:`, error);
-        },
-        () => {
-          setUploadStatusMessage("Done! ✅ Want to upload more?");
-          const metadata: PdfMetadata = res.data.metadata;
-          uploadMetadataToFirestore(
-            metadata,
-            currentUser!.uid,
-            activeProjectId!,
-            uploadsCollection
-          );
-        }
-      );
-
-      const res = await axios.post(
+      response = await axios.post(
         `${config.documents.url}/api/documents/upload`,
         data,
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
-      console.log(`res: ${res}`);
-
-      // uploadTask.then(() => {
-      //   setUploadStatusMessage("Done! ✅ Want to upload more?");
-      //   const metadata: PdfMetadata = res.data.metadata;
-      //   uploadMetadataToFirestore(
-      //     metadata,
-      //     currentUser!.uid,
-      //     activeProjectId!,
-      //     uploadsCollection
-      //   );
-      // });
+      console.log(`response: ${response.data}`);
     } catch (error) {
-      console.error(`An error occurred while processing ${file.name}:`, error);
+      setUploadStatusMessage(
+        "Something went wrong while uploading to backend."
+      );
+      console.log(error);
+      return;
     }
+
+    const uploadTask = uploadBytesResumable(fileRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`${file.name} upload progress: ${progress}%`);
+        setUploadProgress((prev) => ({
+          ...prev,
+          [file.name]: progress,
+        }));
+      },
+      (error) => {
+        uploadTask.cancel();
+        const errorMessage = `An error occurred while uploading ${file.name}`;
+        setUploadStatusMessage(
+          `${errorMessage}. Try again later or contact support if this problem persists.`
+        );
+        console.error(`${errorMessage}:`, error);
+      },
+      async () => {
+        uploadTask.then(() => {
+          setUploadStatusMessage("Done! ✅ Want to upload more?");
+          const metadata: PdfMetadata = response.data.metadata;
+          uploadMetadataToFirestore(
+            metadata,
+            currentUser!.uid,
+            activeProjectId!,
+            uploadsCollection
+          );
+        });
+      }
+    );
   };
 
   const handleSubmit = async () => {
