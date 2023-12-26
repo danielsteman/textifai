@@ -68,7 +68,6 @@ const uploadMetadataToFirestore = async (
 const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadStatusMessage, setUploadStatusMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{
     [key: string]: number;
   }>({});
@@ -117,7 +116,6 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
     const fileRef = ref(
       storage,
       `projects/${activeProjectId}/uploads/${file.name}`
-      //`users/${currentUser?.uid}/uploads/${file.name}`
     );
     const exists = await getDownloadURL(fileRef)
       .then(() => true)
@@ -147,11 +145,22 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
           }));
         },
         (error) => {
+          uploadTask.cancel();
           const errorMessage = `An error occurred while uploading ${file.name}`;
           setUploadStatusMessage(
             `${errorMessage}. Try again later or contact support if this problem persists.`
           );
           console.error(`${errorMessage}:`, error);
+        },
+        () => {
+          setUploadStatusMessage("Done! ✅ Want to upload more?");
+          const metadata: PdfMetadata = res.data.metadata;
+          uploadMetadataToFirestore(
+            metadata,
+            currentUser!.uid,
+            activeProjectId!,
+            uploadsCollection
+          );
         }
       );
 
@@ -163,16 +172,18 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
         }
       );
 
-      uploadTask.then(() => {
-        setUploadStatusMessage("Done! ✅ Want to upload more?");
-        const metadata: PdfMetadata = res.data.metadata;
-        uploadMetadataToFirestore(
-          metadata,
-          currentUser!.uid,
-          activeProjectId!,
-          uploadsCollection
-        );
-      });
+      console.log(`res: ${res}`);
+
+      // uploadTask.then(() => {
+      //   setUploadStatusMessage("Done! ✅ Want to upload more?");
+      //   const metadata: PdfMetadata = res.data.metadata;
+      //   uploadMetadataToFirestore(
+      //     metadata,
+      //     currentUser!.uid,
+      //     activeProjectId!,
+      //     uploadsCollection
+      //   );
+      // });
     } catch (error) {
       console.error(`An error occurred while processing ${file.name}:`, error);
     }
@@ -200,9 +211,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
     );
     setUploadProgress((prev) => ({ ...prev, ...initialProgress }));
 
-    setLoading(true);
     await Promise.all(files.map((file) => handleFileUpload(file)));
-    setLoading(false);
   };
 
   const { colorMode } = useColorMode();
