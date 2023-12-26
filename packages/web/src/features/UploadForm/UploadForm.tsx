@@ -38,7 +38,6 @@ interface PdfMetadata {
 }
 
 interface UploadFormProps {
-  onUploadComplete: () => void;
   dropZoneText?: string;
 }
 
@@ -66,10 +65,7 @@ const uploadMetadataToFirestore = async (
   }
 };
 
-const UploadForm: React.FC<UploadFormProps> = ({
-  onUploadComplete,
-  dropZoneText,
-}) => {
+const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadStatusMessage, setUploadStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -151,10 +147,11 @@ const UploadForm: React.FC<UploadFormProps> = ({
           }));
         },
         (error) => {
-          console.error(
-            `An error occurred while uploading ${file.name}:`,
-            error
+          const errorMessage = `An error occurred while uploading ${file.name}`;
+          setUploadStatusMessage(
+            `${errorMessage}. Try again later or contact support if this problem persists.`
           );
+          console.error(`${errorMessage}:`, error);
         }
       );
 
@@ -206,9 +203,6 @@ const UploadForm: React.FC<UploadFormProps> = ({
     setLoading(true);
     await Promise.all(files.map((file) => handleFileUpload(file)));
     setLoading(false);
-
-    onUploadComplete();
-    setFiles(undefined);
   };
 
   const { colorMode } = useColorMode();

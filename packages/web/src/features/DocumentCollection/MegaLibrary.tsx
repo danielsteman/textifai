@@ -651,10 +651,7 @@ const MegaLibrary = () => {
               <ModalHeader>Upload files</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <UploadForm
-                  onUploadComplete={handleUploadComplete}
-                  dropZoneText="Uploaded files will appear in your personal library"
-                />
+                <UploadForm dropZoneText="Uploaded files will appear in your personal library" />
               </ModalBody>
             </ModalContent>
           </Modal>
@@ -833,7 +830,7 @@ const MegaLibrary = () => {
                         <Td textAlign="center">
                           {doc.favoritedBy ? (
                             <Icon
-                              as={FaStar}  // Filled star when favorited
+                              as={FaStar} // Filled star when favorited
                               color={theme.colors[colorMode].primary}
                               onClick={() =>
                                 toggleFavourite(
@@ -846,7 +843,7 @@ const MegaLibrary = () => {
                             />
                           ) : (
                             <Icon
-                              as={FaRegStar}  // Star outline when not favorited
+                              as={FaRegStar} // Star outline when not favorited
                               color={theme.colors[colorMode].onSurface}
                               onClick={() =>
                                 toggleFavourite(
