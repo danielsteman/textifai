@@ -9,8 +9,15 @@ import bodyParser from "body-parser";
 
 const port = process.env.PORT || 3000;
 
+const corsOptions = {
+  origin: "*", // Replace with your React app's URL
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
 const app: Express = express();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(morgan("tiny"));
 app.use(express.static("public"));
 app.use(bodyParser.json());
