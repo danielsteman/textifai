@@ -16,7 +16,7 @@ import theme from "../themes/theme";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import { useDispatch } from "react-redux";
-import { openSignUpModal } from "../../features/Authentication/loginOrRegisterModalSlice";
+import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
 
 interface Props {
   imageSrc: string;
@@ -103,18 +103,24 @@ const LandingPage = () => {
               and realise why, with Textifai, every discovery feels
               groundbreaking.
             </Heading>
-            <HStack gap={8}>
-              <Button
+            <HStack gap={4}>
+              {/* <Button
                 variant="outline"
                 size="lg"
                 onClick={() => dispatch(openSignUpModal())}
               >
                 Get started
-              </Button>
+              </Button> */}
+              <LoginOrRegisterModal
+                loginOrRegister="signUp"
+                authProviders={["google"]}
+              />
               <Button
                 variant="outline"
                 size="lg"
                 onClick={() => navigate("/support")}
+                borderRadius={24}
+                style={{ color: theme.colors[colorMode].primary }}
               >
                 Get in touch
               </Button>

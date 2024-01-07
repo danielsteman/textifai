@@ -180,12 +180,18 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
           style: {
             color: theme.colors[colorMode].onPrimary,
             bgColor: theme.colors[colorMode].primary,
+            borderRadius: 24,
+            w: 24,
           },
         }
       : {
           text: "Login",
           variant: "outline",
-          style: { color: theme.colors[colorMode].primary },
+          style: {
+            color: theme.colors[colorMode].primary,
+            borderRadius: 24,
+            w: 24,
+          },
         };
 
   const disableSubmitButton = (): boolean => {
