@@ -33,6 +33,9 @@ const Layout: React.FC<LayoutProps> = ({ promoComponent }) => {
         direction="row"
         alignItems="center"
         bgColor={theme.colors[colorMode].surfaceContainerLow}
+        position="sticky"
+        top={0}
+        zIndex={1}
       >
         <Logo />
         <Box w={8} />
