@@ -69,6 +69,7 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { colorMode } = useColorMode();
 
   const onOpen =
     props.loginOrRegister === "signIn"
@@ -132,20 +133,20 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
               language: "english",
               isActive: true,
             };
-        
+
             const userDocRef = doc(db, "users", userCredential.user.uid);
             await setDoc(userDocRef, userData);
-        
+
             const projectData: Project = {
               name: "My Project",
               description: "This is my first project.",
               industry: "",
               users: [userCredential.user.uid],
-              creationDate: Timestamp.fromDate(new Date())
+              creationDate: Timestamp.fromDate(new Date()),
             };
-        
+
             const projectDocRef = doc(collection(db, "projects"));
-        
+
             await setDoc(projectDocRef, projectData);
             await updateProfile(userCredential.user, {
               displayName: `${firstname} ${lastname}`,
@@ -173,8 +174,19 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
 
   const buttonProps =
     props.loginOrRegister === "signUp"
-      ? { text: "Sign up", variant: "outline" }
-      : { text: "Sign in", variant: "solid" };
+      ? {
+          text: "Sign up",
+          variant: "solid",
+          style: {
+            color: theme.colors[colorMode].onPrimary,
+            bgColor: theme.colors[colorMode].primary,
+          },
+        }
+      : {
+          text: "Login",
+          variant: "outline",
+          style: { color: theme.colors[colorMode].primary },
+        };
 
   const disableSubmitButton = (): boolean => {
     if (props.loginOrRegister === "signIn") {
@@ -213,11 +225,14 @@ const LoginOrRegisterModal: React.FC<LoginOrRegisterModalProps> = (props) => {
     }
   };
 
-  const { colorMode } = useColorMode();
-
   return (
     <>
-      <Button size="md" onClick={() => onOpen()} variant={buttonProps.variant}>
+      <Button
+        size="md"
+        onClick={() => onOpen()}
+        variant={buttonProps.variant}
+        {...buttonProps.style}
+      >
         {buttonProps.text}
       </Button>
       <Modal isCentered isOpen={openState} onClose={() => onClose()}>

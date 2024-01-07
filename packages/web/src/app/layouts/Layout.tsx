@@ -48,11 +48,11 @@ const Layout: React.FC<LayoutProps> = ({ promoComponent }) => {
         ) : (
           <ButtonGroup>
             <LoginOrRegisterModal
-              loginOrRegister="signIn"
+              loginOrRegister="signUp"
               authProviders={["google"]}
             />
             <LoginOrRegisterModal
-              loginOrRegister="signUp"
+              loginOrRegister="signIn"
               authProviders={["google"]}
             />
           </ButtonGroup>
