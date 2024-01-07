@@ -8,12 +8,14 @@ export interface NavigationButtonData {
 }
 
 const Navigation = () => {
-
   return (
     <ButtonGroup>
-      <NavigationButton title="Docs"></NavigationButton>
+      <NavigationButton title="About"></NavigationButton>
+      <NavigationButton title="Solutions"></NavigationButton>
       <NavigationButton title="Pricing"></NavigationButton>
-      <NavigationButton title="Support"></NavigationButton>
+      <NavigationButton title="Blog"></NavigationButton>
+      <NavigationButton title="Learn"></NavigationButton>
+      <NavigationButton title="Contact us"></NavigationButton>
     </ButtonGroup>
   );
 };
