@@ -129,7 +129,7 @@ const LandingPage = () => {
         </Center>
       </GridItem>
       <GridItem>
-        <Box
+        {/* <Box
           position="absolute"
           bottom="50%"
           transform="translateY(70%);"
@@ -145,7 +145,7 @@ const LandingPage = () => {
           }}
           autoPlay
           overflowX="hidden"
-        />
+        /> */}
       </GridItem>
       <GridItem>
         <PlaceHolder imageSrc="images/landingpage/Chat_Revolutioniseyourresearch.png" />

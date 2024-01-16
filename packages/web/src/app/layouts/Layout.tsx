@@ -1,12 +1,12 @@
 import {
   Box,
-  Button,
   ButtonGroup,
   Flex,
   Spacer,
+  useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { Outlet } from "react-router-dom";
 import AccountInfoDrawer from "../../features/AccountMenuDrawer/AccountMenuDrawer";
 import Navigation from "../../features/Navigation/Navigation";
@@ -22,6 +22,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ promoComponent }) => {
   const currentUser = useContext(AuthContext);
   const { colorMode } = useColorMode();
+  const isMobile = useBreakpointValue({ base: true, sm: false });
 
   return (
     <Flex direction="column" h="100%">
@@ -46,16 +47,18 @@ const Layout: React.FC<LayoutProps> = ({ promoComponent }) => {
             <AccountInfoDrawer />
           </>
         ) : (
-          <ButtonGroup>
-            <LoginOrRegisterModal
-              loginOrRegister="signUp"
-              authProviders={["google"]}
-            />
-            <LoginOrRegisterModal
-              loginOrRegister="signIn"
-              authProviders={["google"]}
-            />
-          </ButtonGroup>
+          !isMobile && (
+            <ButtonGroup>
+              <LoginOrRegisterModal
+                loginOrRegister="signUp"
+                authProviders={["google"]}
+              />
+              <LoginOrRegisterModal
+                loginOrRegister="signIn"
+                authProviders={["google"]}
+              />
+            </ButtonGroup>
+          )
         )}
       </Flex>
       <Outlet />
