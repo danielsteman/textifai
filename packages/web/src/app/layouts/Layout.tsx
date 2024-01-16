@@ -41,23 +41,26 @@ const Layout: React.FC<LayoutProps> = ({ promoComponent }) => {
         <Logo />
         <Box w={8} />
         <Navigation />
-        <Spacer />
         {currentUser ? (
           <>
+            <Spacer />
             <AccountInfoDrawer />
           </>
         ) : (
           !isMobile && (
-            <ButtonGroup>
-              <LoginOrRegisterModal
-                loginOrRegister="signUp"
-                authProviders={["google"]}
-              />
-              <LoginOrRegisterModal
-                loginOrRegister="signIn"
-                authProviders={["google"]}
-              />
-            </ButtonGroup>
+            <>
+              <Spacer />
+              <ButtonGroup>
+                <LoginOrRegisterModal
+                  loginOrRegister="signUp"
+                  authProviders={["google"]}
+                />
+                <LoginOrRegisterModal
+                  loginOrRegister="signIn"
+                  authProviders={["google"]}
+                />
+              </ButtonGroup>
+            </>
           )
         )}
       </Flex>

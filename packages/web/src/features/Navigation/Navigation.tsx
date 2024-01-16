@@ -5,6 +5,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Spacer,
 } from "@chakra-ui/react";
 import { useBreakpointValue } from "@chakra-ui/react";
 import NavigationButton from "./NavigationButton";
@@ -31,6 +32,7 @@ const Navigation = () => {
   if (isMobile) {
     return (
       <Menu>
+        <Spacer />
         <MenuButton
           as={IconButton}
           aria-label="Options"
