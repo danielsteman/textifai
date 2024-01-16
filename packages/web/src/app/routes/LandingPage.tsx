@@ -10,12 +10,12 @@ import {
   VStack,
   HStack,
   Image,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../providers/AuthProvider";
-import { useDispatch } from "react-redux";
 import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
 
 interface Props {
@@ -64,7 +64,6 @@ const Paragraph: React.FC<ParagraphProps> = ({
 const LandingPage = () => {
   const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
-  const dispatch = useDispatch();
   const { colorMode } = useColorMode();
 
   useEffect(() => {
@@ -73,9 +72,12 @@ const LandingPage = () => {
     }
   }, []);
 
+  const isMobile = useMediaQuery("(max-width: 48em)");
+  const columns = isMobile ? 1 : 2;
+
   return (
     <Grid
-      templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)"]}
+      templateColumns={`repeat(${columns}, 1fr)`}
       pt={24}
       alignItems="center"
       rowGap={24}
@@ -104,13 +106,6 @@ const LandingPage = () => {
               groundbreaking.
             </Heading>
             <HStack gap={4}>
-              {/* <Button
-                variant="outline"
-                size="lg"
-                onClick={() => dispatch(openSignUpModal())}
-              >
-                Get started
-              </Button> */}
               <LoginOrRegisterModal
                 loginOrRegister="signUp"
                 authProviders={["google"]}
