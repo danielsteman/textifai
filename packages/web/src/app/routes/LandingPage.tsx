@@ -10,20 +10,19 @@ import {
   VStack,
   HStack,
   Image,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import theme from "../themes/theme";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../providers/AuthProvider";
-import { useDispatch } from "react-redux";
-import { openSignUpModal } from "../../features/Authentication/loginOrRegisterModalSlice";
+import LoginOrRegisterModal from "../../features/Authentication/LoginOrRegisterModal";
 
 interface Props {
   imageSrc: string;
 }
 
 const PlaceHolder: React.FC<Props> = ({ imageSrc }) => {
-  const { colorMode } = useColorMode();
   return (
     <Center>
       <Box>
@@ -65,7 +64,7 @@ const Paragraph: React.FC<ParagraphProps> = ({
 const LandingPage = () => {
   const navigate = useNavigate();
   const currentUser = useContext(AuthContext);
-  const dispatch = useDispatch();
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     if (currentUser) {
@@ -73,9 +72,12 @@ const LandingPage = () => {
     }
   }, []);
 
+  const isMobile = useMediaQuery("(max-width: 48em)");
+  const columns = isMobile ? 1 : 2;
+
   return (
     <Grid
-      templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)"]}
+      templateColumns={`repeat(${columns}, 1fr)`}
       pt={24}
       alignItems="center"
       rowGap={24}
@@ -83,38 +85,62 @@ const LandingPage = () => {
       justifyContent="center"
       mx="auto"
     >
-      <GridItem colSpan={2} py={24}>
-        <Paragraph
-          heading={
-            "Supercharge your analysis with TAI: your personal AI research assistant"
-          }
-          CTAButton={
-            <HStack gap={8}>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => dispatch(openSignUpModal())}
-              >
-                Get started
-              </Button>
+      <GridItem colSpan={1} py={24}>
+        <Center>
+          <VStack px={[0, 12, 12]} align="start" gap={8} w={["80%", "90%"]}>
+            <Heading
+              size="3xl"
+              fontWeight={950}
+              textColor={`linear(to-l, ${theme.colors[colorMode].primary}, ${theme.colors[colorMode].tertiary})`}
+            >
+              Supercharge your analysis with TAI: your personal AI research
+              assistant
+            </Heading>
+            <Heading size="md" fontWeight={400}>
+              Textifai is your all-in-one research companion, streamlining
+              search, organisation, analysis, and helping you produce faster.{" "}
+              <br />
+              <br />
+              Don't just keep pace in the digital realm; lead the way. Dive in
+              and realise why, with Textifai, every discovery feels
+              groundbreaking.
+            </Heading>
+            <HStack gap={4}>
+              <LoginOrRegisterModal
+                loginOrRegister="signUp"
+                authProviders={["google"]}
+              />
               <Button
                 variant="outline"
                 size="lg"
                 onClick={() => navigate("/support")}
+                borderRadius={24}
+                style={{ color: theme.colors[colorMode].primary }}
               >
                 Get in touch
               </Button>
             </HStack>
-          }
-        >
-          <Heading size="lg" fontWeight={400}>
-            Textifai is your all-in-one research companion, streamlining search,
-            organisation, analysis, and helping you produce faster. <br />
-            <br />
-            Don't just keep pace in the digital realm; lead the way. Dive in and
-            realise why, with Textifai, every discovery feels groundbreaking.
-          </Heading>
-        </Paragraph>
+          </VStack>
+        </Center>
+      </GridItem>
+      <GridItem>
+        {/* <Box
+          position="absolute"
+          bottom="50%"
+          transform="translateY(70%);"
+          w="calc(55px + 50vw)"
+          cursor="pointer"
+          as="video"
+          controls
+          src="https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
+          poster="https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217"
+          objectFit="contain"
+          sx={{
+            aspectRatio: "16/9",
+          }}
+          autoPlay
+          overflowX="hidden"
+        /> */}
       </GridItem>
       <GridItem>
         <PlaceHolder imageSrc="images/landingpage/Chat_Revolutioniseyourresearch.png" />
