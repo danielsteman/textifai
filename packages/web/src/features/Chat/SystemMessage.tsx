@@ -114,8 +114,8 @@ const SystemMessage = ({ message, variant }: SystemMessageProps) => {
       <Box
         color={textColor}
         bgColor={bgColor}
-        px={6}
-        py={4}
+        py={2}
+        px={4}
         rounded={8}
         gap={0}
         maxW="80%"
