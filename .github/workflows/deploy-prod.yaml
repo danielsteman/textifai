@@ -11,7 +11,7 @@ env:
   CONFIG_DIRECTORY: ./infrastructure/prod
 
 jobs:
-  build:
+  build-web:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -43,8 +43,26 @@ jobs:
             FIREBASE_MESSAGINGSENDERID=${{ secrets.FIREBASE_MESSAGINGSENDERID }}
             FIREBASE_APPID=${{ secrets.FIREBASE_APPID }}
           tags: |
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:${{ github.sha }}
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-web:latest
+            europe-west4-docker.pkg.dev/textifai-f6bc5ff9e7/textifai-registry/textifai-web-dev:${{ github.sha }}
+            europe-west4-docker.pkg.dev/textifai-f6bc5ff9e7/textifai-registry/textifai-web-dev:latest
+
+  build-documents:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Set Git SHA
+        id: SetVar
+        run: echo "TF_VAR_image_tag=\"$(echo $GITHUB_SHA | cut -c 1-6)\"" >> $GITHUB_ENV
+
+      - name: Login to GAR
+        id: auth
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west4-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_SA_KEY }}
 
       - id: docker-push-documents-tagged
         name: Tag textifai/documents image and push to GAR
@@ -58,8 +76,26 @@ jobs:
             PINECONE_ENV=${{ secrets.PINECONE_ENV }}
             PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
           tags: |
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:${{ github.sha }}
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-documents:latest
+            europe-west4-docker.pkg.dev/textifai-f6bc5ff9e7/textifai-registry/textifai-documents-dev:${{ github.sha }}
+            europe-west4-docker.pkg.dev/textifai-f6bc5ff9e7/textifai-registry/textifai-documents-dev:latest
+
+  build-chat:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Set Git SHA
+        id: SetVar
+        run: echo "TF_VAR_image_tag=\"$(echo $GITHUB_SHA | cut -c 1-6)\"" >> $GITHUB_ENV
+
+      - name: Login to GAR
+        id: auth
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west4-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_SA_KEY }}
 
       - id: docker-push-chat-tagged
         name: Tag textifai/chat image and push to GAR
@@ -73,11 +109,14 @@ jobs:
             PINECONE_ENV=${{ secrets.PINECONE_ENV }}
             PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}
           tags: |
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:${{ github.sha }}
-            europe-west4-docker.pkg.dev/textifai-g5njdml004/textifai-registry/textifai-chat:latest
+            europe-west4-docker.pkg.dev/textifai-f6bc5ff9e7/textifai-registry/textifai-chat-dev:${{ github.sha }}
+            europe-west4-docker.pkg.dev/textifai-f6bc5ff9e7/textifai-registry/textifai-chat-dev:latest
 
   terraform:
-    needs: build
+    needs:
+      - build-web
+      - build-documents
+      - build-chat
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     permissions:

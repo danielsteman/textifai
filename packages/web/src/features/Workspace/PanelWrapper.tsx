@@ -15,8 +15,8 @@ const PanelWrapper: React.FC<PanelWrapperProps> = ({ tab, isActiveTab }) => {
   const isAnySupportPanelOpen =
     tab.openChatSupport || tab.openMiniLibrary || tab.openPdfViewer;
 
-  console.log(`${tab.name} as active tab: ${isActiveTab}`);
-  console.log(`Is any support panel open: ${isAnySupportPanelOpen}`);
+  // console.log(`${tab.name} as active tab: ${isActiveTab}`);
+  // console.log(`Is any support panel open: ${isAnySupportPanelOpen}`);
 
   return (
     <TabPanel h="100%" flex="1" borderRadius={16} px={0} py={0}>

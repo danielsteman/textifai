@@ -18,6 +18,8 @@ import AccountSettings from "./routes/AccountSettings";
 import EmailVerification from "./routes/VerifyEmail";
 import CheckoutCompleted from "./routes/CheckoutCompleted";
 import Payment from "../features/Checkout/Payment";
+import Blog from "./routes/Blog";
+import Learn from "./routes/Learn";
 
 export const router = createBrowserRouter([
   {
@@ -25,7 +27,7 @@ export const router = createBrowserRouter([
     element: (
       <PrivateRoute>
         {/* <ProjectRoute> */}
-          <WorkspacePage />
+        <WorkspacePage />
         {/* </ProjectRoute> */}
       </PrivateRoute>
     ),
@@ -123,8 +125,16 @@ export const router = createBrowserRouter([
         element: <Support />,
       },
       {
-        path: "docs",
+        path: "learn",
         element: <Docs />,
+      },
+      {
+        path: "blog",
+        element: <Blog />,
+      },
+      {
+        path: "learn",
+        element: <Learn />,
       },
     ],
   },

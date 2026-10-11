@@ -19,7 +19,7 @@ import {
   Timestamp,
   CollectionReference,
 } from "firebase/firestore";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { config } from "../../app/config/config";
 import theme from "../../app/themes/theme";
 import { setProjectId } from "../Workspace/projectSlice";
@@ -29,12 +29,15 @@ import { RootState } from "../../app/store";
 
 interface PdfMetadata {
   fileName: string;
+  uploadName: string;
+  fileType: string;
   author: string;
   creationDate: Date;
   fileSize: number;
   extractedText: string;
   topicText: string;
   wordCount: number;
+  favoritedBy: Boolean;
 }
 
 interface UploadFormProps {
@@ -68,10 +71,10 @@ const uploadMetadataToFirestore = async (
 const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
   const [files, setFiles] = useState<File[] | undefined>();
   const [uploadStatusMessage, setUploadStatusMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{
     [key: string]: number;
   }>({});
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const activeProjectName = useSelector(
@@ -114,68 +117,85 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
   });
 
   const handleFileUpload = async (file: any) => {
+    setLoading(true);
+    setUploadStatusMessage(
+      `Preparing document${files!.length > 1 ? "s" : ""} ⚙️...`
+    );
+
     const fileRef = ref(
       storage,
       `projects/${activeProjectId}/uploads/${file.name}`
-      //`users/${currentUser?.uid}/uploads/${file.name}`
     );
     const exists = await getDownloadURL(fileRef)
       .then(() => true)
       .catch(() => false);
 
     if (exists) {
-      setUploadStatusMessage("A file with this name already exists! 📄");
-      return;
+      setUploadStatusMessage("A file with this name already exists 📄");
+      throw new Error("A file with this name already exists");
     }
 
+    const data = new FormData();
+    data.append("file", file);
+    data.append("userId", currentUser!.uid);
+
+    let response: AxiosResponse<any>;
+
     try {
-      const data = new FormData();
-      data.append("file", file);
-      data.append("userId", currentUser!.uid);
-
-      const uploadTask = uploadBytesResumable(fileRef, file);
-
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`${file.name} upload progress: ${progress}%`);
-          setUploadProgress((prev) => ({
-            ...prev,
-            [file.name]: progress,
-          }));
-        },
-        (error) => {
-          const errorMessage = `An error occurred while uploading ${file.name}`;
-          setUploadStatusMessage(
-            `${errorMessage}. Try again later or contact support if this problem persists.`
-          );
-          console.error(`${errorMessage}:`, error);
-        }
-      );
-
-      const res = await axios.post(
+      response = await axios.post(
         `${config.documents.url}/api/documents/upload`,
         data,
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
-      uploadTask.then(() => {
-        setUploadStatusMessage("Done! ✅ Want to upload more?");
-        const metadata: PdfMetadata = res.data.metadata;
-        uploadMetadataToFirestore(
-          metadata,
-          currentUser!.uid,
-          activeProjectId!,
-          uploadsCollection
-        );
-      });
+      console.log(`response: ${response.data}`);
     } catch (error) {
-      console.error(`An error occurred while processing ${file.name}:`, error);
+      setUploadStatusMessage(
+        "Something went wrong while uploading to backend."
+      );
+      console.log(error);
+      return;
     }
+
+    const uploadTask = uploadBytesResumable(fileRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        setUploadStatusMessage(
+          `Uploading document${files!.length > 1 ? "s" : ""} ⬆️`
+        );
+        setLoading(false);
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`${file.name} upload progress: ${progress}%`);
+        setUploadProgress((prev) => ({
+          ...prev,
+          [file.name]: progress,
+        }));
+      },
+      (error) => {
+        uploadTask.cancel();
+        const errorMessage = `An error occurred while uploading ${file.name}`;
+        setUploadStatusMessage(
+          `${errorMessage}. Try again later or contact support if this problem persists.`
+        );
+        console.error(`${errorMessage}:`, error);
+      },
+      async () => {
+        uploadTask.then(() => {
+          const metadata: PdfMetadata = response.data.metadata;
+          uploadMetadataToFirestore(
+            metadata,
+            currentUser!.uid,
+            activeProjectId!,
+            uploadsCollection
+          );
+        });
+        setUploadStatusMessage("Done! ✅ Want to upload more?");
+      }
+    );
   };
 
   const handleSubmit = async () => {
@@ -200,9 +220,13 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
     );
     setUploadProgress((prev) => ({ ...prev, ...initialProgress }));
 
-    setLoading(true);
-    await Promise.all(files.map((file) => handleFileUpload(file)));
-    setLoading(false);
+    try {
+      await Promise.all(files.map((file) => handleFileUpload(file)));
+      console.log("All files uploaded");
+    } catch (error) {
+      setLoading(false);
+      console.error("Error uploading files: ", error);
+    }
   };
 
   const { colorMode } = useColorMode();
@@ -238,6 +262,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ dropZoneText }) => {
           <Box key={index} mb={3}>
             <Text>{file.name}</Text>
             <Progress
+              isIndeterminate={loading}
               colorScheme="green"
               value={uploadProgress[file.name] || 0}
             />
